@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.admin.FunctionDao">
+<!-- <typeAlias alias="functionTreeDto" type="net.chinahrd.entity.dto.pc.admin.FunctionTreeDto" /> -->
+
+    <select id="findFunctionItemTree" resultType="net.chinahrd.entity.dto.pc.admin.FunctionTreeDto">
+      SELECT
+        fun.function_id AS id,
+        fun.function_key AS functionKey,
+        fun.function_name AS `name`,
+        fun.function_parent_id AS pid,
+        fun.url AS urlPath,
+        fun.isMenu,
+        fun.show_index AS showIndex,
+        fun.full_path AS fullPath,
+        fun.note AS note,
+        0 AS type,
+        IF(fun.function_parent_id, 'false', 'true') AS open
+      FROM (
+        SELECT
+          df.function_id,
+          df.function_key,
+          df.function_name,
+          df.function_parent_id,
+          df.url,
+          df.is_menu AS isMenu,
+          df.show_index,
+          df.full_path,
+          df.note
+        FROM dim_function df
+        <where>
+          <if test="customerIds != null and customerIds.size != 0">
+            AND df.customer_id IN
+            <foreach collection="customerIds" item="cutomerId" separator="," open="(" close=")" >
+              #{cutomerId}
+            </foreach>
+          </if>
+        </where>
+        ORDER BY df.function_parent_id DESC,df.show_index
+      ) fun
+      UNION
+      SELECT
+        dfi.function_item_id AS id,
+        dfi.item_code AS functionKey,
+        dfi.note AS `name`,
+        dfi.function_id AS pid,
+        null AS urlPath,
+        0 AS isMenu,
+        99 AS showIndex,
+        NULL AS fullPath,
+        NULL AS note,
+        1 AS type,
+        'false' AS open
+      FROM dim_function_item dfi
+      <where>
+        <if test="customerIds != null and customerIds.size != 0">
+        AND dfi.customer_id IN
+        <foreach collection="customerIds" item="cutomerId" separator="," open="(" close=")" >
+          #{cutomerId}
+        </foreach>
+        </if>
+      </where>
+    </select>
+
+    <select id="findFunctionObj" resultType="net.chinahrd.entity.dto.pc.admin.FunctionTreeDto">
+    SELECT
+      df.function_id AS id,
+      df.function_key AS functionKey,
+      df.function_name AS name,
+      df.function_parent_id AS pid,
+      df.url AS urlPath,
+      df.is_menu AS isMenu,
+      df.show_index AS showIndex,
+      df.full_path AS fullPath,
+      df.note AS note,
+      0 AS type
+      FROM dim_function df
+      <where>
+        <if test="customerId != null">
+        df.customer_id = #{customerId}
+        </if>
+        <if test="id != null">
+        df.function_id = #{id}
+        </if>
+        <if test="url != null">
+        AND df.url = #{url}
+        </if>
+      </where>
+    ORDER BY df.create_time
+    LIMIT 0,1
+    </select>
+
+    <delete id="deleteFunction" >
+    DELETE FROM dim_function WHERE (function_id = #{id} OR function_parent_id = #{id})  AND customer_id = #{customerId}
+    </delete>
+  
+    <delete id="deleteFunctionItem">
+    DELETE FROM dim_function_item
+    <where>
+      <if test="customerId != null">
+        customer_id = #{customerId}
+      </if>
+      <if test="itemId != null">
+      AND function_item_id = #{itemId}
+      </if>
+      <if test="functionId != null">
+      AND function_id = #{functionId}
+      </if>
+    </where>
+    </delete>
+  
+    <insert id="addFunction" parameterType="net.chinahrd.entity.dto.pc.admin.FunctionDto" >
+      INSERT INTO dim_function (
+        function_id,
+        function_key,
+        function_name,
+        customer_id,
+        function_parent_id,
+        url,
+        is_menu,
+        show_index,
+        full_path,
+        note,
+        create_user_id,
+        create_time
+      )
+      VALUES (
+        #{functionDto.functionId},
+        #{functionDto.functionKey},
+        #{functionDto.functionName},
+        #{functionDto.customerId},
+        #{functionDto.pid},
+        #{functionDto.url},
+        #{functionDto.isMenu},
+        #{functionDto.showIndex},
+        #{functionDto.fullPath},
+        #{functionDto.note},
+        #{functionDto.createUserId},
+        #{functionDto.createTime}
+      )
+    </insert>
+
+
+    <insert id="addFunctionItem" parameterType="net.chinahrd.entity.dto.pc.admin.FunctionItemDto" >
+      INSERT INTO dim_function_item (
+        function_item_id,
+        customer_id,
+        function_id,
+        item_code,
+        note,
+        create_user_id,
+        create_time
+      )
+      VALUES (
+        #{itemDto.functionItemId},
+        #{itemDto.customerId},
+        #{itemDto.functionId},
+        #{itemDto.itemCode},
+        #{itemDto.note},
+        #{itemDto.createUserId},
+        #{itemDto.createTime}
+      )
+    </insert>
+  
+    <update id="updateFunction" parameterType="net.chinahrd.entity.dto.pc.admin.FunctionDto">
+      UPDATE dim_function df
+      <set>
+        <if test="functionDto.functionKey != null and functionDto.functionKey != ''" >
+          df.function_key = #{functionDto.functionKey},
+        </if>
+        <if test="functionDto.functionName != null and functionDto.functionName != ''" >
+          df.function_name = #{functionDto.functionName},
+        </if>
+        <if test="functionDto.url != null" >
+          df.url = #{functionDto.url},
+        </if>
+        <if test="functionDto.isMenu != null and functionDto.isMenu != ''" >
+          df.is_menu = #{functionDto.isMenu},
+        </if>
+        <if test="functionDto.showIndex != null and functionDto.showIndex != ''" >
+          df.show_index = #{functionDto.showIndex},
+        </if>
+        <if test="functionDto.fullPath != null and functionDto.fullPath != ''" >
+          df.full_path = #{functionDto.fullPath},
+        </if>
+        <if test="functionDto.note != null and functionDto.note != ''" >
+          df.note = #{functionDto.note},
+        </if>
+      </set>
+      <where>
+        <if test="functionDto.functionId != null">
+        AND df.function_id = #{functionDto.functionId}
+        </if>
+        <if test="functionDto.customerId != null">
+        AND df.customer_id = #{functionDto.customerId}
+        </if>
+      </where>
+    </update>
+
+    <update id="updateFunctionItem" parameterType="net.chinahrd.entity.dto.pc.admin.FunctionItemDto">
+      UPDATE dim_function_item dfi
+      <set>
+        <if test="itemDto.functionId != null and itemDto.functionId != ''" >
+          dfi.function_id = #{itemDto.functionId},
+        </if>
+        <if test="itemDto.itemCode != null and itemDto.itemCode != ''" >
+          dfi.item_code = #{itemDto.itemCode},
+        </if>
+        <if test="itemDto.note != null and itemDto.note != ''" >
+          dfi.note = #{itemDto.note}
+        </if>
+      </set>
+      <where>
+        <if test="itemDto.functionItemId != null">
+        AND  dfi.function_item_id = #{itemDto.functionItemId}
+        </if>
+        <if test="itemDto.customerId != null">
+        AND  dfi.customer_id = #{itemDto.customerId}
+        </if>
+      </where>
+    </update>
+    
+    <select id="findFunctionAll" resultType="net.chinahrd.entity.dto.pc.admin.RoleFunctionDto">
+    SELECT
+      dff.function_id AS functionId,
+      dff.function_name AS functionName,
+      dff.function_parent_id AS pid,
+      dff.url AS pathUrl,
+      dff.is_menu AS isMenu,
+      dff.show_index,
+      NULL AS functionItem,
+      NULL AS itemName
+    FROM dim_function dff
+    LEFT JOIN dim_function dff2 ON dff2.function_parent_id = dff.function_id AND dff.customer_id = dff2.customer_id 
+      <if test="roleIds != null and roleIds.size() > 0">
+      RIGHT JOIN function_role_relation frrf ON  dff2.function_id = frrf.function_id AND frrf.customer_id = dff2.customer_id 
+      </if>
+      <where>
+        <if test="customerId != null">
+          dff2.customer_id = #{customerId}
+        </if>
+        <if test="roleIds != null and roleIds.size() > 0">
+          AND frrf.role_id IN
+          <foreach collection="roleIds" item="roleId" separator="," open="(" close=")" >
+            #{roleId}
+          </foreach>
+        </if>
+      </where>
+    UNION
+    SELECT
+      df.function_id AS functionId,
+      df.function_name AS functionName,
+      df.function_parent_id AS pid,
+      df.url AS pathUrl,
+      df.is_menu AS isMenu,
+      df.show_index,
+      (
+        SELECT
+        GROUP_CONCAT(dfi.item_code)
+        FROM dim_function_item dfi
+        WHERE dfi.function_id = df.function_id   AND dfi.customer_id = #{customerId}
+        ORDER BY dfi.modify_time
+      ) AS functionItem,
+      (
+        SELECT
+        GROUP_CONCAT(dfi.note)
+        FROM dim_function_item dfi
+        WHERE dfi.function_id = df.function_id   AND dfi.customer_id = #{customerId}
+        ORDER BY dfi.modify_time
+      ) AS itemName
+      FROM dim_function df
+      <if test="roleIds != null and roleIds.size() > 0">
+        RIGHT JOIN function_role_relation frr ON df.function_id = frr.function_id AND df.customer_id = frr.customer_id 
+      </if>
+      <where>
+        <if test="customerId != null">
+          df.customer_id = #{customerId}
+        </if>
+        <if test="roleIds != null and roleIds.size() > 0">
+        AND frr.role_id IN
+          <foreach collection="roleIds" item="roleId" separator="," open="(" close=")" >
+            #{roleId}
+          </foreach>
+        </if>
+      </where>
+      ORDER BY show_index
+    </select>
+
+    <select id="findRoleFunction" resultType="net.chinahrd.entity.dto.pc.admin.RoleFunctionDto">
+      SELECT
+        frr.function_role_id AS roleFunctionId,
+        frr.function_id AS functionId,
+        frr.role_id AS roleId,
+        frr.item_codes AS functionItem
+      FROM function_role_relation frr
+      <where>
+        <if test="roleId != null">
+        frr.role_id = #{roleId}
+        </if>
+        <if test="customerId != null">
+        AND frr.customer_id = #{customerId}
+        </if>
+      </where>
+    </select>
+
+    <insert id="addRoleFunction" parameterType="net.chinahrd.entity.dto.pc.admin.RoleFunctionDto">
+      INSERT INTO function_role_relation
+      (
+        function_role_id,
+        customer_id,
+        role_id,
+        function_id,
+        item_codes,
+        create_user_id,
+        create_time
+      )
+      VALUES
+      <foreach collection="dtos" item="dto" separator=",">
+      (
+        #{dto.roleFunctionId},
+        #{dto.customerId},
+        #{dto.roleId},
+        #{dto.functionId},
+        #{dto.functionItem},
+        #{dto.createUserId},
+        #{dto.createTime}
+      )
+      </foreach>
+    </insert>
+
+    <delete id="deleteRoleFunction" parameterType="string">
+    DELETE FROM function_role_relation WHERE role_id = #{roleId} AND customer_id = #{customerId}
+    </delete>
+
+    <update id="updateFullPathByParent">
+      UPDATE dim_function df
+      SET df.full_path = CONCAT(#{pKey},'_',df.function_key)
+      WHERE df.function_parent_id = #{pid} AND df.customer_id = #{customerId}
+    </update>
+
+
+
+	<!-- ==================================================================== -->
+	
+	  <select id="queryHomeConfig" resultType="net.chinahrd.entity.dto.pc.manage.HomeConfigDto">
+    SELECT
+        fc.function_config_id,
+        fc.customer_id,
+        fc.emp_id,
+        fc.function_id,
+        fc.card_code,
+        fc.is_view,
+        fc.show_index
+    FROM function_config fc
+    WHERE fc.function_id = #{functionId}
+    AND fc.emp_id = #{empId}
+    AND fc.customer_id = #{customerId}
+    ORDER BY fc.is_view DESC,fc.show_index
+    </select>
+
+    <insert id="insertUserHomeConfig">
+    INSERT INTO function_config (
+        function_config_id,
+        customer_id,
+        emp_id,
+        function_id,
+        card_code,
+        is_view,
+        show_index
+    )
+    VALUES
+    <foreach collection="dtos" item="dto" separator=",">
+    (
+      #{dto.functionConfigId},
+      #{dto.customerId},
+      #{dto.empId},
+      #{dto.functionId},
+      #{dto.cardCode},
+      #{dto.isView},
+      #{dto.showIndex}
+    )
+    </foreach>
+    </insert>
+    
+    <update id="updateUserHomeConfig" parameterType="list">
+    <foreach collection="dtos" item="dto" separator=";">
+    UPDATE function_config
+    SET is_view = #{dto.isView}, show_index = #{dto.showIndex}
+    WHERE function_config_id = #{dto.functionConfigId}
+    </foreach>
+    </update>
+
+
+</mapper>

@@ -1,0 +1,195 @@
+.column .widget-toolbar span {
+    padding: 2px;
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.column .widget-toolbar .blue {
+    background-color: #3d6ba7;
+}
+
+.column .widget-toolbar .green2 {
+    background-color: #23C6C8;
+}
+.column .widget-toolbar .blue2 {
+    background-color: #1AB394;
+}
+.column .widget-toolbar .organge {
+    background-color: rgb(248, 172, 89);
+}
+.perChange .column{
+    margin: 0!important;
+}
+
+.perChange .userCount {
+    font-size: 28px;
+    color: #5E5E5E;
+    margin: 18px 0 0 8px;
+}
+
+
+.row {
+    margin-left: 0px;
+}
+
+#preArea {
+    background: white;
+    padding: 0;
+    margin: 0 12px;
+}
+
+#preDistributionChartArea, #preDistributionGridArea {
+    height: 360px;
+}
+
+.noPaddingLeft{
+	padding-left: 0px;
+}
+
+#chartContent{
+	height: 280px;
+}
+.leftBarArea{
+	height: 260px;
+}
+.preStarBarChar {
+	height: 260px;
+}
+.preDisContent{
+	position:absolute;
+	bottom:0px;
+	height: 260px;
+}
+#preDisStar_old{
+	text-align:right;
+}
+#preDisStardiv{
+	height: 29px;
+	line-height: 29px;
+}
+/*color:rgb(221,115,5) f8c21a;*/
+#preDisStar_old>div span{
+	font-size: 20px;
+	color:rgb(248,194,26);
+}
+#preDisChart_old{
+	margin-left:40%; 
+}
+.preDisTextArea{
+	position:relative;
+	float:top;
+	padding-left: 10%;
+	height: 40px;
+}
+
+.rightPieArea{
+	border-left: 1px solid #c5d0dc;
+	height: 260px;
+	line-height: 260px;
+}
+
+#rightPieChart{
+	margin-left: auto;
+	margin-right: auto;
+	height: 260px;
+}
+#noData{
+	display: none;
+	position:absolute;
+	text-align: center;
+	height: 260px;
+}
+.warn-icon {
+    height: 60px;
+    background: url(../../../img/base/icon-warn.png) no-repeat;
+    background-size:90% auto;
+    background-position: center; 
+}
+
+.smile-face {
+    height: 60px;
+    background: url(../../../img/base/smile-face.png) no-repeat;    
+	background-size:90% auto;
+	background-position: center; 
+}
+
+
+#orgBenefitChart {
+    height: 310px;
+    display: inline-block;
+}
+
+.mainArea{
+    height: 338px;
+}
+.chartArea{
+	height: 260px;
+	padding-left:20%; 
+	padding-right:30%; 
+}
+#preChange{
+	margin-top: 60px;
+	height: 220px;
+}
+
+.preException{
+	margin-top: 20px;
+	height: 200px;
+	border-bottom: 1px solid #c5d0dc;
+}
+.preExceptionLable{
+    padding-left: 0px;
+	height: 40px;
+}
+.preExceptionLable div{
+	padding-left: 0px;
+	text-align: left;
+}
+.textArea{
+	padding-left: 20%;
+	color: #999999;
+}
+.preContext{
+	position:absolute;
+	bottom:0px;
+	width:64px;
+	background-color:#3dcace;
+    text-align: center;
+    font-size: 18px;
+    color: #F2F2F2;
+}
+
+#preDown{
+	left:50%;
+}
+.preExceptionNum{
+    font-weight: 700;
+    font-size: 20px;
+    color: #FF6600;
+}
+
+#main-container .label-operator {
+    width: 100%;
+    height: 125px;
+    font-size: 28px;
+    text-align: center;
+    line-height: 125px;
+    font-weight: 500;
+}
+
+#timeLine {
+    position: relative;
+    height: 135px;
+}
+.column-inner{
+	padding: 20px;
+}
+.column-inner .tab-content{
+	padding: 0;
+}
+/********************* 自定义表格页面样式 ****************************/
+.ui-jqgrid>.ui-jqgrid-view th:nth-child(3), .ui-jqgrid>.ui-jqgrid-view tr td:nth-child(3) {
+    background-color: #E3F8FE;
+}

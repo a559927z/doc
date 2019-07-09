@@ -1,0 +1,48 @@
+package net.chinahrd.modules.rbac.entity;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+import net.chinahrd.common.BaseEntity;
+import net.chinahrd.common.BusinessEntity;
+/**
+ * <p>
+ *
+ * </p>
+ *
+ * @author wzmo
+ * @since 2019-03-18
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Accessors(chain = true)
+@TableName("rbac_module")
+public class ModuleInfo extends BaseEntity {
+    /**
+     * 模块id
+     */
+    private String moduleId;
+    /**
+     * 上级parentId
+     */
+    private String modulePid;
+
+    /**
+     * 模块url
+     */
+    private String moduleUrl;
+    /**
+     * 模块名称
+     */
+    private String moduleName;
+    /**
+     * 类型：1模块 2菜单 3按钮
+     */
+    private String moduleType;
+
+    /**
+     * 排序
+     */
+    private Integer moduleSort;
+}

@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.db.input.dao.DbImportBaseDao">
+
+	<resultMap id="rsOrganMap"
+		type="net.chinahrd.db.input.Entity.SoureDimOrganizationEntity">
+		<result property="id" column="id" />
+		<result property="c_id" column="c_id" />
+		<result property="customer_id" column="customer_id" />
+		<result property="business_unit_key" column="business_unit_key" />
+		<result property="organization_type_id" column="organization_type_id" />
+		<result property="organization_type_key" column="organization_type_key" />
+		<result property="organization_key" column="organization_key" />
+		<result property="organization_parent_id" column="organization_parent_id" />
+		<result property="organization_parent_key" column="organization_parent_key" />
+		<result property="organization_name" column="organization_name" />
+		<result property="organization_name_full" column="organization_name_full" />
+		<result property="organization_company_id" column="organization_company_id" />
+		<result property="note" column="note" />
+		<result property="is_single" column="is_single" />
+		<result property="full_path" column="full_path" />
+		<result property="has_children" column="has_children" />
+		<result property="depth" column="depth" />
+		<result property="profession_id" column="profession_id" />
+	</resultMap>
+	
+	<resultMap id="rsCIS"
+		type="net.chinahrd.db.input.Entity.CheckInputdataStatusEntity">
+		<result property="id" column="id" />
+		<result property="customer_id" column="customer_id" />
+		<result property="code" column="code" />
+		<result property="note" column="note" />
+		<result property="date" column="date" />
+	</resultMap>
+	
+	<!-- TODO 实施环境下	curdate() 可改用参数 #{curDate}	-->
+	<select id="findCheckInputdataStatus" resultMap="rsCIS">
+		SELECT 
+			id, code
+		FROM inputdata_status_java
+		WHERE customer_id = #{customer_id} AND `date` = curdate();  
+	</select>
+	
+	<update id="updateCheckInputdataStatus" >
+		update inputdata_status_java 
+		set code = #{code}, note = #{note}
+		WHERE id = #{id} AND customer_id = #{customer_id}
+	</update>
+
+				
+	<!-- 机机构 -->
+	<!-- ============================================================================================================ -->
+	<select id="querySoureDimOrganization" resultMap="rsOrganMap">
+		SELECT 
+			sorg.c_id, 
+			sorg.customer_id, ot.organization_type_id, sorg.organization_key,
+			sorg.organization_parent_key,
+			sorg.organization_name,
+			sorg.organization_name_full,
+			sorg.is_single,
+			sorg.note,
+			sorg.profession_id,
+			sorg.organization_company_id
+		FROM soure_dim_organization sorg
+		INNER JOIN dim_organization_type ot on sorg.organization_type_key = ot.organization_type_key
+		WHERE sorg.customer_id = #{customer_id}
+		ORDER BY ot.organization_type_level
+	</select>
+	<select id="queryDimOrganization" resultMap="rsOrganMap">
+		SELECT 
+			organization_id AS id, full_path, c_id
+		FROM dim_organization
+		WHERE customer_id = #{customer_id} AND
+		c_id in 
+			<foreach item="c_id" collection="list" open="(" separator="," close=")">
+			'${c_id}'
+			</foreach>
+	</select>
+	<delete id="deleteDimOrganization" >
+		DELETE FROM `dim_organization` 
+		WHERE customer_id = #{customer_id} 
+			AND c_id in
+		<foreach collection="list" item="i" index="index" open="(" close=")" separator=",">
+			#{i.c_id}
+		</foreach>
+	</delete>
+	<select id="queryDimOrganizationNew" resultMap="rsOrganMap">
+		SELECT 
+			organization_id AS id,
+			customer_id,
+			business_unit_id,
+			organization_company_id,
+			organization_type_id,
+			organization_key,
+			organization_parent_key,
+			organization_parent_id,
+			organization_name,
+			organization_name_full,
+			note,
+			is_single,
+			full_path,
+			profession_id,
+			c_id
+		FROM dim_organization
+		WHERE customer_id = #{customer_id}
+	</select>
+	<insert id="replaceDimOrganization" parameterType="java.util.List">
+		<if test="list != null and list.size() > 0 ">
+		INSERT INTO dim_organization(
+			organization_id, customer_id,
+			organization_key, 
+			organization_name,
+			organization_name_full,
+			organization_parent_id, 
+			organization_parent_key,
+			organization_company_id,
+			organization_type_id,
+			note, is_single, full_path, has_children, depth, refresh_date,
+			profession_id,
+			c_id
+		)VALUES
+		<foreach collection="list" item="i" index="index" open="" close="" separator=",">
+			(
+			#{i.id}, #{i.customer_id},
+			#{i.organization_key},
+			#{i.organization_name},
+			#{i.organization_name_full},
+			#{i.organization_parent_id},
+			#{i.organization_parent_key},
+			#{i.organization_company_id},
+			#{i.organization_type_id},
+			#{i.note}, #{i.is_single}, #{i.full_path2}, #{i.has_children}, #{i.depth},#{i.refresh_date},
+			#{i.profession_id},
+			#{i.c_id}
+			)
+		</foreach>
+		</if>
+	</insert>
+	<update id="updateAttr" parameterType="java.util.List">
+	    <foreach collection="list" item="i" index="index" open="" separator=";" close="" >
+		    UPDATE dim_organization 
+		    SET refresh_date = now(), full_path = #{i.full_path2}, depth= #{i.depth}, has_children = #{i.has_children}, 
+		    	organization_parent_id = #{i.organization_parent_id}
+		    WHERE organization_id = #{i.id}
+	    </foreach>
+	</update>
+	<select id="queryRoleOrgan" resultType="net.chinahrd.entity.dto.KVItemDto">
+		SELECT role_id k, organization_id v FROM role_organization_relation WHERE customer_id = #{customer_id} AND  half_check = 0
+	</select>
+	<select id="queryUserOrgan" resultType="net.chinahrd.entity.dto.KVItemDto">
+		SELECT user_id k, organization_id v FROM user_organization_relation WHERE customer_id = #{customer_id} AND  half_check = 0
+	</select>
+	<delete id="deleteRoleOrgan">
+		DELETE FROM role_organization_relation WHERE customer_id = #{customer_id} AND  half_check = 0
+	</delete>
+	<insert id="addRoleOrganRelation" parameterType="java.util.List">
+		<if test="list != null and list.size() > 0 ">
+		INSERT INTO role_organization_relation (
+			role_organization_id, customer_id, role_id, organization_id, half_check, create_user_id, create_time
+		)VALUES
+		<foreach collection="list" item="i" index="index" open="" close="" separator=",">
+			( #{i.id}, #{i.customer_id},#{i.role_id},#{i.organization_id}, 0, #{i.create_user_id}, now() )
+		</foreach>
+		</if>
+	</insert>
+	<delete id="deleteUserOrgan">
+		DELETE FROM user_organization_relation WHERE customer_id = #{customer_id} AND  half_check = 0
+	</delete>
+	<insert id="addUserOrganRelation" parameterType="java.util.List">
+		<if test="list != null and list.size() > 0 ">
+		INSERT INTO user_organization_relation (
+			user_organization_id, customer_id, user_id, organization_id, half_check, create_user_id, create_time
+		)VALUES
+		<foreach collection="list" item="i" index="index" open="" close="" separator=",">
+			( #{i.id}, #{i.customer_id},#{i.user_id},#{i.organization_id}, 0, #{i.create_user_id}, now() )
+		</foreach>
+		</if>
+	</insert>
+	<insert id="callUpdateFullpathOrg" statementType="CALLABLE">
+		CALL pro_update_full_path_org (#{p_customer_id, mode=IN, jdbcType=VARCHAR}, #{p_user_id, mode=IN, jdbcType=VARCHAR})
+	</insert>
+		<insert id="callDimOrganizationDays" statementType="CALLABLE">
+		CALL pro_fetch_dim_organization_days (#{p_customer_id, mode=IN, jdbcType=VARCHAR}, #{p_user_id, mode=IN, jdbcType=VARCHAR})
+	</insert>
+	<!-- ============================================================================================================ -->
+	
+	
+	
+	<!-- 岗位 -->
+	<!-- ============================================================================================================ -->
+	<insert id="callDimPosition" statementType="CALLABLE">
+		CALL pro_fetch_dim_position (
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- ============================================================================================================ -->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 维度表 -->
+	<!-- ============================================================================================================ -->
+	<insert id="callDimTable" statementType="CALLABLE">
+		CALL pro_fetch_dim_all(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<select id="findLogInfo" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT count(1) FROM `log` 
+		WHERE customer_id = #{p_customer_id} 
+				and module = #{module} and is_error = #{type} 
+				and TO_DAYS(start_time) = TO_DAYS(CURDATE())
+	</select>
+	
+	<!-- 主序列 -->
+	<insert id="callDimSequence" statementType="CALLABLE">
+		CALL pro_fetch_dim_sequence(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR},
+		 	#{p_error_txt, mode=OUT, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 子序列 -->
+	<insert id="callDimSequenceSub" statementType="CALLABLE">
+		CALL pro_fetch_dim_sequence_sub(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 能力层级 -->
+	<insert id="callDimAbility" statementType="CALLABLE">
+		CALL pro_fetch_dim_ability(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 能力子级 -->
+	<insert id="callDimAbilityLv" statementType="CALLABLE">
+		CALL pro_fetch_dim_ability_lv(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 职衔 -->
+	<insert id="callDimJobTitle" statementType="CALLABLE">
+		CALL pro_fetch_dim_job_title(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+
+	
+	<!-- 关键人才库 -->
+	<insert id="callDimKeyTalentType" statementType="CALLABLE">
+		CALL pro_fetch_dim_key_talent_type(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 流失 -->
+	<insert id="callDimRunOff" statementType="CALLABLE">
+		CALL pro_fetch_dim_run_off(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	
+	
+	<!-- 课程 -->
+	<insert id="callDimCourse" statementType="CALLABLE">
+		CALL pro_fetch_dim_course(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 课程类型 -->
+	<insert id="callDimCourseType" statementType="CALLABLE">
+		CALL pro_fetch_dim_course_type(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	
+	<!-- 工资结构维度 -->
+	<insert id="callDimStructure" statementType="CALLABLE">
+		CALL pro_fetch_dim_structure(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	
+	
+	<!-- 项目类型维度 -->
+	<insert id="callDimProjectType" statementType="CALLABLE">
+		CALL pro_fetch_dim_project_type(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 项目投入费用类型维度 -->
+	<insert id="callDimProjectInputType" statementType="CALLABLE">
+		CALL pro_fetch_dim_project_input_type(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	
+	<!-- 异动类型维度 -->
+	<insert id="callDimChangeType" statementType="CALLABLE">
+		CALL pro_fetch_dim_change_type(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	
+	<!-- 招聘渠道维度 -->
+	<insert id="callDimChannel" statementType="CALLABLE">
+		CALL pro_fetch_dim_channel(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 离职周期 -->
+	<insert id="callDimDismissionWeek" statementType="CALLABLE">
+		CALL pro_fetch_dim_dismission_week(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 激励要素 -->
+	<insert id="callDimEncourages" statementType="CALLABLE">
+		CALL pro_fetch_dim_encourages(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 绩效 -->
+	<insert id="callDimPerformance" statementType="CALLABLE">
+		CALL pro_fetch_dim_performance(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 人群范围 -->
+	<insert id="callDimPopulation" statementType="CALLABLE">
+		CALL pro_fetch_dim_population(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 岗位能力素质维 -->
+	<insert id="callDimQuality" statementType="CALLABLE">
+		CALL pro_fetch_dim_quality(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- 岗位能力素质维 -->
+	<insert id="callDimCheckworktype" statementType="CALLABLE">
+		CALL pro_fetch_dim_checkwork_type(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_key_work, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	<!-- ============================================================================================================ -->
+	
+	
+</mapper>

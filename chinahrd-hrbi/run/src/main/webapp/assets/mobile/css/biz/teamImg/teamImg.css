@@ -1,0 +1,77 @@
+
+.teamTotal {
+	text-align:center;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: normal;
+    font-style: normal;
+    color: #1E1E1E;
+/*     color: #999999; */
+}
+.changeCardPanel{
+	margin-top: 10px;
+}   
+.teamCard{
+	width:32%;
+	text-align: center;
+	padding: 0;
+	float: left;
+	height:50px;
+}
+.teamCardSplit{
+	float: left;
+	width: 1px;
+	margin-top:10px;
+	height:50px;
+	background-color: #B1ABAB;
+}
+.teamCard .label{
+	font-size: 14px;
+    color: #1E1E1E;
+    font-weight: 400;
+    font-style: normal;
+    line-height: normal;
+    display:block;
+    background-color: #ffffff !important;
+}
+.teamCard .value{
+	height:35px;
+	color: #1E1E1E;
+	font-weight: 400;
+    font-style: normal;
+}
+.teamCard .value label{
+
+	font-size: 11px;
+}
+.teamCard .value span{
+
+	font-size: 28px;
+}
+.constellatoryContent{
+	height:239px;
+}
+.teamImg-sex{
+	position: absolute;left: 50px;top: 50px;
+	display: none;
+}
+
+.lidyZone {
+	position: absolute;
+	z-index: 2;
+	width: 60px;
+	color: #FF88A2;
+	font-size: 20px;
+	text-align: center;
+}
+.manZone {
+	position: absolute;
+	z-index: 2;
+	width: 60px;
+	color: #019BD9;
+	font-size: 20px;
+	text-align: center;
+}
+.lidyVal, .manVal {
+	font-size: 30px;
+}

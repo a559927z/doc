@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.db.input.dao.DbImportPerBenefitDao">
+
+	<!-- 明年目标人均效益（年） -->
+	<insert id="callTargetBenefitValue" statementType="CALLABLE">
+		CALL pro_fetch_target_benefit_value (
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+			#{p_user_id, mode=IN, jdbcType=VARCHAR},
+			#{p_nowTime, mode=IN, jdbcType=TIMESTAMP}
+			)
+	</insert>
+
+	<!-- 每月营业利润 -->
+	<insert id="callTradeProfit" statementType="CALLABLE">
+		CALL pro_fetch_trade_profit (
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+			#{p_user_id, mode=IN, jdbcType=VARCHAR},
+			#{p_last_curdate, mode=IN, jdbcType=INTEGER}
+			)
+	</insert>
+
+	<!-- 每月等效全职员工数 -->
+	<insert id="callFactfte" statementType="CALLABLE">
+		CALL pro_fetch_factfte (
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_nowTime, mode=IN, jdbcType=TIMESTAMP}
+		 	)
+	</insert>
+
+
+
+</mapper>
+

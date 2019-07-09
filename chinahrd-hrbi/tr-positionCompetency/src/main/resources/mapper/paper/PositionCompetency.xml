@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.positionCompetency.mvc.pc.dao.PositionCompetencyDao">
+	<cache-ref namespace="net.chinahrd.ehcache.normal" />
+	
+	<!-- 查询包含字迹的组织机构id -->
+	<sql id="queryOrganIdAll">
+		(
+					SELECT
+						o.organization_id 
+					FROM
+						(SELECT o.organization_id ,o.full_path,o.customer_id
+						FROM history_dim_organization_month o 
+						WHERE o.`year_month`=#{yearMonth}
+						)o
+					WHERE
+						LOCATE(
+							(
+								SELECT
+									o1.full_path
+								FROM
+									(SELECT o.organization_id ,o.full_path,o.customer_id
+									FROM history_dim_organization_month o
+									WHERE o.`year_month`=#{yearMonth})o1
+								WHERE
+									o1.organization_id = #{organId}
+								AND o1.customer_id = #{customerId}
+							),
+							o.full_path
+						)
+					AND o.customer_id = #{customerId}
+					)
+	</sql>
+	<!-- 查询所有周期点  -->
+	<select id="queryAllTime" resultType="string" useCache="true">
+		SELECT DISTINCT `year_month` FROM `emp_pq_relation` 
+		WHERE customer_id=#{customerId};
+	</select>
+	<!-- 查询岗位  -->
+	<select id="queryPositionByName"  resultType="net.chinahrd.entity.dto.KVItemDto" >
+	   	select dm.position_id as k,
+	   			dm.position_name as v
+	   	 from dim_position dm
+			where dm.customer_Id=#{customerId} 
+			AND dm.position_name  LIKE CONCAT('%',#{keyName},'%')
+	     ORDER BY convert(dm.position_name using GBK) 
+	     limit #{rowBounds.offset} , #{rowBounds.limit}		
+	</select>
+	<select id="queryPositionByNameCount"  resultType="java.lang.Integer" >
+	   	select count(1) from dim_position dm
+			where dm.customer_Id=#{customerId}
+			  AND dm.position_name  LIKE CONCAT('%',#{keyName},'%')
+	</select>
+	
+	
+	<!-- 查询所有下级机构  -->
+		<!-- 查询所有下级机构  -->
+	<select id="queryOrgan" resultType="net.chinahrd.entity.dto.pc.positionCompetency.PositionCompetencyDto" useCache="true">
+		select 
+			do.organization_id organId,
+			do.organization_name organName,
+			do.organization_parent_id parentId,
+			do.has_children hasChildren,
+			do.customer_id customerId
+		from dim_organization do 
+		WHERE do.customer_id=#{customerId}
+			and (do.organization_id=#{organId} OR do.organization_parent_id=#{organId})
+	</select>
+	<select id="queryOrganByTime" resultType="net.chinahrd.entity.dto.pc.positionCompetency.PositionCompetencyDto" useCache="true">
+		select 
+			don.organization_id organId,
+			don.organization_name organName,
+			don.organization_parent_id parentId,
+			don.has_children hasChildren,
+			don.`year_month` yearMonth,
+			don.customer_id customerId
+		from history_dim_organization_month don 
+		WHERE don.customer_id=#{customerId}
+				and don.organization_parent_id=#{organId}
+<!-- 			and (don.organization_id=#{organId} OR don.organization_parent_id=#{organId}) -->
+			and don.`year_month`=#{yearMonth} 
+	</select>
+	<!-- 团队平均胜任度 -->
+	<select id="queryAvgCompetencyByOrgan" parameterType="net.chinahrd.entity.dto.pc.positionCompetency.PositionCompetencyDto" resultType="net.chinahrd.entity.dto.pc.positionCompetency.PositionCompetencyDto" useCache="true">
+		SELECT SUM(t.soure)/COUNT(1) rate FROM(
+			SELECT epr.emp_id,SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1) soure 
+			FROM emp_pq_relation  epr 
+			INNER JOIN dim_emp_month dem
+			ON epr.emp_id=dem.emp_id 
+			AND epr.customer_id=dem.customer_id 
+			AND dem.`year_month`=epr.`year_month`
+			INNER JOIN matching_soure yq
+			ON epr.demands_matching_soure_id=yq.matching_soure_id
+			AND epr.customer_id=yq.customer_id
+			INNER JOIN matching_soure sd
+			ON epr.matching_soure_id=sd.matching_soure_id
+			AND epr.customer_id=sd.customer_id 
+			WHERE epr.`year_month`=#{yearMonth}
+			AND epr.customer_id = #{customerId}
+			<if test="positionId!=null">
+			AND dem.position_id=#{positionId}
+			</if>
+			AND dem.organization_id IN
+			<include refid="queryOrganIdAll"></include>
+			GROUP BY epr.emp_id
+			)t
+	</select>
+	
+	<!-- 岗位胜任度 -->
+	<select id="queryPositionCompetency" resultType="net.chinahrd.entity.dto.pc.positionCompetency.PositionCompetencyDto" useCache="true">
+		SELECT  t.position_id positionId,t.position_name positionName,
+		SUM(t.soure)/COUNT(1) rate 
+		FROM(
+		SELECT epr.emp_id,dem.position_id,dem.position_name,SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1) soure 
+		FROM emp_pq_relation  epr 
+		INNER JOIN dim_emp_month dem
+		ON epr.emp_id=dem.emp_id 
+		AND epr.customer_id=dem.customer_id 
+		AND dem.`year_month`=epr.`year_month`
+		INNER JOIN matching_soure yq
+		ON epr.demands_matching_soure_id=yq.matching_soure_id
+		AND epr.customer_id=yq.customer_id
+		INNER JOIN matching_soure sd
+		ON epr.matching_soure_id=sd.matching_soure_id
+		AND epr.customer_id=sd.customer_id 
+		WHERE epr.`year_month`=#{yearMonth}
+		AND epr.customer_id = #{customerId}
+		AND dem.organization_id IN
+		<include refid="queryOrganIdAll"></include>
+		GROUP BY epr.emp_id
+		)t
+		GROUP BY t.position_id,t.position_name
+		ORDER BY rate
+	</select>
+	
+	<!-- 序列团队平均胜任度对比分析-->
+	<select id="querySequence"  resultType="net.chinahrd.entity.dto.pc.positionCompetency.SequenceAndAblityDto" useCache="true">
+		SELECT  t.sequence_id id,t.sequence_name name,
+		SUM(t.soure)/COUNT(1) rate
+		FROM(
+		SELECT epr.emp_id,dem.sequence_id,dem.sequence_name,SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1) soure 
+		FROM emp_pq_relation  epr 
+		INNER JOIN dim_emp_month dem
+		ON epr.emp_id=dem.emp_id 
+		AND epr.customer_id=dem.customer_id 
+		AND dem.`year_month`=epr.`year_month`
+		INNER JOIN matching_soure yq
+		ON epr.demands_matching_soure_id=yq.matching_soure_id
+		AND epr.customer_id=yq.customer_id
+		INNER JOIN matching_soure sd
+		ON epr.matching_soure_id=sd.matching_soure_id
+		AND epr.customer_id=sd.customer_id 
+		WHERE epr.`year_month`=#{yearMonth}
+		AND epr.customer_id = #{customerId}
+		AND dem.organization_id IN
+		<include refid="queryOrganIdAll"></include>
+		<if test="sequenceId!=null">
+		AND dem.sequence_id=#{sequenceId}
+		</if>
+		GROUP BY epr.emp_id
+		)t
+		GROUP BY t.sequence_id,t.sequence_name
+	</select>
+		<!--职级团队平均胜任度对比分析-->
+	<select id="queryAbilityBySequence"   resultType="net.chinahrd.entity.dto.pc.positionCompetency.SequenceAndAblityDto" useCache="true">
+		SELECT  t.curt_name name,
+<!-- 		COUNT(1) count, -->
+		SUM(t.soure)/COUNT(1) rate
+		FROM(
+		SELECT epr.emp_id,da.curt_name,SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1) soure 
+		FROM emp_pq_relation  epr 
+		INNER JOIN dim_emp_month dem
+		ON epr.emp_id=dem.emp_id 
+		AND epr.customer_id=dem.customer_id 
+		AND dem.`year_month`=epr.`year_month`
+		INNER JOIN matching_soure yq
+		ON epr.demands_matching_soure_id=yq.matching_soure_id
+		AND epr.customer_id=yq.customer_id
+		INNER JOIN matching_soure sd
+		ON epr.matching_soure_id=sd.matching_soure_id
+		AND epr.customer_id=sd.customer_id 
+		LEFT JOIN dim_ability da 
+		ON dem.ability_id=da.ability_id 
+		WHERE dem.organization_id IN
+		<include refid="queryOrganIdAll"></include>
+		AND epr.`year_month`=#{yearMonth}
+		AND epr.customer_id = #{customerId}
+		<if test="sequenceId!=null">
+		AND dem.sequence_id=#{sequenceId}
+		</if>
+		GROUP BY epr.emp_id
+		)t
+		GROUP BY t.curt_name
+	</select>
+	
+	
+		<!--人员总数-->
+	<select id="queryEmpByNameCount" resultType="int">
+		SELECT count(DISTINCT epr.emp_id) 
+		FROM emp_pq_relation  epr 
+		INNER JOIN dim_emp_month dem
+		ON epr.emp_id=dem.emp_id 
+  		AND epr.customer_id=dem.customer_id 
+		AND dem.`year_month`=epr.`year_month`
+
+		WHERE epr.`year_month`=#{yearMonth}
+		AND epr.customer_id = #{customerId}
+		AND dem.organization_id IN
+		<include refid="queryOrganIdAll"></include>
+		<if test="keyName!=null">
+			  AND ((dem.emp_key  LIKE CONCAT('%',#{keyName},'%')) OR dem.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+			</if>
+	</select>
+	
+	<select id="queryEmpByNameCount2" resultType="int">
+		SELECT count(DISTINCT t.empId) 
+		 FROM(
+			SELECT epr.emp_id as empId,
+			dem.user_name_ch as empName,
+			dem.position_name as positionName,
+			SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1)  as  rate 
+			FROM emp_pq_relation  epr 
+			INNER JOIN dim_emp_month dem
+			ON epr.emp_id=dem.emp_id 
+			AND epr.customer_id=dem.customer_id 
+			AND dem.`year_month`=epr.`year_month`
+			INNER JOIN matching_soure yq
+			ON epr.demands_matching_soure_id=yq.matching_soure_id
+			AND epr.customer_id=yq.customer_id
+			INNER JOIN matching_soure sd
+			ON epr.matching_soure_id=sd.matching_soure_id
+			AND epr.customer_id=sd.customer_id 
+			LEFT JOIN dim_ability da 
+			ON dem.ability_id=da.ability_id 
+			WHERE  epr.`year_month`=#{yearMonth}
+			AND epr.customer_id = #{customerId}
+			AND dem.organization_id IN
+			<include refid="queryOrganIdAll"></include>
+			GROUP BY epr.emp_id
+		) AS t
+		<where>
+			<if test="start!=null">
+		  		AND  t.rate &gt;=#{start}
+			</if>
+			<if test="end!=null">
+		 		AND  t.rate &lt;=#{end}
+			</if>
+		</where>
+	</select>
+	<!--人员总得分-->
+	<select id="queryEmpByName" resultType="net.chinahrd.entity.dto.pc.positionCompetency.EmpDetailDto">
+		SELECT t.empId,
+				t.empName,
+				t.positionName,
+				t.rate
+		 FROM(
+			SELECT epr.emp_id as empId,
+			dem.user_name_ch as empName,
+			dem.position_name as positionName,
+			SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1)  as  rate 
+			FROM emp_pq_relation  epr 
+			INNER JOIN dim_emp_month dem
+			ON epr.emp_id=dem.emp_id 
+			AND epr.customer_id=dem.customer_id 
+			AND dem.`year_month`=epr.`year_month`
+			INNER JOIN matching_soure yq
+			ON epr.demands_matching_soure_id=yq.matching_soure_id
+			AND epr.customer_id=yq.customer_id
+			INNER JOIN matching_soure sd
+			ON epr.matching_soure_id=sd.matching_soure_id
+			AND epr.customer_id=sd.customer_id 
+			LEFT JOIN dim_ability da 
+			ON dem.ability_id=da.ability_id 
+			WHERE  epr.`year_month`=#{yearMonth}
+			AND epr.customer_id = #{customerId}
+			<if test="keyName!=null">
+			  AND ((dem.emp_key  LIKE CONCAT('%',#{keyName},'%')) OR dem.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+			</if>
+			
+			AND dem.organization_id IN
+			<include refid="queryOrganIdAll"></include>
+			GROUP BY epr.emp_id,dem.user_name_ch ,dem.position_name
+		) AS t
+		<where>
+			<if test="start!=null">
+		  		AND  t.rate &gt;=#{start}
+			</if>
+			<if test="end!=null">
+		 		AND  t.rate &lt;=#{end}
+			</if>
+		
+		</where>
+		ORDER BY t.rate DESC,convert(t.empName using GBK) 
+		  limit #{rowBounds.offset} , #{rowBounds.limit}		
+	</select>
+	
+	<!--每个人员详细得分-->
+	<select id="queryEmpDetail"  resultType="net.chinahrd.entity.dto.pc.positionCompetency.DimensionDto">
+		SELECT
+		epr.emp_id empId,
+		dq.quality_id id,
+		dq.vocabulary name,
+		sd.show_index reallyScore,
+		yq.show_index expectScore,
+		sd.v1 reallyScoreName,
+		yq.v1 expectScoreName
+		FROM emp_pq_relation  epr 
+		INNER JOIN dim_emp_month dem
+		ON epr.emp_id=dem.emp_id 
+		AND epr.customer_id=dem.customer_id 
+		AND dem.`year_month`=epr.`year_month`
+		INNER JOIN dim_quality dq
+		ON epr.quality_id=dq.quality_id 
+		AND epr.customer_id=dem.customer_id 
+		INNER JOIN matching_soure yq
+		ON epr.demands_matching_soure_id=yq.matching_soure_id
+		AND epr.customer_id=yq.customer_id
+		INNER JOIN matching_soure sd
+		ON epr.matching_soure_id=sd.matching_soure_id
+		AND epr.customer_id=sd.customer_id 
+		WHERE epr.`year_month`= #{yearMonth}
+		AND epr.customer_id =  #{customerId}
+<!-- 		AND epr.emp_id=#{empId} -->
+		<if test="empIds!=null">
+			AND  epr.emp_id in
+			<foreach item="empId" collection="empIds" open="(" separator="," close=")">
+			'${empId}'
+			</foreach>
+		</if>
+		<if test="empIds==null">
+			AND epr.emp_id=#{empId}
+		</if>
+		ORDER BY id
+	</select>
+	
+	<!--岗位得分   列表-->
+	<select id="queryPositionTable"   resultType="net.chinahrd.entity.dto.pc.positionCompetency.PositionDetailDto">
+		SELECT t.positionId,t.positionName,t.rate FROM(
+			SELECT  t.position_id positionId,
+			    t.position_name positionName,
+				SUM(t.soure)/COUNT(1) rate
+				FROM(
+				SELECT epr.emp_id,dem.position_id,dem.position_name,SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1) soure 
+				FROM emp_pq_relation  epr 
+				INNER JOIN dim_emp_month dem
+				ON epr.emp_id=dem.emp_id 
+				AND epr.customer_id=dem.customer_id 
+				AND dem.`year_month`=epr.`year_month`
+				INNER JOIN matching_soure yq
+				ON epr.demands_matching_soure_id=yq.matching_soure_id
+				AND epr.customer_id=yq.customer_id
+				INNER JOIN matching_soure sd
+				ON epr.matching_soure_id=sd.matching_soure_id
+				AND epr.customer_id=sd.customer_id 
+				WHERE epr.`year_month`=#{yearMonth}
+				AND epr.customer_id = #{customerId}
+				AND dem.organization_id IN
+					<include refid="queryOrganIdAll"></include>
+				<if test="keyName!=null">
+					AND (dem.position_name  LIKE CONCAT('%',#{keyName},'%'))
+				</if>
+				GROUP BY epr.emp_id
+				)t
+		   GROUP BY t.position_id,t.position_name
+	   )t 
+	   ORDER BY t.rate DESC
+	     limit #{rowBounds.offset} , #{rowBounds.limit}		
+	</select>
+	
+		<!--岗位得分   列表  总数-->
+	<select id="queryPositionTableCount"  resultType="int">
+			SELECT
+			count(DISTINCT dem.position_id)
+			FROM emp_pq_relation  epr 
+			INNER JOIN dim_emp_month dem
+			ON epr.emp_id=dem.emp_id 
+			AND epr.customer_id=dem.customer_id 
+			AND dem.`year_month`=epr.`year_month`
+			WHERE epr.`year_month`=#{yearMonth}
+			AND epr.customer_id = #{customerId}
+			AND dem.organization_id IN 
+		<include refid="queryOrganIdAll"></include>
+			<if test="keyName!=null">
+			AND (dem.position_name  LIKE CONCAT('%',#{keyName},'%'))
+			</if>
+	</select>
+	
+	
+		<!--岗位下各个能力维度的匹配度-->
+	<select id="queryPositionDimension"   resultType="net.chinahrd.entity.dto.pc.positionCompetency.DimensionDto">
+		SELECT pq.position_id positionId,s.quality_id id,
+			dq.vocabulary name ,
+			s.soure rate
+			FROM position_quality pq 
+			INNER JOIN dim_quality dq
+			ON pq.quality_id =dq.quality_id 
+			AND pq.customer_id=dq.customer_id 
+			LEFT JOIN 
+			(SELECT dem.position_id,epr.quality_id,SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1) soure 
+			FROM emp_pq_relation  epr 
+			INNER JOIN dim_emp_month dem
+			ON epr.emp_id=dem.emp_id 
+			AND epr.customer_id=dem.customer_id 
+			AND dem.`year_month`=epr.`year_month`
+			INNER JOIN matching_soure yq
+			ON epr.demands_matching_soure_id=yq.matching_soure_id
+			AND epr.customer_id=yq.customer_id
+			INNER JOIN matching_soure sd
+			ON epr.matching_soure_id=sd.matching_soure_id
+			AND epr.customer_id=sd.customer_id 
+			WHERE epr.`year_month`=#{yearMonth}
+			AND epr.customer_id = #{customerId}
+			AND dem.organization_id IN
+			<include refid="queryOrganIdAll"></include>
+			GROUP BY dem.position_id,epr.quality_id
+			)s
+			ON s.quality_id=dq.quality_id
+			AND s.position_id=pq.position_id
+			WHERE  
+				 pq.position_id in
+				<foreach item="positionId" collection="positionIds" open="(" separator="," close=")">
+				'${positionId}'
+				</foreach>
+			ORDER BY pq.position_id,s.quality_id
+	</select>
+	
+	<!-- 岗位下人员数量 -->
+	<select id="queryPositionEmpCount"   resultType="net.chinahrd.entity.dto.pc.positionCompetency.PositionEmpCount">
+		SELECT dem.position_id positionId,count(DISTINCT(dem.emp_id)) count
+		FROM emp_pq_relation  epr 
+		INNER JOIN dim_emp_month dem
+		ON epr.emp_id=dem.emp_id 
+		AND epr.customer_id=dem.customer_id 
+		AND dem.`year_month`=epr.`year_month`
+		
+		WHERE  epr.`year_month`=#{yearMonth}
+		AND epr.customer_id = #{customerId}
+		<if test="null!=positionIds ">
+		AND dem.position_id in
+		<foreach item="positionId" collection="positionIds" open="(" separator="," close=")">
+		'${positionId}'
+		</foreach>
+		</if>
+		<if test="null==positionIds">
+		AND dem.position_id =#{positionId}
+		</if>
+<!-- 		AND dem.position_id=#{positionId} -->
+		AND dem.organization_id IN
+		<include refid="queryOrganIdAll"></include>
+		<if test="keyName!=null and queryEmp!=null">
+		  AND ((dem.emp_key  LIKE CONCAT('%',#{keyName},'%')) OR dem.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		GROUP BY dem.position_id
+	</select>
+	<!-- 岗位下得分最高和得分最低的人 -->
+	<select id="queryPositionEmpHighAndLow" resultType="net.chinahrd.entity.dto.pc.positionCompetency.EmpDetailDto">
+				SELECT a.position_id positionId,a.emp_id empId,a.user_name_ch empName,a.rate
+				 FROM (SELECT *, if(@b=position_id,@a:= @a+1,@a:=1) rn, @b:=position_id 
+				FROM
+				(SELECT dem.position_id,dem.emp_id,dem.user_name_ch,SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1) rate 
+					FROM dim_emp_month dem  
+					STRAIGHT_JOIN emp_pq_relation epr 
+					ON epr.emp_id=dem.emp_id 
+					AND epr.customer_id=dem.customer_id 
+					AND dem.`year_month`=epr.`year_month`
+					STRAIGHT_JOIN matching_soure yq
+					ON epr.demands_matching_soure_id=yq.matching_soure_id
+					AND epr.customer_id=yq.customer_id
+					STRAIGHT_JOIN matching_soure sd
+					ON epr.matching_soure_id=sd.matching_soure_id
+					AND epr.customer_id=sd.customer_id 
+					WHERE epr.`year_month`=#{yearMonth}
+					AND epr.customer_id = #{customerId}
+					AND dem.organization_id IN
+					<include refid="queryOrganIdAll"></include>
+					AND  dem.position_id in
+					<foreach item="positionId" collection="positionIds" open="(" separator="," close=")">
+					'${positionId}'
+					</foreach>
+					GROUP BY dem.position_id,epr.emp_id,dem.user_name_ch) a,
+				(select @a:=0,@b:=null) b
+				ORDER BY
+				position_id,rate DESC) a  where  rn=1
+		UNION ALL
+			SELECT a.position_id positionId,a.emp_id empId,a.user_name_ch empName,a.rate
+				 FROM (SELECT *, if(@d=position_id,@c:= @c+1,@c:=1) rn, @d:=position_id 
+				FROM
+				(SELECT dem.position_id,dem.emp_id,dem.user_name_ch,SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1) rate 
+					FROM dim_emp_month dem 
+					STRAIGHT_JOIN emp_pq_relation  epr
+					ON epr.emp_id=dem.emp_id 
+					AND epr.customer_id=dem.customer_id 
+					AND dem.`year_month`=epr.`year_month`
+					STRAIGHT_JOIN matching_soure yq
+					ON epr.demands_matching_soure_id=yq.matching_soure_id
+					AND epr.customer_id=yq.customer_id
+					STRAIGHT_JOIN matching_soure sd
+					ON epr.matching_soure_id=sd.matching_soure_id
+					AND epr.customer_id=sd.customer_id 
+					WHERE epr.`year_month`=#{yearMonth}
+					AND epr.customer_id = #{customerId}
+					AND dem.organization_id IN
+					<include refid="queryOrganIdAll"></include>
+					AND  dem.position_id in
+					<foreach item="positionId" collection="positionIds" open="(" separator="," close=")">
+					'${positionId}'
+					</foreach>
+					GROUP BY dem.position_id,epr.emp_id,dem.user_name_ch) a,
+				(select @c:=0,@d:=null) b
+				ORDER BY
+				position_id,rate) a  where  rn=1
+	</select>
+	
+
+		
+	<!-- 岗位下  所有的人员列表 -->
+	<select id="queryPositionEmp"   resultType="net.chinahrd.entity.dto.pc.positionCompetency.EmpDetailDto">
+		SELECT t.empId,t.empName,t.positionName,t.rate FROM(
+			SELECT epr.emp_id as empId,
+			dem.user_name_ch as empName,
+			dem.position_name as positionName,
+			SUM(CASE WHEN sd.show_index>=yq.show_index THEN 1 ELSE 0 END) /count(1)  as  rate 
+			FROM emp_pq_relation  epr 
+			INNER JOIN dim_emp_month dem
+			ON epr.emp_id=dem.emp_id 
+			AND epr.customer_id=dem.customer_id 
+			AND dem.`year_month`=epr.`year_month`
+			INNER JOIN matching_soure yq
+			ON epr.demands_matching_soure_id=yq.matching_soure_id
+			AND epr.customer_id=yq.customer_id
+			INNER JOIN matching_soure sd
+			ON epr.matching_soure_id=sd.matching_soure_id
+			AND epr.customer_id=sd.customer_id 
+			LEFT JOIN dim_ability da 
+			ON dem.ability_id=da.ability_id 
+			WHERE  epr.`year_month`=#{yearMonth}
+			AND epr.customer_id = #{customerId}
+			AND dem.position_id = #{positionId}
+			AND dem.organization_id IN 
+			<include refid="queryOrganIdAll"></include>
+			<if test="keyName!=null">
+			AND ((dem.emp_key  LIKE CONCAT('%',#{keyName},'%')) OR dem.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+			</if>
+			GROUP BY epr.emp_id
+		)t 
+		ORDER BY t.rate desc,convert(t.empName using GBK)
+		  limit #{rowBounds.offset} , #{rowBounds.limit}
+		
+	</select>
+	
+		<!-- 岗位下所有维度的应得分数 -->
+	<select id="queryPositionDimensionExpect"   resultType="net.chinahrd.entity.dto.pc.positionCompetency.DimensionDto">
+		SELECT dq.quality_id id,
+		    dq.vocabulary name,
+		    ms.v1 expectScoreName,
+		    ms.show_index expectScore
+			FROM position_quality pq 
+			INNER JOIN dim_quality dq
+			ON pq.quality_id =dq.quality_id 
+			AND pq.customer_id=dq.customer_id 
+			INNER JOIN matching_soure ms
+			ON ms.matching_soure_id =pq.matching_soure_id 
+			AND pq.customer_id=ms.customer_id 
+			WHERE  pq.position_id=#{positionId}
+			AND pq.customer_id = #{customerId}
+			ORDER BY convert(dq.vocabulary using GBK)
+	</select>
+	
+	 <!-- 获取岗位高绩效的人群信息 -->
+    <select id="queryHighPerfImagesEmps" resultType="net.chinahrd.entity.dto.pc.positionCompetency.HighPerfEmpDto" useCache="true">
+    SELECT
+        vde.emp_id AS empId,
+        vde.sex,
+        vde.degree,
+        vde.age,
+        vde.birth_date AS birthDate,
+        vde.company_age AS seniority
+    FROM v_dim_emp vde
+    INNER JOIN (
+        SELECT
+            pc.emp_id,
+            COUNT(pc.position_id) AS total
+        FROM performance_change pc
+        LEFT JOIN dim_performance dp ON pc.customer_id = dp.customer_id AND pc.performance_id = dp.performance_id
+        WHERE pc.customer_id = #{customerId}
+        AND LEFT(pc.`year_month`,4) &gt; ${year} and LEFT(pc.year_month,4) &lt;=#{maxYear}
+        AND dp.curt_name &gt;= #{star}
+        GROUP BY pc.emp_id
+        HAVING total &gt;= #{continueNum}
+    ) tpc ON tpc.emp_id = vde.emp_id 
+    WHERE vde.customer_id = #{customerId}
+    AND vde.position_id = #{positionId} 
+    AND vde.organization_id IN
+		<foreach item="organId" collection="subOrganIdList" open="(" separator="," close=")">
+		'${organId}'
+		</foreach>
+    GROUP BY vde.emp_id 
+    </select>
+    <!-- 人员对比信息 -->
+   <select id="queryEmpContrastInfo" resultType="net.chinahrd.entity.dto.pc.positionCompetency.EmpContrastDetailDto">
+	SELECT
+		vde.emp_id AS empId,
+		vde.img_path AS imgPath,
+		vde.user_name_ch AS empName,
+		vde.sex,
+		vde.age,
+		vde.degree,
+		vde.entry_date AS entryDate,
+		vde.company_age AS seniority
+	FROM v_dim_emp vde
+	WHERE	vde.customer_id = #{customerId}
+	AND vde.emp_id =#{empId}
+	</select>
+	
+	<select id="getKeyWordInfo" resultType="net.chinahrd.entity.dto.KVItemDto">
+		SELECT 'resume' k,count(1) v
+		FROM emp_past_resume 
+        WHERE emp_id=#{empId}
+        AND (work_unit LIKE CONCAT('%',#{keyword},'%') 
+        	OR department_name LIKE CONCAT('%',#{keyword},'%') 
+        	OR position_name LIKE CONCAT('%',#{keyword},'%') 
+        )
+        UNION
+         SELECT  'train' k,count(1) v
+         FROM emp_train_experience 
+ 		WHERE emp_id=#{empId} 
+ 		AND customer_id = #{customerId}
+	  	AND course_name LIKE CONCAT('%',#{keyword},'%')
+	</select>
+	
+	<select id="getPastResume" resultType="net.chinahrd.entity.dto.pc.emp.EmpPastResumeDto">
+		SELECT emp_id as empId ,
+		work_unit as workUnit, 
+		department_name as departmentName, 
+		position_name as positionName, 
+		bonus_penalty_name as bonusPenaltyName, 
+		witness_name as witnessName, 
+		witness_contact_info as witnessContactInfo, 
+		change_reason as changeReason ,
+		entry_date as entryDate,
+		run_off_date as runOffDate 
+		FROM emp_past_resume 
+        WHERE emp_id=#{empId}
+        AND (work_unit LIKE CONCAT('%',#{keyword},'%') 
+        	OR department_name LIKE CONCAT('%',#{keyword},'%') 
+        	OR position_name LIKE CONCAT('%',#{keyword},'%') 
+        )
+       	AND customer_id = #{customerId}
+	</select>
+	
+	<select id="getTrainExp" resultType="net.chinahrd.entity.dto.pc.emp.TrainExperienceDto">
+         SELECT  	course_name as trainName, 
+            finish_date as finishDate,
+            status,
+			result,train_unit as trainUnit,
+			gain_certificate as gainCertificate, 
+			lecturer_name as teacherName,
+			note 
+         FROM emp_train_experience 
+ 		WHERE emp_id=#{empId}
+	  	AND course_name LIKE CONCAT('%',#{keyword},'%') 
+	  	AND customer_id = #{customerId}
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.talentStructure.mvc.app.dao.MobileTalentStructureDao">
+
+	<!-- 编制分析 -->
+	<select id="findBudgetAnalyse" resultType="net.chinahrd.entity.dto.app.talent.structure.TalentstructureDto">
+		SELECT
+			t2.number AS number,
+			IFNULL(sum(hec.emp_count_sum), 0) AS empCount
+		FROM  budget_emp_number t2 
+		LEFT JOIN history_emp_count hec ON t2.organization_id = hec.organization_id
+			AND hec.customer_id = t2.customer_id
+			AND hec.day = date_sub(#{now},interval 1 day) 
+			AND hec.type in   
+			<foreach collection="personTypeKey" item="type" separator="," open="(" close=")">
+			 #{type}
+		 	</foreach>
+		WHERE 
+			t2.organization_id = #{organId}
+			AND t2.YEAR = YEAR(#{now})
+			AND t2.customer_id = #{customerId}  
+
+	</select>
+	
+	
+    
+    <select id="queryOrganId" resultType="java.lang.String">
+    	SELECT DISTINCT organization_id
+    	FROM dim_organization
+    	WHERE customer_id = #{customerId}
+    </select>
+    
+    <!-- 人力结构核心 -->
+    <select id="queryEmpInfo" resultType="net.chinahrd.entity.dto.app.talent.structure.TalentstructureDto">
+		SELECT
+			t2.emp_id empId,
+			t2.organization_parent_id organizationPId,
+			t2.organization_id organizationId,
+			t2.organization_name organizationName,
+			t2.ability_id abilityId,
+			t2.ability_name abilityName,
+			t2.work_place workPlace,
+			t2.degree degree,
+			t2.company_age companyAge,
+			t2.sequence_id sequenceId,
+			t2.sequence_name sequenceName,
+			t1.sequence_key seqKey,
+			t4.full_path,
+			concat(t3.curt_name,'级') abCurtName,
+			(SELECT MAX(curt_name) FROM dim_ability where customer_id =#{customerId} ) maxAbLevel
+		FROM
+			v_dim_emp t2 
+		LEFT JOIN dim_sequence t1 ON t1.customer_id = t2.customer_id AND t2.sequence_id = t1.sequence_id
+		LEFT JOIN dim_ability t3 on t3.ability_id = t2.ability_id AND t3.customer_id = t2.customer_id
+		LEFT JOIN dim_organization t4 on t4.organization_id = t2.organization_id AND t4.customer_id = t2.customer_id
+		WHERE
+			t2.customer_id = #{customerId} 
+			AND t2.organization_id in (
+				SELECT t0.organization_id FROM dim_organization t0
+				WHERE locate(
+					(SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{organId} AND t.customer_id = #{customerId}
+					), t0.full_path
+				)AND t0.customer_id = #{customerId}
+			)
+			AND t2.run_off_date is null
+		ORDER BY t3.show_index
+	</select>
+    
+    <!-- 人力结构核心 -->
+    <select id="queryAbEmpCountBarBySeqId" resultType="net.chinahrd.entity.dto.app.talent.structure.TalentstructureDto">
+		SELECT
+			t2.emp_id empId,
+			t2.sequence_id sequenceId,
+			t2.sequence_name sequenceName,
+			concat(t3.curt_name,'级') abCurtName
+		FROM
+			v_dim_emp t2 
+		LEFT JOIN dim_ability t3 on t3.ability_id = t2.ability_id AND t3.customer_id = t2.customer_id
+		WHERE
+			t2.customer_id = #{customerId} 
+			AND t2.organization_id in (
+				SELECT t0.organization_id FROM dim_organization t0
+				WHERE locate(
+					(SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{organId} AND t.customer_id = #{customerId}
+					), t0.full_path
+				)AND t0.customer_id = #{customerId}
+			)
+			AND t2.sequence_id = #{seqId}
+			AND t2.run_off_date is null
+		ORDER BY t3.show_index
+	</select>
+    
+    <select id="quertAllSeq" resultType="net.chinahrd.entity.dto.KVItemDto">
+    	SELECT sequence_id AS k,
+    	       sequence_name AS v
+    	FROM dim_sequence
+    	WHERE customer_id = #{customerId}
+    	ORDER BY show_index 
+    </select>
+</mapper>

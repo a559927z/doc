@@ -1,0 +1,20 @@
+package net.chinahrd.common;
+
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * <p>
+ *  日志抽象信息，可以在各自相关的服务实现类中复制抽象信息到具体的日志实体
+ * </p>
+ *
+ * @author bright
+ * @since 2019/3/19 12:13
+ */
+@Data
+public class SysLog implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    //TODO add属性
+}

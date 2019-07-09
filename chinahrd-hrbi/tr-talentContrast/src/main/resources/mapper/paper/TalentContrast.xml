@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.talentContrast.mvc.pc.dao.TalentContrastDao">
+
+	<select id="queryContrastAll" resultType="net.chinahrd.entity.dto.pc.talentContrast.ContrastEmpDto">
+	SELECT
+		vde.emp_id AS empId,
+		vde.img_path AS imgPath,
+		vde.emp_key AS empKey,
+		vde.user_name_ch AS userName,
+		vde.organization_name AS organName,
+		vde.sex,
+		vde.age,
+		vde.marry_status AS marryStatus,
+		vde.degree,
+		vde.organization_parent_name AS organParentName,
+		vde.entry_date AS entryDate,
+		vde.sequence_name AS sequenceName,
+		vde.sequence_sub_name AS sequenceSubName,
+		vde.ability_name AS abilityName,
+		vde.rank_name AS rankName,
+		vde.position_name AS positionName,
+		vde.organization_id AS organizationId
+	FROM v_dim_emp vde
+	<where>
+		<if test="customerId != null">
+			AND vde.customer_id = #{customerId}
+		</if>
+		<if test="keyName != null">
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="empIds != null and empIds.size != 0">
+			AND vde.emp_id IN
+			<foreach collection="empIds" item="empId" separator="," open="(" close=")" >
+				#{empId}
+			</foreach>
+		</if>
+		<if test="organPermitIds != null and organPermitIds.size() > 0">
+			AND vde.organization_id IN
+			<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+		</if>
+	</where>
+	<if test="offset != null and limit != null">
+		LIMIT #{offset}, #{limit}
+	</if>
+	</select>
+	
+	<select id="queryContrastCount" resultType="int">
+	SELECT
+		COUNT(vde.emp_id)
+	FROM v_dim_emp vde
+	<where>
+		<if test="customerId != null">
+			AND vde.customer_id = #{customerId}
+		</if>
+		<if test="keyName != null">
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="empIds != null and empIds.size != 0">
+			AND vde.emp_id IN
+			<foreach collection="empIds" item="empId" separator="," open="(" close=")" >
+				#{empId}
+			</foreach>
+		</if>
+		<if test="organPermitIds != null and organPermitIds.size() > 0">
+			AND vde.organization_id IN
+			<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+		</if>
+	</where>
+	</select>
+
+	<select id="queryNewEvalReport" resultType="net.chinahrd.entity.dto.pc.EvalReportDto">
+	SELECT
+		3t.360_time_id AS evalId,
+		3t.emp_id AS empId,
+		YEAR(3t.report_date) AS reportYear,
+		3r.360_ability_id AS abilityId,
+		3r.360_ability_name AS abilityName,
+		3r.360_ability_lv_name AS abilityLvName,
+		3r.score
+	FROM 360_time 3t
+	LEFT JOIN 360_report 3r ON 3r.360_time_id = 3t.360_time_id AND 3r.customer_id = 3t.customer_id
+	WHERE 3t.type = 1
+	AND 3t.360_time_id = (select t.360_time_id from 360_time t where t.emp_id = 3t.emp_id AND t.customer_id = #{customerId} order by t.report_date desc limit 0,1)
+	<if test="customerId != null">
+	AND 3t.customer_id = #{customerId}
+	</if>
+	<if test="empIds != null and empIds.size != 0">
+		AND 3t.emp_id IN
+		<foreach collection="empIds" item="empId" separator="," open="(" close=")" >
+			#{empId}
+		</foreach>
+	</if>
+	</select>
+</mapper>

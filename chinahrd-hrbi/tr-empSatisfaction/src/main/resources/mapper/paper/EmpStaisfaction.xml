@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.empSatisfaction.mvc.pc.dao.EmpSatisfactionDao">
+
+	<!-- 获取敬业度年度分数-->
+    <select id="queryEngagementYearSoure" resultType="net.chinahrd.entity.dto.pc.competency.SatisfactionChartDto">
+	    SELECT 
+			a.organization_id as id,
+			a.organization_name as name,
+			a.soure as curorgscore,
+			a.date as date
+			<if test="flag==false">  
+				,b.soure as comscore
+			</if> 
+		FROM
+			dedicat_organ a
+			<if test="flag==false">  
+				inner JOIN 
+				dedicat_organ b on a.date=b.date and a.customer_id=b.customer_id
+			</if> 
+		WHERE
+			a.organization_id = #{organizationId}
+		and a.customer_id =#{customerId}
+		<if test="flag==false">  
+			and b.organization_id=(select t.organization_id from dim_organization  t where t.organization_parent_key=-1)
+		</if> 
+		order by a.date
+    </select>
+    
+    <!-- 获取敬业度子节点分数以及公司分数-->
+    <select id="queryEngagementSoure" resultType="net.chinahrd.entity.dto.pc.competency.SatisfactionChartDto">
+	    SELECT
+			dimo.organization_name as name,
+			dedo.soure as curorgscore,
+			dimo.organization_parent_id as parent,
+			dimo.organization_id as id
+		FROM
+			dedicat_organ dedo
+		LEFT JOIN dim_organization dimo ON dedo.organization_id = dimo.organization_id
+		WHERE
+		 dedo.customer_id=#{customerId}
+		 and dedo.date = #{maxDay}
+		AND (
+			dimo.organization_parent_id = #{organizationId}
+			OR dimo.organization_id = #{organizationId}
+		)
+		ORDER BY
+		dimo.depth ASC, dedo.soure DESC
+    </select>
+    
+    <!-- 获取敬业度题目以及分数以及公司分数-->
+    <select id="queryEngagementSubject" resultType="net.chinahrd.entity.dto.pc.competency.SatisfactionDto">
+	    SELECT
+			a.soure AS curorgscore,
+			b.soure as comscore,
+			c.dedicat_genre_id AS id,
+			c.dedicat_name AS name,
+			c.dedicat_genre_parent_id AS parent,
+			(case c.is_children when 0 then 'true' else 'false' end ) as isLeaf
+		FROM
+			dedicat_genre_soure a
+		LEFT JOIN dedicat_genre_soure b ON a.dedicat_genre_id = b.dedicat_genre_id and a.customer_id=b.customer_id and a.date=b.date
+		INNER JOIN dim_dedicat_genre c ON a.dedicat_genre_id = c.dedicat_genre_id and a.customer_id=c.customer_id
+		WHERE a.customer_id=#{customerId}
+			and a.date = #{maxDay}
+			and a.organization_id = #{organizationId}
+			and b.organization_id=(select t.organization_id from dim_organization  t where t.organization_parent_key=-1)
+    </select>
+    
+    <!-- 获取满意度敬业度年度分数-->
+    <select id="querySatisfactionYearSoure" resultType="net.chinahrd.entity.dto.pc.competency.SatisfactionChartDto">
+	    SELECT 
+			a.organization_id as id,
+			a.organization_name as name,
+			a.soure as curorgscore,
+			a.date as date
+			<if test="flag==false">  
+				,b.soure as comscore
+			</if> 
+		FROM
+			satfac_organ a
+		<if test="flag==false">  
+			inner JOIN 
+			satfac_organ b on a.date=b.date and a.customer_id=b.customer_id
+		</if> 
+		WHERE
+			a.organization_id = #{organizationId}
+		and a.customer_id =#{customerId}
+		<if test="flag==false">  
+			and b.organization_id=(select t.organization_id from dim_organization  t where t.organization_parent_key=-1)
+		</if> 
+		order by a.date
+    </select>
+    
+    <!-- 获取满意度子节点分数以及公司分数-->
+    <select id="querySatisfactionSoure" resultType="net.chinahrd.entity.dto.pc.competency.SatisfactionChartDto">
+	    SELECT
+			dimo.organization_name as name,
+			sato.soure as curorgscore,
+			dimo.organization_parent_id as parent,
+			dimo.organization_id as id
+		FROM
+			satfac_organ sato
+		LEFT JOIN dim_organization dimo ON sato.organization_id = dimo.organization_id
+		WHERE
+		 sato.customer_id=#{customerId}
+		 and sato.date = #{maxDay}
+		AND (
+			dimo.organization_parent_id = #{organizationId}
+			OR dimo.organization_id = #{organizationId}
+		)
+		ORDER BY
+		dimo.depth ASC, sato.soure DESC
+    </select>
+    
+    <!-- 获取满意度度题目以及分数以及公司分数-->
+    <select id="querySatisfactionSubject" resultType="net.chinahrd.entity.dto.pc.competency.SatisfactionDto">
+	     SELECT
+			a.soure AS curorgscore,
+			b.soure as comscore,
+			c.satfac_genre_id AS id,
+			c.satfac_name AS name,
+			c.satfac_genre_parent_id AS parent,
+			(case c.is_children when 0 then 'true' else 'false' end ) as isLeaf
+		FROM
+			satfac_genre_soure a
+		LEFT JOIN satfac_genre_soure b ON a.satfac_genre_id = b.satfac_genre_id and a.customer_id=b.customer_id and a.date=b.date
+		INNER JOIN dim_satfac_genre c ON a.satfac_genre_id = c.satfac_genre_id and a.customer_id=c.customer_id
+		WHERE a.customer_id=#{customerId}
+			and a.date =#{maxDay}
+			and a.organization_id = #{organizationId}
+			and b.organization_id=(select t.organization_id from dim_organization  t where t.organization_parent_key=-1)
+    </select>
+    
+    <!-- 获取敬业度最大日期 -->
+    <select id="queryEngagementMaxDay"  resultType="java.lang.String">
+	    select max(date) as maxDate from dedicat_organ t where t.customer_id=#{customerId}
+    </select>
+    
+    <!-- 获取满意度最大日期 -->
+    <select id="querySatisfactionMaxDay"  resultType="java.lang.String">
+	    select max(date) as maxDate from satfac_organ t where t.customer_id=#{customerId}
+    </select>
+    
+    <!-- 获取根节点ID -->
+    <select id="queryRootNode"  resultType="java.lang.String">
+	    select t.organization_id from dim_organization t where t.organization_parent_key=-1 and t.customer_id=#{customerId}
+    </select>
+</mapper>

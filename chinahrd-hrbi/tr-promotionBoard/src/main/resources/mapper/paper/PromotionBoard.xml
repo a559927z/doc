@@ -1,0 +1,1179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.promotionBoard.mvc.pc.dao.PromotionBoardDao">
+	
+    <!-- 符合条件 -->
+    <select id="getEligibilityApplication" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionTotalDto" useCache="true">
+        SELECT
+            vde.user_name_ch as userName,
+            pt.total_date AS totalDate
+        FROM
+            promotion_total AS pt
+        INNER JOIN v_dim_emp as vde
+        ON total_date = (
+            SELECT max(t.total_date) FROM promotion_total AS t
+            WHERE t.customer_id=#{customerId}
+        )
+        AND pt.customer_id =#{customerId}
+        <if test="status>=0">
+        AND pt.status=#{status}
+        </if>
+        AND pt.condition_prop=100
+        AND vde.customer_id=pt.customer_id
+        AND vde.emp_id=pt.emp_id
+        AND vde.run_off_date IS NULL
+         <if test="subOrganIdList.size != 0">
+				AND vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+		
+        ORDER BY  vde.rank_name desc, CONVERT(vde.user_name_ch USING GBK);
+    </select>
+    <!-- 符合条件 列表 -->
+    <select id="getEligibilityApplicationListCount" resultType="Integer" useCache="true">
+        SELECT
+        count(*) as total
+        FROM
+            promotion_total AS pt
+        INNER JOIN v_dim_emp as vde
+        ON total_date = (
+            SELECT max(t.total_date) FROM promotion_total AS t
+            WHERE t.customer_id=#{customerId}
+        )
+        AND pt.customer_id =#{customerId}
+        <if test="status>=0">
+            AND pt.status=#{status}
+        </if>
+        AND pt.condition_prop=100
+        AND vde.customer_id=pt.customer_id
+        AND vde.emp_id=pt.emp_id
+        AND vde.run_off_date IS NULL
+        <if test="subOrganIdList.size != 0">
+				AND vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+    </select>
+    <!-- 符合条件 列表 -->
+    <select id="getEligibilityApplicationList" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionBoardDto" useCache="true">
+        SELECT
+            vde.user_name_ch as name,
+            pt.rank_name as rankName,
+            pt.rank_name_af as rankNameAfter,
+            pt.`status` as `status`
+        FROM
+            promotion_total AS pt
+        INNER JOIN v_dim_emp as vde
+        ON total_date = (
+            SELECT max(t.total_date) FROM promotion_total AS t
+            WHERE t.customer_id= #{customerId}
+        )
+        AND pt.customer_id = #{customerId}
+        <if test="status>=0">
+            AND pt.status=#{status}
+        </if>
+        AND pt.condition_prop=100
+        AND vde.customer_id=pt.customer_id
+        AND vde.emp_id=pt.emp_id
+        AND vde.run_off_date IS NULL
+        <if test="subOrganIdList.size != 0">
+				AND vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+        <!-- ORDER BY CONVERT(vde.user_name_ch USING GBK) -->
+        order by pt.rank_name desc,CONVERT(vde.user_name_ch USING GBK)
+        LIMIT #{offset},#{limit}
+    </select>
+
+    <!-- 部分符合条件 -->
+    <select id="getSomeEligibility" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionTotalDto" useCache="true">
+        SELECT
+        count(*) as total,
+	    max(pt.total_date) AS totalDate
+        FROM promotion_total AS pt
+        INNER JOIN v_dim_emp as vde
+        ON total_date = (
+            SELECT max(t.total_date) FROM promotion_total AS t
+            WHERE t.customer_id=#{customerId}
+        )
+        AND pt.customer_id =#{customerId}
+        AND pt.condition_prop &gt;= #{conditionProp} AND pt.condition_prop &lt; 100
+        AND vde.customer_id=pt.customer_id
+        AND vde.emp_id=pt.emp_id
+        AND vde.run_off_date IS NULL
+        <if test="subOrganIdList.size != 0">
+				AND vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+    </select>
+
+
+    <!-- 晋级速度日期范围 -->
+    <select id="getTrendDate" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionDateDto">
+        SELECT
+        max(a.status_date) as maxDate,
+        MIN(a.status_date) as minDate
+        FROM
+        promotion_results AS a
+        WHERE
+        a.customer_id = #{customerId}
+    </select>
+
+    <!-- 趋势分析 -->
+    <select id="getTrendAnalysis" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionSpeedDto" useCache="true">
+		   SELECT
+			new_values1 AS rank,
+			new_values1 / total AS avgsu,
+			total AS total
+		FROM
+			(
+				SELECT
+					sum(new_values / company_age1) new_values1,
+					'y' AS bz	
+				FROM
+					(
+						SELECT
+							(TIMESTAMPDIFF(DAY,entry_date, #{endDate}) / 365) as company_age1,
+							sum(show_index_af - show_index) new_values
+						FROM
+							promotion_results pt 
+						WHERE
+							pt.customer_id =#{customerId}
+						AND pt.promotion_date &lt;= #{endDate}
+		        and full_path like (SELECT CONCAT(FULL_PATH,'%') FROM dim_organization WHERE ORGANIZATION_ID=#{organId}) 
+						GROUP BY
+							pt.emp_id,
+							(TIMESTAMPDIFF(DAY,entry_date, #{endDate}) / 365)
+					) a
+			) a
+		INNER JOIN (
+			SELECT
+				count(*) total,
+				'y' bz
+			FROM
+				v_dim_emp b
+			INNER JOIN (
+				SELECT
+					t1.organization_id,
+					t1.organization_name
+				FROM
+					dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT
+								t.full_path
+							FROM
+								dim_organization t
+							WHERE
+								t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						),
+						t1.full_path
+					)
+				AND t1.customer_id =#{customerId}
+				GROUP BY
+					t1.organization_id,
+					t1.organization_name
+			) c ON b.organization_id = c.organization_id
+			WHERE
+				run_off_date IS NULL
+			AND b.customer_id =#{customerId}
+		) b ON a.bz = b.bz;
+    </select>
+
+    <!-- 下级组织分析 -->
+    <select id="getOrgAnalysis" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionSpeedDto" useCache="true">
+    			SELECT
+    			a.organization_parent_id as parOrganId,
+				a.organization_id AS id,
+				a.organization_name AS NAME,
+				CASE WHEN b.rank IS NULL THEN 0 ELSE b.rank END AS rank,
+			  CASE WHEN c.total IS NULL THEN 0 ELSE c.total END AS total,
+			   b.rank/c.total as avgSu
+			FROM
+				(
+					SELECT
+						*
+					FROM
+						dim_organization AS org
+					WHERE
+						org.customer_id =#{customerId}
+					AND org.organization_parent_id =#{organId}
+				) AS a                               
+			LEFT JOIN (
+				SELECT
+					t1.organization_id AS id,
+					sum(tem.rank/#{siLing}) AS rank
+				FROM
+					(
+						SELECT
+							pr.emp_id,
+							pr.organization_id,
+							sum(pr.show_index_af - pr.show_index) AS rank
+			        
+						FROM
+							promotion_results AS pr
+						INNER JOIN dim_organization AS org ON pr.customer_id =#{customerId}
+						AND<![CDATA[(pr.promotion_date >= #{beginDate} AND pr.promotion_date<=#{endDate})]]>
+						AND locate(    
+							(
+								SELECT
+									t.full_path
+								FROM
+									dim_organization t
+								WHERE
+									t.customer_id = #{customerId}
+								AND t.organization_id =#{organId}
+							),
+							org.full_path
+						)
+						AND pr.organization_id = org.organization_id
+					group by pr.emp_id,pr.organization_id) AS tem
+				INNER JOIN dim_organization t1
+				INNER JOIN dim_organization t2 ON t1.organization_parent_id =#{organId}
+				AND t1.customer_id =#{customerId}
+				AND t2.customer_id = t1.customer_id
+				AND LOCATE(t1.full_path, t2.full_path)
+				AND t2.organization_id = tem.organization_id
+				GROUP BY
+					t1.organization_id
+			) AS b ON a.organization_id = b.id
+			inner join (select count(*) total,a.organization_id from dim_organization a STRAIGHT_JOIN dim_organization b on locate(a.full_path,b.full_path) and a.organization_parent_id =#{organId}
+			STRAIGHT_JOIN v_dim_emp c on b.organization_id=c.organization_id
+			where 
+			1=1
+			and b.customer_id =#{customerId}
+			and b.customer_id=c.customer_id 
+			and c.run_off_date is null
+			group by a.organization_id   ) c on  c.organization_id=a.organization_id;
+
+      
+
+    </select>
+    
+      <!-- 下级组织分析，个人晋级速度总数 -->
+    <select id="getOrgAnalysisPerJinsuCount" resultType="Integer" useCache="true">
+		     select count(1) as total from
+		(select emp_id,user_name_ch,a.rank_name from v_dim_emp a
+			 inner join (
+			SELECT
+				t1.organization_id
+			FROM
+				dim_organization t1
+			WHERE
+				t1.customer_id =#{customerId}
+			AND locate(
+				(
+					SELECT
+						t.full_path
+					FROM
+						dim_organization t
+					WHERE
+						t.customer_id = t1.customer_id
+					AND t.organization_id =#{organId}
+				),
+				t1.full_path
+			)
+		group by organization_id) b on a.organization_id = b.organization_id and a.run_off_date is null) a
+		
+
+    </select>
+    
+    <!-- 下级组织分析，个人晋级速度 -->
+    <select id="getOrgAnalysisPerJinsuList" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionTrackDto" useCache="true">
+		      select a.emp_id as empId,a.user_name_ch as userName,a.rank_name as rankName,(sum(b.show_index_af-b.show_index))/(TIMESTAMPDIFF(DAY, entry_date, NOW()) / 365) as rank from 
+		(select emp_id,user_name_ch,a.rank_name from v_dim_emp a inner join (
+			SELECT
+				t1.organization_id
+			FROM
+				dim_organization t1
+			WHERE
+				t1.customer_id =#{customerId}
+			AND locate(
+				(
+					SELECT
+						t.full_path
+					FROM
+						dim_organization t
+					WHERE
+						t.customer_id = t1.customer_id
+					AND t.organization_id =#{organId}
+				),
+				t1.full_path
+			)
+		group by organization_id) b on a.organization_id = b.organization_id and a.run_off_date is null) a
+		left join  promotion_results b on   a.emp_id=b.emp_id group by a.emp_id,a.user_name_ch,a.rank_name 
+		<!-- order by a.emp_id,a.user_name_ch,a.rank_name -->
+		order by a.rank_name desc ,CONVERT(a.user_name_ch USING GBK)
+		 limit #{offset},#{limit};
+
+    </select>
+
+    <!-- 序列统计 -->
+    <select id="getSequenceAnalysis" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionSpeedDto" useCache="true">
+		SELECT
+<!-- 		 CASE WHEN b.sequence_id is null THEN -->
+<!-- 			'-1' ELSE b.sequence_id END as id, -->
+<!-- 		 CASE WHEN b.sequence_name is null THEN -->
+<!-- 			'其他' ELSE b.sequence_name END as name, -->
+          b.sequence_id as id,
+           b.sequence_name as name,
+		  a.new_values as rank,
+		   a.new_values/b.total as avg,
+		  b.total as total
+		FROM
+		 (
+		 SELECT ds.sequence_id,ds.sequence_name,count(1) total FROM 
+		 	 dim_sequence ds 
+			INNER JOIN v_dim_emp b 
+			on ds.sequence_id=b.sequence_id 
+			INNER JOIN
+		(
+		SELECT
+		t1.organization_id,
+		t1.organization_name
+		FROM
+		dim_organization t1
+		WHERE
+		locate(
+		(
+		SELECT
+		t.full_path
+		FROM
+		dim_organization t
+		WHERE
+		t.organization_id =#{organId} 
+		AND t.customer_id =#{customerId}
+		),
+		t1.full_path
+		)
+		AND t1.customer_id = #{customerId}
+		) c
+	
+		ON b.organization_id = c.organization_id 
+		WHERE b.run_off_date IS NULL AND b.customer_id = #{customerId} 
+		GROUP BY ds.sequence_id,ds.sequence_name
+		)b 
+		LEFT JOIN (
+		SELECT
+		pt.sequence_id,
+		sum((show_index_af - show_index)/#{siLing}) AS new_values
+		FROM
+		promotion_results pt
+		INNER JOIN (
+		SELECT
+		t1.organization_id,
+		t1.organization_name
+		FROM
+		dim_organization t1
+		WHERE
+		locate(
+		(
+		SELECT
+		t.full_path
+		FROM
+		dim_organization t
+		WHERE
+		t.organization_id = #{organId} 
+		AND t.customer_id = #{customerId}
+		),
+		t1.full_path
+		)
+		AND t1.customer_id =  #{customerId}
+		) b ON pt.organization_id = b.organization_id
+		WHERE pt.`status`= '1'
+		AND pt.customer_id =  #{customerId}
+		AND pt.promotion_date BETWEEN #{beginDate} AND #{endDate}
+		GROUP BY
+		pt.sequence_id
+		) a ON a.sequence_id = b.sequence_id
+		
+  
+  
+    </select>
+
+    <!-- 关键人才 -->
+   
+ <select id="getKeyTalentAnalysis" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionSpeedDto" useCache="true">
+          select t.rank,t.avg,t.total,t.is_key_talent,
+		CASE
+		WHEN t.is_key_talent > 0 THEN
+			'关键人才'
+		ELSE
+			'非关键人才'
+		END AS NAME from (SELECT
+			a.new_values AS rank,
+			a.new_values / b.total AS avg,
+			 b.total AS total,
+			a.is_key_talent as is_key_talent
+		  
+		FROM
+		 (SELECT b.is_key_talent,count(1) total FROM 
+			(
+		SELECT
+				t1.organization_id,
+				t1.organization_name
+			FROM
+				dim_organization t1
+			WHERE
+		locate(
+			(
+				SELECT
+					t.full_path
+				FROM
+					dim_organization t
+				WHERE
+					t.organization_id = #{organId}
+				AND t.customer_id = #{customerId}
+			),
+			t1.full_path
+		)
+		AND t1.customer_id = #{customerId}
+		) c
+			INNER JOIN v_dim_emp b 
+			ON b.organization_id = c.organization_id 
+			where b.run_off_date IS NULL
+			AND b.customer_id = #{customerId}
+			GROUP BY
+			b.is_key_talent
+		) b 
+			LEFT JOIN (
+				SELECT
+			pt.is_key_talent,
+			sum((show_index_af - show_index)/#{siLing}) AS new_values
+		FROM
+			promotion_results pt 
+			INNER JOIN (
+				SELECT
+					t1.organization_id,
+					t1.organization_name
+				FROM
+					dim_organization t1
+				WHERE
+			locate(
+				(
+					SELECT
+						t.full_path
+					FROM
+						dim_organization t
+					WHERE
+						t.organization_id = #{organId}
+					AND t.customer_id = #{customerId}
+				),
+				t1.full_path
+			)
+			AND t1.customer_id = #{customerId}
+		) c ON pt.organization_id=c.organization_id
+		WHERE pt.`status`= '1'
+		AND pt.customer_id = #{customerId}
+		AND pt.promotion_date BETWEEN #{beginDate} AND #{endDate}
+		GROUP BY 
+			pt.is_key_talent
+			) a ON a.is_key_talent=b.is_key_talent
+			) t;
+       
+       
+    </select>
+    <!-- 绩效 -->
+    <select id="getPerformanceAnalysis" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionSpeedDto" useCache="true">
+        SELECT
+		a.new_values AS rank,
+		a.new_values / b.total AS avg,
+		b.total AS total,
+		b.performance_id as id,
+		b.performance_name as name
+		FROM
+		 (SELECT dp.performance_id,dp.performance_name,count(1) total FROM 
+		 dim_performance dp 
+		 inner join v_dim_emp b ON b.performance_id = dp.performance_id 
+		 INNER JOIN 
+		(
+		SELECT
+		t1.organization_id,
+		t1.organization_name
+		FROM
+		dim_organization t1
+		WHERE
+		locate(
+		(
+		SELECT
+		t.full_path
+		FROM
+		dim_organization t
+		WHERE
+		t.organization_id =#{organId}
+		AND t.customer_id =#{customerId}
+		),
+		t1.full_path
+		)
+		AND t1.customer_id =#{customerId}
+		) c ON b.organization_id = c.organization_id 
+			where b.run_off_date IS NULL AND b.customer_id = #{customerId}
+		GROUP BY
+		dp.performance_id,dp.performance_name
+		)b
+		LEFT JOIN (
+		SELECT
+		pt.performance_id,
+		sum((show_index_af - show_index)/#{siLing}) AS new_values
+		FROM
+		promotion_results pt 
+		INNER JOIN (
+				SELECT
+					t1.organization_id,
+					t1.organization_name
+				FROM
+					dim_organization t1
+				WHERE
+			locate(
+				(
+					SELECT
+						t.full_path
+					FROM
+						dim_organization t
+					WHERE
+						t.organization_id = #{organId}
+					AND t.customer_id = #{customerId}
+				),
+				t1.full_path
+			)
+			AND t1.customer_id = #{customerId}
+		) c ON pt.organization_id=c.organization_id
+		WHERE pt.`status`= '1'
+		AND pt.customer_id = #{customerId}
+		AND pt.promotion_date BETWEEN #{beginDate} AND #{endDate}
+		GROUP BY
+		pt.performance_id
+		) a on a.performance_id=b.performance_id
+
+
+    </select>
+
+    <!-- 晋级轨迹(图) -->
+    <select id="getTrackChart" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionTrackDto" useCache="true">
+        SELECT
+        pr.emp_id AS empId,
+        year(pr.status_date)*2+(CASE WHEN month(pr.status_date)>6 THEN 1 ELSE 0 END) AS years,
+        RIGHT(pr.rank_name_af,3) AS rank,
+        RIGHT (pr.rank_name, 3) AS currRank,
+        substring(rank_name,1,2) as rankName
+        FROM promotion_results AS pr
+        WHERE  pr.customer_id=#{customerId}
+
+        <if test="empIds.size()>0">
+            AND pr.emp_id IN
+            <foreach collection="empIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+  		<if test="subOrganIdList.size != 0">
+				AND pr.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+    </select>
+
+    <!-- 晋级轨迹(搜索下拉) -->
+    <select id="getTrackSelect" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionTrackDto" useCache="true">
+        SELECT
+        vde.emp_id AS empId,
+        vde.user_name_ch AS userName
+        FROM v_dim_emp AS vde
+        WHERE vde.customer_id=#{customerId}
+        AND vde.run_off_date IS NULL
+        <if test="subOrganIdList.size != 0">
+		AND	vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+
+        <if test="key!=null">
+        AND vde.user_name_ch LIKE CONCAT('%',#{key},'%')
+        </if>
+
+        ORDER BY CONVERT(vde.user_name_ch USING GBK) ASC
+        LIMIT #{offset},#{limit};
+    </select>
+
+    <!-- 晋级轨迹(总人数) -->
+    <select id="getTrackListCount" resultType="Integer" useCache="true">
+        SELECT COUNT(*) AS total FROM v_dim_emp AS vde
+        WHERE vde.customer_id=#{customerId}
+        AND vde.run_off_date IS NULL
+        <if test="subOrganIdList.size != 0">
+		AND	vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+        <if test="empId!=null">
+            AND (vde.user_name_ch LIKE CONCAT('%',#{empId},'%'))
+        </if>
+    </select>
+
+    <!-- 晋级轨迹(列表) -->
+    <select id="getTrackList" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionTrackDto" useCache="true">
+    SELECT
+	t.emp_id AS empId,
+	t.userName,
+	t.performanceName,
+	CASE WHEN t.years = 0 THEN 0 ELSE CASE WHEN t.rank IS NULL THEN 0 ELSE t.rank END / t.years END AS rank,
+ 	 t.rank as total     
+	FROM
+	(
+		SELECT
+			aa.emp_id,
+			aa.userName,
+			aa.performanceName,
+			sum(bb.show_index_af - bb.show_index) AS rank,
+ 			(TIMESTAMPDIFF(DAY, aa.entry_date, NOW()) / 365) AS years,
+			count(bb.emp_id) AS total
+		FROM
+			(
+				SELECT
+					a.*, b.show_index
+				FROM
+					(
+						SELECT
+							vde.emp_id,
+							vde.user_name_ch AS userName,
+							vde.performance_name AS performanceName,
+							vde.performance_id,
+							vde.entry_date,
+							vde.rank_name
+						FROM
+							v_dim_emp AS vde
+						WHERE
+							vde.customer_id =#{customerId}
+						AND vde.run_off_date IS NULL
+			 <if test="subOrganIdList.size != 0">
+			AND	vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		   </if>
+					 <if test="empId!=null">
+                  		AND (vde.user_name_ch LIKE CONCAT('%',#{empId},'%'))
+                    </if>
+					) AS a
+				LEFT JOIN dim_performance AS b ON a.performance_id = b.performance_id
+			) AS aa
+		LEFT JOIN (
+			SELECT
+				*
+			FROM
+				promotion_results AS pr
+			WHERE
+				pr.customer_id = #{customerId}
+			AND pr.`status` = 1
+		) AS bb ON aa.emp_id = bb.emp_id
+		GROUP BY
+			aa.emp_id,
+			aa.userName,
+			aa.performanceName
+		ORDER BY
+					aa.show_index DESC,
+					CONVERT (aa.userName USING GBK) 
+				LIMIT #{offset},#{limit}
+	) AS t;
+      
+    </select>
+
+
+    <!-- 人员晋级状态(列表总数) -->
+    <select id="getStatusListCount" resultType="Integer" useCache="true">
+        SELECT
+        COUNT(vde.emp_id)
+        FROM v_dim_emp AS vde
+			<if test="isAll == true">
+			LEFT JOIN promotion_total AS pt 
+			</if>
+			<if test="isAll == false">
+			INNER JOIN promotion_total AS pt 
+			</if>
+		ON pt.customer_id =vde.customer_id
+        AND total_date =(
+          SELECT max(p.total_date) FROM promotion_total AS p
+          WHERE p.customer_id=#{customerId}
+        )
+         AND pt.emp_id=vde.emp_id
+        WHERE vde.customer_id=#{customerId}
+        AND vde.run_off_date IS NULL
+         <if test="subOrganIdList.size != 0">
+			AND	vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+       
+
+          <if test="empId!=null">
+           AND vde.user_name_ch like CONCAT('%',#{empId},'%')
+            </if>
+
+        <if test="rankName!=null">
+            AND pt.rank_name=#{rankName}
+        </if>
+        <if test="rankNameNext!=null">
+            AND pt.rank_name_af=#{rankNameNext}
+        </if>
+         <if test="condition>0">
+            AND pt.condition_prop &gt;= #{conditionBegin} AND pt.condition_prop &lt; #{conditionEnd}
+        </if>
+        <if test="condition==0">
+            AND pt.condition_prop=100
+        </if>
+    </select>
+
+    <!-- 人员晋级状态(列表) -->
+    <select id="getStatusList" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionStatusDto" useCache="true">
+		    SELECT
+			vde.emp_id AS empId,
+			vde.user_name_ch AS userName,
+			vde.img_path AS imgPath,
+			vde.organization_name AS organizationName,
+			vde.rank_name AS rankName,
+			pt.rank_name_af AS rankNameNext,
+			pt.status
+			FROM v_dim_emp AS vde
+			<if test="isAll == true">
+			LEFT JOIN promotion_total AS pt 
+			</if>
+			<if test="isAll == false">
+			INNER JOIN promotion_total AS pt 
+			</if>
+			ON pt.customer_id =vde.customer_id
+			AND total_date = (
+				SELECT
+					max(p.total_date)
+				FROM
+					promotion_total AS p
+				WHERE
+					p.customer_id =#{customerId}
+			)
+			 AND pt.emp_id=vde.emp_id
+			WHERE vde.customer_id =#{customerId}
+			AND vde.run_off_date IS NULL
+			<if test="subOrganIdList.size != 0">
+			AND	vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		   </if>
+			
+			  <if test="empId!=null">
+                AND vde.user_name_ch like CONCAT('%',#{empId},'%')
+             </if>
+
+        <if test="rankName!=null">
+            AND pt.rank_name=#{rankName}
+        </if>
+        <if test="rankNameNext!=null">
+            AND pt.rank_name_af=#{rankNameNext}
+        </if>
+        <if test="condition>0">
+            AND pt.condition_prop &gt;= #{conditionBegin} AND pt.condition_prop &lt; #{conditionEnd}
+        </if>
+        <if test="condition==0">
+            AND pt.condition_prop=100
+        </if>
+		order by vde.rank_name desc,CONVERT(vde.user_name_ch USING GBK)
+        LIMIT #{offset},#{limit};
+    </select>
+
+    <!-- 人员晋级状态(要求) -->
+    <select id="getStatusReqList" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionReqDto" useCache="true">
+        SELECT * FROM(
+        SELECT
+        pa.emp_id AS empId,
+        CASE pa.note WHEN '工作年限' THEN 0 WHEN '绩效等级' THEN 1 WHEN '能力评价' THEN 2 WHEN '资格证书' THEN 3 ELSE 4 END AS noteIndex,
+        pa.note AS note,
+        pa.promotion_req AS promotionRequest,
+        pa.persoma_status AS persomaStatus,
+        pa.is_accord AS isAccord
+        FROM promotion_analysis AS pa WHERE pa.customer_id=#{customerId}
+        <if test="empIds!=null and empIds.size()>0">
+        AND pa.emp_id IN
+            <foreach collection="empIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) AS pa ORDER BY pa.noteIndex ASC;
+    </select>
+
+
+    <!-- 晋级薪酬模拟器（筛选显示的职级） -->
+    <select id="getPromotionSelectRank" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionPayDto" useCache="true">
+        select * from (select rankName,matchCondition,count(*) as matchCount from (SELECT
+	    pt.rank_name_af rankName,
+	    case when pt.condition_prop = 100 then 1 
+         when pt.condition_prop>=#{conditionProp} and pt.condition_prop &lt; 100 then 0 else 3 end as matchCondition
+		FROM
+		    promotion_total pt
+		INNER JOIN v_dim_emp vde ON pt.emp_id = vde.emp_id
+		AND pt.customer_id = vde.customer_id
+		AND vde.run_off_date IS NULL
+		INNER JOIN (
+		    SELECT
+		        t1.organization_id,
+		        t1.organization_name
+		    FROM
+		        dim_organization t1
+		    WHERE
+        locate(
+            (
+                SELECT
+                    t.full_path
+                FROM
+                    dim_organization t
+                WHERE
+                    t.organization_id = #{organId}
+                AND t.customer_id =#{customerId}
+            ),
+            t1.full_path
+        )
+		    AND t1.customer_id =#{customerId}
+		) a ON pt.organization_id = a.organization_id
+		AND pt.customer_id =#{customerId} -- AND pt.condition_prop = 100
+		-- AND pt.condition_prop =100
+		AND pt.total_date = (SELECT
+				p.total_date
+			FROM
+				promotion_total AS p
+			WHERE
+				p.customer_id =#{customerId} order by total_date limit 1)
+		) a  group by rankName,matchCondition)  a where matchCondition in (0,1);
+    </select>
+
+    <!-- 晋级薪酬模拟器(列表 当前职级人员名单) -->
+    <select id="getPromotionCurrentRankList" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionPayDto" useCache="true">
+	    select a.*,cast(replace(unhex(pay_should),'hrbi','')/ 10000 AS DECIMAL (18, 2)) AS pay from (SELECT
+		vde.emp_id AS empId,
+		vde.user_name_ch AS userName,
+		vde.rank_name AS rankName,
+		pt.condition_prop AS conditionProp,
+	    pt.rank_name_af as rankNameAf
+		FROM
+		v_dim_emp AS vde
+		INNER JOIN promotion_total AS pt ON vde.customer_id =#{customerId}
+		AND run_off_date IS NULL
+		 <if test="subOrganIdList.size != 0">
+			AND	vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+		AND pt.customer_id = vde.customer_id
+		AND pt.total_date = (
+			SELECT
+			p.total_date
+			FROM
+				promotion_total AS p
+			WHERE
+				p.customer_id =#{customerId} order by p.total_date limit 1
+		)
+		AND vde.emp_id = pt.emp_id
+		AND pt.condition_prop >=#{conditionProp}
+		 <if test="ranks!=null and ranks.size()>0">
+            AND pt.rank_name_af in
+            <foreach collection="ranks" separator="," item="item" open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+		) a inner join pay b on a.empId=b.emp_id and `year_month`=(select `year_month` from pay where customer_id =#{customerId} order by `year_month` DESC  limit 1)
+		 order by pay desc,CONVERT(a.userName USING GBK) 
+
+    </select>
+
+    <!-- 晋级薪酬模拟器（列表 晋级职级人员名单） -->
+    <select id="getPromotionNextRankList" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionPayDto" useCache="true">
+       SELECT
+	vde.emp_id AS empId,
+	t1.rank_name AS rankName
+   FROM
+	(
+
+		 SELECT
+			show_index AS showIndex,
+			jr.rank_name
+		FROM
+			job_relation AS jr
+		WHERE
+			show_index IS NOT NULL
+		  <if test="ranks!=null and ranks.size()>0">
+                AND jr.rank_name in
+                <foreach collection="ranks" separator="," item="item" open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+	) AS t1
+   INNER JOIN v_dim_emp AS vde ON vde.customer_id =#{customerId}
+   AND run_off_date IS NULL
+   <if test="subOrganIdList.size != 0">
+			AND	vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+    AND vde.rank_name = t1.rank_name;
+       
+      
+    </select>
+
+    <!-- 晋级薪酬模拟器（列表 人员薪酬列表） -->
+    <select id="getPromotionRankSalaryList" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionPayDto" useCache="true">
+         SELECT
+		rank_name as rankName,
+		cast(avg(
+			REPLACE (
+				unhex(pay_should),
+				'hrbi',
+				''
+			)
+			)/ 10000 AS DECIMAL (18, 2)) as pay
+		FROM
+			v_dim_emp a,
+			pay b
+		WHERE
+			a.emp_id = b.emp_id
+		AND `year_month` =(select `year_month` from pay where customer_id =#{customerId} order by `year_month` DESC  limit 1)
+		<if test="ranks!=null and ranks.size()>0">
+            AND a.rank_name in
+            <foreach collection="ranks" separator="," item="item" open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+		GROUP BY
+			rank_name;
+       
+    </select>
+
+    <!-- 晋级薪酬模拟器(添加下拉) -->
+    <select id="getPromotionAddPersonList" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionPayDto" useCache="true">
+        SELECT
+        vde.emp_id AS empId,
+        vde.user_name_ch AS userName
+        FROM v_dim_emp AS vde
+<!--          INNER JOIN promotion_total AS pt -->
+<!--             AND vde.rank_name=#{rank} -->
+<!--             ON pt.customer_id=vde.customer_id -->
+<!--             AND pt.total_date=( -->
+<!--                 SELECT max(p.total_date) FROM promotion_total AS p WHERE p.customer_id=vde.customer_id -->
+<!--             ) -->
+<!--             AND pt.rank_name=vde.rank_name -->
+<!--             AND vde.emp_id=pt.emp_id -->
+<!--             AND pt.condition_prop>=#{conditionProp} -->
+        WHERE vde.customer_id=#{customerId}
+<!--         AND vde.rank_name=#{rank} -->
+<!--         AND vde.run_off_date IS NOT NULL -->
+		<if test="subOrganIdList.size != 0">
+			AND	vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+         <if test="key!=null">
+        AND vde.user_name_ch LIKE CONCAT('%',#{key},'%')
+        </if>
+        AND vde.run_off_date IS NULL
+        ORDER BY CONVERT(vde.user_name_ch USING GBK) ASC
+        LIMIT #{offset},#{limit};
+    </select>
+    
+    <!-- 晋级薪酬模拟器（列表 人员薪酬列表） -->
+    <select id="getPromotionRankSalaryListByEmpid" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionPayDto" useCache="true">
+         SELECT
+        a.emp_id as empId,
+        a.user_name_ch AS userName,
+		cast(avg(
+			REPLACE (
+				unhex(pay_should),
+				'hrbi',
+				''
+			)
+			)/ 10000 AS DECIMAL (18, 2)) as pay
+		FROM
+			v_dim_emp a,
+			pay b
+		WHERE
+			a.emp_id = b.emp_id
+		AND `year_month` =(select `year_month` from pay where customer_id =#{customerId} order by `year_month` DESC  limit 1)
+<!-- 		<if test="empIds!=null and empIds.size()>0"> -->
+<!--             AND a.emp_id in -->
+<!--             <foreach collection="empIds" separator="," item="item" open="(" close=")"> -->
+<!--                 #{item} -->
+<!--             </foreach> -->
+<!--         </if> -->
+		<if test="key!=null">
+        AND a.user_name_ch LIKE CONCAT('%',#{key},'%')
+        </if>
+         AND a.run_off_date IS NULL
+         <if test="subOrganIdList.size != 0">
+			AND	a.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+		</if>
+		GROUP BY
+			a.emp_id,a.user_name_ch 
+		 ORDER BY CONVERT(a.user_name_ch USING GBK) ASC 
+		  LIMIT #{offset},#{limit};
+       
+    </select>
+
+
+	<!-- 员工和方案关系 -->
+	<select id="getEmpSchemeRel" resultType="net.chinahrd.entity.dto.KVItemDto"
+		useCache="false">
+		SELECT
+			emp_id as k, scheme_id as v
+		FROM promotion_total
+		WHERE scheme_id is not null
+		<if test="date != null">
+			AND total_date= #{date}
+		</if>
+	</select>
+	<!-- 方案 -->
+	<select id="getSchemeAll"
+		resultType="net.chinahrd.entity.dto.pc.promotionBoard.PromotionElementSchemeDto"
+		useCache="false">
+		SELECT 
+			scheme_id schemeId,
+			company_age companyAge,
+			curt_name_per curtNamePer,
+			curt_name_eval curtNameEval,
+			certificate_id certificateId,
+			certificate_type_id certificateTypeId
+		FROM promotion_element_scheme
+	</select>
+	<!-- 删除当前员工分析的所有记录 -->
+	<delete id="delEmpAnalysis">
+		DELETE FROM promotion_analysis
+		<if test="empId != null">
+		 WHERE emp_id=#{empId};
+		</if>
+	</delete>
+   	<!-- 员工司龄 -->
+	<select id="getEmpCompanyAge" resultType="net.chinahrd.entity.dto.KVItemDto"
+		useCache="false">
+		SELECT
+			emp_id as k, company_age as v
+		FROM v_dim_emp
+		WHERE company_age is not null
+	</select>
+   	<!-- 员工能力评价 -->
+	<select id="getEmpEval" resultType="net.chinahrd.entity.dto.KVItemDto"
+		useCache="false">
+		SELECT
+			emp_id as k, curt_name as v
+		FROM emp_pq_eval_relation
+		WHERE curt_name is not null
+	</select>
+	<!-- 能力评价维 字典表里'排序'来分区方案里的要求，得出中文名称 -->
+	<select id="getEvalAll" resultType="net.chinahrd.entity.dto.KVItemDto"
+		useCache="false">
+		SELECT 
+			show_index as k,
+			sys_code_item_name as v 
+		FROM sys_code_item WHERE code_group_id='pqeval'
+	</select>
+	<!-- 员工获取证书 -->
+	<select id="getEmpCertificate" resultType="net.chinahrd.entity.dto.KVItemDto"
+		useCache="false">
+		SELECT 
+			emp_id k, certificate_id as v 
+		FROM emp_certificate_info 
+		WHERE certificate_id is not null
+	</select>
+	<!-- 员工获取证书维  -->
+	<select id="getCertificateAll" resultType="net.chinahrd.entity.dto.KVItemDto"
+		useCache="false">
+		SELECT 
+			certificate_info_id k, certificate_name as v 
+		FROM dim_certificate_info 
+		WHERE certificate_info_id is not null
+	</select>
+	<!-- 员工证书类型  -->
+	<select id="getEmpCertificateType" resultType="net.chinahrd.entity.dto.KVItemDto"
+		useCache="false">
+		SELECT a.emp_id k, b.certificate_type_id v 
+		FROM emp_certificate_info a, dim_certificate_info b 
+		WHERE a.certificate_id=b.certificate_info_id 
+		AND b.certificate_type_id is not null
+	</select>
+	<!-- 员工绩效  -->
+	<select id="getEmpPerf" resultType="net.chinahrd.entity.dto.pc.promotionBoard.PerfChangeAnalysisDto"
+		useCache="false">
+		SELECT
+			a.emp_id empId,
+			a.performance_id perfchangeId,
+			a.performance_name perfName,
+			b.curt_name curtName,
+			`year_month` yearMonth
+		FROM
+			performance_change a
+		INNER JOIN dim_performance b ON a.performance_id = b.performance_id
+		where a.performance_id is not NULL
+		ORDER BY a.emp_id, a.`year_month` DESC
+	</select>
+	<!-- 批量插入分析  -->
+	<insert id="batchInsertPA" parameterType="java.util.ArrayList">
+		INSERT INTO promotion_analysis (
+			promotion_analysis_id,
+			emp_id,
+			customer_id,
+			promotion_req,
+			persoma_status,
+			is_accord,
+			analysis_date,
+			note) 
+		VALUES 
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			#{item.promotionAnalysisId},
+			#{item.empId},
+			#{item.customerId},
+			#{item.promotionReq},
+			#{item.persomaStatus},
+			#{item.isAccord},
+			#{item.analysisDate},
+			#{item.note}
+			)
+		</foreach>
+	</insert>
+	<!-- 批量更新符合条件占比 -->
+	<update id="batchUpdate" parameterType="java.util.List">
+        begin
+        <foreach collection="list" item="item" index="index" separator=""> 
+           update promotion_total
+            <set>       
+               condition_prop = #{item.v}
+            </set>
+           where emp_id = #{item.k} and total_date = #{date};
+        </foreach>
+        end;
+    </update>
+	
+	
+	
+<!-- 	<select id="call" parameterMap="paramMap" statementType="CALLABLE" > -->
+<!--            CALL pro_update_promotion_total(?,?) -->
+<!--     </select> -->
+<!-- 	<parameterMap type="java.util.Map" id="paramMap"> -->
+<!-- 		<parameter property="p_customer_id" mode="IN" jdbcType="VARCHAR" /> -->
+<!-- 		<parameter property="p_user_id" mode="IN" jdbcType="VARCHAR" /> -->
+<!-- 	</parameterMap> -->
+	
+</mapper>

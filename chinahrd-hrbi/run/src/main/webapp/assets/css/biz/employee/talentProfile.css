@@ -1,0 +1,106 @@
+.profile-header {
+    margin-top: 100px;
+}
+
+.profile-header .row:first-child {
+    text-align: center;
+}
+
+.profile-header .profile-title {
+    font-size: 36px;
+    font-weight: bolder;
+    letter-spacing: 10px;
+}
+
+.profile-header .input-group input {
+    height: 44px !important;
+	line-height: 44px !important;
+	color: #999999 !important;
+	border-color: #0099cc !important;
+}
+
+.profile-header .input-group button.btn-search {
+    background-color: #0099cc !important;
+    width: 95px;
+    height: 44px !important;
+    border: 1px solid #0099cc;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+.profile-header .hint {
+    display: block;
+    color: #666666;
+    margin-top: 24px;
+    font-size: 14px;
+}
+
+@media only screen and (max-width: 767px) {
+    .profile-header {
+        margin-top: 50px;
+    }
+    .profile-header .input-group button.btn-search{
+        width: 70px;
+    }
+}
+.emp_col{
+    margin-left: 10px;
+}
+.panel {
+	border: none !important;
+	background-color: #ffffff !important;
+}
+.panel .bottom-row {
+	border: none !important;
+	padding: 0px 10px 10px;
+}
+.panel .title-text {
+	font-weight: bold;
+	color: #e7191b
+}
+.panel .head-row {
+	margin: 0px;
+    padding: 0px;
+    margin-top: 24px;
+    margin-bottom: 10px;
+}
+.panel .head-row .search-row{
+    padding-right: 30px;
+}
+.panel .head-row .info-row{
+    padding: 0px;
+}
+.panel .input-group input {
+    border-color: #e0e0e0;
+    font-size: 12px;
+    color: #999999;
+    padding-left: 10px;
+}
+.panel .hint {
+    display: block;
+    color: #666666;
+    margin-top: 15px;
+    font-size: 14px;
+}
+.panel .input-group button.btn-search {
+    background-color: #0099cc !important;
+    width: 80px;
+    height: 34px;
+    border: 1px solid #0099cc;
+    color: #ffffff !important;
+}
+.panel .content-row {
+    padding: 0px;
+    border: solid 1px #e0e0e0;
+}
+.panel .grid-row {
+    padding-bottom: 20px;
+}
+.page-content .normal-row{
+	margin: 0px !important;
+	padding : 0px !important;
+}
+.page-content .img-row{
+    margin-top: 180px;
+    margin-bottom: 54px;
+}

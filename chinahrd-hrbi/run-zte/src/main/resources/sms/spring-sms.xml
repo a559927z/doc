@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd"
+	default-lazy-init="true">
+
+	<description>SMS配置</description>
+
+	<!-- SMS服务类 -->
+	<bean id="smsService"
+		class="net.chinahrd.eis.sms.SMSService">
+		<property name="provider" ref="smsSendProvider" />
+	</bean>
+	
+	<!-- SMS发送提供类 -->
+	<bean id="smsSendProvider" class="${sms.provider_classname}" init-method="initMonitor" destroy-method="stopMonitor">
+		<property name="providerName" value="${sms.providerName}"/>
+		<property name="sendUrl" value="${sms.sendUrl}" />
+		<property name="dataUrl" value="${sms.dataUrl}" />
+		<property name="uid" value="${sms.uid}" />
+		<property name="authKey" value="${sms.authKey}" />
+		<property name="defaultEncoding" value="${sms.encoding}" />
+	</bean>
+	
+</beans>

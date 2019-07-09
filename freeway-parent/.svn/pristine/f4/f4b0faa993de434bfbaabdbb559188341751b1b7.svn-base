@@ -1,0 +1,18 @@
+package net.chinahrd.modules.rbac.service.impl;
+
+import net.chinahrd.response.RbacUserRes;
+import net.chinahrd.service.rbac.RealmService;
+import org.springframework.stereotype.Service;
+
+/**
+ * 支持Realm调用dobbo服务
+ * @author wzmo
+ */
+@Service
+public class RealmServiceImpl implements RealmService {
+
+    @Override
+    public RbacUserRes selectByUserName(String userName) {
+        return null;
+    }
+}

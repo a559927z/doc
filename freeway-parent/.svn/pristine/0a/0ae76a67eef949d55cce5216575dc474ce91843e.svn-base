@@ -1,0 +1,39 @@
+spring.profiles.active=dev
+
+#是否开启压缩
+server.compression.enabled=true
+#指定要压缩的MIME type，多个以逗号分隔.
+server.compression.mime-types=application/json
+#执行压缩的阈值，默认为2048
+server.compression.min-response-size=2048
+
+# tomcat最大线程数，默认为200  
+server.tomcat.max-threads=800
+server.tomcat.uri-encoding=utf-8
+
+#日期格式
+spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
+spring.jackson.time-zone=GMT+8
+logging.config=classpath:log4j2.xml
+
+# Hikari will use the above plus the following to setup connection pooling
+spring.datasource.type=com.zaxxer.hikari.HikariDataSource
+spring.datasource.hikari.minimum-idle=5
+spring.datasource.hikari.maximum-pool-size=15
+spring.datasource.hikari.auto-commit=true
+spring.datasource.hikari.idle-timeout=30000
+spring.datasource.hikari.pool-name=DatebookHikariCP
+spring.datasource.hikari.max-lifetime=1800000
+spring.datasource.hikari.connection-timeout=30000
+spring.datasource.hikari.connection-test-query=SELECT 1
+
+#Mybatis
+mybatis.type-aliases-package=net.chinahrd.modules.**.entity
+
+# 连接超时时间（毫秒）
+spring.redis.timeout=10000
+
+#文件最大
+spring.servlet.multipart.max-file-size=50MB
+#设置总上传数据总大小 
+spring.servlet.multipart.max-request-size=200MB

@@ -1,0 +1,328 @@
+.row{margin-left:0px; margin-right:0px;}
+.talentmaps-history {
+    position: relative;
+}
+.ct-dissmiss .column{
+    padding: 2px!important;
+}
+/*椤甸潰閫氱敤鏍峰紡 begin*/
+.talentmaps-history .index-common-title{position: relative;width: 100%;height: 34px;}
+.talentmaps-history .index-common-title-left{position: absolute;top: 10px;left: 8px;background-color: #88b7e0;width: 2px;height: 15px;}
+.talentmaps-history .index-common-title-text{position: absolute;top: 6px;color: #444;}
+.talentmaps-history .index-common-title-center{position: absolute;left: 150px;top:-4px;}
+.talentmaps-history .index-common-title-center .title-center-text{display: inline-block;border:1px solid #e0e0e0;margin-right: 35px;}
+.talentmaps-history .index-common-title-center .title-center-text span:first-child{display: inline-block;color: #333;margin:0 5px;}
+.talentmaps-history .index-common-title-center .title-center-text span:nth-child(2){display: inline-block;background-color: #999;color: #fff;padding-left: 15px;font-size: 18px;}
+.talentmaps-history .index-common-title-center .title-center-text small{display: inline-block;background-color: #999;color: #fff;padding: 6px 10px 3px 5px;font-size: 12px;vertical-align: top;}
+.talentmaps-history .index-common-title-right{  float: right; margin: 6px 6px 0px 0px;  position: relative; background-color: #fff; padding: 0px 2px;}
+.talentmaps-history .index-common-title-right span{padding: 0px 4px; border-radius: 5px; cursor:pointer;  background: #efefef; border: 1px solid #ccc;}
+.talentmaps-history .index-common-title-right span.select{ background: #009EDD; color: #fff; cursor:default;   border: 1px solid #009EDD;}
+.talentmaps-history .rightBody{
+    width: 100%;
+    background-color: #ecf0f1;
+    padding: 20px;
+}
+.talentmaps-history .top-div{
+    height: 160px;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+}
+.talentmaps-history .bottom-div{
+    width: 100%;
+    border: 0px;
+}
+.talentmaps-history .bottom-div >.chart-view .col-xs-12:nth-child(2){
+    /* height: 350px; */
+}
+.talentmaps-history .bottom-div .bottom-div-first{
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+}
+.talentmaps-history .bottom-div .bottom-div-first span{
+    color: #999;
+    margin-left: 10px;
+}
+.talentmaps-history .bottom-div .bottom-div-right{
+    position: absolute;
+    right: 30px;
+    top: 10px;
+    z-index: 999;
+}
+.talentmaps-history .bottom-div .bottom-div-right>div{
+    display: inline-block;
+    background-color: rgb(242,242,242);
+    color: rgb(102,102,102);
+    padding: 4px 8px;
+    margin:0 -2px;
+    cursor: pointer;
+}
+.talentmaps-history .bottom-div .bottom-div-right>div.select{
+    background-color: rgb(211,211,211);
+    color: rgb(51,51,51);
+}
+.talentmaps-history .bottom-div .bottom-div-first a{
+    float: right;
+    text-decoration: none;
+    cursor: pointer;
+}
+.talentmaps-history .bottom-div .bottom-div-second{
+    color: #999;
+    margin-left: 10px;
+}
+/*椤甸潰閫氱敤鏍峰紡 begin*/
+
+.left{
+	float: left;
+}
+.bottom-div1{
+	height: 60px; 
+	width: 15%; 
+}
+.bottom-div2{
+	height: 60px; 
+	width: 60%; 
+	margin-top: 35px; 
+}
+.bottom-div3{
+	height: 60px; 
+	width: 25%; 
+}
+.bottom-span1{
+	font-weight: bold;
+	display: block;
+	margin-left: 10px;
+	margin-top: 20px;
+}
+.bottom-span2{
+	font-size: 12px;
+	display: block;
+	margin-left: 10px;
+	margin-top: 20px;
+}
+/** 瀹℃牳鍙戝竷姝ラbegin */
+.hr-class{
+	color: #e0e0e0;
+	margin: 0;
+}
+.step{
+	/* border: 1px solid #e0e0e0; */
+	border-left: 1px solid #e0e0e0;
+	border-right: 1px solid #e0e0e0;
+	border-bottom: 1px solid #e0e0e0;
+	height: 100px;
+}
+ol {
+	list-style: none outside none;
+	margin: 0;
+	padding: 0;
+}
+.ui-step {
+	padding: 0 100px;
+	margin-bottom: 35px;
+	position: relative;
+}
+.ui-step:after {
+	display: block;
+	content: "";
+	height: 0;
+	font-size: 0;
+	clear: both;
+	overflow: hidden;
+	visibility: hidden;
+}
+.ui-step li {
+	float: left;
+	position: relative;
+}
+.ui-step .step-end {
+	width: 120px;
+	position: absolute;
+	top: 3px;
+	right: -20px;
+}
+.ui-step .ui-step-line {
+	height: 3px;
+	background-color: #808080;
+}
+.step-end .ui-step-line { display: none; }
+.ui-step-cont {
+	width: 120px;
+	position: absolute;
+	left: -15px;
+	text-align: center;
+}
+.ui-step-cont-circle {
+	display: inline-block;
+	position: absolute;
+	left: 2px;
+	top: -9px;
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background-color: #808080;
+}
+.ui-step-cont-text {
+	position: relative;
+	left: -50px;
+	font-size: 12px;
+	top: 5px;
+}
+.ui-step-cont-time{
+	position: relative;
+	left: -50px;
+	font-size: 12px;
+	top: 5px;
+	display:block;
+}
+/** 姝ラ鏁板畾涔� **/
+.ui-step li { width: 50%; }
+/* step-one */
+.step-one .step-start .ui-step-cont-circle { background-color: #6c6; }
+.step-one .step-start .ui-step-cont-text { color: #6c6; }
+/* step-two */
+.step-two .step-start .ui-step-cont-circle { background-color: #6c6; }
+.step-two .step-start .ui-step-cont-text { color: #6c6; }
+.step-two .step-start .ui-step-line { background-color: #6c6; }
+.step-two .step-active .ui-step-cont-circle { background-color: #6c6; }
+.step-two .step-active .ui-step-cont-text { color: #6c6; }
+/* step-three */
+.step-three .step-start .ui-step-cont-circle { background-color: #6c6; }
+.step-three .step-start .ui-step-cont-text { color: #6c6; }
+.step-three .step-start .ui-step-line { background-color: #6c6; }
+.step-three .step-active .ui-step-cont-circle { background-color: #6c6; }
+.step-three .step-active .ui-step-cont-text { color: #6c6; }
+.step-three .step-active .ui-step-line { background-color: #6c6; }
+.step-three .step-end .ui-step-cont-circle { background-color: #6c6; }
+.step-three .step-end .ui-step-cont-text { color: #6c6; }
+/** 瀹℃牳鍙戝竷姝ラend */
+.botton-div{
+	text-align: center;
+	font-size: 13px; 
+	color: #FFFFFF; 
+	height: 30px; 
+	line-height: 30px; 
+	width: 80px; 
+	background-color: #0088FF; 
+	cursor: pointer;
+	margin-top: 30px;
+	margin-left: 100px;
+}
+.hr-line{
+	margin: 0px 10px 0px 10px; 
+}
+.rightSetUpTitle a:link {
+	text-decoration: none;
+}
+.rightSetUpTitle a:visited {
+	text-decoration: none;
+}
+.rightSetUpTitle a:hover {
+	text-decoration: none;
+	color: #009edd;
+}
+.rightSetUpTitle a:active {
+	text-decoration: none;
+}
+.line{
+	border-bottom: 1px solid #e0e0e0;
+	margin: 0 10px 0 10px;
+}
+.clear{
+	clear: both;
+}
+
+.rightTitle{
+	height: 34px;
+	margin-left: -15px;
+}
+.content{
+	padding: 20px;
+	background-color: #fff;
+}
+.content-bottom{
+    min-height: 240px;
+    border: 1px solid #e0e0e0;
+}
+.bottom-div-two{
+    width: 100%;
+    min-height: 108px;
+    margin-bottom: 20px;
+}
+.steped-left{
+	background-image: url("../../../img/talentmaps/steped-left.png");
+	width: 25px;
+	height: 22px;
+}
+.step-ing{
+	background-image: url("../../../img/talentmaps/step-ing.png");
+	width: 30px;
+	height: 22px;
+	margin-left: -2px;
+}
+.steped-ing{
+	background-image: url("../../../img/talentmaps/steped-ing.png");
+	width: 30px;
+	height: 22px;
+	margin-left: -2px;
+}
+.step-right{
+	background-image: url("../../../img/talentmaps/step-right.png");
+	width: 25px;
+	height: 22px;
+	margin-left: -2px;
+}
+.steped-right{
+	background-image: url("../../../img/talentmaps/steped-right.png");
+	width: 25px;
+	height: 22px;
+	margin-left: -2px;
+}
+.step-div{
+	height: 88px; border: 1px solid #e0e0e0; margin: 20px 20px 0 20px; border-left: 4px solid #85b6ff; border-bottom-right-radius:4em; border-top-right-radius:4em;
+}
+.step-div-h{
+	height: 88px; border: 1px solid #e0e0e0; margin: 20px 20px 0 20px; border-left: 4px solid #8991e8; border-bottom-right-radius:4em; border-top-right-radius:4em;
+}
+.step-div .span-one {
+	font-size: 14px; font-family: '微软雅黑 bold'; color: #666; display: block;
+}
+.step-div .span-two {
+	font-size: 12px; font-family: '微软雅黑 bold'; color: #999; display: block; margin-top: 10px;
+}
+.vertical-split{
+	height:60px; width:1px; border-left:1px solid #e0e0e0; float: left; margin: 14px 0;
+}
+.step-div-one{
+	width: 200px; height: 88px; float: left; padding: 20px;
+}
+.step-div-two{
+	width: 60%; height: 88px; float: left; padding: 20 60px;
+}
+.step-div-two .line_step{
+	height: 22px; padding-left: 25px;
+}
+.line-block{
+	float: left; width: 40%; background-color: #e0e0e0; height: 4px; margin-top: 9px; margin-left: -2px;
+}
+.line-blocked{
+	float: left; width: 40%; background-color: #01d286; height: 4px; margin-top: 9px; margin-left: -2px;
+}
+.content-center{
+	text-align: center;
+}
+.display-block{
+	display: block;
+}
+.steped-color{
+	color: #01d286;
+}
+.step-color{
+	color: #01d2ea;
+}
+.step-div-three{
+	width: 106px; height: 88px; line-height: 88px; text-align: center; font-size: 16px; cursor: pointer; background-color: #a2abfa; color:#fff; border-bottom-right-radius:4em; border-top-right-radius:4em; float: right;
+}
+.step-div-three-h{
+	width: 106px; height: 88px; line-height: 88px; text-align: center; font-size: 16px; cursor: pointer; background-color: #8991e8; color:#fff; border-bottom-right-radius:4em; border-top-right-radius:4em; float: right;
+}

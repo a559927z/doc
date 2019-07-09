@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.mvc.pc.dao.admin.ImportDataDao">
+
+
+	<select id="queryTest" resultType="java.lang.Integer">
+		SELECT 1
+	</select>
+	<delete id="deleteSoureOrgan" parameterType="java.lang.String">
+		DELETE FROM
+		`_soure_dim_organization`
+	</delete>
+	<insert id="addSoureOrgan" parameterType="java.util.List">
+		<if test="list != null and list.size() > 0 ">
+			INSERT INTO v_dim_emp (
+			v_dim_emp_id, customer_id, emp_id, emp_key, user_name, user_name_ch, emp_hf_id,
+			emp_hf_key, email, img_path,
+			passtime_or_fulltime, contract, blood, age, company_age,
+			is_key_talent, sex, nation, degree_id, degree, native_place, country, birth_place,
+			birth_date, national_id, national_type,
+			marry_status, patty_name,
+			position_id, position_name, organization_parent_id, organization_parent_name,
+			organization_id, organization_name,
+			sequence_id, sequence_name, sequence_sub_id, sequence_sub_name, performance_id,
+			performance_name, <!-- key_talent_type_id, key_talent_type_name, -->
+			ability_id, job_title_id, ability_lv_id, ability_name,
+			job_title_name, ability_lv_name, rank_name,
+			run_off_date, entry_date,
+			tel_phone, qq, wx_code, address, contract_unit, work_place_id, work_place,
+			regular_date, channel_id, speciality, is_regular, refresh_date,
+			c_id, report_relation
+			)VALUES
+			<foreach collection="list" item="i" index="index" open=""
+				close="" separator=",">
+				(
+				#{i.id}, #{i.customer_id}, #{i.emp_id},#{i.emp_key},
+				#{i.user_name}, #{i.user_name_ch},#{i.emp_hf_id}, #{i.emp_hf_key},
+				#{i.email},#{i.img_path},
+				#{i.passtime_or_fulltime},
+				#{i.contract},#{i.blood}, #{i.age}, #{i.company_age},
+				#{i.is_key_talent}, #{i.sex}, #{i.nation}, #{i.degree_id},
+				#{i.degree}, #{i.native_place}, #{i.country}, #{i.birth_place},
+				#{i.birth_date}, #{i.national_id}, #{i.national_type},
+				#{i.marry_status}, #{i.patty_name},
+				#{i.position_id}, #{i.position_name}, #{i.organization_parent_id},
+				#{i.organization_parent_name}, #{i.organization_id},
+				#{i.organization_name},
+				#{i.sequence_id}, #{i.sequence_name},
+				#{i.sequence_sub_id}, #{i.sequence_sub_name}, #{i.performance_id},
+				#{i.performance_name}, <!-- #{i.key_talent_type_id}, #{i.key_talent_type_name}, -->
+				#{i.ability_id}, #{i.job_title_id}, #{i.ability_lv_id},
+				#{i.ability_name}, #{i.job_title_name}, #{i.ability_lv_name},
+				#{i.rank_name},
+				#{i.run_off_date}, #{i.entry_date},
+				#{i.tel_phone},
+				#{i.qq}, #{i.wx_code}, #{i.address}, #{i.contract_unit},
+				#{i.work_place_id}, #{i.work_place}, #{i.regular_date},
+				#{i.channel_id}, #{i.speciality}, #{i.is_regular}, now(),
+				#{i.c_id},
+				#{i.report_relation2}
+				)
+			</foreach>
+		</if>
+	</insert>
+
+
+</mapper>

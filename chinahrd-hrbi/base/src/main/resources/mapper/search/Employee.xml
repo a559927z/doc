@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.eis.search.dao.EmployeeDao">
+
+	<resultMap id="empResult" type="net.chinahrd.eis.search.dto.Employee">
+		<id property="empId" column="emp_id" />
+		<result property="customerId" column="customer_id"/>
+		<result property="empKey" column="emp_key"/>
+		<result property="userNameCh" column="user_name_ch"/>
+		<result property="empType" column="emp_type"/>
+		<result property="age" column="age"/>
+		<result property="sex" column="sex"/>
+		<result property="degree" column="degree"/>
+		<result property="organizationId" column="organization_id"/>
+		<result property="organizationName" column="organization_name"/>
+		<result property="positionId" column="position_id"/>
+		<result property="positionName" column="position_name"/>
+		<result property="sequenceId" column="sequence_id"/>
+		<result property="sequenceName" column="sequence_name"/>
+		<result property="sequenceSubId" column="sequence_sub_id"/>
+		<result property="sequenceSubName" column="sequence_sub_name"/>
+		<result property="abilityId" column="ability_id"/>
+		<result property="abilityName" column="ability_name"/>
+		<result property="jobTitleId" column="job_title_id"/>
+		<result property="jobTitleName" column="job_title_name"/>
+		<result property="mark" column="mark"/>
+		
+		<collection property="performances"
+			ofType="net.chinahrd.eis.search.dto.Performance" resultMap="perfResult" />
+		<collection property="pastResumes"
+			ofType="net.chinahrd.eis.search.dto.PastResume" resultMap="pastResult" />
+		<collection property="trainExperiences"
+			ofType="net.chinahrd.eis.search.dto.TrainExperience" resultMap="trainResult" />
+	</resultMap>
+
+	<resultMap id="perfResult" type="net.chinahrd.eis.search.dto.Performance">
+		<id property="performanceChangeId" column="performance_change_id" />
+		<result property="yearMonth" column="year_month"/>
+		<result property="perfType" column="perf_type"/>
+		<result property="performanceId" column="performance_id"/>
+		<result property="performanceName" column="performance_name"/>
+	</resultMap>
+	<resultMap id="pastResult" type="net.chinahrd.eis.search.dto.PastResume">
+		<id property="empPastResumeId" column="emp_past_resume_id" />
+		<result property="empId" column="emp_id"/>
+		<result property="workUnit" column="work_unit"/>
+		<result property="departmentName" column="department_name"/>
+		<result property="positionName" column="past_position_name"/>
+		<result property="bonusPenaltyName" column="bonus_penalty_name"/>
+		<result property="witnessName" column="witness_name"/>
+		<result property="changeReason" column="change_reason"/>
+		<result property="entryDate" column="entry_date"/>
+		<result property="runOffDate" column="run_off_date"/>
+	</resultMap>
+	<resultMap id="trainResult" type="net.chinahrd.eis.search.dto.TrainExperience">
+		<id property="trainExperienceId" column="train_experience_id" />
+		<result property="empId" column="emp_id"/>
+		<result property="courseName" column="course_name"/>
+		<result property="result" column="result"/>
+		<result property="trainUnit" column="train_unit"/>
+		<result property="gainCertificate" column="gain_certificate"/>
+		<result property="lecturerName" column="lecturer_name"/>
+		<result property="note" column="note"/>
+		<result property="trainTime" column="train_time"/>
+		<result property="startDate" column="start_date"/>
+		<result property="finishDate " column="finish_date "/>
+	</resultMap>
+
+
+	<!-- 获取需要进行索引的人员信息 -->
+	<select id="findUnIndexedEmp" resultMap="empResult">
+		SELECT
+		vde.emp_id,
+		vde.customer_id,
+		vde.emp_key,
+		vde.user_name_ch,
+		case vde.passtime_or_fulltime
+		  when 'f' then '正式员工'
+		  when 'p' then '兼职员工'
+		  else '其他'
+		end AS emp_type,
+		vde.age,
+		case vde.sex
+		  when 'm' then '男'
+		  when 'w' then '女'
+		  else '其他'
+		end AS sex,
+		vde.degree,
+		vde.organization_id,
+		vde.organization_name,
+		vde.position_id,
+		vde.position_name,
+		vde.sequence_id,
+		vde.sequence_name,
+		vde.sequence_sub_id,
+		vde.sequence_sub_name,
+		vde.ability_id,
+		vde.ability_name,
+		vde.job_title_id,
+		vde.job_title_name,
+		vde.mark,
+		
+		perf.performance_change_id,
+		perf.`year_month`,
+		perf.type AS perf_type,
+		perf.performance_id,
+		perf.performance_name,
+		
+		past.emp_past_resume_id,
+		past.work_unit,
+		past.department_name,
+		past.position_name AS past_position_name,
+		past.bonus_penalty_name,
+		past.witness_name,
+		past.change_reason,
+		past.entry_date,
+		past.run_off_date,
+		
+		train.train_experience_id,
+		train.course_name,
+		train.result,
+		train.train_unit,
+		train.gain_certificate,
+		train.lecturer_name,
+		train.note,
+		train.train_time,
+		train.start_date,
+		train.finish_date
+		
+		FROM v_dim_emp vde
+		LEFT JOIN performance_change perf 
+		on vde.emp_id = perf.emp_id
+		LEFT JOIN emp_past_resume past 
+		on vde.emp_id = past.emp_id
+		LEFT JOIN emp_train_experience train
+		on vde.emp_id = train.emp_id
+		INNER JOIN (select emp_id from v_dim_emp where mark in (1,2) LIMIT 0,#{batchSize}) emp
+		on vde.emp_id = emp.emp_id
+		order by mark
+	</select>
+	
+	<!-- 更改标记-->
+    <update id="updateMark" parameterType="java.util.List">
+       	update v_dim_emp t 
+	    set t.mark = 3
+	    where t.emp_id in 
+	   <foreach collection="list" item="item" open="(" close=")" separator=",">
+	    #{item.empId}
+	   </foreach>
+	</update>
+
+
+<!-- 查询未被索引的培训经历 -->
+	<select id="findUnIndexedTrainExperience" resultMap="trainResult">
+		SELECT
+		train.emp_id,
+		train.train_experience_id,
+		train.course_name,
+		train.result,
+		train.train_unit,
+		train.gain_certificate,
+		train.lecturer_name,
+		train.note,
+		train.train_time,
+		train.start_date,
+		train.finish_date
+		
+		FROM  emp_train_experience train
+		 WHERE train.mark in (1,2) 
+		 LIMIT 0,#{batchSize}
+
+	</select>
+	<!-- 更新培训经历索引标记-->
+    <update id="updateTrainExperienceMark" parameterType="java.util.List">
+       	update emp_train_experience t 
+	    set t.mark = 3
+	    where t.train_experience_id in 
+	   <foreach collection="list" item="item" open="(" close=")" separator=",">
+	    #{item.trainExperienceId}
+	   </foreach>
+	</update>
+	
+	<!-- 查询未被索引的过往履历 -->
+	<select id="findUnIndexedPastResume" resultMap="pastResult">
+		SELECT
+		past.emp_id,
+		past.emp_past_resume_id,
+		past.work_unit,
+		past.department_name,
+		past.position_name AS past_position_name,
+		past.bonus_penalty_name,
+		past.witness_name,
+		past.change_reason,
+		past.entry_date,
+		past.run_off_date
+		
+		FROM  emp_past_resume past
+		 WHERE past.mark in (1,2) 
+		 LIMIT 0,#{batchSize}
+	</select>
+	<!-- 更新过往履历索引标记-->
+    <update id="updatePastResumeMark" parameterType="java.util.List">
+       	update emp_past_resume t 
+	    set t.mark = 3
+	    where t.emp_past_resume_id in 
+	   <foreach collection="list" item="item" open="(" close=")" separator=",">
+	    #{item.empPastResumeId}
+	   </foreach>
+	</update>
+
+</mapper>

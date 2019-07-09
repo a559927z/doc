@@ -1,0 +1,246 @@
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.talentmaps-teampk {
+    position: relative;
+}
+
+.ct-dissmiss .column {
+    padding: 2px !important;
+}
+
+/*!*页面通用样式 begin*!*/
+/*.talentmaps-teampk .index-common-title {*/
+    /*position: relative;*/
+    /*width: 100%;*/
+    /*height: 34px;*/
+/*}*/
+
+/*.talentmaps-teampk .index-common-title-left {*/
+    /*position: absolute;*/
+    /*top: 10px;*/
+    /*left: 8px;*/
+    /*background-color: #88b7e0;*/
+    /*width: 2px;*/
+    /*height: 15px;*/
+/*}*/
+
+/*.talentmaps-teampk .index-common-title-text {*/
+    /*position: absolute;*/
+    /*top: 6px;*/
+    /*color: #444;*/
+/*}*/
+
+/*.talentmaps-teampk .index-common-title-center {*/
+    /*position: absolute;*/
+    /*left: 150px;*/
+    /*top: -4px;*/
+/*}*/
+
+/*.talentmaps-teampk .index-common-title-center .title-center-text {*/
+    /*display: inline-block;*/
+    /*border: 1px solid #e0e0e0;*/
+    /*margin-right: 35px;*/
+/*}*/
+
+/*.talentmaps-teampk .index-common-title-center .title-center-text span:first-child {*/
+    /*display: inline-block;*/
+    /*color: #333;*/
+    /*margin: 0 5px;*/
+/*}*/
+
+/*.talentmaps-teampk .index-common-title-center .title-center-text span:nth-child(2) {*/
+    /*display: inline-block;*/
+    /*background-color: #999;*/
+    /*color: #fff;*/
+    /*padding-left: 15px;*/
+    /*font-size: 18px;*/
+/*}*/
+
+/*.talentmaps-teampk .index-common-title-center .title-center-text small {*/
+    /*display: inline-block;*/
+    /*background-color: #999;*/
+    /*color: #fff;*/
+    /*padding: 6px 10px 3px 5px;*/
+    /*font-size: 12px;*/
+    /*vertical-align: top;*/
+/*}*/
+
+/*.talentmaps-teampk .index-common-title-right {*/
+    /*float: right;*/
+    /*margin: 6px 6px 0px 0px;*/
+    /*position: relative;*/
+    /*background-color: #fff;*/
+    /*padding: 0px 2px;*/
+/*}*/
+
+/*.talentmaps-teampk .index-common-title-right span {*/
+    /*padding: 0px 4px;*/
+    /*border-radius: 5px;*/
+    /*cursor: pointer;*/
+    /*background: #efefef;*/
+    /*border: 1px solid #ccc;*/
+/*}*/
+
+/*.talentmaps-teampk .index-common-title-right span.select {*/
+    /*background: #009EDD;*/
+    /*color: #fff;*/
+    /*cursor: default;*/
+    /*border: 1px solid #009EDD;*/
+/*}*/
+
+/*.talentmaps-teampk .rightBody {*/
+    /*width: 100%;*/
+    /*background-color: #fff;*/
+    /*padding: 5px;*/
+/*}*/
+
+/*.talentmaps-teampk .top-div {*/
+    /*height: 160px;*/
+    /*width: 100%;*/
+    /*border: 1px solid #e0e0e0;*/
+/*}*/
+
+/*.talentmaps-teampk .bottom-div {*/
+    /*width: 100%;*/
+    /*height: 300px;*/
+    /*border: 1px solid #e0e0e0;*/
+    /*padding: 10px 30px 10px 30px;*/
+/*}*/
+
+.talentmaps-teampk .bottom-div .maps-pk-title {
+    font-weight: bold;
+    font-size: 16px;
+    display: block;
+}
+
+.talentmaps-teampk .bottom-div .maps-pk-remind {
+    display: block;
+    color: #999;
+    font-size: 13px;
+}
+
+.talentmaps-teampk .bottom-div .maps-pk-main {
+    margin-top: 15px;
+}
+
+.talentmaps-teampk .bottom-div .help-inline {
+    margin-top: 30px;
+}
+
+.talentmaps-teampk .bottom-div .maps-pk-bottom {
+    margin-top: 10px;
+    height: 30px;
+    line-height: 30px;
+}
+
+/*!*页面通用样式 begin*!*/
+
+.rightSetUpTitle a:link {
+    text-decoration: none;
+}
+
+.rightSetUpTitle a:visited {
+    text-decoration: none;
+}
+
+.rightSetUpTitle a:hover {
+    text-decoration: none;
+    color: #009edd;
+}
+
+.rightSetUpTitle a:active {
+    text-decoration: none;
+}
+
+.team-bottom-div {
+    border: 1px solid #1C97F3;
+    width: 180px;
+    height: 80px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+.team-bottom-div a{
+    font-size: 12px;
+}
+
+.team-bottom-dashed-div {
+    border: 1px dashed #1C97F3;
+    width: 180px;
+    height: 80px;
+    margin-right: 20px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.team-bottom-div .circle {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    color: #ffffff;
+    background-color: #1C97F3;
+    margin: 15px 15px 15px 15px;
+}
+
+.team-bottom-div .bottom-text {
+    height: 80px;
+    line-height: 30px;
+    margin-top: 10px;
+}
+
+.checkteam-link {
+    margin-left: 10px;
+    color: #009edd;
+    font-size: 13px;
+}
+
+.bg {
+    width: 180px;
+    height: 80px;
+    background-color: black;
+    opacity: .50;
+    filter: alpha(opacity=50);
+    *zoom: 1;
+}
+/* 搜索弹出层相关样式 start */
+@media (min-width: 768px) {
+    .popup-modal .modal-dialog {
+        width: 800px;
+    }
+}
+
+.popup-modal .form-horizontal {
+    border: 0;
+    margin-top: 10px;
+}
+
+.popup-modal .form-horizontal .input-large {
+    padding: 5px;
+}
+.popup-modal .u-dropdown-input{
+    background-color: #FFFFFF;
+    border:1px solid #b5b5b5;
+}
+.popup-modal .form-group .icon-remove{
+    position: absolute;
+    top:6px;
+    right: 25px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.popup-modal .btn{
+    margin-right: 20px;
+}
+.popup-modal .form-teamNum{
+    font-size: 12px;
+    margin-left: 15px;
+    vertical-align: bottom;
+}
+.popup-modal .form-teamNum span{
+    color: #ff6e00;
+}
+/* 搜索弹出层相关样式 end */

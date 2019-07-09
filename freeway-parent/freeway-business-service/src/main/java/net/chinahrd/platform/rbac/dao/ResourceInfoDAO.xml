@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.platform.rbac.dao.ResourceInfoDAO">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ResourceInfoResultMap" type="net.chinahrd.platform.rbac.entity.ResourceInfo">
+        <result column="resource_id" property="resourceId" />
+        <result column="resource_name" property="resourceName" />
+        <result column="resource_type" property="resourceType" />
+        <result column="resource_url" property="resourceUrl" />
+        <result column="resource_sort" property="resourceSort" />
+
+    </resultMap>
+
+
+
+</mapper>

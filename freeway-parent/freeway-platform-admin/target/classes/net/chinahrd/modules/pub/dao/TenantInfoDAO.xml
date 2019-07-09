@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.modules.pub.dao.TenantInfoDAO">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="net.chinahrd.modules.pub.entity.TenantInfo">
+        <id column="tenant_id" property="tenantId" />
+        <result column="tenant_name" property="tenantName" />
+        <result column="tenant_state" property="tenantState" />
+        <result column="tenant_address" property="tenantAddress" />
+        <result column="contact" property="contact" />
+        <result column="contact_tel" property="contactTel" />
+        <result column="contact_email" property="contactEmail" />
+        <result column="create_by" property="createBy" />
+        <result column="create_date" property="createDate" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_date" property="updateDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        tenant_id, tenant_name, tenant_state, tenant_address, contact, contact_tel, contact_email
+    </sql>
+
+    <select id="listTenantInfo" parameterType="java.util.Map" resultType="net.chinahrd.modules.pub.response.TenantInfoRes">
+        select
+        tenant.tenant_id,tenant.tenant_name,tenant.tenant_state, tenant.tenant_address, tenant.contact, tenant.contact_tel, tenant.contact_email,
+        ds.datasource_id, ds.datasource_name, ds.db_type, ds.username, ds.password, ds.url, ds.initial_size, ds.max_active, ds.max_idle, ds.note
+        from pub_tenant_info tenant
+        left join pub_tenant_datasource_rel rel on tenant.tenant_id = rel.tenant_id
+        left join pub_datasource_info ds on ds.datasource_id = rel.datasource_id
+        where 1 = 1
+        <if test="tenantName != null and tenantName != ''">
+            and t.tenant_name like CONCAT('%', #{tenantName}, '%')
+        </if>
+        <if test="tenantState != null and tenantState != ''">
+            and t.tenant_State like CONCAT('%', #{tenantState}, '%')
+        </if>
+
+    </select>
+
+</mapper>

@@ -1,0 +1,296 @@
+body {
+    background-color: #fff;
+}
+
+.talent-maps .rightSetUpTitle {
+    margin: 10px 0px 5px;
+}
+
+.talent-maps .rightSetUpBtn {
+    position: absolute;
+    right: 0px;
+    top: 1px;
+    cursor: pointer;
+}
+
+.talent-maps .rightSetUpBtnDiv {
+    position: relative;
+    float: left;
+    height: 30px;
+    width: 80px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+}
+
+.talent-maps .rightSetUpRight {
+    margin-left: -1px;
+}
+
+.talent-maps .rightSetUpBtnSelect {
+    border-bottom: 0px;
+    cursor: default;
+    background-color: #fff;
+}
+
+.talent-maps .rightBodyHead {
+    background-color: #F5F5F5;
+}
+
+.talent-maps .rightBodyHead .rightBodyHeadTitle {
+    display: inline-block;
+    font-weight: bold;
+    color: #333;
+    margin: 10px 5px;
+    padding-left: 12px;
+}
+
+.talent-maps .rightBodyHead .rightBodyHeadSelect {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 5px 8px;
+}
+
+.talent-maps .rightBodyHead .rightBodyHeadCheckbox {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 10px 5px;
+}
+
+.talent-maps .rightBodyHead .rightBodyHeadCheckbox label {
+    cursor: pointer;
+    font-size: 13px;
+    color: #555;
+}
+
+.talent-maps .fullScreenBodyHead {
+    background-color: #000;
+    z-index: 151;
+}
+
+.talent-maps .fullScreenBodyHead .fullScreenBodyTitle {
+    display: inline-block;
+    font-weight: bold;
+    color: #F5F5F5;
+    margin: 10px 5px;
+    padding-left: 12px;
+}
+
+.talent-maps .fullScreenBodyHead .close {
+    float: right;
+    margin: 8px 18px;
+    color: #fff;
+    opacity: 0.8;
+    font-size: 20px;
+}
+
+.talent-maps .fullScreenBodyHead .close:hover {
+    opacity: 0.5;
+}
+
+/* 左边z轴展示层 start */
+.map-axis-Block {
+    position: absolute;
+    top: 160px;
+    left: 0;
+    overflow: hidden;
+    list-style: none;
+    z-index: 101;
+}
+
+.map-axis-Block .map-axis-hide {
+    float: right;
+    display: none;
+    padding: 10px 4px;
+    width: 27px;
+    font-size: 16px;
+    word-wrap: break-word;
+    word-break: normal;
+    text-align: center;
+    background-color: #0066ff;
+    color: #fff;
+    cursor: pointer;
+    -moz-border-radius: 0 15px 15px 0;
+    -webkit-border-radius: 0 15px 15px 0;
+    border-radius: 0 15px 15px 0;
+}
+
+.map-axis-Block .map-axis-show {
+    display: none;
+    width: 400px;
+    background-color: #fff;
+    border: 1px solid #0066ff;
+    -moz-border-radius: 0 5px 5px 0;
+    -webkit-border-radius: 0 5px 5px 0;
+    border-radius: 0 5px 5px 0;
+}
+
+.map-axis-Block .map-axis-show .index-common-title {
+    position: relative;
+    width: 100%;
+    height: 40px;
+}
+
+.map-axis-Block .map-axis-show .index-common-title-left {
+    position: absolute;
+    top: 12px;
+    left: 10px;
+    background-color: #88b7e0;
+    width: 2px;
+    height: 18px;
+}
+
+.map-axis-Block .map-axis-show .index-common-title-text {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-size: 16px;
+}
+
+.map-axis-Block .map-axis-show .index-common-title .rightSetUpBtn {
+    position: absolute;
+    right: 0px;
+    top: 1px;
+}
+
+.map-axis-Block .map-axis-show .index-common-title .rightSetUpBtn .icon-remove {
+    cursor: pointer;
+    font-size: 22px;
+    margin: 5px 8px;
+}
+
+.map-axis-Block .map-axis-show .map-axis-main {
+    border-top: 2px solid #F0F0F0;
+    padding-top: 10px;
+}
+
+.map-axis-Block .map-axis-show .map-axis-area div:first-child {
+    text-align: right;
+}
+
+/* 左边z轴展示层 end */
+
+.talent-maps .active .u-dropdown-input {
+    background-color: #FFFFFF;
+    border: 1px solid #d5d5d5;
+    margin: 0 10px;
+    min-width: 120px;
+}
+
+/* 搜索条件 start */
+.search-box > .row:first-child {
+    padding: 0px !important;
+}
+
+.search-box .more-search .more-search-label {
+    right: 20px;
+    top: -41px;
+    height: 42px;
+    line-height: 42px;
+}
+
+.search-box > .filter {
+    overflow-y: hidden !important;
+    height: 440px !important;
+}
+
+.search-box .filter .form-horizontal {
+    margin: auto;
+}
+
+/* 搜索条件 end */
+
+/* 搜索模块样式 begin */
+.talent-maps .search-block {
+    z-index: 150;
+}
+
+.talent-maps .search-main-block {
+    display: none;
+    border-right: 1px solid #f0f0f0;
+    width: 220px;
+    margin-top: -28px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.talent-maps .search-main-block .close {
+    margin: 5px 8px;
+}
+
+.talent-maps .search-main-block label {
+    margin: 40px 15px 15px;
+    display: inline-block;
+    width: 170px;
+    text-align: left;
+}
+
+.talent-maps .search-main-block .search-block-show {
+    display: flex;
+}
+
+.talent-maps .search-main-block .search-instructions {
+    font-size: 12px;
+    display: inline-block;
+}
+
+.talent-maps .search-main-block .search-content {
+    margin: 5px;
+}
+
+.talent-maps .search-main-block .search-emp-main {
+    display: inline-block;
+    border: 1px solid #999;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    font-size: 12px;
+    text-align: left;
+    color: #000;
+}
+
+.talent-maps .search-main-block .search-emp-main span {
+    display: inline-block;
+}
+
+.talent-maps .search-main-block .search-emp-main .btn {
+    margin: 12px 10px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.talent-maps .nav-search {
+    min-width: 200px;
+}
+
+.talent-maps .nav-search .nav-search-block {
+    position: relative;
+    z-index: 200;
+}
+
+.talent-maps .nav-search .nav-search-block .search-emp-main {
+    position: absolute;
+    display: inline-block;
+    width: 260px;
+    right: -20px;
+    border: 1px solid #999;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    text-align: left;
+    color: #000;
+}
+
+.talent-maps .nav-search .nav-search-block .search-emp-main span {
+    display: inline-block;
+}
+
+.talent-maps .nav-search .nav-search-block .search-emp-main .btn {
+    margin: 12px 10px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+/* 搜索模块样式 end */

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.manpowerCost.mvc.app.dao.MobileManpowerCostDao">
+
+	
+	<!-- 成本月度趋势 -->
+	<select id="queryTrendByMonth" resultType="net.chinahrd.entity.dto.app.manpowerCost.ManpowerDto">
+		select cost,`year_month` as yearMonth
+		from manpower_cost   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		ORDER BY `year_month`
+	</select>
+	
+	<!-- 本年预算 -->
+	<select id="queryYearBudget" resultType="java.lang.Double">
+		select budget_value
+		from manpower_cost_value   
+		where year=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+	</select>
+	
+	
+	
+	<!-- 人力成本结构 -->
+	<select id="queryItemDetail" resultType="net.chinahrd.entity.dto.app.manpowerCost.ManpowerItemDto">
+		select mct.item_name AS itemName, sum(mct.item_cost) cost
+	      from manpower_cost  mc INNER JOIN manpower_cost_item mct
+                on mc.organization_id=mct.organization_id and mc.`year_month` = mct.`year_month`
+                and mc.customer_id=mct.customer_id
+           where substr(mc.`year_month`,1,4)=#{year}   
+		AND mc.organization_id = #{organId} AND mc.customer_id = #{customerId}
+		GROUP BY mct.item_name
+		ORDER BY mct.item_name
+	</select>
+
+	<!-- 各架构人力成本 -->
+	<select id="queryOrganCost" resultType="net.chinahrd.entity.dto.app.manpowerCost.ManpowerOrganDto">
+		select do.organization_id organId,do.organization_name organ,sum(mc.cost)cost 
+	      from manpower_cost  mc INNER JOIN 
+	      dim_organization do
+                on mc.organization_id=do.organization_id and mc.customer_id=do.customer_id
+           where substr(mc.`year_month`,1,4)=#{year}   
+<!-- 		AND mc.organization_id = #{organId}  -->
+		AND mc.customer_id = #{customerId}
+		AND (do.organization_id = #{organId} or do.organization_parent_id = #{organId} )
+		GROUP BY do.organization_id,do.organization_name
+		ORDER BY cost 
+	</select>
+	
+
+	<!-- 人力成本占比（按年同比） -->
+	<select id="queryProportionYear" resultType="net.chinahrd.entity.dto.app.manpowerCost.ManpowerCompareDto">
+		select sum(cost) cost,sum(cost_company) as total,substr(`year_month`,1,4) as yearMonth,1 as type
+		from manpower_cost   where substr(`year_month`,1,4)=#{year1}  
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		group by substr(`year_month`,1,4)
+		union
+		select sum(cost) cost,sum(cost_company) as total,substr(`year_month`,1,4) as yearMonth,0 as type
+		from manpower_cost   where substr(`year_month`,1,4)=#{year2}  
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		group by substr(`year_month`,1,4)
+	</select>
+	
+	
+	
+	<select id="queryAllDetailData" resultType="net.chinahrd.entity.dto.app.manpowerCost.ManpowerDto">
+		select m.cost,m.costAvg,p.gainAmount,p.salesAmount,m.`year_month` AS yearMonth  from
+		(select cost,cost_avg as costAvg,`year_month`
+		from manpower_cost   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId})m
+		LEFT JOIN (
+		select gain_amount AS gainAmount,sales_amount as salesAmount,`year_month`
+		from fact_fte   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		)p on m.`year_month`=p.`year_month`
+		union
+		select m.cost,m.costAvg,p.gainAmount,p.salesAmount,p.`year_month` AS yearMonth from
+		(
+		select gain_amount AS gainAmount,sales_amount as salesAmount,`year_month` 
+		from fact_fte   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		)p
+		LEFT JOIN (select cost,cost_avg as costAvg,`year_month` 
+		from manpower_cost   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId})m  
+		on m.`year_month`=p.`year_month`
+		ORDER BY yearMonth
+	</select>
+
+</mapper>

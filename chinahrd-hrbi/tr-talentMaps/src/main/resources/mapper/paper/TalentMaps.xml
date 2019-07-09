@@ -1,0 +1,2115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.talentMaps.mvc.pc.dao.TalentMapsDao">
+    <cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+    <resultMap id="resultBaseMap" type="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto">
+        <result column="date" property="date"/>
+        <result column="cnDate" property="cnDate"/>
+        <result column="abilityNumberId" property="abilityNumberId"/>
+        <result column="abilityNumberName" property="abilityNumberName"/>
+        <result column="performanceId" property="performanceId"/>
+        <result column="performanceName" property="performanceName"/>
+        <result column="conNum" property="conNum"/>
+        <result column="empId" property="empId"/>
+        <result column="userName" property="userName"/>
+        <result column="imgPath" property="imgPath"/>
+        <result column="rankName" property="rankName"/>
+    </resultMap>
+
+    <!-- 获取带子架构的所有组织机构 -->
+    <sql id="queryFullOrganId">
+	(
+		SELECT o.organization_id
+		FROM dim_organization o
+		WHERE
+		LOCATE(
+			(
+			SELECT o1.full_path
+			FROM dim_organization o1
+			WHERE o1.customer_id = #{customerId}
+			AND o1.organization_id = #{organId}
+			),
+			o.full_path
+		)
+		AND o.customer_id = #{customerId}
+	)
+	</sql>
+    <!-- 通过缓存获取带子架构的所有组织机构 -->
+    <sql id="queryFullOrganIdByContext">
+        <if test="subOrganIdList != null and subOrganIdList.size != 0">
+            AND mti.organization_id in
+            <foreach item="organId" collection="subOrganIdList" open="(" separator="," close=")">
+                '${organId}'
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 检查是否审核人 -->
+    <select id="checkIsAuditor" resultType="boolean" useCache="true">
+    SELECT COUNT(mm.map_management_id)
+    FROM map_management mm
+    WHERE mm.emp_id = #{empId}
+    AND mm.customer_id = #{customerId}
+    </select>
+
+    <!-- 查询时间区间选择 -->
+    <select id="queryTimesCycle" resultType="java.lang.String" useCache="true">
+		SELECT mtr.year_months date
+		FROM map_talent_result mtr
+		WHERE mtr.customer_id = #{customerId}
+		GROUP BY mtr.year_months
+		ORDER BY mtr.year_months
+	</select>
+    <!-- 趋势图公共筛选框条件sql -->
+    <sql id="teamCPSearchSql">
+        <if test="sequenceList != null and sequenceList != '' and sequenceList.size() > 0">
+            AND
+            <foreach collection="sequenceList" item="i" open="(" close=")" separator="OR">
+                (mti.sequence_id = '${i}')
+            </foreach>
+        </if>
+        <if test="sequenceSubList != null and sequenceSubList != '' and sequenceSubList.size() > 0">
+            AND
+            <foreach collection="sequenceSubList" item="i" open="(" close=")" separator="OR">
+                (mti.sequence_sub_id = '${i}')
+            </foreach>
+        </if>
+        <if test="ageList != null and ageList != '' and ageList.size() > 0">
+            AND
+            <foreach collection="ageList" item="i" open="(" close=")" separator="OR">
+                (mti.age &gt;= '${i.min}'
+                <if test="i.max != null">
+                    AND mti.age &lt; '${i.max}'
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="sexList != null and sexList != '' and sexList.size() > 0">
+            AND
+            <foreach collection="sexList" item="i" open="(" close=")" separator="OR">
+                (mti.sex = '${i}')
+            </foreach>
+        </if>
+        <if test="eduList != null and eduList != '' and eduList.size() > 0">
+            AND
+            <foreach collection="eduList" item="i" open="(" close=")" separator="OR">
+                (mti.degree_id = '${i}')
+            </foreach>
+        </if>
+        <if test="performanceList != null and performanceList != '' and performanceList.size() > 0">
+            AND mti.performance_id IN
+            <foreach collection="performanceList" item="perf" open="(" close=")" separator=",">
+                '${perf}'
+            </foreach>
+        </if>
+        <if test="abilityList != null and abilityList != '' and abilityList.size() > 0">
+            AND
+            <foreach collection="abilityList" item="i" open="(" close=")" separator="OR">
+                (mti.ability_id = '${i}')
+            </foreach>
+        </if>
+    </sql>
+    <!-- 趋势图公共时间筛选sql -->
+    <sql id="teamCPminMaxDate">
+        <if test="minDate != null and minDate != ''">
+            AND mtr.year_months <![CDATA[>=]]> #{minDate}
+        </if>
+        <if test="maxDate != null and maxDate != ''">
+            AND mtr.year_months <![CDATA[<=]]> #{maxDate}
+        </if>
+    </sql>
+    <!-- 趋势图公共时间筛选sql -->
+    <sql id="teamCPYearMonth">
+        <if test="yearMonth != null and yearMonth != ''">
+            AND mtr.year_months = #{yearMonth}
+        </if>
+    </sql>
+    <!-- 团队能力/绩效趋势图 地图显示-查看能力 -->
+    <select id="queryTeamCPMapForAbility" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+        SELECT
+        mtr.year_months date,
+        CONCAT(
+        SUBSTR(mtr.year_months, 1, 4),
+        '年',
+        IF (
+        SUBSTR(mtr.year_months, 5, 2) <![CDATA[<]]> 7,
+        '上半年',
+        '下半年'
+        )
+        ) cnDate,
+        dan.ability_number_id id,
+        dan.ability_number_name name,
+        COUNT(mtr.emp_id) conNum
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mtr.customer_id = mti.customer_id
+        AND mtr.emp_id = mti.emp_id
+        <include refid="teamCPminMaxDate"></include>
+        INNER JOIN dim_ability_number dan ON dan.customer_id = mtr.customer_id
+        AND mtr.y_axis_id = dan.ability_number_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        GROUP BY
+        mtr.year_months,
+        dan.show_index
+        ORDER BY
+        mtr.year_months,
+        dan.show_index DESC
+    </select>
+    <!-- 团队能力/绩效趋势图 地图显示-查看绩效 -->
+    <select id="queryTeamCPMapForPerformance" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+        SELECT
+        mtr.year_months date,
+        CONCAT(
+        SUBSTR(mtr.year_months, 1, 4),
+        '年',
+        IF (
+        SUBSTR(mtr.year_months, 5, 2) <![CDATA[<]]> 7,
+        '上半年',
+        '下半年'
+        )
+        ) cnDate,
+        dp.performance_id id,
+        dp.performance_name name,
+        COUNT(mtr.emp_id) conNum
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        <include refid="teamCPminMaxDate"></include>
+        INNER JOIN dim_performance dp ON mtr.customer_id = dp.customer_id
+        AND mtr.x_axis_id = dp.performance_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        GROUP BY
+        mtr.year_months,
+        dp.performance_id
+        ORDER BY
+        mtr.year_months,
+        dp.show_index DESC
+    </select>
+    <!-- 团队能力/绩效趋势图 地图显示 人员明细-查看能力总数 -->
+    <select id="queryTeamCPMapPersonDetailForAbilityCount" resultType="java.lang.Integer" useCache="true">
+        SELECT
+        COUNT(mti.emp_id) conNum
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        AND mtr.year_months = #{date}
+        INNER JOIN dim_ability_number dan ON mtr.customer_id = dan.customer_id
+        AND mtr.y_axis_id = dan.ability_number_id
+        AND dan.ability_number_id = #{yVal}
+        INNER JOIN v_dim_emp vde ON mtr.customer_id = vde.customer_id
+        AND mtr.emp_id = vde.emp_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+    </select>
+    <!-- 团队能力/绩效趋势图 地图显示 人员明细-查看能力 -->
+    <select id="queryTeamCPMapPersonDetailForAbility" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+        SELECT
+        mti.emp_id empId,
+        mti.user_name_ch userName,
+        vde.img_path imgPath
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        AND mtr.year_months = #{date}
+        INNER JOIN dim_ability_number dan ON mtr.customer_id = dan.customer_id
+        AND mtr.y_axis_id = dan.ability_number_id
+        AND dan.ability_number_id = #{yVal}
+        INNER JOIN v_dim_emp vde ON mtr.customer_id = vde.customer_id
+        AND mtr.emp_id = vde.emp_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        ORDER BY
+        CONVERT (vde.user_name_ch USING GBK)
+        LIMIT #{start}, #{rows}
+    </select>
+    <!-- 团队能力/绩效趋势图 地图显示 人员明细-查看绩效总数 -->
+    <select id="queryTeamCPMapPersonDetailForPerformanceCount" resultType="java.lang.Integer" useCache="true">
+        SELECT
+        COUNT(mti.emp_id) conNum
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        AND mtr.year_months = #{date}
+        INNER JOIN dim_performance dp ON mtr.customer_id = dp.customer_id
+        AND mtr.x_axis_id = dp.performance_id
+        AND dp.performance_id = #{yVal}
+        INNER JOIN v_dim_emp vde ON mtr.customer_id = vde.customer_id
+        AND mtr.emp_id = vde.emp_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+    </select>
+    <!-- 团队能力/绩效趋势图 地图显示 人员明细-查看绩效 -->
+    <select id="queryTeamCPMapPersonDetailForPerformance"
+            resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+        SELECT
+        mti.emp_id empId,
+        mti.user_name_ch userName,
+        vde.img_path imgPath
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        AND mtr.year_months = #{date}
+        INNER JOIN dim_performance dp ON mtr.customer_id = dp.customer_id
+        AND mtr.x_axis_id = dp.performance_id
+        AND dp.performance_id = #{yVal}
+        INNER JOIN v_dim_emp vde ON mtr.customer_id = vde.customer_id
+        AND mtr.emp_id = vde.emp_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        ORDER BY
+        CONVERT (vde.user_name_ch USING GBK)
+        LIMIT #{start}, #{rows}
+    </select>
+    <!-- 团队能力/绩效趋势图 列表显示-标题列表全部 -->
+    <select id="queryAbilityForListCount" resultType="java.lang.Integer" useCache="true">
+        SELECT
+        COUNT(mti.emp_id) conNum
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        <include refid="teamCPYearMonth"></include>
+        INNER JOIN dim_performance dp ON mtr.customer_id = dp.customer_id
+        AND mtr.x_axis_id = dp.performance_id
+        INNER JOIN dim_ability_number dan ON mtr.customer_id = dan.customer_id
+        AND mtr.y_axis_id = dan.ability_number_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+    </select>
+    <!-- 团队能力/绩效趋势图 列表显示-标题列表 -->
+    <select id="queryAbilityForList" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+        SELECT
+        mc.z_name name,
+        COUNT(mc.map_config_id) conNum
+        FROM
+        (
+        SELECT
+        mti.customer_id,
+        dp.show_index xNum,
+        dan.show_index yNum,
+        mtr.year_months
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        <include refid="teamCPYearMonth"></include>
+        INNER JOIN dim_performance dp ON mtr.customer_id = dp.customer_id
+        AND mtr.x_axis_id = dp.performance_id
+        INNER JOIN dim_ability_number dan ON mtr.customer_id = dan.customer_id
+        AND mtr.y_axis_id = dan.ability_number_id
+        WHERE mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        ) a
+        INNER JOIN map_config mc ON a.customer_id = mc.customer_id
+        AND a.xNum = mc.x_number
+        AND a.yNum = mc.y_number
+        INNER JOIN dim_z_info dzi ON mc.z_name = dzi.z_name
+        AND mc.customer_id = dzi.customer_id
+        GROUP BY mc.z_name
+        ORDER BY dzi.show_index
+    </select>
+    <!-- 团队能力/绩效趋势图 列表显示 -->
+    <select id="queryTeamCPGrid" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+        SELECT
+        a.empId,
+        vde.img_path imgPath,
+        vde.user_name_ch userName,
+        vde.organization_name organName,
+        vde.rank_name rankName,
+        a.abilityNumberName,
+        a.performanceName
+        FROM
+        (
+        SELECT
+        mti.emp_id empId,
+        mti.customer_id,
+        dan.ability_number_name abilityNumberName,
+        dp.performance_name performanceName,
+        dp.show_index xNum,
+        dan.show_index yNum
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        <include refid="teamCPYearMonth"></include>
+        INNER JOIN dim_performance dp ON mtr.customer_id = dp.customer_id AND mtr.x_axis_id = dp.performance_id
+        INNER JOIN dim_ability_number dan ON mtr.customer_id = dan.customer_id
+        AND mtr.y_axis_id = dan.ability_number_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        ) a
+        INNER JOIN v_dim_emp vde ON a.customer_id = vde.customer_id
+        AND a.empId = vde.emp_id
+        <if test="titleId != null and titleId != ''">
+            INNER JOIN map_config mc ON a.customer_id = mc.customer_id
+            AND a.xNum = mc.x_number
+            AND a.yNum = mc.y_number
+            AND mc.z_name = #{titleId}
+        </if>
+        ORDER BY
+        a.xNum DESC,
+        a.yNum DESC,
+        CONVERT (vde.user_name_ch USING GBK)
+        LIMIT #{pageNum}, #{pageSize}
+    </select>
+    <!-- 团队能力/绩效趋势图 明细显示-查看能力 -->
+    <select id="queryTeamCPDetailForAbility" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsSimpleCountDto"
+            useCache="true">
+        SELECT
+        mtr.year_months xLabelId,
+        CONCAT(
+        SUBSTR(mtr.year_months, 1, 4),
+        '年',
+        IF (
+        SUBSTR(mtr.year_months, 5, 2) <![CDATA[<]]> 7,
+        '上半年',
+        '下半年'
+        )
+        ) xLabel,
+        dan.ability_number_id yLabelId,
+        dan.ability_number_name yLabel,
+        COUNT(mti.emp_id) countNum,
+        GROUP_CONCAT(
+        mti.emp_id
+        ORDER BY
+        CONVERT (mti.user_name_ch USING GBK)
+        ) empIds,
+        GROUP_CONCAT(
+        mti.user_name_ch
+        ORDER BY
+        CONVERT (mti.user_name_ch USING GBK)
+        ) empNames
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        <include refid="teamCPminMaxDate"></include>
+        INNER JOIN dim_ability_number dan ON mtr.customer_id = dan.customer_id
+        AND mtr.y_axis_id = dan.ability_number_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        GROUP BY
+        mtr.year_months,
+        dan.ability_number_id
+        ORDER BY
+        mtr.year_months,
+        dan.show_index DESC
+    </select>
+    <!-- 团队能力/绩效趋势图 明细显示-查看绩效 -->
+    <select id="queryTeamCPDetailForPerformance"
+            resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsSimpleCountDto" useCache="true">
+        SELECT
+        mtr.year_months xLabelId,
+        CONCAT(
+        SUBSTR(mtr.year_months, 1, 4),
+        '年',
+        IF (
+        SUBSTR(mtr.year_months, 5, 2) <![CDATA[<]]> 7,
+        '上半年',
+        '下半年'
+        )
+        ) xLabel,
+        dp.performance_Id yLabelId,
+        dp.performance_name yLabel,
+        COUNT(mti.emp_id) countNum,
+        GROUP_CONCAT(
+        mti.emp_id
+        ORDER BY
+        CONVERT (mti.user_name_ch USING GBK)
+        ) empIds,
+        GROUP_CONCAT(
+        mti.user_name_ch
+        ORDER BY
+        CONVERT (mti.user_name_ch USING GBK)
+        ) empNames
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        <include refid="teamCPminMaxDate"></include>
+        INNER JOIN dim_performance dp ON mtr.customer_id = dp.customer_id
+        AND mtr.x_axis_id = dp.performance_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        GROUP BY
+        mtr.year_months,
+        dp.performance_id
+        ORDER BY
+        mtr.year_months,
+        dp.show_index
+    </select>
+    <!-- 团队能力/绩效趋势图 明细显示-查看能力-全屏显示 -->
+    <select id="queryTeamCPDetailForFullAbility" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsPointDto"
+            useCache="true">
+        SELECT
+        CONCAT(
+        SUBSTR(mtr.year_months, 1, 4),
+        '年',
+        IF (
+        SUBSTR(mtr.year_months, 5, 2) <![CDATA[<]]> 7,
+        '上半年',
+        '下半年'
+        )
+        ) xLabel,
+        dan.ability_number_name yLabel,
+        mti.emp_id empId,
+        mti.user_name_ch text
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        <include refid="teamCPminMaxDate"></include>
+        INNER JOIN dim_ability_number dan ON mtr.customer_id = dan.customer_id
+        AND mtr.y_axis_id = dan.ability_number_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        ORDER BY
+        mtr.year_months,
+        dan.show_index DESC,
+        CONVERT(mti.user_name_ch USING GBK)
+    </select>
+    <!-- 团队能力/绩效趋势图 明细显示-查看绩效 -->
+    <select id="queryTeamCPDetailForFullPerformance"
+            resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsPointDto" useCache="true">
+        SELECT
+        CONCAT(
+        SUBSTR(mtr.year_months, 1, 4),
+        '年',
+        IF (
+        SUBSTR(mtr.year_months, 5, 2) <![CDATA[<]]> 7,
+        '上半年',
+        '下半年'
+        )
+        ) xLabel,
+        dp.performance_name yLabel,
+        mti.emp_id empId,
+        mti.user_name_ch text
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        <include refid="teamCPminMaxDate"></include>
+        INNER JOIN dim_performance dp ON mtr.customer_id = dp.customer_id
+        AND mtr.x_axis_id = dp.performance_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        ORDER BY
+        mtr.year_months,
+        dp.show_index,
+        CONVERT(mti.user_name_ch USING GBK)
+    </select>
+    <!-- 团队能力/绩效趋势图 明细显示-能力/时间员工数 -->
+    <select id="queryTeamCPAbilityEmpCount" resultType="java.lang.Integer" useCache="true">
+        SELECT
+        COUNT(mti.emp_id) countNum
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        AND mtr.year_months = #{yearMonth}
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        AND mtr.y_axis_id = #{abilityStr}
+    </select>
+    <!-- 团队能力/绩效趋势图 明细显示-能力/时间员工 -->
+    <select id="queryTeamCPAbilityEmpPoint" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsPointDto"
+            useCache="true">
+        SELECT
+        mti.emp_id empId,
+        mti.user_name_ch text,
+        CONCAT(
+        SUBSTR(mtr.year_months, 1, 4),
+        '年',
+        IF (
+        SUBSTR(mtr.year_months, 5, 2) <![CDATA[<]]> 7,
+        '上半年',
+        '下半年'
+        )
+        ) xLabel,
+        dan.ability_number_name yLabel
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        AND mtr.year_months = #{yearMonth}
+        INNER JOIN dim_ability_number dan ON mtr.customer_id = dan.customer_id
+        AND mtr.y_axis_id = dan.ability_number_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        AND mtr.y_axis_id = #{abilityStr}
+        ORDER BY
+        CONVERT (mti.user_name_ch USING GBK)
+        LIMIT #{start}, #{rows}
+    </select>
+    <!-- 团队能力/绩效趋势图 明细显示-绩效/时间员工数 -->
+    <select id="queryTeamCPPerformanceEmpCount" resultType="java.lang.Integer" useCache="true">
+        SELECT
+        COUNT(mti.emp_id) countNum
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        AND mtr.year_months = #{yearMonth}
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        AND mtr.x_axis_id = #{performanceStr}
+    </select>
+    <!-- 团队能力/绩效趋势图 明细显示-绩效/时间员工 -->
+    <select id="queryTeamCPPerformanceEmpPoint" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsPointDto"
+            useCache="true">
+        SELECT
+        mti.emp_id empId,
+        mti.user_name_ch text,
+        CONCAT(
+        SUBSTR(mtr.year_months, 1, 4),
+        '年',
+        IF (
+        SUBSTR(mtr.year_months, 5, 2) <![CDATA[<]]> 7,
+        '上半年',
+        '下半年'
+        )
+        ) xLabel,
+        dp.performance_name yLabel
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        AND mtr.year_months = #{yearMonth}
+        INNER JOIN dim_performance dp ON mtr.customer_id = dp.customer_id
+        AND mtr.x_axis_id = dp.performance_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <include refid="queryFullOrganIdByContext"></include>
+        <include refid="teamCPSearchSql"></include>
+        AND mtr.x_axis_id = #{performanceStr}
+        ORDER BY
+        CONVERT (mti.user_name_ch USING GBK)
+        LIMIT #{start}, #{rows}
+    </select>
+    <!-- 盘点报告-人员信息 -->
+    <select id="queryInventoryReportPersonInfo" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+        SELECT
+        mti.emp_id empId,
+        mti.user_name_ch userName,
+        vde.img_path imgPath,
+        vde.position_name positionName,
+        vde.rank_name rankName,
+        dr.risk_flag riskFlag,
+        dr.note,
+        max(
+        CASE
+        WHEN kk.type = 1 THEN
+        kk.countTags
+        ELSE
+        NULL
+        END
+        ) advantageTag,
+        max(
+        CASE
+        WHEN kk.type = 2 THEN
+        kk.countTags
+        ELSE
+        NULL
+        END
+        ) inferiorityTag,
+        kk.encourage,
+        vde.is_key_talent isKeyTalent,
+        vde.run_off_date runOffDate
+        FROM
+        map_talent_info mti
+        INNER JOIN v_dim_emp vde ON mti.customer_id = vde.customer_id
+        AND mti.emp_id = vde.emp_id
+        <!-- AND vde.run_off_date IS NULL -->
+        LEFT JOIN dimission_risk dr ON mti.customer_id = dr.customer_id
+        AND mti.emp_id = dr.emp_id
+        LEFT JOIN (
+        SELECT
+        kt.customer_id,
+        kt.emp_id,
+        ktt.type,
+        ktt.countTags,
+        kte.encourage
+        FROM
+        key_talent kt
+        INNER JOIN (
+        SELECT
+        key_talent_id,
+        type,
+        customer_id,
+        GROUP_CONCAT(content) countTags
+        FROM
+        key_talent_tags
+        GROUP BY
+        key_talent_id,
+        type,
+        customer_id
+        ) ktt ON kt.customer_id = ktt.customer_id
+        AND kt.key_talent_id = ktt.key_talent_id
+        INNER JOIN (
+        SELECT
+        kte1.key_talent_id,
+        kte1.customer_id,
+        GROUP_CONCAT(de.content) encourage
+        FROM
+        key_talent_encourages kte1
+        LEFT JOIN dim_encourages de ON kte1.encourages_id = de.encourages_id
+        AND kte1.customer_id = de.customer_id
+        GROUP BY
+        kte1.key_talent_id,
+        kte1.customer_id
+        ) kte ON kt.customer_id = kte.customer_id
+        AND kt.key_talent_id = kte.key_talent_id
+        ) kk ON mti.customer_id = kk.customer_id
+        AND mti.emp_id = kk.emp_id
+        WHERE
+        mti.customer_id = #{customerId}
+        AND mti.emp_id = #{empId}
+    </select>
+    <!-- 根据z轴维度表查询z轴信息 -->
+    <select id="queryPositionInfo" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+		SELECT
+			a.z_name zName,
+			@myIndex := @myIndex + 1 curtName
+		FROM
+			dim_z_info a,
+			(SELECT @myIndex := 0) b
+		WHERE
+			a.customer_id = #{customerId}
+		ORDER BY
+			a.show_index DESC
+	</select>
+    <!-- 原来根据配置表查询z轴信息，暂不删除该方法 -->
+    <select id="queryPositionInfo_old" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+		SET @myIndex = 0;
+		SELECT
+			a.z_name zName,
+			@myIndex := @myIndex + 1 curtName
+		FROM
+			(
+				SELECT
+					mc.z_name
+				FROM
+					map_config mc
+				WHERE
+					mc.customer_id = #{customerId}
+				GROUP BY
+					mc.z_name
+				ORDER BY
+					mc.y_number DESC,
+					mc.x_number
+			) a
+	</select>
+    <!-- 查询异动信息 -->
+    <select id="queryRankInfo" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+		SELECT
+			da.curt_name curtName,
+			CONCAT(da.curt_name, '级') name
+		FROM
+			dim_ability da
+		WHERE
+			da.customer_id = #{customerId}
+		GROUP BY
+			da.curt_name
+		ORDER BY
+			da.show_index
+	</select>
+    <!-- 盘点报告-人才地图轨迹 -->
+    <select id="queryTalentMapTrajectory" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+        SET @myIndex = 0;
+        SELECT
+        ls.date,
+        ls.curtName
+        FROM
+        (
+        SELECT
+        x.date,
+        y.curtName
+        FROM
+        (
+        SELECT
+        CONCAT(
+        SUBSTR(a.year_months, 1, 4),
+        '年',
+        IF (
+        CAST(
+        SUBSTR(a.year_months, 5, 2) AS SIGNED
+        ) <![CDATA[<]]> 7,
+        '上半年',
+        '下半年'
+        )
+        ) date,
+        mc.z_name
+        FROM
+        (
+        SELECT
+        mti.emp_id,
+        mti.customer_id,
+        dp.show_index xNum,
+        dan.show_index yNum,
+        mtr.year_months
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id
+        AND mti.emp_id = mtr.emp_id
+        <if test="maxDate != null and maxDate != ''">
+            AND mtr.year_months <![CDATA[<=]]> #{maxDate}
+        </if>
+        INNER JOIN dim_performance dp ON mti.customer_id = dp.customer_id
+        AND mtr.x_axis_id = dp.performance_id
+        INNER JOIN dim_ability_number dan ON mti.customer_id = dan.customer_id
+        AND mtr.y_axis_id = dan.ability_number_id
+        WHERE
+        mti.customer_id = #{customerId}
+        AND mti.emp_id = #{empId}
+        ) a
+        INNER JOIN map_config mc ON a.customer_id = mc.customer_id
+        AND a.xNum = mc.x_number
+        AND a.yNum = mc.y_number
+        ) x
+        LEFT JOIN (
+        SELECT
+			a.z_name,
+			@myIndex := @myIndex + 1 curtName
+		FROM
+			dim_z_info a,
+			(SELECT @myIndex := 0) b
+		WHERE
+			a.customer_id = #{customerId}
+		ORDER BY
+			a.show_index DESC
+        ) y ON x.z_name = y.z_name
+        ORDER BY
+        x.date DESC
+        LIMIT #{rows}
+        ) ls
+        ORDER BY
+        ls.date
+    </select>
+    <!-- 盘点报告-绩效轨迹 -->
+    <select id="queryPerformanceTrajectory" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+    	SELECT
+			ls.date,
+			ls.curtName
+		FROM
+			(
+				SELECT
+					CONCAT(
+						SUBSTR(pc.`year_month`, 1, 4),
+						'年',
+						IF (
+							CAST(
+								SUBSTR(pc.`year_month`, 5, 2) AS SIGNED
+							) <![CDATA[>]]> 6,
+							'下半年',
+							'上半年'
+						)
+					) date,
+					dp.curt_name curtName
+				FROM
+					performance_change pc
+				INNER JOIN dim_performance dp ON pc.customer_id = dp.customer_id
+				AND pc.performance_id = dp.performance_id
+				WHERE
+					pc.customer_id = #{customerId}
+				AND pc.emp_id = #{empId}
+				ORDER BY
+					pc.`year_month` DESC
+				LIMIT #{rows}
+			) ls
+		ORDER BY
+			ls.date
+	</select>
+    <!-- 盘点报告-能力轨迹 -->
+    <select id="queryAbilityTrajectory" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+    	SELECT
+			ls.date,
+			ls.curtName
+		FROM
+			(
+				SELECT
+					CONCAT(
+						SUBSTR(ac.year_months, 1, 4),
+						'年',
+						IF (
+							CAST(
+								SUBSTR(ac.year_months, 5, 2) AS SIGNED
+							) <![CDATA[>]]> 6,
+							'下半年',
+							'上半年'
+						)
+					) date,
+					dan.show_index curtName
+				FROM
+					ability_change ac
+				INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+				AND ac.ability_number_id = dan.ability_number_id
+				WHERE
+					ac.customer_id = #{customerId}
+				AND ac.emp_id = #{empId}
+				ORDER BY
+					ac.year_months DESC
+				LIMIT #{rows}
+			) ls
+		ORDER BY
+			ls.date
+	</select>
+    <!-- 盘点报告-异动轨迹 -->
+    <select id="queryChangeTrajectory" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+		SELECT
+			ls.date,
+			ls.name,
+			ls.curtName,
+			ls.rankName
+		FROM
+			(
+				SELECT
+					jc.change_date,
+					CONCAT(
+						SUBSTR(jc.change_date, 1, 4),
+						'年',
+						CAST(
+							SUBSTR(jc.change_date, 6, 2) AS SIGNED
+						),
+						'月'
+					) date,
+					da.ability_name name,
+					da.curt_name curtName,
+					jc.rank_name rankName
+				FROM
+					job_change jc
+				INNER JOIN dim_ability da ON jc.customer_id = da.customer_id
+				AND jc.ability_id = da.ability_id
+				WHERE
+					jc.customer_id = #{customerId}
+				AND jc.emp_id = #{empId}
+				ORDER BY
+					jc.change_date DESC
+				LIMIT #{rows}
+			) ls
+		ORDER BY
+			ls.change_date
+	</select>
+
+    <!-- 生成原始人才地图 -->
+    <insert id="addOriginalTalentMaps" parameterType="java.util.Map">
+        INSERT INTO map_management (
+        map_management_id,
+        customer_id,
+        top_id,
+        `status`,
+        <!-- adjustment_id, -->
+        starte_date,
+        year_months
+        )
+        VALUES
+        (
+        #{id},
+        #{customerId},
+        #{organId},
+        #{flag},
+        <!-- #{adjustmentId}, -->
+        #{startTime},
+        #{yearMonth}
+        )
+    </insert>
+
+    <select id="findUserTeamNum" resultType="int">
+    SELECT COUNT(mt.map_team_id) FROM map_team mt
+    WHERE mt.emp_id = #{empId}
+    AND mt.customer_id = #{customerId}
+    <if test="teamId != null">
+    AND mt.map_team_id != #{teamId}
+    </if>
+    </select>
+
+    <!-- 查询待审核的人员信息 -->
+    <select id="queryTalentPerformanceAbilityCount" resultType="int" useCache="true">
+        SELECT
+        count(1)
+        FROM
+        (
+        SELECT DISTINCT
+        mt.emp_id,
+        (SELECT p.show_index FROM dim_performance p WHERE p.performance_id=IFNULL(mt.x_axis_id_af, mt.x_axis_id)) xData,
+        (SELECT a.show_index FROM dim_ability_number a WHERE a.ability_number_id=IFNULL(mt.y_axis_id_af, mt.y_axis_id))
+        yData
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent mt ON mt.emp_id = mti.emp_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <!-- AND mt.is_update = #{flag} -->
+        AND mt.year_months = #{yearMonth}
+        <if test="keyName != null and keyName != ''">
+            AND mti.user_name_ch LIKE CONCAT('%', #{keyName}, '%')
+        </if>
+        AND locate(
+        (
+        SELECT
+        t.full_path
+        FROM
+        dim_organization t
+        WHERE
+        t.organization_id = #{topId}
+        AND t.customer_id = #{customerId}
+        ),
+        mti.full_path
+        )
+        ) a
+        LEFT JOIN map_config mc ON a.xData = mc.x_number
+        AND a.yData = mc.y_number
+        WHERE 1=1
+        <if test="zName != null and zName != ''">
+            AND mc.z_name = #{zName}
+        </if>
+    </select>
+    <select id="queryTalentPerformanceAbility" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+        SELECT a.empId,
+        a.userName,
+        a.organName,
+        a.positionName,
+        a.xaxis,
+        a.xData,
+        a.xaxisAf,
+        a.xDataAf,
+        a.yaxis,
+        a.yData,
+        a.yaxisAf,
+        a.yDataAf,
+        a.note
+        FROM(
+        SELECT
+        DISTINCT
+        mt.emp_id empId,
+        v.user_name_ch userName,
+        v.organization_name organName,
+        v.position_name positionName,
+        mt.x_axis_id xaxis,
+        (SELECT p.show_index FROM dim_performance p WHERE p.performance_id=IFNULL(mt.x_axis_id_af, mt.x_axis_id)) xData,
+        mt.x_axis_id_af xaxisAf,
+        (SELECT p.show_index FROM dim_performance p WHERE p.performance_id=mt.x_axis_id_af) xDataAf,
+        mt.y_axis_id yaxis,
+        (SELECT a.show_index FROM dim_ability_number a WHERE a.ability_number_id=IFNULL(mt.y_axis_id_af, mt.y_axis_id))
+        yData,
+        mt.y_axis_id_af yaxisAf,
+        (SELECT a.show_index FROM dim_ability_number a WHERE a.ability_number_id=mt.y_axis_id_af) yDataAf,
+        mt.note note
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent mt ON mt.emp_id = mti.emp_id
+        LEFT JOIN v_dim_emp v ON v.emp_id = mti.emp_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <!-- AND mt.is_update = #{flag} -->
+        AND mt.year_months = #{yearMonth}
+        <if test="keyName != null and keyName != ''">
+            AND v.user_name_ch LIKE CONCAT('%', #{keyName}, '%')
+        </if>
+        AND locate(
+        (
+        SELECT
+        t.full_path
+        FROM
+        dim_organization t
+        WHERE
+        t.organization_id = #{topId}
+        AND t.customer_id = #{customerId}
+        ),
+        mti.full_path
+        )
+        ) a
+        LEFT JOIN map_config mc ON a.xData=mc.x_number
+        AND a.yData=mc.y_number
+        WHERE 1=1
+        <if test="zName != null and zName != ''">
+            AND mc.z_name = #{zName}
+        </if>
+        ORDER BY a.xData DESC, a.yData DESC, CONVERT(a.userName USING GBK)
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 查询地图坐标 -->
+    <select id="queryMapsPreview" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+        SELECT
+        DISTINCT
+        mti.emp_id empId,
+        mti.user_name_ch userName,
+        (SELECT p.show_index FROM dim_performance p WHERE p.performance_id=IFNULL(mt.x_axis_id_af, mt.x_axis_id)) xData,
+        (SELECT a.show_index FROM dim_ability_number a WHERE a.ability_number_id=IFNULL(mt.y_axis_id_af, mt.y_axis_id))
+        yData
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent mt ON mt.emp_id = mti.emp_id
+        WHERE
+        mti.customer_id = #{customerId}
+        <!-- AND mt.is_update = #{flag} -->
+        AND mt.year_months = #{yearMonth}
+        AND locate(
+        (
+        SELECT
+        t.full_path
+        FROM
+        dim_organization t
+        WHERE
+        t.organization_id = #{topId}
+        AND t.customer_id = #{customerId}
+        ),
+        mti.full_path
+        )
+    </select>
+
+    <!-- 查询待发布的人员信息 -->
+    <select id="queryTalentPublishCount" resultType="int" useCache="true">
+        SELECT
+        count(DISTINCT mt.emp_id)
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent mt ON mt.emp_id = mti.emp_id
+        LEFT JOIN v_dim_emp v ON v.emp_id = mti.emp_id
+        WHERE
+        mti.customer_id = #{customerId}
+        AND mt.is_update = #{flag}
+        AND mt.modify_id = #{adjustmentId}
+        AND mt.year_months = #{yearMonth}
+        <if test="keyName != null and keyName != ''">
+            AND v.user_name_ch LIKE CONCAT('%', #{keyName}, '%')
+        </if>
+        AND locate(
+        (
+        SELECT
+        t.full_path
+        FROM
+        dim_organization t
+        WHERE
+        t.organization_id = #{topId}
+        AND t.customer_id = #{customerId}
+        ),
+        mti.full_path
+        )
+    </select>
+    <select id="queryTalentPublish" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+        SELECT
+        DISTINCT
+        mt.emp_id empId,
+        mti.user_name_ch userName,
+        v.organization_name organName,
+        v.position_name positionName,
+        mt.x_axis_id xaxis,
+        mt.x_axis_id_af xaxisAf,
+        mt.y_axis_id yaxis,
+        mt.y_axis_id_af yaxisAf,
+        mt.note note
+        FROM
+        map_talent_info mti
+        INNER JOIN map_talent mt ON mt.emp_id = mti.emp_id
+        LEFT JOIN v_dim_emp v ON v.emp_id = mti.emp_id
+        WHERE
+        mti.customer_id = #{customerId}
+        AND mt.is_update = #{flag}
+        AND mt.modify_id = #{adjustmentId}
+        AND mt.year_months = #{yearMonth}
+        <if test="keyName != null and keyName != ''">
+		AND v.user_name_ch LIKE CONCAT('%', #{keyName}, '%')
+        </if>
+        AND locate(
+        (
+        SELECT
+        t.full_path
+        FROM
+        dim_organization t
+        WHERE
+        t.organization_id = #{topId}
+        AND t.customer_id = #{customerId}
+        ),
+        mti.full_path
+        )
+        ORDER BY mt.update_time
+        LIMIT #{offset}, #{limit}
+    </select>
+    <!-- 查询已调整的人员信息-全部 -->
+    <select id="queryTalentAdjustmentInfo" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+        SELECT
+        	DISTINCT
+			mt.emp_id empId,
+			v.user_name_ch userName,
+			v.organization_name organName,
+			v.position_name positionName,
+			mt.x_axis_id xaxis,
+			IFNULL(mt.x_axis_id_af, mt.x_axis_id) xaxisAf,
+			mt.y_axis_id yaxis,
+			IFNULL(mt.y_axis_id_af, mt.y_axis_id) yaxisAf,
+			mt.note note
+		FROM
+			map_talent_info mti
+		INNER JOIN map_talent mt ON mt.emp_id = mti.emp_id
+		LEFT JOIN v_dim_emp v ON v.emp_id = mti.emp_id
+		WHERE
+			mti.customer_id = #{customerId}
+		AND mt.modify_id = #{adjustmentId}
+		AND mt.year_months = #{yearMonth}
+		AND mt.is_update = #{flag}
+		AND locate(
+			(
+				SELECT
+					t.full_path
+				FROM
+					dim_organization t
+				WHERE
+					t.organization_id = #{topId}
+				AND t.customer_id = #{customerId}
+			),
+			mti.full_path
+		)
+    </select>
+    <!-- 查询已发布人才信息 -->
+    <select id="queryTalentPublishInfoCount" resultType="java.lang.Integer" useCache="true">
+        SELECT
+        	count(DISTINCT mt.emp_id)
+		FROM
+			map_talent_info mti
+		INNER JOIN map_talent mt ON mt.emp_id = mti.emp_id
+		LEFT JOIN v_dim_emp v ON v.emp_id = mti.emp_id
+		WHERE
+			mti.customer_id = #{customerId}
+		AND mt.release_id = #{releaseId}
+		AND mt.year_months = #{yearMonth}
+		AND mt.is_update = #{flag}
+		AND locate(
+			(
+				SELECT
+					t.full_path
+				FROM
+					dim_organization t
+				WHERE
+					t.organization_id = #{topId}
+				AND t.customer_id = #{customerId}
+			),
+			mti.full_path
+		)
+    </select>
+    <select id="queryTalentPublishInfo" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="true">
+        SELECT
+        	DISTINCT
+			mt.emp_id empId,
+			v.user_name_ch userName,
+			v.organization_name organName,
+			v.position_name positionName,
+			mt.x_axis_id xaxis,
+			mt.x_axis_id_af_r xaxisAf,
+			mt.y_axis_id yaxis,
+			mt.y_axis_id_af_r yaxisAf,
+			mt.note1 note
+		FROM
+			map_talent_info mti
+		INNER JOIN map_talent mt ON mt.emp_id = mti.emp_id
+		LEFT JOIN v_dim_emp v ON v.emp_id = mti.emp_id
+		WHERE
+			mti.customer_id = #{customerId}
+		AND mt.release_id = #{releaseId}
+		AND mt.year_months = #{yearMonth}
+		AND mt.is_update = #{flag}
+		AND locate(
+			(
+				SELECT
+					t.full_path
+				FROM
+					dim_organization t
+				WHERE
+					t.organization_id = #{topId}
+				AND t.customer_id = #{customerId}
+			),
+			mti.full_path
+		)
+		ORDER BY mt.update_time
+		LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 查询能力纬度 -->
+    <select id="queryAbilityInfo" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+		SELECT
+			dan.ability_number_id id,
+			dan.ability_number_name name,
+			dan.show_index text
+		FROM dim_ability_number dan
+		WHERE dan.customer_id = #{customerId}
+		ORDER BY dan.show_index
+	</select>
+    <!-- 查询绩效纬度 -->
+    <select id="queryPerformanceInfo" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+		SELECT
+			dp.performance_id id,
+			dp.performance_name name,
+			dp.show_index text
+		FROM dim_performance dp
+		WHERE dp.customer_id = #{customerId}
+		ORDER BY dp.show_index
+	</select>
+    <!-- 查询z轴纬度 -->
+    <select id="queryZInfo" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+		SELECT
+			z_id id,
+			z_name name,
+			show_index text
+		FROM
+			dim_z_info
+		WHERE
+			customer_id = #{customerId}
+		ORDER BY
+			show_index
+	</select>
+    <!-- 查询人才地图 -->
+    <select id="queryAllTalentMaps" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto">
+        SELECT
+        m.top_id organId,
+        m.`status` flag,
+        m.adjustment_id adjustmentId,
+        e.user_name_ch userName,
+        m.starte_date startTime,
+        m.motify_date modifyTime,
+        m.release_date releaseTime,
+        d.organization_name organName,
+        m.year_months yearMonth
+        FROM
+        map_management m
+        LEFT JOIN dim_organization d ON d.organization_id = m.top_id
+        LEFT JOIN v_dim_emp e ON m.adjustment_id = e.emp_id
+        WHERE
+        m.customer_id = #{customerId}
+        AND m.year_months = #{yearMonth}
+        AND m.top_id IN
+        <foreach collection="topOrgan" open="(" close=")" separator="," item="dto">
+            #{dto.organizationId}
+        </foreach>
+        ORDER BY m.year_months, m.starte_date, m.motify_date
+    </select>
+    <!-- 查询待审核的人才地图 -->
+    <select id="queryTalentMapsAuditing" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto"
+            useCache="false">
+        SELECT
+        m.top_id organId,
+        m.`status` flag,
+        m.adjustment_id adjustmentId,
+        e.user_name_ch userName,
+        m.starte_date startTime,
+        m.motify_date modifyTime,
+        m.release_date releaseTime,
+        d.organization_name organName,
+        m.year_months yearMonth
+        FROM
+        map_management m
+        LEFT JOIN dim_organization d ON d.organization_id = m.top_id
+        LEFT JOIN v_dim_emp e ON m.adjustment_id = e.emp_id
+        WHERE
+        m.customer_id = #{customerId}
+        AND m.`status` = #{status}
+        AND m.year_months = #{yearMonth}
+        AND m.top_id IN
+        <foreach collection="topOrgan" open="(" close=")" separator="," item="dto">
+            #{dto.organizationId}
+        </foreach>
+        ORDER BY m.year_months, m.starte_date, m.motify_date
+    </select>
+    <!-- 查询待发布的人才地图 -->
+    <select id="queryTalentMapsPublish" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto">
+        SELECT
+        m.top_id organId,
+        m.`status` flag,
+        m.adjustment_id adjustmentId,
+        e.user_name_ch userName,
+        m.starte_date startTime,
+        m.motify_date modifyTime,
+        m.release_date releaseTime,
+        d.organization_name organName,
+        m.year_months yearMonth
+        FROM
+        map_management m
+        LEFT JOIN dim_organization d ON d.organization_id = m.top_id
+        LEFT JOIN v_dim_emp e ON m.adjustment_id = e.emp_id
+        WHERE
+        m.customer_id = #{customerId}
+        AND m.`status` = #{status}
+        AND m.year_months = #{yearMonth}
+        AND m.emp_id = #{empId}
+        <!-- AND (
+            m.emp_id = #{empId}
+            <if test="topOrgan != null and topOrgan.size > 0">
+            OR
+            m.top_id IN
+            <foreach collection="topOrgan" open="(" close=")" separator="," item="dto">
+                #{dto.organizationId}
+            </foreach>
+            </if>
+        ) -->
+        ORDER BY m.year_months, m.starte_date, m.motify_date
+    </select>
+    <!-- 查询历史审核列表 -->
+    <select id="queryHistoricalAuditing" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto">
+        SELECT
+        mm.map_management_id id,
+        mm.`status` flag,
+        mm.adjustment_id adjustmentId,
+        (SELECT user_name_ch FROM v_dim_emp WHERE emp_id=mm.adjustment_id) curtName,
+        mm.emp_id empId,
+        (SELECT user_name_ch FROM v_dim_emp WHERE emp_id=mm.adjustment_id) userName,
+        mm.top_id topId,
+        d.organization_name organName,
+        mm.starte_date startTime,
+        mm.motify_date modifyTime,
+        mm.release_date releaseTime,
+        mm.year_months yearMonth
+        FROM
+        map_management mm
+        LEFT JOIN v_dim_emp v ON v.emp_id = mm.emp_id
+        LEFT JOIN dim_organization d ON d.organization_id = mm.top_id
+        WHERE
+        mm.customer_id = #{customerId}
+        AND (((mm.emp_id != #{empId} OR mm.emp_id is null) AND mm.`status` = 1) OR mm.`status` = 2)
+        AND mm.top_id IN
+        <foreach collection="topOrgan" open="(" close=")" separator="," item="dto">
+            #{dto.organizationId}
+        </foreach>
+    </select>
+
+    <!-- 查询历史 -->
+    <select id="queryMapManage" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="false">
+        SELECT
+        mm.map_management_id id,
+        mm.`status` flag,
+        mm.adjustment_id adjustmentId,
+        (SELECT user_name_ch FROM v_dim_emp WHERE emp_id=mm.adjustment_id) curtName,
+        mm.emp_id empId,
+        (SELECT user_name_ch FROM v_dim_emp WHERE emp_id=mm.emp_id) userName,
+        mm.top_id topId,
+        d.organization_name organName,
+        mm.starte_date startTime,
+        mm.motify_date modifyTime,
+        mm.release_date releaseTime
+        FROM
+        map_management mm
+        LEFT JOIN dim_organization d ON d.organization_id = mm.top_id
+        WHERE
+        mm.customer_id = #{customerId}
+        <if test="id != null and id != ''">
+            AND mm.map_management_id = #{id}
+        </if>
+        <if test="topId != null and topId != ''">
+            AND mm.top_id = #{topId}
+        </if>
+        <if test="yearMonth != null and yearMonth != ''">
+            AND mm.year_months = #{yearMonth}
+        </if>
+    </select>
+
+    <!-- 查询机构所对应地图人员统计  -->
+    <select id="queryOrganMapsEmpCount" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsEmpCountDto"
+            useCache="true">
+        SELECT
+        a.organId,
+        a.organName,
+        a.empCount
+        FROM (
+        <foreach collection="organs" item="dto" index="idx">
+            <if test="idx != 0">UNION ALL</if>
+            SELECT '${dto.organId}' AS organId,
+            '${dto.organName}' AS organName,
+            COUNT(DISTINCT mti.emp_id) as empCount
+            FROM map_talent_info mti
+            INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id AND mti.emp_id = mtr.emp_id
+            WHERE mti.customer_id = #{customerId}
+            AND mtr.year_months = #{yearMonths}
+            AND mti.organization_id IN (
+            SELECT o.organization_id
+            FROM dim_organization o
+            WHERE
+            LOCATE(
+            (
+            SELECT o1.full_path
+            FROM dim_organization o1
+            WHERE o1.customer_id = #{customerId}
+            AND o1.organization_id = #{dto.organId}
+            ),
+            o.full_path
+            )
+            AND o.customer_id = #{customerId}
+            )
+        </foreach>
+        ) a
+        ORDER BY convert(a.organName using GBK)
+    </select>
+
+    <!-- 查询员工信息 -->
+    <select id="checkEmpInfo" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="true">
+        SELECT
+        v.emp_id empId,
+        v.user_name_ch userName
+        FROM
+        v_dim_emp v
+        WHERE
+        v.customer_id = #{customerId}
+        AND v.run_off_date is null
+        <if test="keyName != null and keyName != ''">
+            AND (v.emp_key LIKE CONCAT('%', #{keyName}, '%') or v.user_name_ch LIKE CONCAT('%', #{keyName}, '%'))
+        </if>
+        ORDER BY convert(v.user_name_ch using GBK)
+    </select>
+
+    <!-- 更新人才地图坐标-审核 -->
+    <update id="updateAuditingInfo" parameterType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto">
+        <foreach collection="list" item="dto" index="idx" separator=";">
+            UPDATE map_talent
+            SET x_axis_id_af = #{dto.xaxisAf},
+            y_axis_id_af = #{dto.yaxisAf},
+            update_time = #{dto.updateTime},
+            is_update = #{dto.flag},
+            modify_id = #{dto.adjustmentId},
+            note = #{dto.note}
+            WHERE
+            customer_id = #{dto.customerId}
+            AND emp_id = #{dto.empId}
+            AND year_months = #{dto.yearMonth}
+        </foreach>
+    </update>
+
+    <!-- 更新人才地图坐标-发布 -->
+    <update id="updatePublishInfo" parameterType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto">
+        <foreach collection="list" item="dto" index="idx" separator=";">
+            UPDATE map_talent
+            SET x_axis_id_af_r = #{dto.xaxisAf},
+            y_axis_id_af_r = #{dto.yaxisAf},
+            update_time = #{dto.updateTime},
+            is_update = #{dto.flag},
+            release_id = #{dto.releaseId},
+            note1 = #{dto.note}
+            WHERE
+            customer_id = #{dto.customerId}
+            AND emp_id = #{dto.empId}
+            AND year_months = #{dto.yearMonth}
+        </foreach>
+    </update>
+
+    <!-- 更新人才地图状态为审核 -->
+    <update id="updateMapsManagement" parameterType="java.util.Map">
+        UPDATE map_management
+        SET `status` = #{flag},
+        adjustment_id = #{adjustmentId},
+        emp_id = #{empId},
+        motify_date = #{modifyTime}
+        WHERE
+        customer_id = #{customerId}
+        AND top_id = #{topId}
+        <!-- AND adjustment_id = #{adjustmentId} -->
+        AND year_months = #{time}
+        AND `status` = 0
+    </update>
+
+    <!-- 更新人才地图状态为发布-->
+    <update id="pulishMapsManagement" parameterType="java.util.Map">
+		UPDATE map_management
+		SET `status` = #{flag}, release_date = #{releaseTime}
+		WHERE customer_id = #{customerId}
+		AND top_id = #{topId}
+		AND emp_id = #{empId}
+		AND year_months = #{time}
+		AND `status` = 1
+	</update>
+    <!-- 查询是否存在人才地图发布 -->
+    <select id="queryPublishMaps" resultType="int" useCache="true">
+		SELECT
+			count(1)
+		FROM
+			map_public
+		WHERE
+			customer_id = #{customerId}
+		AND organization_id = #{organId}
+		AND `year_month` = #{time}
+	</select>
+    <!-- 添加人才地图发布 -->
+    <insert id="addPublishMaps" parameterType="java.util.Map">
+		INSERT INTO `map_public` (
+			`organization_id`,
+			`customer_id`,
+			`emp_id`,
+			`full_path`,
+			`update_time`,
+			`year_month`
+		)
+		VALUES
+		(
+			#{topId}, 
+			#{customerId}, 
+			#{empId}, 
+			#{fullPath}, 
+			#{updateTime},
+			#{time}
+		)
+	</insert>
+
+    <select id="queryTalentMapsDateCycle" resultType="net.chinahrd.entity.dto.KVItemDto" useCache="true">
+    SELECT
+      mtr.year_months AS k,
+      CONCAT(LEFT(mtr.year_months,4),IF(RIGHT(mtr.year_months,2) > 6,'下半年','上半年')) AS v
+    FROM map_talent_result mtr
+    INNER JOIN map_talent_info mti ON mtr.emp_id = mti.emp_id AND mtr.customer_id = mti.customer_id
+    WHERE mtr.customer_id = #{customerId}
+    <if test="organIds != null and organIds.size() > 0">
+        AND mti.organization_id IN
+        <foreach collection="organIds" item="id" open="(" close=")" separator=",">
+            '${id}'
+        </foreach>
+    </if>
+    GROUP BY mtr.year_months
+    ORDER BY mtr.year_months DESC
+    </select>
+
+    <!-- 获取团队PK里面团队设置的人员统计 -->
+    <select id="queryMapsSettingEmpCount" resultType="int"
+            parameterType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsTeamQueryDto" useCache="true">
+        SELECT COUNT(DISTINCT mti.emp_id)
+        FROM map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id AND mti.emp_id = mtr.emp_id
+        <if test="yearMonths != null">
+            AND mtr.year_months = #{yearMonths}
+        </if>
+        <if test="minYearMonth != null and minYearMonth != ''">
+            AND mtr.year_months <![CDATA[>=]]> #{minYearMonth}
+        </if>
+        <if test="maxYearMonth != null and maxYearMonth != ''">
+            AND mtr.year_months <![CDATA[<=]]> #{maxYearMonth}
+        </if>
+        WHERE mti.customer_id = #{customerId}
+        <if test="organId != null">
+            AND mti.organization_id IN
+            <include refid="queryFullOrganId"></include>
+        </if>
+        <if test="name != null">
+            AND mti.user_name_ch LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="xLaberId != null">
+            AND mtr.x_axis_id = #{xLaberId}
+        </if>
+        <if test="yLaberId != null">
+            AND mtr.y_axis_id = #{yLaberId}
+        </if>
+        <if test="sequences != null">
+            AND mti.sequence_id IN
+            <foreach collection="sequences" item="sequence" open="(" close=")" separator=",">
+                #{sequence}
+            </foreach>
+        </if>
+        <if test="sequenceSubs != null">
+            AND mti.sequence_sub_id IN
+            <foreach collection="sequenceSubs" item="sub" open="(" close=")" separator=",">
+                #{sub}
+            </foreach>
+        </if>
+        <if test="abilitys != null">
+            AND mti.ability_id IN
+            <foreach collection="abilitys" item="ability" open="(" close=")" separator=",">
+                #{ability}
+            </foreach>
+        </if>
+        <if test="performances != null">
+            AND mti.performance_id IN
+            <foreach collection="performances" item="perf" open="(" close=")" separator=",">
+                '${perf}'
+            </foreach>
+        </if>
+        <if test="ageIntervals != null">
+            AND
+            <foreach collection="ageIntervals" item="i" open="(" close=")" separator="OR">
+                (mti.age &gt;= '${i.min}'
+                <if test="i.max != null">
+                    AND mti.age &lt; '${i.max}'
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="sexs != null">
+            AND
+            <foreach collection="sexs" item="s" open="(" close=")" separator="OR">
+                (mti.sex = '${s}')
+            </foreach>
+        </if>
+        <if test="edus != null">
+            AND mti.degree_id IN
+            <foreach collection="edus" item="e" open="(" close=")" separator=",">
+                '${e}'
+            </foreach>
+        </if>
+    </select>
+
+
+    <!-- 获取团队PK里面团队设置的人员统计 -->
+    <select id="queryTeamEmpPoint" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsPointDto"
+            parameterType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsTeamQueryDto" useCache="true">
+        SELECT
+        mti.emp_id AS empId,
+        <if test="team != null">
+            '${team}' AS team,
+        </if>
+        mti.user_name_ch AS text,
+        dp.performance_id AS xLabelId,
+        dp.performance_name AS xLabel,
+        dan.ability_number_id AS yLabelId,
+        dan.ability_number_name AS yLabel
+        FROM map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id AND mti.emp_id = mtr.emp_id
+        <if test="yearMonths != null">
+            AND mtr.year_months = #{yearMonths}
+        </if>
+        LEFT JOIN dim_performance dp ON dp.customer_id = mtr.customer_id AND mtr.x_axis_id = dp.performance_id
+        LEFT JOIN dim_ability_number dan ON dan.customer_id = mtr.customer_id AND mtr.y_axis_id = dan.ability_number_id
+        WHERE mti.customer_id = #{customerId}
+        <if test="organId != null">
+            AND mti.organization_id IN
+            <include refid="queryFullOrganId"></include>
+        </if>
+        <if test="xLaberId != null">
+            AND mtr.x_axis_id = #{xLaberId}
+        </if>
+        <if test="yLaberId != null">
+            AND mtr.y_axis_id = #{yLaberId}
+        </if>
+        <if test="sequences != null">
+            AND mti.sequence_id IN
+            <foreach collection="sequences" item="sequence" open="(" close=")" separator=",">
+                #{sequence}
+            </foreach>
+        </if>
+        <if test="sequenceSubs != null">
+            AND mti.sequence_sub_id IN
+            <foreach collection="sequenceSubs" item="sub" open="(" close=")" separator=",">
+                #{sub}
+            </foreach>
+        </if>
+        <if test="abilitys != null">
+            AND mti.ability_id IN
+            <foreach collection="abilitys" item="ability" open="(" close=")" separator=",">
+                #{ability}
+            </foreach>
+        </if>
+        <if test="performances != null">
+            AND mti.performance_id IN
+            <foreach collection="performances" item="perf" open="(" close=")" separator=",">
+                '${perf}'
+            </foreach>
+        </if>
+        <if test="ageIntervals != null">
+            AND
+            <foreach collection="ageIntervals" item="i" open="(" close=")" separator="OR">
+                (mti.age &gt;= '${i.min}'
+                <if test="i.max != null">
+                    AND mti.age &lt; '${i.max}'
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="sexs != null">
+            AND
+            <foreach collection="sexs" item="s" open="(" close=")" separator="OR">
+                (mti.sex = '${s}')
+            </foreach>
+        </if>
+        <if test="edus != null">
+            AND mti.degree_id IN
+            <foreach collection="edus" item="e" open="(" close=")" separator=",">
+                '${e}'
+            </foreach>
+        </if>
+        ORDER BY CONVERT(mti.user_name_ch USING GBK)
+    </select>
+
+    <!-- 新增用户选择的团队信息 -->
+    <insert id="insertMapsTeams" parameterType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsTeamInfoDto">
+        INSERT INTO map_team (map_team_id,emp_id,customer_id,team_name,requirement,pk_view,create_time) VALUES
+        <foreach collection="teamInfoDtos" item="dto" separator=",">
+            (#{dto.teamId},#{dto.empId},#{dto.customerId},#{dto.teamName},#{dto.requirement},#{dto.pkView},sysdate())
+        </foreach>
+    </insert>
+
+    <update id="updateUserTeam" parameterType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsTeamInfoDto">
+        UPDATE map_team mt
+        <set>
+            <if test="teamName != null">
+                mt.team_name = #{teamName}
+            </if>
+            <if test="requirement != null">
+                ,mt.requirement = #{requirement}
+            </if>
+        </set>
+        WHERE mt.customer_id = #{customerId}
+        AND mt.map_team_id = #{teamId}
+    </update>
+
+    <!-- 移除用户保存的团队信息 -->
+    <delete id="deleteUserTeamInfo">
+        DELETE FROM map_team
+        WHERE customer_id = #{customerId}
+        AND emp_id = #{empId}
+        <if test="teamId != null">
+            AND map_team_id = #{teamId}
+        </if>
+    </delete>
+
+    <!-- 获取用户保存的团队信息 -->
+    <select id="queryUserTeamInfo" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsTeamInfoDto" useCache="true">
+    SELECT
+    	mt.map_team_id AS teamId,
+        mt.emp_id AS empId,
+        mt.team_name AS teamName,
+        mt.requirement AS requirement,
+        mt.pk_view AS pkView
+    FROM map_team mt
+    WHERE mt.customer_id = #{customerId}
+    AND mt.emp_id = #{empId}
+    ORDER BY mt.create_time
+    </select>
+
+    <!-- 查询人才地图z轴信息配置 -->
+    <resultMap id="talentMapsConfigMap" type="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsConfigDto">
+        <result property="name" column="z_name"></result>
+        <result property="color" column="color"></result>
+        <collection property="values" ofType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsAxisDto">
+            <result property="x" column="x_number"></result>
+            <result property="y" column="y_number"></result>
+        </collection>
+    </resultMap>
+
+    <select id="queryMapsConfigInfo" resultMap="talentMapsConfigMap" useCache="true">
+	SELECT mc.z_name,mc.color,mc.x_number,mc.y_number
+	FROM map_config mc
+	INNER JOIN dim_z_info dzi ON  mc.z_name = dzi.z_name and mc.customer_id = dzi.customer_id
+	WHERE mc.customer_id = #{customerId}
+	ORDER BY dzi.show_index
+	</select>
+
+    <select id="queryMapsSimpleEmpCount" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsSimpleCountDto"
+            useCache="true">
+        SELECT
+        dp.performance_id AS xLabelId,
+        dp.performance_name AS xLabel,
+        dan.ability_number_id AS yLabelId,
+        dan.ability_number_name AS yLabel,
+        COUNT(DISTINCT mti.emp_id) AS countNum,
+        GROUP_CONCAT(DISTINCT mti.emp_id ORDER BY CONVERT(mti.user_name_ch USING GBK)) AS empIds,
+        GROUP_CONCAT(DISTINCT mti.user_name_ch ORDER BY CONVERT(mti.user_name_ch USING GBK)) AS empNames
+        FROM map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id AND mti.emp_id = mtr.emp_id
+        <if test="yearMonths != null">
+            AND mtr.year_months = #{yearMonths}
+        </if>
+        INNER JOIN dim_performance dp ON dp.customer_id = mtr.customer_id AND mtr.x_axis_id = dp.performance_id
+        INNER JOIN dim_ability_number dan ON dan.customer_id = mtr.customer_id AND mtr.y_axis_id = dan.ability_number_id
+        WHERE mti.customer_id = #{customerId}
+        <if test="organId != null">
+            AND mti.organization_id IN
+            <include refid="queryFullOrganId"></include>
+        </if>
+        <if test="xLaberId != null">
+            AND mtr.x_axis_id = #{xLaberId}
+        </if>
+        <if test="yLaberId != null">
+            AND mtr.y_axis_id = #{yLaberId}
+        </if>
+        <if test="sequences != null">
+            AND mti.sequence_id IN
+            <foreach collection="sequences" item="sequence" open="(" close=")" separator=",">
+                #{sequence}
+            </foreach>
+        </if>
+        <if test="sequenceSubs != null">
+            AND mti.sequence_sub_id IN
+            <foreach collection="sequenceSubs" item="sub" open="(" close=")" separator=",">
+                #{sub}
+            </foreach>
+        </if>
+        <if test="abilitys != null">
+            AND mti.ability_id IN
+            <foreach collection="abilitys" item="ability" open="(" close=")" separator=",">
+                #{ability}
+            </foreach>
+        </if>
+        <if test="performances != null">
+            AND mti.performance_id IN
+            <foreach collection="performances" item="perf" open="(" close=")" separator=",">
+                '${perf}'
+            </foreach>
+        </if>
+        <if test="ageIntervals != null">
+            AND
+            <foreach collection="ageIntervals" item="i" open="(" close=")" separator="OR">
+                (mti.age &gt;= '${i.min}'
+                <if test="i.max != null">
+                    AND mti.age &lt; '${i.max}'
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="sexs != null">
+            AND
+            <foreach collection="sexs" item="s" open="(" close=")" separator="OR">
+                (mti.sex = '${s}')
+            </foreach>
+        </if>
+        <if test="edus != null">
+            AND mti.degree_id IN
+            <foreach collection="edus" item="e" open="(" close=")" separator=",">
+                '${e}'
+            </foreach>
+        </if>
+        GROUP BY xLabelId, xLabel, yLabelId, yLabel
+    </select>
+
+
+    <!-- 获取团队PK里面团队设置的人员统计 -->
+    <select id="queryMapsEmpPoint" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsPointDto"
+            parameterType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsTeamQueryDto" useCache="true">
+        SELECT
+        mtr.year_months yearMonth,
+        CONCAT(
+        SUBSTR(mtr.year_months, 1, 4),
+        '年',
+        IF (
+        SUBSTR(mtr.year_months, 5, 2) <![CDATA[<]]> 7,
+        '上半年',
+        '下半年'
+        )
+        ) yearMonthText,
+        mti.emp_id AS empId,
+        mti.user_name_ch AS text,
+        dp.performance_name AS xLabel,
+        dan.ability_number_name AS yLabel
+        FROM map_talent_info mti
+        INNER JOIN map_talent_result mtr ON mti.customer_id = mtr.customer_id AND mti.emp_id = mtr.emp_id
+        <if test="yearMonths != null">
+            AND mtr.year_months = #{yearMonths}
+        </if>
+        <if test="minYearMonth != null and minYearMonth != ''">
+            AND mtr.year_months <![CDATA[>=]]> #{minYearMonth}
+        </if>
+        <if test="maxYearMonth != null and maxYearMonth != ''">
+            AND mtr.year_months <![CDATA[<=]]> #{maxYearMonth}
+        </if>
+        LEFT JOIN dim_performance dp ON dp.customer_id = mtr.customer_id AND mtr.x_axis_id = dp.performance_id
+        LEFT JOIN dim_ability_number dan ON dan.customer_id = mtr.customer_id AND mtr.y_axis_id = dan.ability_number_id
+        WHERE mti.customer_id = #{customerId}
+        <if test="organId != null">
+            AND mti.organization_id IN
+            <include refid="queryFullOrganId"></include>
+        </if>
+        <if test="name != null">
+            AND mti.user_name_ch LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="xLaberId != null">
+            AND mtr.x_axis_id = #{xLaberId}
+        </if>
+        <if test="yLaberId != null">
+            AND mtr.y_axis_id = #{yLaberId}
+        </if>
+        <if test="sequences != null">
+            AND mti.sequence_id IN
+            <foreach collection="sequences" item="sequence" open="(" close=")" separator=",">
+                '${sequence}'
+            </foreach>
+        </if>
+        <if test="sequenceSubs != null">
+            AND mti.sequence_sub_id IN
+            <foreach collection="sequenceSubs" item="sub" open="(" close=")" separator=",">
+                '${sub}'
+            </foreach>
+        </if>
+        <if test="abilitys != null">
+            AND mti.ability_id IN
+            <foreach collection="abilitys" item="ability" open="(" close=")" separator=",">
+                '${ability}'
+            </foreach>
+        </if>
+        <if test="performances != null">
+            AND mti.performance_id IN
+            <foreach collection="performances" item="perf" open="(" close=")" separator=",">
+                '${perf}'
+            </foreach>
+        </if>
+        <if test="ageIntervals != null">
+            AND
+            <foreach collection="ageIntervals" item="i" open="(" close=")" separator="OR">
+                (mti.age &gt;= '${i.min}'
+                <if test="i.max != null">
+                    AND mti.age &lt; '${i.max}'
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="sexs != null">
+            AND
+            <foreach collection="sexs" item="s" open="(" close=")" separator="OR">
+                (mti.sex = '${s}')
+            </foreach>
+        </if>
+        <if test="edus != null">
+            AND mti.degree_id IN
+            <foreach collection="edus" item="e" open="(" close=")" separator=",">
+                '${e}'
+            </foreach>
+        </if>
+        ORDER BY mtr.year_months DESC, CONVERT(mti.user_name_ch USING GBK)
+    </select>
+    <!-- 查询原始地图配置 -->
+    <select id="queryConfigTalentMaps" resultType="net.chinahrd.entity.dto.pc.admin.OrganDto" useCache="true">
+		SELECT
+			c.config_val organizationId,
+			d.organization_name organizationName,
+			d.full_path fullPath
+		FROM
+			config c
+		LEFT JOIN dim_organization d ON d.organization_id = c.config_val
+		WHERE
+			c.customer_id = #{customerId}
+		AND c.config_key LIKE CONCAT('RCDT-original', '%');
+	</select>
+    <!-- 检查是否有发布地图权限 -->
+    <select id="checkPublishPermission" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			map_management
+		WHERE
+			customer_id = #{customerId}
+		AND top_id = #{topId}
+		AND emp_id = #{empId}
+		AND year_months = #{time}
+	</select>
+    <!-- 查询人才地图时间范围 -->
+    <select id="queryTalentMapsTime" resultType="java.lang.Integer" useCache="false">
+		SELECT DISTINCT
+			year_months
+		FROM
+			map_talent
+		WHERE
+			customer_id = #{customerId}
+		ORDER BY
+			year_months
+	</select>
+
+    <!-- 加入人才地图结果 -->
+    <!-- <select id="callMapTalentResult" resultType="java.lang.Integer" statementType="CALLABLE">
+		CALL pro_update_map_talent_result (
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+			#{p_top_id, mode=IN, jdbcType=VARCHAR},
+			#{p_ym, mode=IN, jdbcType=INTEGER})
+	</select> -->
+	<!-- <select id="callMapTalentResult" resultType="java.lang.Integer" parameterMap="paramMap" statementType="CALLABLE" >
+		CALL pro_update_map_talent_result(?, ?, ?)
+    </select>
+	<parameterMap type="java.util.Map" id="paramMap">
+		<parameter property="p_customer_id" mode="IN" jdbcType="VARCHAR" />
+		<parameter property="p_top_id" mode="IN" jdbcType="VARCHAR" />
+		<parameter property="p_ym" mode="IN" jdbcType="INTEGER" />
+	</parameterMap> -->
+
+	<select id="queryTalentmapsResult" resultType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto" useCache="false">
+		SELECT
+			c.map_talent_id id,
+			c.customer_id customerId,
+			c.emp_id empId,
+			IFNULL(IFNULL(c.x_axis_id_af_r, c.x_axis_id_af), c.x_axis_id) xaxis,
+			IFNULL(IFNULL(c.y_axis_id_af_r, c.y_axis_id_af), c.y_axis_id) yaxis,
+			c.update_time modifyTime,
+			c.year_months yearMonth,
+			IFNULL(c.note1, c.note1) text
+		FROM
+			(
+				SELECT dor.full_path
+				FROM dim_organization dor
+				WHERE dor.customer_id = #{customerId}
+				AND LOCATE(
+					(
+						SELECT o2.full_path
+						FROM dim_organization o2
+						WHERE o2.customer_id = #{customerId}
+						AND o2.organization_id = #{organId}
+					),
+					dor.full_path)
+			) a
+		INNER JOIN map_talent_info b ON a.full_path = b.full_path
+		INNER JOIN map_talent c ON b.emp_id = c.emp_id
+		AND c.year_months = #{yearMonth}
+	</select>
+	
+	<insert id="insertMapTalentResult" parameterType="net.chinahrd.entity.dto.pc.talentMaps.TalentMapsDto">
+        INSERT INTO `mup`.`map_talent_result` (
+			`map_talent_id`,
+			`customer_id`,
+			`emp_id`,
+			`x_axis_id`,
+			`y_axis_id`,
+			`update_time`,
+			`year_months`,
+			`note`
+		)
+		VALUES
+		<foreach collection="talentMapsResult" item="dto" separator=",">
+		(
+			#{dto.id},
+			#{dto.customerId},
+			#{dto.empId},
+			#{dto.xaxis},
+			#{dto.yaxis},
+			#{dto.modifyTime},
+			#{dto.yearMonth},
+			#{dto.text}
+		)
+		</foreach>
+    </insert>
+</mapper>

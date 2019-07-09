@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.organizationalStructure.mvc.pc.dao.OrgChartDao">
+
+	<sql id="orgChart">
+		<![CDATA[
+			select t.organization_id as organizationId
+				,t.organization_name as organizationName
+				,t.organization_parent_id as organizationParentId
+				,t.has_children as hasChildren
+				,t2.number  as number
+				,GROUP_CONCAT(DISTINCT te.user_name_ch) as userName
+				,h.emp_count_sum as empCount
+				,#{maxVal} as warnValue
+			from dim_organization t
+			left join  budget_emp_number t2 
+				 on t2.customer_id=t.customer_id and t2.organization_id=t.organization_id
+				 and t2.year=year(#{now})
+				 
+			/*关联组织机构负责人*/
+			left join organization_emp_relation oe 
+				on oe.customer_id=t.customer_id and oe.organization_id=t.organization_id
+			left join sys_code_item ci
+				on oe.sys_code_item_id = ci.sys_code_item_id and ci.sys_code_item_key = 1 and ci.code_group_id = 'personType'  AND ci.customer_id = oe.customer_id
+				
+			
+			/*查询机构负责人名称*/
+			left join v_dim_emp te on te.customer_id=t.customer_id and te.emp_id=oe.emp_id
+				and te.run_off_date is NULL
+				
+			/*统计在职的员工*/
+			LEFT JOIN history_emp_count h on h.organization_id = t.organization_id 
+			 	 and h.customer_id = t2.customer_id
+			 	 and `day` = (SELECT max(day) from history_emp_count where customer_id = t2.customer_id) and h.type= 1
+			 	 
+			where t.customer_id= #{customerId}  
+		  ]]>
+	</sql>
+
+	<!-- 由机构ID查询当前机构编制-->
+	<select id="queryOrgById" resultType="net.chinahrd.entity.dto.pc.OrgChartDto">
+		<include refid="orgChart"></include>
+		and t.organization_id = #{organizationId}
+		GROUP by t.organization_id
+			,t.organization_name
+			,t.organization_parent_id
+			,t.has_children
+			,t2.number 
+	    ORDER BY t.has_children DESC,t.full_path
+	</select>
+	
+	<!--由机构ID查询子机构编制列表 -->
+	<select id="queryChildOrgListById" resultType="net.chinahrd.entity.dto.pc.OrgChartDto">
+		 <include refid="orgChart"></include>
+		and t.organization_parent_id = #{organizationId}
+		GROUP by t.organization_id
+			,t.organization_name
+			,t.organization_parent_id
+			,t.has_children
+			,t2.number
+		ORDER BY t.has_children DESC,t.full_path
+	</select>
+	
+	
+</mapper>

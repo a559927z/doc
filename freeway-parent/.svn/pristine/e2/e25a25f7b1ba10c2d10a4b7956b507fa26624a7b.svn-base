@@ -1,0 +1,81 @@
+package net.chinahrd.common.shiro;
+
+import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import net.chinahrd.common.BaseResponse;
+import net.chinahrd.enums.LoginType;
+import net.chinahrd.response.RbacModuleRes;
+import net.chinahrd.response.RbacRoleRes;
+import net.chinahrd.response.RbacUserRes;
+import net.chinahrd.enums.ResponseStatusEnum;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.filter.authc.UserFilter;
+import org.springframework.util.CollectionUtils;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * @author wzmo
+ */
+@Slf4j
+public class AuthcUserFilter extends UserFilter {
+    @Override
+    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        if (this.isLoginRequest(request, response)) {
+            return true;
+        } else {
+            String requestURL = getPathWithinApplication(request);// 获取url
+            Subject subject = this.getSubject(request, response);
+            RbacUserRes rbacUserRes = (RbacUserRes) subject.getPrincipal();
+            if (rbacUserRes != null) {
+                /**
+                 * 平台用户登录不校验权限
+                 */
+                String loginType = rbacUserRes.getLoginType();
+                if(StringUtils.equalsIgnoreCase(LoginType.ADMIN.toString(), loginType)){
+                    return true;
+                }
+                List<RbacRoleRes> roles = rbacUserRes.getRoles();
+                if (!CollectionUtils.isEmpty(roles)) {
+                    for (RbacRoleRes rbacRoleRes : roles) {
+                        List<RbacModuleRes> modules = rbacRoleRes.getModules();
+                        if (!CollectionUtils.isEmpty(modules)) {
+                            for (RbacModuleRes rbacModuleRes : modules) {
+                                if (StringUtils.equalsIgnoreCase(requestURL, rbacModuleRes.getModuleUrl())) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+            //return subject.getPrincipal() != null;
+        }
+    }
+
+    @Override
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+        String requestURL = getPathWithinApplication(request);// 获取url
+        log.debug("url:" + requestURL);
+        sessionTimeOut(response);
+        return false;
+    }
+
+    private void sessionTimeOut(ServletResponse response) throws IOException {
+        log.info("session超时");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=utf-8");
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        //        httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        BaseResponse<String> error = new BaseResponse<String>();
+        error.setCode(ResponseStatusEnum.SESSION_TIMEOUT.getCode());
+        error.setMessage(ResponseStatusEnum.SESSION_TIMEOUT.getValue());
+        httpResponse.getWriter().append(JSONObject.toJSONString(error));
+    }
+}

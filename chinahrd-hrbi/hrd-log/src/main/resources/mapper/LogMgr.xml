@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.dao.LogMgrDao">
+
+    <select id="queryAllLog" resultType="net.chinahrd.dto.LogDto" useCache="false">
+        SELECT
+        t.operate_log_id operateLogId,
+        t.user_key userKey,
+        t.user_name_ch userNameCh,
+        t.ip_address ipAddress,
+        t.description,
+        t.package packageName,
+        t.method,
+        t.use_time useTime,
+        t.create_date createDate
+        FROM operate_log t
+        <where>
+            <if test="paramMap.search != null and paramMap.search.length() >0 ">
+                and (
+                user_key like CONCAT('%',#{paramMap.search},'%') or
+                user_name_ch like CONCAT('%',#{paramMap.search},'%') or
+                ip_address like CONCAT('%',#{paramMap.search},'%') or
+                description like CONCAT('%',#{paramMap.search},'%') or
+                use_time like CONCAT('%',#{paramMap.search},'%') or
+                create_date like CONCAT('%',#{paramMap.search},'%')
+                )
+            </if>
+        </where>
+        ORDER BY t.create_date DESC
+        LIMIT #{paramMap.startIndex}, #{paramMap.pageSize}
+    </select>
+    <select id="countAllLog" resultType="java.lang.Long" useCache="false">
+        SELECT
+        count(1)
+        FROM operate_log t
+        <where>
+            <if test="paramMap.search != null and paramMap.search.length() >0 ">
+                and (
+                user_key like CONCAT('%',#{paramMap.search},'%') or
+                user_name_ch like CONCAT('%',#{paramMap.search},'%') or
+                ip_address like CONCAT('%',#{paramMap.search},'%') or
+                description like CONCAT('%',#{paramMap.search},'%') or
+                use_time like CONCAT('%',#{paramMap.search},'%') or
+                create_date like CONCAT('%',#{paramMap.search},'%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <!--添加用户登录记录-->
+    <insert id="insertLoginLog" parameterType="net.chinahrd.dto.AopInformation">
+        INSERT INTO login_log (
+        login_log_id,user_id,user_key,user_name,user_name_ch,ip_address,login_time) VALUES (
+        #{userLoginId},#{userId},#{userKey},#{userName},#{userNameCh},#{ipAddress},#{loginTime}
+        )
+    </insert>
+    <!--添加操作日志-->
+    <insert id="insertOperateLog" parameterType="net.chinahrd.dto.AopInformation">
+        INSERT INTO operate_log (
+          user_id, user_key, user_name, user_name_ch, ip_address, create_date, description, package, clazz, method, params, type, use_time, exception_code, exception_detail
+        ) VALUES (
+        #{userId}, #{userKey}, #{userName}, #{userNameCh}, #{ipAddress}, #{createDate}, #{description}, #{packageName}, #{clazz}, #{method}, #{params}, #{type}, #{useTime}, #{exceptionCode}, #{exceptionDetail}
+        )
+    </insert>
+
+
+</mapper>

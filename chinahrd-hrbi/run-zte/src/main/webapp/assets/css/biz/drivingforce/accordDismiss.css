@@ -1,0 +1,82 @@
+#accordDismissTab .row {
+    margin-left: -29px;
+    margin-right: -29px;
+}
+
+#timeLine {
+    position: relative;
+    height: 135px;
+}
+
+.warning-title {
+    margin: 20px 0 6px;
+}
+
+.warning-red {
+    display: inline-block;
+    color: #ff0000;
+    font-size: 26px;
+    margin: 0 2px;
+}
+
+.warning-yellow {
+    display: inline-block;
+    color: #FFCC00;
+    font-size: 26px;
+    margin: 0 2px;
+}
+.column .widget-toolbar span {
+    padding: 2px;
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 4px;
+}
+.column .widget-toolbar .green {
+    background-color: #23C6C8;
+}
+#accordDismissTab .tab-content{
+    min-height: 350px;
+}
+#accordDismissTab .tab-content{
+    min-height: 350px;
+}
+#dismissReasonPie,#dismissReasonBar{
+	height : 380px;
+}
+/*
+.tab-content .tab-pane{
+    height : 300px;
+}
+*/
+#contrastChart{
+	height : 300px;
+}
+#accordDismissTab .currentQuarter {
+    font-size: 28px;
+    color: #5E5E5E;
+    margin:25px 0 0 8px;
+}
+
+#accordDismissTab .lastQuarter {
+    display: inline-block;
+    font-weight: 700;
+    height: 71px;
+    width: 100%;
+    padding-top: 50px;
+    text-align: right;
+}
+#accordDismissTab .lastLabel{
+    display: inline-block;
+    width: 100%;
+    text-align: right;
+    font-size: 11px;
+}
+.u-searchBox-content-black{
+    min-width: 165px;
+}
+.update-time{
+    text-align: right;
+    margin-right: 10px;
+    line-height: 32px;
+}

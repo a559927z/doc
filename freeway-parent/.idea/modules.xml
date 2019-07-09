@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/freeway-facade/freeway-base-facade/freeway-base-facade.iml" filepath="$PROJECT_DIR$/freeway-facade/freeway-base-facade/freeway-base-facade.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-facade/freeway-business-facade/freeway-business-facade.iml" filepath="$PROJECT_DIR$/freeway-facade/freeway-business-facade/freeway-business-facade.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-business-service/freeway-business-service.iml" filepath="$PROJECT_DIR$/freeway-business-service/freeway-business-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-business-web/freeway-business-web.iml" filepath="$PROJECT_DIR$/freeway-business-web/freeway-business-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-common/freeway-common.iml" filepath="$PROJECT_DIR$/freeway-common/freeway-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-support/freeway-dubbo-support/freeway-dubbo-support.iml" filepath="$PROJECT_DIR$/freeway-support/freeway-dubbo-support/freeway-dubbo-support.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-facade/freeway-facade.iml" filepath="$PROJECT_DIR$/freeway-facade/freeway-facade.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-generator/freeway-generator.iml" filepath="$PROJECT_DIR$/freeway-generator/freeway-generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-parent.iml" filepath="$PROJECT_DIR$/freeway-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-platform-admin/freeway-platform-admin.iml" filepath="$PROJECT_DIR$/freeway-platform-admin/freeway-platform-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-facade/freeway-platform-facade/freeway-platform-facade.iml" filepath="$PROJECT_DIR$/freeway-facade/freeway-platform-facade/freeway-platform-facade.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-support/freeway-support.iml" filepath="$PROJECT_DIR$/freeway-support/freeway-support.iml" />
+      <module fileurl="file://$PROJECT_DIR$/freeway-support/freeway-web-support/freeway-web-support.iml" filepath="$PROJECT_DIR$/freeway-support/freeway-web-support/freeway-web-support.iml" />
+    </modules>
+  </component>
+</project>

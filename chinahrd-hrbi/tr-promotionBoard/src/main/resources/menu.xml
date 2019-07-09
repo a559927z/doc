@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="驱动力">
+		<menu code="JinJiKanBan" name="晋级看板" url="promotionBoard/toPromotionBoardView" icon="" mobile="false">
+			<block code="JinSuTrack" >晋级速度及轨迹</block>
+			<block code="RyJinStatus" >人员晋级状态</block>
+			<block code="JinMoniqi" >晋级薪酬变化模拟器</block>
+		</menu>
+	</menus>

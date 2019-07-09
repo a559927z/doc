@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.monthReport.mvc.pc.dao.MonthReportDao">
+    <cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+    <!-- 获取带子架构的所有组织机构 -->
+    <sql id="queryFullOrganId">
+    (
+        SELECT o.organization_id
+        FROM dim_organization o
+        WHERE LOCATE(
+            (
+            SELECT o1.full_path
+            FROM dim_organization o1
+            WHERE o1.customer_id = #{customerId}
+            AND o1.organization_id = #{organId}
+            ),
+            o.full_path
+        )
+        AND o.customer_id = #{customerId}
+    )
+    </sql>
+
+    <!-- 获取人员异动信息（按组织） -->
+	<select id="queryChangesToSubOrgan" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportChangesDto" useCache="true">
+	SELECT
+		oc.organization_id AS itemId,
+		oc.organization_name AS itemName,
+		SUM(IF(change_type = 3, 1, 0)) AS entry,
+		SUM(IF(change_type = 2, 1, 0)) AS transferIn,
+		SUM(IF(change_type = 4, 1, 0)) AS transferOut,
+		SUM(IF(change_type = 5, 1, 0)) AS dimission
+	FROM organization_change oc
+	INNER JOIN dim_organization dor ON dor.customer_id = oc.customer_id AND dor.organization_id = oc.organization_id
+	WHERE oc.customer_id = #{customerId}
+	AND dor.organization_parent_id = #{organId}
+	AND oc.`year_month` = #{yearMonth}
+	GROUP BY oc.organization_id, oc.organization_name
+	</select>
+
+    <!-- 获取人员异动信息（按职级） -->
+	<select id="queryChangesToAbility" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportChangesDto" useCache="true">
+	SELECT
+		da.curt_name AS itemId,
+		CONCAT(da.curt_name,'级') AS itemName,
+		SUM(IF(change_type = 3, 1, 0)) AS entry,
+		SUM(IF(change_type = 2, 1, 0)) AS transferIn,
+		SUM(IF(change_type = 4, 1, 0)) AS transferOut,
+		SUM(IF(change_type = 5, 1, 0)) AS dimission
+	FROM organization_change oc
+	INNER JOIN dim_ability da ON oc.customer_id = da.customer_id AND oc.ability_id = da.ability_id
+	WHERE oc.customer_id = #{customerId}
+	AND oc.organization_id = #{organId}
+	AND oc.`year_month` = #{yearMonth}
+	GROUP BY da.curt_name
+	ORDER BY da.show_index DESC
+	</select>
+
+    <!-- 统计异动人员明细 -->
+	<select id="queryChangesDetailsCount" resultType="int" useCache="true">
+	SELECT COUNT(oc.emp_id)
+	FROM organization_change oc
+	INNER JOIN v_dim_emp vde ON oc.customer_id = vde.customer_id AND oc.emp_id = vde.emp_id
+	<if test="itemId != null">
+	LEFT JOIN dim_ability da ON oc.customer_id = da.customer_id AND oc.ability_id = da.ability_id
+	</if>
+	WHERE oc.customer_id = #{customerId}
+	AND oc.change_type = #{changesPos}
+	AND oc.organization_id = #{organId}
+	AND oc.`year_month` = #{yearMonth}
+	<if test="itemId != null">
+		AND da.curt_name = #{itemId}
+	</if>
+	</select>
+
+    <!-- 获取异动人员明细 -->
+	<select id="queryChangesDetails" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportChangesDetailDto" useCache="true">
+		SELECT
+			oc.emp_id AS empId,
+			oc.user_name_ch AS userNameCh,
+			vde.organization_name AS organName,
+			vde.organization_id AS organId,
+			oc.change_date AS changesDate,
+			oc.note AS note
+		FROM organization_change oc
+		INNER JOIN v_dim_emp vde ON oc.customer_id = vde.customer_id AND oc.emp_id = vde.emp_id
+		<if test="itemId != null">
+			LEFT JOIN dim_ability da ON oc.customer_id = da.customer_id AND oc.ability_id = da.ability_id
+		</if>
+		WHERE oc.customer_id = #{customerId}
+		AND oc.change_type = #{changesPos}
+		AND oc.organization_id = #{organId}
+		AND oc.`year_month` = #{yearMonth}
+		<if test="itemId != null">
+			AND da.curt_name = #{itemId}
+		</if>
+	</select>
+
+    <!-- 统计离职人员信息 -->
+    <select id="queryDimissionEmpsCount" resultType="int" useCache="true">
+    SELECT COUNT(ror.emp_id)
+    FROM run_off_record ror
+    INNER JOIN v_dim_emp vde ON ror.customer_id = vde.customer_id AND ror.emp_id = vde.emp_id
+    LEFT JOIN dim_run_off dro ON ror.customer_id = dro.customer_id AND ror.run_off_id = dro.run_off_id
+    WHERE ror.customer_id = #{customerId}
+    <if test="yearMonth != null">
+        AND DATE_FORMAT(ror.run_off_date ,'%Y%m') = #{yearMonth}
+    </if>
+    <if test="isKeyTalent != null">
+        AND vde.is_key_talent = #{isKeyTalent}
+    </if>
+    <if test="organId != null">
+        AND vde.organization_id IN <include refid="queryFullOrganId"></include>
+    </if>
+    </select>
+
+    <!-- 获取离职人员信息 -->
+    <select id="queryDimissionEmpsList" resultType="net.chinahrd.entity.dto.pc.accordDismiss.DismissRiskDto" useCache="true">
+    SELECT
+        ror.emp_id AS empId,
+        vde.user_name_ch AS userNameCh,
+        vde.organization_name AS organizationName,
+        vde.position_name AS positionName,
+        vde.ability_name AS abilityName,
+		vde.sequence_name AS sequenceName,
+        vde.rank_name AS rankName,
+        vde.company_age AS companyAge,
+        dro.run_off_name AS separationRiskName,
+        ror.is_warn AS isWarn
+    FROM run_off_record ror
+    INNER JOIN v_dim_emp vde ON ror.customer_id = vde.customer_id AND ror.emp_id = vde.emp_id
+    LEFT JOIN dim_run_off dro ON ror.customer_id = dro.customer_id AND ror.run_off_id = dro.run_off_id
+    WHERE ror.customer_id = #{customerId}
+    <if test="yearMonth != null">
+        AND DATE_FORMAT(ror.run_off_date ,'%Y%m') = #{yearMonth}
+    </if>
+    <if test="isKeyTalent != null">
+        AND vde.is_key_talent = #{isKeyTalent}
+    </if>
+    <if test="organId != null">
+        AND vde.organization_id IN <include refid="queryFullOrganId"></include>
+    </if>
+    </select>
+    
+    <select id="queryDimissionEmpsListNoPage" resultType="net.chinahrd.entity.dto.pc.accordDismiss.DismissRiskDto" useCache="true">
+    SELECT
+        ror.emp_id AS empId,
+        vde.user_name_ch AS userNameCh,
+        vde.organization_name AS organizationName,
+        vde.position_name AS positionName,
+        vde.ability_name AS abilityName,
+		vde.sequence_name AS sequenceName,
+        vde.rank_name AS rankName,
+        vde.company_age AS companyAge,
+        dro.run_off_name AS separationRiskName,
+        ror.is_warn AS isWarn
+    FROM run_off_record ror
+    INNER JOIN v_dim_emp vde ON ror.customer_id = vde.customer_id AND ror.emp_id = vde.emp_id
+    LEFT JOIN dim_run_off dro ON ror.customer_id = dro.customer_id AND ror.run_off_id = dro.run_off_id
+    WHERE ror.customer_id = #{customerId}
+    <if test="yearMonth != null">
+        AND DATE_FORMAT(ror.run_off_date ,'%Y%m') = #{yearMonth}
+    </if>
+    <if test="isKeyTalent != null">
+        AND vde.is_key_talent = #{isKeyTalent}
+    </if>
+    <if test="organId != null">
+        AND vde.organization_id IN <include refid="queryFullOrganId"></include>
+    </if>
+    </select>
+
+	<!-- 获取培训概况信息 -->
+	<select id="queryTrainGeneral" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportTrainGeneralDto">
+	SELECT
+		dor.organization_id AS organId,
+		dor.organization_name AS organName,
+		tv.budget_value AS budgetValue,
+		tro.outlays,
+		(
+			SELECT count(vde.emp_id)
+			FROM dim_organization org1
+			inner join v_dim_emp vde ON org1.organization_id = vde.organization_id AND org1.customer_id = vde.customer_id and vde.run_off_date is null
+			inner JOIN emp_train_experience ete on vde.emp_id=ete.emp_id and vde.customer_id = ete.customer_id
+			and year(ete.start_date) &lt;= #{year} and year(ete.finish_date) &gt;= #{year} and ete.`year` = #{year}
+			WHERE org1.customer_id =dor.customer_id
+			and vde.organization_id IN (
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE t1.customer_id = vde.customer_id
+				AND	locate(
+					(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.customer_id = t1.customer_id
+					AND t.organization_id = dor.organization_id
+					),
+					t1.full_path
+				)
+			)
+		) as frequency,
+		(
+			SELECT count(DISTINCT lec.lecturer_id)
+			FROM lecturer lec
+			INNER JOIN lecturer_course_speak lcs ON lec.customer_id = lcs.customer_id AND lec.lecturer_id = lcs.lecturer_id
+			INNER JOIN lecturer_course_design lcd ON lcs.customer_id = lcd.customer_id AND lcs.course_id = lcd.course_id
+			INNER JOIN course_record cr ON cr.customer_id = lcd.customer_id AND cr.course_id = lcd.course_id
+			INNER JOIN train_plan tp ON tp.customer_id = cr.customer_id AND cr.train_plan_id = tp.train_plan_id
+			AND YEAR(tp.start_date) &lt;= #{year} AND YEAR(tp.end_date) &gt;= #{year} AND tp.`year` = #{year}
+			WHERE lec.customer_id = dor.customer_id
+			AND tp.organization_id IN (
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE t1.customer_id = lec.customer_id
+				AND locate(
+				(
+				SELECT t.full_path
+				FROM dim_organization t
+				WHERE t.customer_id = t1.customer_id
+				AND t.organization_id = dor.organization_id
+				),
+				t1.full_path
+				)
+			)
+		) as lecturerNum,
+		round((
+			SELECT sum(ete.train_time)
+			FROM dim_organization org1
+			INNER JOIN v_dim_emp vde ON org1.organization_id = vde.organization_id
+						AND org1.customer_id = vde.customer_id AND vde.run_off_date IS NULL
+			INNER JOIN emp_train_experience ete ON vde.emp_id = ete.emp_id AND vde.customer_id = ete.customer_id
+								AND year(ete.start_date) &lt;= #{year} and year(ete.finish_date) &gt;= #{year}
+			WHERE org1.customer_id = dor.customer_id
+			AND vde.organization_id IN (
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE t1.customer_id = vde.customer_id
+				AND locate(
+				(
+				SELECT t.full_path
+				FROM dim_organization t
+				WHERE t.customer_id = t1.customer_id
+				AND t.organization_id = dor.organization_id
+				),
+				t1.full_path
+				)
+			)
+			)/ (
+				select count(distinct ete.emp_id) from emp_train_experience ete,v_dim_emp vde
+				where ete.emp_id=vde.emp_id and ete.customer_id=vde.customer_id
+				and year(ete.start_date) &lt;= #{year} and year(ete.finish_date) &gt;= #{year}
+				and ete.customer_id=dor.customer_id
+				and vde.run_off_date is null
+				and vde.organization_id IN (
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE t1.customer_id = vde.customer_id
+				AND	locate(
+				(
+				SELECT t.full_path
+				FROM dim_organization t
+				WHERE t.customer_id = t1.customer_id
+				AND t.organization_id =dor.organization_id
+				),
+				t1.full_path
+				)
+			)
+		),2) AS hours
+		FROM dim_organization dor
+		LEFT JOIN train_value tv ON dor.customer_id = tv.customer_id AND dor.organization_id = tv.organization_id AND tv.`year` = #{year}
+		LEFT JOIN (
+		SELECT ttro.organization_id,
+		SUM(ttro.outlay) AS outlays
+		FROM train_outlay ttro
+		where ttro.customer_id = #{customerId}
+		AND ttro.`year` = #{year}
+		GROUP BY ttro.organization_id
+		) tro ON tro.organization_id = dor.organization_id
+		WHERE dor.customer_id = #{customerId}
+		AND (dor.organization_id = #{organId} OR dor.organization_parent_id = #{organId})
+		ORDER BY dor.full_path
+	</select>
+
+
+	<select id="queryInJobsEmpCount" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportEmpCountDto">
+	SELECT
+		CONCAT(da.curt_name,'级') AS abilityName,
+		ds.sequence_id AS sequenceId,
+		ds.sequence_name AS sequenceName,
+		COUNT(DISTINCT vde.emp_id) AS empNumber
+	FROM v_dim_emp vde
+	INNER JOIN dim_ability da ON vde.customer_id = da.customer_id AND vde.ability_id = da.ability_id
+	INNER JOIN dim_sequence ds ON ds.customer_id = vde.customer_id AND ds.sequence_id = vde.sequence_id
+	WHERE vde.customer_id = #{customerId}
+	AND vde.run_off_date IS NULL
+	AND vde.organization_id IN <include refid="queryFullOrganId"></include>
+	GROUP BY da.curt_name, ds.sequence_id,ds.sequence_name
+	</select>
+
+
+	<!-- 获取各商品的销售情况 -->
+	<select id="querySalesCountByProduct" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportSalesCountDto">
+	SELECT
+		dsp.product_id AS itemId,
+		dsp.product_name AS itemName,
+		sopm.salesEmpNumber AS empNumber,
+		sopm.salesNumber AS salesNumber,
+		sopm.salesMoney AS salesMoney,
+		spt.sales_target AS salesTarget,
+		spt.return_amount AS returnAmount,
+		spt.payment AS payment
+	FROM dim_sales_product dsp
+	INNER JOIN sales_pro_target spt ON spt.customer_id = dsp.customer_id AND spt.product_id = dsp.product_id AND spt.`year_month` =  #{yearMonth}
+	INNER JOIN (
+		SELECT
+			tsopm.product_id,
+			SUM(tsopm.sales_money_month) AS salesMoney,
+			SUM(tsopm.sales_number) AS salesNumber,
+			SUM(tsopm.sales_profit_month) AS salesEmpNumber
+		FROM sales_org_prod_month tsopm
+		WHERE tsopm.customer_id = #{customerId}
+		AND tsopm.`year_month` =  #{yearMonth}
+		<!--AND tsopm.organization_id =  #{organId}-->
+		GROUP BY tsopm.product_id
+	) sopm ON dsp.product_id = sopm.product_id
+	WHERE dsp.customer_id = #{customerId}
+	ORDER BY convert(dsp.product_name using gbk)
+	</select>
+
+	<!-- 获取各组织机构的销售情况 -->
+	<select id="querySalesCountByOrgan" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportSalesCountDto">
+	SELECT
+		dor.organization_id AS itemId,
+		dor.organization_name AS itemName,
+		hecm.month_count_sum AS empNumber,
+		som.sales_number_month AS salesNumber,
+		som.sales_money_month AS salesMoney,
+		sot.sales_target AS salesTarget,
+		sot.return_amount AS returnAmount,
+		sot.payment AS payment
+	FROM dim_organization dor
+	INNER JOIN history_emp_count_month hecm ON dor.customer_id = hecm.customer_id AND dor.organization_id = hecm.organization_id AND hecm.`year_month` = #{yearMonth} AND hecm.type = 1
+	INNER JOIN sales_org_target sot ON sot.customer_id = dor.customer_id AND sot.organization_id = dor.organization_id AND sot.`year_month` = #{yearMonth}
+	INNER JOIN sales_org_month som ON dor.customer_id = som.customer_id AND dor.organization_id = som.organization_id AND som.`year_month` = #{yearMonth}
+	WHERE dor.customer_id = #{customerId}
+	AND (dor.organization_id = #{organId} OR dor.organization_parent_id = #{organId})
+	ORDER BY dor.full_path
+	</select>
+
+	<!-- 获取各商品每月的销售情况 -->
+	<select id="queryProductSalesCountByMonth" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportSalesCountDto">
+	SELECT
+		spt.`year_month` AS yearMonth,
+		sopm.salesMoney AS salesMoney,
+		spt.sales_target AS salesTarget,
+		spt.return_amount AS returnAmount
+	FROM sales_pro_target spt
+	INNER JOIN (
+		SELECT
+			tsopm.`year_month`,
+			SUM(tsopm.sales_money_month) AS salesMoney
+		FROM sales_org_prod_month tsopm
+		WHERE tsopm.customer_id = #{customerId}
+		AND tsopm.product_id = #{itemId}
+		AND tsopm.`year_month` BETWEEN #{beginTime} AND #{endTime}
+		<!--AND tsopm.organization_id =  #{organId}-->
+		GROUP BY tsopm.`year_month`
+	) sopm ON spt.`year_month` = sopm.`year_month`
+	WHERE spt.customer_id = #{customerId}
+	AND spt.product_id = #{itemId}
+	AND spt.`year_month` BETWEEN #{beginTime} AND #{endTime}
+	</select>
+
+	<!-- 获取各组织机构每月的销售情况 -->
+	<select id="queryOrganSalesCountByMonth" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportSalesCountDto">
+	SELECT
+		sot.`year_month` AS yearMonth,
+		som.sales_money_month AS salesMoney,
+		sot.sales_target AS salesTarget,
+		sot.return_amount AS returnAmount
+	FROM sales_org_target sot
+	INNER JOIN sales_org_month som ON sot.customer_id = som.customer_id AND sot.organization_id = som.organization_id AND som.`year_month` = sot.`year_month`
+	WHERE sot.customer_id = #{customerId}
+	AND sot.organization_id = #{organId}
+	AND sot.`year_month` BETWEEN #{beginTime} AND #{endTime}
+	</select>
+
+	<!-- 添加用户收藏月报信息 -->
+	<insert id="insertFavorites" parameterType="net.chinahrd.entity.dto.pc.monthReport.MonthReportSavaDto">
+    INSERT INTO monthly_report_save (
+        monthly_report_save_id,
+        customer_id,
+        emp_id,
+		organization_id,
+        path,
+        file_name,
+        `year_month`,
+        create_time
+    )
+    VALUES (
+        #{savaId},
+        #{customerId},
+        #{empId},
+        #{organId},
+        #{path},
+        #{fileName},
+        #{yearMonth},
+        #{createTime}
+    )
+	</insert>
+
+	<!-- 获取用户收藏月报信息 -->
+	<select id="queryFavorites" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportSavaDto">
+    SELECT
+        mrs.monthly_report_save_id AS savaId,
+        mrs.emp_id AS empId,
+        mrs.path AS path,
+        mrs.file_name AS fileName,
+        mrs.`year_month` AS yearMonth
+    FROM monthly_report_save mrs
+    WHERE mrs.customer_id = #{customerId}
+    AND mrs.emp_id = #{empId}
+    ORDER BY mrs.`year_month` DESC,mrs.create_time
+	</select>
+
+    <select id="findFavoritesInfo" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportSavaDto">
+    SELECT
+        mrs.monthly_report_save_id AS savaId,
+        mrs.emp_id AS empId,
+        mrs.path AS path,
+        mrs.file_name AS fileName,
+        mrs.`year_month` AS yearMonth
+    FROM monthly_report_save mrs
+    WHERE mrs.customer_id = #{customerId}
+    <if test="empId != null">
+        AND mrs.emp_id = #{empId}
+    </if>
+    <if test="yearMonth != null">
+        AND mrs.`year_month` = #{yearMonth}
+    </if>
+    <if test="organId != null">
+        AND mrs.organization_id = #{organId}
+    </if>
+    </select>
+
+	<!-- 移除月报收藏信息 -->
+    <delete id="deleteFavorites" >
+	DELETE FROM monthly_report_save WHERE customer_id = #{customerId}  AND monthly_report_save_id = #{favoritesId}
+    </delete>
+
+	<!-- 获取分享给我的信息 -->
+	<select id="queryShare" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportShareDto">
+		SELECT
+			mrs.monthly_report_share_id AS shareId,
+			mrs.to_emp_id AS empId,
+			mrs.share_emp_id AS shareEmpId,
+			mrs.report_content AS reportContent,
+			mrs.path AS path,
+			mrs.note AS note,
+			mrs.send_mail AS sendMail,
+			mrs.`year_month` AS yearMonth,
+			mrs.create_time AS createTime,
+			mrs.organization_id organId
+		FROM
+			monthly_report_share mrs
+		WHERE
+			mrs.customer_id = #{customerId}
+		AND mrs.to_emp_id = #{empId}
+		<if test="yearMonth != null and yearMonth > 0">
+		AND mrs.`year_month` = #{yearMonth}
+		</if>
+		ORDER BY
+			mrs.`year_month` DESC,
+			mrs.create_time
+	</select>
+	
+	<!-- 获取月报的用户配置信息 -->
+	<select id="queryMonthReportConfig" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportConfigDto">
+		SELECT
+			monthly_report_config_id id,
+			emp_id empId,
+			report_path reportPath,
+			report_content reportContent,
+			is_flag flag,
+			show_index showIndex
+		FROM
+			monthly_report_config
+		WHERE
+			customer_id = #{customerId}
+		AND emp_id = #{empId}
+		ORDER BY
+			show_index
+	</select>
+	
+	<!-- 删除分享 -->
+	<delete id="deleteMonthReportShare">
+		DELETE
+		FROM
+			monthly_report_share
+		WHERE
+			customer_id = #{customerId}
+		AND monthly_report_share_id = #{shareId}
+	</delete>
+	
+	<!-- 更新月报的用户配置信息  -->
+	<update id="updateMonthReportConfig">
+		<foreach collection="list" item="dto" separator=";">
+			UPDATE monthly_report_config
+			SET is_flag = #{dto.flag},
+				show_index = #{dto.showIndex}
+			WHERE
+				emp_id = #{dto.empId}
+			AND report_path = #{dto.reportPath}
+		</foreach>
+	</update>
+	
+	<!-- 获取晋级分析概况 -->
+	<select id="queryPromotionGeneral" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportPromotionDto">
+		SELECT
+    		t1.organization_id organId,
+			t2.organization_name organName,
+			t1.count count,
+			t2.proCount proCount,
+			t2.proCount/t1.count proRate,
+			t3.keyCount/t2.proCount keyProRate
+		FROM
+			(
+				SELECT
+					organization_id,
+					COUNT(1) count
+				FROM
+					history_emp_count_month
+				WHERE customer_id = #{customerId}
+				AND `year_month` = #{yearMonth}
+				GROUP BY
+					organization_id
+			) t1
+		INNER JOIN(
+			SELECT v.organization_id,
+				v.organization_name,
+				COUNT(DISTINCT p.emp_id) proCount
+			FROM promotion_results p
+			INNER JOIN v_dim_emp v ON v.emp_id = p.emp_id
+			AND v.customer_id = p.customer_id
+			WHERE p.customer_id = #{customerId}
+			AND DATE_FORMAT(p.promotion_date, '%Y%m') = #{yearMonth}
+			GROUP BY v.organization_id
+		) t2 ON t2.organization_id = t1.organization_id
+		INNER JOIN(
+			SELECT v.organization_id,
+				COUNT(DISTINCT k.emp_id) keyCount
+			FROM key_talent k
+			INNER JOIN v_dim_emp v ON v.emp_id = k.emp_id
+			AND v.customer_id = k.customer_id
+			WHERE k.customer_id = #{customerId}
+			AND (DATE_FORMAT(k.delete_time, '%Y%m') > #{yearMonth} OR k.delete_time IS NULL)
+			GROUP BY v.organization_id
+		) t3 ON t3.organization_id = t1.organization_id
+		WHERE t1.organization_id IN (
+			SELECT t1.organization_id
+			FROM dim_organization t1
+			WHERE t1.customer_id = #{customerId}
+			AND locate(
+				(SELECT d.full_path
+				FROM dim_organization d
+				WHERE d.customer_id = #{customerId}
+				AND d.organization_id = #{organId}
+				), t1.full_path
+			)
+		)
+	</select>
+	
+	<!-- 查询员工信息 -->
+    <select id="checkEmpInfo" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportShareDto" useCache="true">
+        SELECT
+	        v.emp_id empId,
+	        v.user_name_ch userName
+	    FROM
+	        v_dim_emp v
+        WHERE
+        v.customer_id = #{customerId}
+        AND v.run_off_date is null
+        <if test="keyName != null and keyName != ''">
+            AND (v.emp_key LIKE CONCAT('%', #{keyName}, '%') or v.user_name_ch LIKE CONCAT('%', #{keyName}, '%'))
+        </if>
+        ORDER BY convert(v.user_name_ch using GBK)
+    </select>
+    
+    <!-- 查询员工email -->
+    <select id="queryEmpEmail" resultType="java.lang.String" useCache="true">
+    	SELECT
+			v.email
+		FROM
+			v_dim_emp v
+		WHERE
+			v.customer_id = #{customerId}
+		AND v.emp_id = #{empId}
+    </select>
+    
+    <insert id="addMonthReportShare">
+    	INSERT INTO `monthly_report_share` (
+			`monthly_report_share_id`,
+			`customer_id`,
+			`share_emp_id`,
+			`to_emp_id`,
+			`organization_id`,
+			`create_time`,
+			`report_content`,
+			`send_mail`,
+			`path`,
+			`note`,
+			`year_month`
+		)
+		VALUES
+		(
+			#{shareId},
+			#{customerId},
+			#{shareEmpId},
+			#{toEmpId},
+			#{organId},
+			#{createTime},
+			#{reportContent},
+			#{sendMail},
+			#{path},
+			#{note},
+			#{yearMonth}
+		)
+    </insert>
+    
+    <!--  -->
+    <select id="accordDismissAnalysis" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportDimissionEmpDto" useCache="true">
+		SELECT r.organization_id organId,
+			r.organization_name organName,
+			r.runOffCount/t.total yearRate,
+			rm.runOffCount/tm.total monthRate,
+			rl.runOffCount/tl.total sameRatio,
+			rl.runOffCount/tl.total basicRatio
+		FROM
+		(SELECT
+			rot.organization_id,
+			o1.organization_name,
+			sum(rot.act_count_sum) runOffCount
+		FROM
+			run_off_total rot
+		INNER JOIN dim_organization o1 ON o1.customer_id = rot.customer_id
+		AND o1.organization_id = rot.organization_id
+		WHERE
+			rot.customer_id = #{customerId}
+		AND substr(rot.`year_month`, 1, 4) = #{year}
+		AND o1.organization_parent_id = #{organId}
+		GROUP BY rot.organization_id) r
+		INNER JOIN
+		(
+			SELECT
+				a.organization_id,
+				(a.month_count_sum + b.month_count_sum) / 2 total
+			FROM
+				(
+					SELECT
+						organization_id,
+						month_count_sum
+					FROM
+						history_emp_count_month
+					WHERE
+						customer_id = #{customerId}
+					AND `year_month` = #{beginYearMonth}
+					AND type = 1
+					AND organization_id IN (
+						SELECT
+							o1.organization_id
+						FROM
+							dim_organization o1
+						WHERE
+							o1.customer_id = #{customerId}
+						AND o1.organization_parent_id = #{organId}
+					)
+				) a
+			INNER JOIN (
+				SELECT
+					organization_id,
+					month_count_sum
+				FROM
+					history_emp_count_month
+				WHERE
+					customer_id = #{customerId}
+				AND `year_month` = #{endYearMonth}
+				AND type = 1
+				AND organization_id IN (
+					SELECT
+						o1.organization_id
+					FROM
+						dim_organization o1
+					WHERE
+						o1.customer_id = #{customerId}
+					AND o1.organization_parent_id = #{organId}
+				)
+			) b ON a.organization_id = b.organization_id
+		) t ON t.organization_id = r.organization_id
+		INNER JOIN
+		(SELECT
+			rot.organization_id,
+			sum(rot.act_count_sum) runOffCount
+		FROM
+			run_off_total rot
+		WHERE
+			rot.customer_id = #{customerId}
+		AND rot.`year_month` = #{endYearMonth}
+		AND rot.organization_id IN (
+			SELECT
+				o1.organization_id
+			FROM
+				dim_organization o1
+			WHERE
+				o1.customer_id = #{customerId}
+			AND o1.organization_parent_id = #{organId}
+		)
+		GROUP BY rot.organization_id) rm ON rm.organization_id = r.organization_id
+		INNER JOIN
+		(
+			SELECT
+				organization_id,
+				month_count_sum total
+			FROM
+				history_emp_count_month
+			WHERE
+				customer_id = #{customerId}
+			AND `year_month` = #{endYearMonth}
+			AND type = 1
+			AND organization_id IN (
+				SELECT
+					o1.organization_id
+				FROM
+					dim_organization o1
+				WHERE
+					o1.customer_id = #{customerId}
+				AND o1.organization_parent_id = #{organId}
+			)
+		) tm ON tm.organization_id = rm.organization_id
+		INNER JOIN
+		(SELECT
+			rot.organization_id,
+			sum(rot.act_count_sum) runOffCount
+		FROM
+			run_off_total rot
+		WHERE
+			rot.customer_id = #{customerId}
+		AND rot.`year_month` = #{lastYearMonth}
+		AND rot.organization_id IN (
+			SELECT
+				o1.organization_id
+			FROM
+				dim_organization o1
+			WHERE
+				o1.customer_id = #{customerId}
+			AND o1.organization_parent_id = #{organId}
+		)
+		GROUP BY rot.organization_id) rl ON rl.organization_id = r.organization_id
+		INNER JOIN
+		(
+			SELECT
+				organization_id,
+				month_count_sum total
+			FROM
+				history_emp_count_month
+			WHERE
+				customer_id = #{customerId}
+			AND `year_month` = #{lastYearMonth}
+			AND type = 1
+			AND organization_id IN (
+				SELECT
+					o1.organization_id
+				FROM
+					dim_organization o1
+				WHERE
+					o1.customer_id = #{customerId}
+				AND o1.organization_parent_id = #{organId}
+			)
+		) tl ON tl.organization_id = rl.organization_id
+		INNER JOIN
+		(SELECT
+			rot.organization_id,
+			sum(rot.act_count_sum) runOffCount
+		FROM
+			run_off_total rot
+		WHERE
+			rot.customer_id = #{customerId}
+		AND rot.`year_month` = #{lastMonth}
+		AND rot.organization_id IN (
+			SELECT
+				o1.organization_id
+			FROM
+				dim_organization o1
+			WHERE
+				o1.customer_id = #{customerId}
+			AND o1.organization_parent_id = #{organId}
+		)
+		GROUP BY rot.organization_id) rlm ON rlm.organization_id = r.organization_id
+		INNER JOIN
+		(
+			SELECT
+				organization_id,
+				month_count_sum total
+			FROM
+				history_emp_count_month
+			WHERE
+				customer_id = #{customerId}
+			AND `year_month` = #{lastMonth}
+			AND type = 1
+			AND organization_id IN (
+				SELECT
+					o1.organization_id
+				FROM
+					dim_organization o1
+				WHERE
+					o1.customer_id = #{customerId}
+				AND o1.organization_parent_id = #{organId}
+			)
+		) tlm ON tlm.organization_id = rlm.organization_id
+    </select>
+    
+    <!--  -->
+    <select id="accordDismissByYearMonth" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportDimissionEmpDto" useCache="true">
+    	SELECT
+			rot.`year_month` yearMonth,
+			sum(rot.act_count_sum) / hem.month_count_sum monthRate
+		FROM
+			run_off_total rot
+		INNER JOIN history_emp_count_month hem ON hem.`year_month` = rot.`year_month`
+		AND hem.organization_id = rot.organization_id
+		AND hem.customer_id = rot.customer_id
+		WHERE
+			rot.customer_id = #{customerId}
+		AND substr(rot.`year_month`, 1, 4) = #{year}
+		AND rot.organization_id = #{organId}
+		GROUP BY rot.`year_month`
+		ORDER BY rot.`year_month`
+    </select>
+    
+    <select id="accordDismissInYear" resultType="java.lang.Double" useCache="true">
+    	SELECT
+			r.runOffCount / h.total rate
+		FROM
+			(
+				SELECT
+					rot.organization_id,
+					sum(rot.act_count_sum) runOffCount
+				FROM
+					run_off_total rot
+				WHERE
+					rot.customer_id = #{customerId}
+				AND rot.organization_id = #{organId}
+				AND substr(rot.`year_month`, 1, 4) = #{year}
+			) r
+		INNER JOIN (
+			SELECT
+				a.organization_id,
+				(a.month_count_sum + b.month_count_sum) / 2 total
+			FROM
+				(
+					SELECT
+						organization_id,
+						month_count_sum
+					FROM
+						history_emp_count_month
+					WHERE
+						customer_id = #{customerId}
+					AND organization_id = #{organId}
+					AND `year_month` = #{beginYearMonth}
+					AND type = 1
+				) a
+			INNER JOIN (
+				SELECT
+					organization_id,
+					month_count_sum
+				FROM
+					history_emp_count_month
+				WHERE
+					customer_id = #{customerId}
+				AND organization_id = #{organId}
+				AND `year_month` = #{endYearMonth}
+				AND type = 1
+			) b ON a.organization_id = b.organization_id
+		) h ON r.organization_id = h.organization_id
+    </select>
+    
+    <select id="manpowerCostInfo" resultType="net.chinahrd.entity.dto.pc.monthReport.MonthReportManpowerCostDto" useCache="true">
+    	SELECT
+			a.organization_name organName,
+			a.sumYearBudget,
+			a.sumYearCost,
+			a.yearRate,
+			b.cost monthCost,
+			b.cost_avg monthAvg,
+			(b.cost - c.cost) / c.cost * 100 sameRatio,
+			(b.cost - d.cost) / d.cost * 100 basicRatio
+		FROM
+		(SELECT
+			o.organization_name,
+			sum(mc.cost_budget) sumYearBudget,
+			sum(mc.cost) sumYearCost,
+			sum(mc.cost) / sum(mc.cost_budget) * 100 yearRate
+		FROM
+			manpower_cost mc
+		INNER JOIN dim_organization o ON o.organization_id = mc.organization_id
+		AND o.customer_id = mc.customer_id
+		WHERE
+			mc.customer_id = #{customerId}
+		AND	substr(mc.`year_month`, 1, 4) = #{year}
+		AND o.organization_parent_id = #{organId}
+		GROUP BY mc.organization_id) a
+		INNER JOIN(
+		SELECT
+			o.organization_name,
+			mc.cost,
+			mc.cost_avg
+		FROM
+			manpower_cost mc
+		INNER JOIN dim_organization o ON o.organization_id = mc.organization_id
+		AND o.customer_id = mc.customer_id
+		WHERE
+			mc.customer_id = #{customerId}
+		AND	mc.`year_month` = #{yearMonth}
+		AND o.organization_parent_id = #{organId}
+		GROUP BY mc.organization_id
+		) b ON a.organization_name = b.organization_name
+		INNER JOIN(
+		SELECT
+			o.organization_name,
+			mc.cost
+		FROM
+			manpower_cost mc
+		INNER JOIN dim_organization o ON o.organization_id = mc.organization_id
+		AND o.customer_id = mc.customer_id
+		WHERE
+			mc.customer_id = #{customerId}
+		AND	mc.`year_month` = #{lastYearMonth}
+		AND o.organization_parent_id = #{organId}
+		GROUP BY mc.organization_id
+		) c ON a.organization_name = c.organization_name
+		INNER JOIN(
+		SELECT
+			o.organization_name,
+			mc.cost
+		FROM
+			manpower_cost mc
+		INNER JOIN dim_organization o ON o.organization_id = mc.organization_id
+		AND o.customer_id = mc.customer_id
+		WHERE
+			mc.customer_id = #{customerId}
+		AND	mc.`year_month` = #{lastMonth}
+		AND o.organization_parent_id = #{organId}
+		GROUP BY mc.organization_id
+		) d ON d.organization_name = a.organization_name
+    </select>
+	
+</mapper>

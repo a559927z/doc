@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="胜任力">
+		<menu code="TrainBoard" name="培训看板" url="trainBoard/toTrainBoardView" icon="" mobile="false">
+			<block code="PeixunZL" >培训总览</block>
+			<block code="WeiduFX" >维度分析</block>
+			<block code="PeixunJL" >培训记录</block>
+		</menu>
+	</menus>

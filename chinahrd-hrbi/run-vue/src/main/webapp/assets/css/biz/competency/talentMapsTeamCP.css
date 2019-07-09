@@ -1,0 +1,393 @@
+.row{margin-left:0px; margin-right:0px;}
+
+.teamCPChart {
+    position: relative;
+}
+.ct-dissmiss .column{
+    padding: 2px!important;
+}
+
+#page-one{display: block;}
+#page-two{display: none;}
+#page-three{display: none;}
+#page-four{display: none;}
+.leftListSet,.LSLSetUp{
+    cursor: pointer;
+}
+
+/*页面通用样式 begin*/
+.teamCPChart .index-common-title{position: relative;width: 100%;height: 34px;}
+.teamCPChart .index-common-title-left{position: absolute;top: 10px;left: 8px;background-color: #88b7e0;width: 2px;height: 15px;}
+.teamCPChart .index-common-title-text{position: absolute;top: 6px;left: 20px;color: #444;}
+.teamCPChart .index-common-title-center{position: absolute;left: 150px;top:-4px;}
+.teamCPChart .index-common-title-center .title-center-text{display: inline-block;border:1px solid #e0e0e0;margin-right: 35px;}
+.teamCPChart .index-common-title-center .title-center-text span:first-child{display: inline-block;color: #333;margin:0 5px;}
+.teamCPChart .index-common-title-center .title-center-text span:nth-child(2){display: inline-block;background-color: #999;color: #fff;padding-left: 15px;font-size: 18px;}
+.teamCPChart .index-common-title-center .title-center-text small{display: inline-block;background-color: #999;color: #fff;padding: 6px 10px 3px 5px;font-size: 12px;vertical-align: top;}
+.teamCPChart .index-common-title-right{  float: right; margin: 6px 6px 0px 0px;  position: relative; background-color: #fff; padding: 0px 2px;}
+.teamCPChart .index-common-title-right span{padding: 0px 4px; border-radius: 5px; cursor:pointer;  background: #efefef; border: 1px solid #ccc;}
+.teamCPChart .index-common-title-right span.select{ background: #009EDD; color: #fff; cursor:default;   border: 1px solid #009EDD;}
+
+.teamCPChart .rightBody{
+    width: 100%;
+    background-color: #fff;
+    padding: 10px 0px;
+}
+
+.teamCPChart .top-div{
+    height: 160px;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+}
+.teamCPChart .bottom-div{
+    width: 100%;
+    border: none;
+    min-height: 0;
+}
+.teamCPChart .content-div{
+    width: 100%;
+    height: 600px;
+}
+.teamCPChart .content-div .chart-view{
+    width: 100%;
+    height: 100%;
+}
+.teamCPChart .bottom-div-map{
+    width: 100%;
+    height: 100%;
+}
+.teamCPChart .bottom-div-detail{
+	width: 100%;
+	height: 100%;
+}
+.teamCPChart .bottom-div .bottom-div-first{
+	height: 35px;
+	float: left;
+}
+.teamCPChart .bottom-div .bottom-div-second{
+    height: 50px; 
+    line-height: 50px; 
+    margin-top: 5px;
+}
+.teamCPChart .bottom-div .bottom-div-second .col-xs-12{
+    padding-left: 20px;
+    height: 50px;
+}
+.teamCPChart .bottom-div .bottom-div-second .select-view{
+    border: solid 1px #CCCCCC;
+}
+.teamCPChart .bottom-div .bottom-div-second .font-style-parent{
+	font-weight: bold;
+	font-size: 0;
+	color: #333;
+}
+.teamCPChart .bottom-div .bottom-div-second .font-style-child{
+	font-size: 14px;
+}
+.teamCPChart .bottom-div .bottom-div-first .breadcrumb{
+	margin-right: 0px;
+}
+.teamCPChart .bottom-div .bottom-div-second .span-padding{
+	padding-left: 10px;
+}
+.teamCPChart .cursor-pointer{
+    cursor: pointer;
+}
+.teamCPChart .cursor-default{
+    cursor: default;
+}
+.teamCPChart .bottom-div .search-box .row{
+	padding: 0 !important;
+}
+.teamCPChart .bottom-div .search-box .filter{
+	overflow: hidden !important;
+}
+.teamCPChart .bottom-div .search-box .more-search-label{
+	right: 20px;
+    margin: 0px;
+    margin-top: -7px;
+    height: 43px;
+}
+.teamCPChart .bottom-div .search-box .filter .form-horizontal{
+    margin: 0px;
+}
+.teamCPChart .bottom-div .padding-title{
+	margin-left: 5px;
+}
+.teamCPChart .bottom-div .time-select{
+	margin-left: 5px;
+	height: 30px !important;
+	line-height: 30px !important;
+	top: 10px !important;
+	position: static !important;
+}
+.teamCPChart .closed{
+	display: none;
+}
+.teamCPChart #selectTimeId .fhead{
+	color: #777777 !important;
+}
+.teamCPChart .left{
+	float: left;
+}
+.teamCPChart .right{
+	float: right;
+}
+.teamCPChart .font-color{
+	color: #00f;
+}
+.teamCPChart .bord-style{
+	border: solid 1px #cccccc;
+}
+.teamCPChart .nav-search {
+    top: 12px;
+}
+/*页面通用样式 begin*/
+/* 人员明细弹窗 began */
+#personDetailModal .modal-dialog{
+	margin: 0 !important;
+	width: 400px;
+	height: 200px;
+}
+#personDetailModal .modal-dialog .modal-content{
+	width: 100% !important;
+	height: 100% !important;
+	margin: 0px !important;
+}
+#personDetailModal .modal-dialog .modal-content .modal-body{
+	/* overflow: auto; */
+	height: 150px;
+}
+#personDetailModal .modal-dialog .modal-content .div-block{
+	width: 52px; 
+	float: left; 
+	margin-right: 15px;
+	margin-bottom: 10px;
+	text-align: center;
+}
+#personDetailModal .modal-dialog .modal-content .head-pic{
+	width: 50px; 
+	height: 50px;
+	text-align: center;
+	cursor: pointer;
+}
+#personDetailModal .detail-body{
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+/* 人员明细弹窗 end */
+/* 全屏显示 began */
+.talent-maps .fullScreenBodyHead{
+	background-color: #000;
+}
+.talent-maps .full-span-title{
+	display: inline-block;
+	font-size: 0;
+	margin: 10px 5px;
+	padding-left: 12px;
+}
+.talent-maps .fullScreenBodyHead .fullScreenBodyTitle{
+	font-weight: bold;
+	color: #F5F5F5;
+	font-size: 14px;
+}
+.talent-maps .fullScreenBodyHead .close{
+	float: right;
+	margin: 8px 18px;
+	color: #fff;
+	opacity: 0.8;
+	font-size: 20px;
+}
+.talent-maps .fullScreenBodyHead .close:hover{
+	opacity: 0.5;
+}
+.talent-maps .u-map{
+	/* width: 1000px;
+	height: 600px; */
+}
+.talent-maps .bord-style{
+	border: solid 1px #cccccc;
+}
+.talent-maps .view-grid-title{
+	height: 30px;
+	width: 100%;
+}
+.talent-maps .view-grid-title ul li{
+	float: left;
+	list-style-type: none;
+	margin-right: 15px;
+	cursor: pointer;
+	text-align: center;
+}
+.talent-maps .view-grid-title .grid-li-style{
+	font-weight: bold;
+	border-bottom: solid 3px #019AEF;
+}
+.talent-maps .view-grid-content{
+	height: 400px;
+}
+.talent-maps .view-grid-content .grid-img-div{
+	width: 250px;
+	height: 120px;
+	border: solid 1px #ccc;
+	margin-top: 10px;
+	margin-right: 20px;
+	padding: 5px;
+}
+.talent-maps .view-grid-content .grid-img-div .grid-div-right{
+	width: 70%;
+	display: inline-block;
+}
+.talent-maps .view-grid-content .grid-img-div .head-pic{
+	margin-right: 5px;
+	cursor: pointer;
+	height: 50px;
+	width: 50px;
+}
+.talent-maps .view-grid-content .grid-img-div .span-info{
+	background: #019AEF;
+	border-radius: 5px;
+	margin-right: 10px;
+	width: 70px;
+	text-align: center;
+	color: #ffffff;
+	cursor: pointer;
+}
+.talent-maps .view-grid-content .grid-img-div .jl-style{
+	margin-top: 8px;
+}
+.talent-maps .view-grid-pager{
+	width: 100%;
+	display: inline-block;
+	margin-top: 10px;
+}
+.talent-maps .pager-total{
+	font-size: 16px;
+	color: #666666;
+	line-height: 30px;
+}
+.talent-maps .pager-total-num{
+	color: #cc0000;
+}
+.talent-maps .pager-operate{
+	margin-right: 5%;
+}
+.talent-maps .jPagination{
+	margin: 0 !important;
+}
+/* 全屏显示 end */
+
+/* 全局组织机构文本框设置 began */
+.u-dropdown-input {
+	background-color: #fff !important;
+	line-height: normal;
+	float: left;
+	padding: 5px 8px;
+	border: 1px solid #ccc;
+	height: 30px;
+	font-size: 14px;
+	color: #777777;
+	cursor: default;
+}
+
+.dropDownRightBtn {
+	display: none;
+}
+/* 全局组织机构文本框设置 end */
+/* 搜索模块样式 begin */
+.talent-maps .search-block {
+    z-index: 150;
+}
+
+.talent-maps .search-main-block {
+    display: none;
+    border-right: 1px solid #f0f0f0;
+    width: 220px;
+    margin-top: -28px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.talent-maps .search-main-block .close {
+    margin: 5px 8px;
+}
+
+.talent-maps .search-main-block label {
+    margin: 40px 15px 15px;
+    display: inline-block;
+    width: 170px;
+    text-align: left;
+}
+
+.talent-maps .search-main-block .search-block-show {
+    display: flex;
+}
+
+.talent-maps .search-main-block .search-instructions {
+    font-size: 12px;
+    display: inline-block;
+}
+
+.talent-maps .search-main-block .search-content {
+    margin: 5px;
+}
+
+.talent-maps .search-main-block .search-emp-main {
+    display: inline-block;
+    border: 1px solid #999;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    font-size: 12px;
+    text-align: left;
+    color: #000;
+}
+
+.talent-maps .search-main-block .search-emp-main span {
+    display: inline-block;
+}
+
+.talent-maps .search-main-block .search-emp-main .btn {
+    margin: 12px 10px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.talent-maps .nav-search {
+    min-width: 200px;
+}
+
+.talent-maps .nav-search .nav-search-block {
+    position: relative;
+    z-index: 200;
+}
+
+.talent-maps .nav-search .nav-search-block .search-emp-main {
+    position: absolute;
+    display: inline-block;
+    width: 260px;
+    right: -20px;
+    border: 1px solid #999;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    text-align: left;
+    color: #000;
+}
+
+.talent-maps .nav-search .nav-search-block .search-emp-main span {
+    display: inline-block;
+}
+
+.talent-maps .nav-search .nav-search-block .search-emp-main .btn {
+    margin: 12px 10px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+/* 搜索模块样式 end */

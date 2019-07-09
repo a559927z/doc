@@ -1,0 +1,15 @@
+net\chinahrd\modules\pub\response\ParamInfoRes.class
+net\chinahrd\modules\pub\service\TenantInfoService.class
+net\chinahrd\modules\demo\service\UserInfoService.class
+net\chinahrd\modules\pub\request\ParamInfoReq.class
+net\chinahrd\modules\pub\response\TenantInfoRes.class
+net\chinahrd\modules\demo\entity\UserInfo.class
+net\chinahrd\modules\pub\request\TenantQueryReq.class
+net\chinahrd\modules\pub\service\ParamInfoService.class
+net\chinahrd\modules\pub\response\DatasourceInfoRes.class
+net\chinahrd\modules\pub\service\DatasourceInfoService.class
+net\chinahrd\modules\pub\entity\TenantDatasourceRel.class
+net\chinahrd\modules\pub\entity\DatasourceInfo.class
+net\chinahrd\modules\pub\request\DatasourceQueryReq.class
+net\chinahrd\modules\pub\entity\ParamInfo.class
+net\chinahrd\modules\pub\entity\TenantInfo.class

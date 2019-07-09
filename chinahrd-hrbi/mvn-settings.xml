@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+	<!-- localRepository | The path to the local repository maven will use to 
+		store artifacts. | | Default: ~/.m2/repository <localRepository>/path/to/local/repo</localRepository> -->
+	<localRepository>D:\maven\repository</localRepository>
+
+	<pluginGroups></pluginGroups>
+
+	<proxies></proxies>
+
+	<servers>
+		<server>
+			<id>releases</id>
+			<username>admin</username>
+			<password>1q2w3e123</password>
+		</server>
+		<server>
+			<id>Snapshots</id>
+			<username>admin</username>
+			<password>1q2w3e123</password>
+		</server>
+	</servers>
+
+
+	<mirrors>
+		<!--This sends everything else to /public -->
+		<mirror>
+			<id>nexus</id>
+			<mirrorOf>central</mirrorOf>
+			<url>http://localhost:8081/nexus/content/groups/public</url>
+			<!-- <url>http://nexus.gz.chinahrd.net/content/groups/public/</url> -->
+			<!-- <url>http://172.16.9.80:8088/nexus/content/groups/public</url> -->
+			<!-- <url>http://183.234.62.85:8081/nexus/content/groups/public</url> -->
+		</mirror>
+		<mirror>
+			<id>nexus</id>
+			<mirrorOf>central</mirrorOf>
+			<url>http://183.234.62.85:8081/nexus/content/groups/public</url>
+		</mirror>
+	</mirrors>
+
+
+	<profiles>
+		<profile>
+			<id>nexus2</id>
+			<repositories>
+				<repository>
+					<id>nexus</id>
+					<name>local private nexus</name>
+					<url>http://localhost:8081/nexus/content/groups/public</url>
+					<!-- 中人网-北京外网 -->
+					<!-- <url>http://nexus.gz.chinahrd.net/content/groups/public/</url> -->
+					<!-- 中人网-广州内网 -->
+					<!-- <url>http://172.16.9.80:8088/nexus/content/groups/public</url> -->
+					<!-- 博惠思华 -->
+					<!-- <url>http://183.234.62.85:8081/nexus/content/groups/public</url> -->
+				</repository>
+				<repository>
+					<id>nexus</id>
+					<name>local private nexus</name>
+					<!-- 博惠思华 -->
+					<url>http://183.234.62.85:8081/nexus/content/groups/public</url>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
+
+	<!-- <activeProfiles> -->
+	<!-- <activeProfile>nexus</activeProfile> -->
+	<!-- </activeProfiles> -->
+
+</settings>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.dao.EmpMgrDao">
+
+    <select id="queryEmpList" resultType="net.chinahrd.dto.EmpExtendDto" useCache="false">
+		SELECT
+            t.user_id userId,
+            t.emp_id empId,
+            t.user_key userKey,
+            t.user_name_ch userNameCh,
+            t.email,
+            t.is_lock isLock,
+            t3.national_id nationalId,
+            t3.tel_phone telPhone,
+            t3.position_name positionName,
+            t3.entry_date entryDate,
+            t3.address,
+            t3.organization_parent_name orgParName,
+            t3.organization_name orgName,
+            IFNULL(t4.annual_total,0) annualTotal,
+            IFNULL(t4.annual,0) annual,
+            IFNULL(t4.can_leave,0) canLeave,
+            GROUP_CONCAT(t2.role_name) roles
+        FROM
+            dim_user t
+        INNER JOIN v_dim_emp t3 ON t.emp_id = t3.emp_id
+        LEFT JOIN user_role_relation t1 ON t.user_id = t1.user_id
+        INNER JOIN dim_role t2 ON t1.role_id = t2.role_id
+        LEFT JOIN emp_vacation t4 on t3.emp_id= t4.emp_id
+        WHERE user_key != 'superAdmin'
+        <if test="isLock != null  ">
+          AND is_lock = #{isLock}
+        </if>
+        <if test="search != null and search.length() >0 ">
+            AND (
+                t.user_key LIKE CONCAT('%',#{search},'%') OR
+                t.user_name_ch LIKE CONCAT('%',#{search},'%') OR
+                t.email LIKE CONCAT('%',#{search},'%') OR
+                t3.tel_phone LIKE CONCAT('%',#{search},'%') OR
+                t3.position_name LIKE CONCAT('%',#{search},'%') OR
+                t3.entry_date LIKE CONCAT('%',#{search},'%') OR
+                t3.address LIKE CONCAT('%',#{search},'%') OR
+                t3.organization_parent_name LIKE CONCAT('%',#{search},'%') or
+                t3.organization_name LIKE CONCAT('%',#{search},'%')
+            )
+        </if>
+        GROUP BY t.user_id
+        ORDER BY  #{orderColumn}, #{orderDir} ASC
+        LIMIT #{startIndex}, #{pageSize}
+	</select>
+    <select id="countEmpSQL" resultType="java.lang.Long" useCache="false">
+        SELECT count(1) FROM (
+            SELECT
+              GROUP_CONCAT(t2.role_name) roles
+            FROM
+              dim_user t
+            INNER JOIN v_dim_emp t3 ON t.emp_id = t3.emp_id
+            LEFT JOIN user_role_relation t1 ON t.user_id = t1.user_id
+            INNER JOIN dim_role t2 ON t1.role_id = t2.role_id
+            LEFT JOIN emp_vacation t4 on t3.emp_id= t4.emp_id
+            WHERE user_key != 'superAdmin'
+            <if test="isLock != null ">
+                AND is_lock = #{isLock}
+            </if>
+            <if test="search != null and search.length() >0 ">
+                AND (
+                    t.user_key LIKE CONCAT('%',#{search},'%') OR
+                    t.user_name_ch LIKE CONCAT('%',#{search},'%') OR
+                    t.email LIKE CONCAT('%',#{search},'%') OR
+                    t3.tel_phone LIKE CONCAT('%',#{search},'%') OR
+                    t3.position_name LIKE CONCAT('%',#{search},'%') OR
+                    t3.entry_date LIKE CONCAT('%',#{search},'%') OR
+                    t3.address LIKE CONCAT('%',#{search},'%') OR
+                    t3.organization_parent_name LIKE CONCAT('%',#{search},'%') or
+                    t3.organization_name LIKE CONCAT('%',#{search},'%')
+                )
+            </if>
+            GROUP BY t.user_id
+        ) tt
+	</select>
+
+    <update id="updateLockStatus">
+        <foreach collection="userIds" item="i" index="index" open="" separator=";" close="" >
+          UPDATE `dim_user` SET is_lock = #{isLock} WHERE user_id = #{i}
+        </foreach>
+    </update>
+
+    <insert id="saveAnnual" parameterType="net.chinahrd.dto.EmpVacation">
+        insert into emp_vacation
+        (emp_id, customer_id, emp_key, user_name_ch, annual_total, annual, can_leave, history_hour, refresh)
+         values(
+           #{empId},
+           #{customerId},
+           #{empKey},
+           #{userNameCh},
+           #{annualTotal},
+           #{annual},
+           #{canLeave},
+           #{historyHour},
+           now()
+         )
+    </insert>
+
+
+    <update id="updateAnnualTotal"  parameterType="java.lang.String">
+        UPDATE `emp_vacation` SET annual_total = #{annualTotal} , annual=#{annual}, refresh = now() WHERE emp_id = #{empId}
+    </update>
+
+
+</mapper>

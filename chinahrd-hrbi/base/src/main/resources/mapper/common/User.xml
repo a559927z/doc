@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.admin.UserDao">
+
+    <resultMap id="UserMap" type="net.chinahrd.entity.dto.pc.admin.UserDto" >
+        <id property="id" column="user_id" />
+        <result property="userId" column="user_id" />
+        <result property="userName" column="user_name" />
+        <result property="userNameCh" column="user_name_ch" />
+        <result property="customerId" column="customer_id" />
+        <result property="userKey" column="user_key" />
+        <result property="password" column="password" />
+        <result property="note" column="note" />
+        <result property="createUserId" column="create_user_id" />
+        <result property="modifyUserId" column="modify_user_id" />
+        <result property="createTime" column="create_time" />
+        <result property="modifyTime" column="modify_time" />
+    </resultMap>
+    <resultMap id="EmpMap" type="net.chinahrd.entity.dto.pc.admin.EmpDto">
+        <id property="id" column="emp_id"/>
+        <result property="empId" column="emp_id"/>
+        <result property="empKey" column="emp_key"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="empName" column="user_name_ch"/>
+    </resultMap>
+    
+    
+    <select id="existUser" resultType="int">
+    	SELECT count(1) from dim_user t 
+		<where>
+			1=1
+			<if test="empId != null and empId != '' and empId != 'null'">
+				AND t.emp_id &lt;&gt; #{empId}
+			</if>
+			<if test="userName != null and userName != '' and userName != 'null'">
+				AND t.user_name = #{userName}
+			</if>
+		</where>
+    </select>
+
+    <insert id="insertUser">
+		insert into dim_user
+		(user_id,customer_id,emp_id,user_key,user_name,user_name_ch,note,create_user_id,create_time, is_lock,sys_deploy,password,email) 
+		values
+		(#{userId},#{customerId},#{empId},#{userKey},#{userName},#{userNameCh},#{note},#{createUserId},#{createTime}, 0,#{sysDeploy},#{password},#{email})
+	</insert>
+
+    <update id="updateUser">
+        update dim_user
+        <set>
+            <if test="userKey != null">
+                user_key = #{userKey}
+            </if>
+            <if test="userName != null">
+                ,user_name = #{userName}
+            </if>
+            <if test="userNameCh != null">
+                ,user_name_ch = #{userNameCh}
+            </if>
+            <if test="note != null">
+                ,note = #{note}
+            </if>
+            <if test="modifyUserId != null">
+                ,modify_user_id = #{modifyUserId}
+            </if>
+            <if test="modifyTime != null">
+                ,modify_time = #{modifyTime}
+            </if>
+            <if test="email != null and email != ''">
+            	,email = #{email}
+            </if>
+        </set>
+        WHERE user_id = #{id} AND customer_id = #{customerId}
+        	and is_lock = 0
+    </update>
+
+    <update id="updateUserEmp">
+		update dim_user
+        SET emp_id=#{empId} 
+		WHERE user_id = #{userId} AND customer_id = #{customerId}
+			and is_lock = 0
+	</update>
+
+    <update id="updateUserPasswd">
+        UPDATE dim_user
+        SET password = #{passwd}
+        WHERE user_id = #{userId} AND customer_id = #{customerId} 
+        	and is_lock = 0
+    </update>
+
+    <update id="updateUserPasswdByUserKey">
+        UPDATE dim_user
+        SET password = #{passwd}
+        WHERE user_key = #{userKey} AND customer_id = #{customerId} 
+        	and is_lock = 0
+    </update>
+
+    <update id="updateUserPWDbyUserName">
+        UPDATE dim_user
+        SET password = #{passwd}
+        WHERE user_name = #{userName} AND customer_id = #{customerId} 
+        	and is_lock = 0
+    </update>
+
+    <delete id="deleteUser" >
+        delete from dim_user
+        <where>
+            <if test="customerId != null">
+                customer_id = #{customerId}
+            </if>
+            <if test="userId != null and userId.size() > 0">
+                AND user_id IN
+                <foreach collection="userId" item="id" separator="," open="(" close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+
+    </delete>
+
+
+    <select id="findAll" resultMap="UserMap">
+        SELECT
+        du.user_id,
+        du.customer_id,
+        du.emp_id,
+        du.user_key,
+        du.user_name,
+        du.user_name_ch,
+        du.password,
+        du.note,
+        du.create_user_id,
+        du.modify_user_id,
+        du.create_time,
+        du.modify_time
+        FROM dim_user du
+        INNER JOIN v_dim_emp t2 on du.emp_id = t2.emp_id
+        <where>
+        	du.is_lock = 0
+        	<if test="roleIds != null and roleIds.size() > 0">
+                AND t2.organization_id in (
+                	SELECT organization_id from role_organization_relation where role_id in
+	                <foreach collection="roleIds" item="id" separator="," open="(" close=")">
+	                    #{id}
+	                </foreach>
+                )
+            </if>
+            <if test="customerId != null">
+              AND du.customer_id = #{customerId}
+            </if>
+            <if test="userName != null">
+                AND (du.user_name LIKE concat('%',#{userName},'%') OR du.user_name_ch LIKE concat('%',#{userName},'%'))
+            </if>
+        </where>
+        ORDER BY du.modify_time desc
+        limit #{rowBounds.offset} , #{rowBounds.limit}
+    </select>
+
+    <select id="findAllCount" resultType="int">
+        SELECT count(du.user_id) FROM dim_user du INNER JOIN v_dim_emp t2 on du.emp_id = t2.emp_id
+        <where>
+        	du.is_lock = 0
+        	<if test="roleIds != null and roleIds.size() > 0">
+                AND t2.organization_id in (
+                	SELECT organization_id from role_organization_relation where role_id in
+	                <foreach collection="roleIds" item="id" separator="," open="(" close=")">
+	                    #{id}
+	                </foreach>
+                )
+            </if>
+            <if test="customerId != null">
+               AND du.customer_id = #{customerId}
+            </if>
+            <if test="userName != null">
+                AND (du.user_name LIKE concat('%',#{userName},'%') OR du.user_name_ch LIKE concat('%',#{userName},'%'))
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findUserById" resultMap="UserMap">
+        SELECT
+        du.user_id,
+        du.customer_id,
+        du.emp_id,
+        du.user_key,
+        du.user_name,
+        du.user_name_ch
+      FROM dim_user du
+      WHERE du.user_id = #{userId} AND du.customer_id = #{customerId} 
+      	and du.is_lock = 0
+    </select>
+
+
+</mapper>

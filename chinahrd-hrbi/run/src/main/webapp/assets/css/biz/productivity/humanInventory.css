@@ -1,0 +1,773 @@
+.human-inventory {
+    position: relative;
+    padding-left: 120px;
+}
+.ct-dissmiss .column{
+    padding: 2px!important;
+}
+
+#page-one{display: block;}
+#page-two{display: none;}
+#page-three{display: none;}
+.leftListSet,.LSLSetUp{
+    cursor: pointer;
+}
+.text-date{
+    margin-left: 5px;
+    color: #999;
+}
+.noData{margin-top: 50px; font-size: 12px; color: #999; text-align: center;}
+
+.human-inventory .bottom-div{
+    min-height: 385px;
+}
+.human-inventory .bottom-div >.chart-view .col-xs-12:nth-child(2){
+    height: 350px;
+}
+.human-inventory .bottom-div >.table-view .col-xs-12:nth-child(2){
+    height: 350px;
+}
+.human-inventory .bottom-div .bottom-div-first{
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+}
+.human-inventory .bottom-div .bottom-div-first span{
+    color: #999;
+    margin-left: 10px;
+}
+.human-inventory .bottom-div .bottom-div-first h5{
+    display: inline-block;
+}
+.human-inventory .bottom-div .bottom-div-right{
+    position: absolute;
+    right: 30px;
+    top: 10px;
+
+}
+.human-inventory .bottom-div .bottom-div-right>div{
+    display: inline-block;
+    background-color: rgb(242,242,242);
+    color: rgb(102,102,102);
+    padding: 4px 8px;
+    margin:0 -2px;
+    cursor: pointer;
+}
+.human-inventory .bottom-div .bottom-div-right>div.select{
+    background-color: rgb(211,211,211);
+    color: rgb(51,51,51);
+}
+.human-inventory .bottom-div .bottom-div-first a{
+    float: right;
+    text-decoration: none;
+    cursor: pointer;
+}
+.human-inventory .bottom-div .bottom-div-second{
+    color: #999;
+    margin-left: 10px;
+}
+/*页面通用样式 begin*/
+
+/*表格样式 begin*/
+
+/*表格样式 end*/
+
+.human-inventory .LSLSetUp{
+    background-image: url("../../../img/index/setUp.png");
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 11px;
+    top: 10px;
+}
+
+.human-inventory .bottom-div2 {
+    border-top: 0px;
+    height: 800px;
+}
+.human-inventory .project-view {
+    height: 690px;
+}
+.human-inventory .employee-view {
+    height: 600px;
+}
+.human-inventory .index-jxmb-tab {
+    position: relative;
+    font-size: 12px;
+    height: 34px;
+    width: 100%;
+    border-left: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.human-inventory .index-jxmb-btn {
+    border-top: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+    width: 90px;
+    height: 34px;
+    line-height: 32px;
+    text-align: center;
+    float: left;
+    cursor: pointer;
+    background-color: #fafafa;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.human-inventory .index-jxmb-btn-select {
+    border-top: 2px solid #009edd;
+    border-bottom: #ffffff;
+    background: #ffffff;
+    line-height: 30px;
+    cursor: default;
+}
+
+.human-inventory .index-proj-btn {
+	margin: 20px auto;
+	border: 1px solid #e0e0e0;
+    width: 120px;
+    height: 28px;
+    line-height: 26px;
+   	text-align: center;
+    cursor: pointer;
+    background-color: #fafafa;
+}
+
+.human-inventory .index-proj-btn-select {
+    background: #D3D3D3;
+    line-height: 25px;
+    cursor: default;
+}
+
+.human-inventory .tab-content{
+    min-height: 350px;
+}
+.tab-content{
+	padding: 20px 20px 0px 20px;
+}
+
+.position-relative{
+	margin-top: 15px;
+}
+
+.manpowerInput-line{
+    height: 315px;
+}
+
+.inputOutputRatioChart-line{
+    height: 315px;
+}
+
+.inputOutputFeeChart-line{
+	height: 315px;
+}
+
+.piepanel{
+	overflow: auto;
+	height: 315px;
+}
+
+.human-inventory .table-view{
+    display: none;
+}
+.human-inventory .index-son-body{background-color: #ffffff;}
+.human-inventory .index-son-middle{width: 100%;height: 350px;padding-left: 20px;padding-right: 20px;padding-bottom: 18px;}
+
+.bottom-div-two > .row > div{
+    height: 385px;
+}
+.bottom-div-two > .row > div:nth-child(2){
+    border-left:1px solid #e0e0e0;
+}
+.bottom-div-two .row .bottom-div-first{
+    color: #333;
+}
+.bottom-div-three{
+    height: 960px !important;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.conditionBtn{
+    cursor: pointer;
+    position: absolute;
+    top: -48px;
+    left: 220px;
+    font-size: 12px;
+    width: 108px;
+    height: 48px;
+    line-height: 47px;
+    margin-left: 10px;
+    border: 1px solid #e0e0e0;
+    border-bottom: 0px;
+    z-index: 1;
+    background-color: #fff;
+    text-indent: 10px;
+}
+.conditionBtnListBody{
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px !important;
+}
+
+/*筛选条件 begin*/
+.dis-search{width: 280px;font-size: 12px !important;}
+.dis-search-input{line-height:2 !important;font-size: 12px !important;float: left;width: 74%;height: 34px;margin-top: 1px;border: 1px solid #e0e0e0;font-size: 12px;padding-top: 4px;padding-left: 12px;}
+.dis-search-input-btn{cursor:pointer;font-size: 12px !important;float: left;width: 26%;background-color: #009edd;height: 36px;line-height:36px;border: 1px solid #e0e0e0;margin-left: -1px;color: #fff;text-align: center;}
+.dis-search-tip{display: inline-block;color: #888;line-height: 2;padding: 6px 28px;}
+
+.condition-body{
+	border: 1px solid #E0E0E0; 
+	margin-top: 10px; 
+}
+.condition-body-list{
+    width: 100%;
+    margin-bottom: 30px;
+    margin-top: 14px;
+    height: 30px;
+    line-height: 30px;
+}
+.condition-body-list-title{
+    margin-left: 24px;
+    margin-right: 40px;
+    width: 65px;
+    text-align: right;
+}
+
+.condition-input-text{
+    width: 120px;
+    height: 30px;
+    line-height: 30px;
+}
+.condition-text-one{
+    margin-left: 6px;
+    margin-right: 6px;
+}
+.condition-btn{
+    float: left;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 24px;
+    line-height: 24px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+.condition-btn-selected{
+    background-color: #009edd;
+    color: #fff;
+    cursor: default;
+}
+
+.condition-btn-too-icon{
+    position: absolute;
+    top: 8px;
+    right: 6px;
+    background-image: url("../../../img/index/y.png");
+    width: 7px;
+    height: 7px;
+}
+/*筛选条件 end*/
+
+/*弹出框 begin*/
+.ZBSetUp-drag-middle{
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    margin-top: 30px;
+}
+.BSetUp-col{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+.BSetUp-line{
+    width: 100%;
+    float: left;
+    margin-bottom: 30px;
+}
+.BSetUp-text-line{
+    color: #888888;
+    text-align: left;
+    margin-bottom: 8px;
+}
+.BSetUp-text-last-line{
+    margin-bottom: 30px;
+}
+.color-div{
+    width: 12px;
+    height: 12px;
+    margin-top: 6px;
+}
+.green-color-div{
+    background-color: #5ab700;
+}
+.orange-color-div{
+    background-color: #eda100;
+}
+.BSetUp-text-one{
+    margin-top: 3px;
+    margin-left: 6px;
+}
+.BSetUp-input{
+    width: 58px;
+    height: 24px;
+    padding-left: 8px !important;
+    margin-left: 8px;
+    font-size: 12px !important;
+}
+.BSetUp-text-two{
+    margin-top: 3px;
+    margin-left: 12px;
+}
+
+/*.drag-middle-C{*/
+    /*margin-top: 5px;*/
+/*}*/
+.BSetUp-line-two{
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+}
+.BSetUp-line-three{
+    border-bottom: 1px dashed #e8ecf0;
+}
+.CSetUp-text-one{
+    margin-top: 6px;
+}
+.CSetUp-select{
+    margin-top: 4px;
+    margin-left: 8px;
+    width: 132px;
+    height: 24px;
+}
+.CSetUp-text-two{
+    width: 100%;
+    text-align: left;
+    color: #888888;
+    padding-top: 8px;
+    padding-bottom: 20px;
+}
+.CSetUp-text-checkbox{
+    margin-top: 3px;
+    margin-right: 18px;
+    margin-left: 2px;
+    cursor: pointer;
+}
+/*弹出框 end*/
+
+.pieChart {
+	height: 320px;
+}
+
+.pieChartText {
+	height: 100%;
+    display: table;
+	text-align: left;
+	overflow: auto;
+	padding: 10px;
+}
+.pieChartText .pieChartTextContent {
+    display: table-cell;
+	vertical-align: middle;
+}
+
+.pieChartText .legend {
+	margin: 5px 0px;
+}
+
+.pieChartText .legend label {
+	width: 10px;
+	height: 10px;
+	margin-right: 3px;
+}
+
+/*media begin*/
+@media (max-width: 680px) {
+    .condition-body-list-title {width: 100%;text-align: left;}
+    .condition-bottom{padding-left: 0px;}
+    .condition-text-one{display: none;}
+    .condition-input-text-too{clear: both;margin-top: 6px;}
+
+    .conditionBtn{top: -65px;left: -11px;border-bottom: 1px solid #e0e0e0;}
+    .conditionBtnListBody{margin-top: 110px;}
+    .dis-search{top: -115px;}
+}
+/*media end*/
+
+#manpowerInYearModal .modal-dialog{
+    width:900px;
+}
+#manpowerInYearModal .modal-dialog>.modal-content>.modal-body{
+    min-height: 450px;
+}
+
+#feeInputInYearModal .modal-dialog{
+    width:900px;
+}
+#feeInputInYearModal .modal-dialog>.modal-content>.modal-body{
+    min-height: 450px;
+}
+
+#manpowerPartInYearModal .modal-dialog{
+    width:900px;
+}
+#manpowerPartInYearModal .modal-dialog>.modal-content>.modal-body{
+    min-height: 450px;
+}
+
+#participateProjectModal .modal-dialog{
+    width:900px;
+}
+#participateProjectModal .modal-dialog>.modal-content>.modal-body{
+    min-height: 450px;
+}
+#participateProjectModal .tab-content{
+    padding:15px 1px;
+}
+#participateProjectModal .tab-content .col-xs-12{
+    padding: 0;
+}
+.customBtn{
+	cursor: pointer; 
+	width: 50px; 
+	height: 25px; 
+	line-height:25px; 
+	color: white; 
+	background-color: #1A9FF3; 
+	text-align: center; 
+	float: left;
+}
+.clearBtn{
+	cursor: pointer; 
+	width: 50px; 
+	height: 25px; 
+	line-height:25px; 
+	color: black; 
+	background-color: #FBFBFB; 
+	text-align: center; 
+	float: left;
+	margin-left: 20px;
+	border: 1px solid #E0E0E0;
+}
+
+/*盈亏项目明细 弹出框 -- began*/
+#profitLossProjectDetailModal .modal-dialog{
+	width: 850px;
+}
+#profitLossProjectDetailModal .modal-body .span-weight{
+    font-weight: bolder; 
+    font-size: 15px;
+}
+#profitLossProjectDetailModal .tab-content{
+    padding:15px 1px;
+}
+#profitLossProjectDetailModal .tab-content .col-xs-12{
+    padding: 0;
+}
+#profitLossProjectDetailModal .tab-content .table-thead-tr{
+	background: #ffffff;
+}
+#profitLossProjectDetailModal .tab-content .table-thead-tr th{
+	text-align: center;
+}
+#profitLossProjectDetailModal .tab-content .thead-tr-th-first{
+	width: 30%; 
+}
+#profitLossProjectDetailModal .tab-content .thead-tr-th{
+	width: 15%; 
+}
+#profitLossProjectDetailModal .tab-content .thead-tr-th-last{
+	width: 25%; 
+}
+#profitLossProjectDetailModal .tab-content .tbody-tr-td-first{
+	text-align: left;
+}
+#profitLossProjectDetailModal .tab-content .tbody-tr-td{
+	text-align: center;
+}
+/*盈亏项目明细 弹出框 -- end*/
+
+/*盈亏金额明细 弹出框 -- began*/
+#profitLossAmountDetailModal .modal-dialog{
+	width: 850px;
+}
+#profitLossAmountDetailModal .modal-body .span-weight{
+    font-weight: bolder; 
+    font-size: 15px;
+}
+#profitLossAmountDetailModal .tab-content{
+    padding:15px 1px;
+}
+#profitLossAmountDetailModal .tab-content .col-xs-12{
+    padding: 0;
+}
+#profitLossAmountDetailModal .tab-content .table-thead-tr{
+	background: #ffffff;
+}
+#profitLossAmountDetailModal .tab-content .table-thead-tr th{
+	text-align: center;
+}
+#profitLossAmountDetailModal .tab-content .thead-tr-th-first{
+	width: 30%; 
+}
+#profitLossAmountDetailModal .tab-content .thead-tr-th{
+	width: 15%; 
+}
+#profitLossAmountDetailModal .tab-content .thead-tr-th-last{
+	width: 25%; 
+}
+#profitLossAmountDetailModal .tab-content .tbody-tr-td-first{
+	text-align: left;
+}
+#profitLossAmountDetailModal .tab-content .tbody-tr-td{
+	text-align: center;
+}
+/*盈亏金额明细 弹出框 -- end*/
+#projectTypeLegend{
+	position: absolute;
+}
+/*jqgrid标题行自动换行*/
+th.ui-th-column div{
+	white-space:normal !important;
+	height:auto !important;
+	padding:5px;
+}
+.textInput{
+	height:30px; 
+	line-height:30px;
+}
+
+/* 数据导入 began */
+#page-three .bottom-div{
+	width: 100%;
+    height: 260px;
+    border: 1px solid #e0e0e0;
+}
+#page-three .div-three-title{
+	line-height: 40px;
+}
+#page-three .ct-col-line{
+	padding-top: 10px;
+}
+#page-three .title-font-weight{
+	font-size: 15px; 
+	font-weight: bolder; 
+}
+#page-three .upload-radio-cursor{
+	cursor: default;
+}
+#page-three .upload-radio-padding{
+	padding-left: 0px;
+}
+#page-three .explain-style{
+	padding: 10px;
+}
+#page-three .hyperlink-style{
+	cursor: pointer; 
+	color: #00f; 
+	text-decoration: underline;
+}
+#page-three .display-none{
+	display: none;
+}
+#page-three .div-bottom-line{
+	border-bottom: dashed 1px #ccc;
+}
+#page-three .checkbox-date-first{
+	width: 60px;
+}
+#page-three .checkbox-date-second{
+	width: 100px;
+}
+#page-three .btn-style-center{
+	text-align: center;
+}
+#page-three .btn-style-width{
+	width: 400px;
+}
+#page-three .span-font-warning{
+	color: #f00;
+}
+#page-three .span-font-success{
+	color: #00f;
+}
+#importDataTemplate .modal-content{
+	width: 400px;
+	height: 200px;
+}
+#importDataTemplate .modal-content .modal-body-p{
+	padding: 20px;
+}
+#formalErrorTable, #updateAndDeleteTipsTable{
+	margin-top: 10px;
+}
+#formalErrorTable .table-thead-tr, #updateAndDeleteTipsTable .table-thead-tr{
+	background: #ffffff;
+}
+#formalErrorTable .importErrorTd, #updateAndDeleteTipsTable .importInfoTr .importInfoTd{
+	color: #f00;
+}
+/* 数据导入 end */
+.ui-jqgrid-hdiv .ui-jqgrid-htable{
+    /* border-top: 1px solid #e1e1e1;
+    border-left: 1px solid #e1e1e1;
+    border-right: 1px solid #e1e1e1; */
+}
+.ui-jqgrid .ui-jqgrid-btable{
+	border-left: 0px !important;
+	border-right: 0px !important;
+}
+.ct-glyphicon-plus{
+    background-image: url("../../../img/index/ct-glyphicon-plus.png");
+    width: 9px;
+    height: 9px;
+    margin-left: 2px;
+    margin-top: 6px;
+}
+.ct-glyphicon-minus{
+    background-image: url("../../../img/index/ct-glyphicon-minus.png");
+    width: 9px;
+    height: 9px;
+    margin-left: 2px;
+    margin-top: 6px;
+}
+.condition-bottom{
+	white-space: nowrap; 
+	font-size: 15px;
+	margin-left: 100px;
+	margin-bottom: 20px;
+	display: inline-block;
+}
+.continue-btn{
+	border: 1px solid #808080;
+	background-color: #E0E0E0;
+	border-radius: 3px;
+	cursor: pointer;
+	width: 100px;
+	height: 25px;
+	text-align: center;
+	float: left;
+}
+.float-left{
+	float: left;
+}
+.margin0{
+	margin: 0 !important;
+}
+.marginRight7{
+	margin-right: 7px !important;
+}
+.marginRight20{
+	margin-right: 20px !important;
+}
+.marginBottom20{
+	margin-bottom: 20px !important;
+}
+.marginTop20{
+	margin-top: 20px;
+}
+.marginLeft10{
+	margin-left: 10px !important;
+}
+.marginLeft30{
+	margin-left: 30px !important;
+}
+.padding0{
+	padding: 0px !important;
+}
+.paddingLeft10{
+	padding-left: 10px !important;
+}
+.imgLabel{
+	width: 12px;
+	height: 12px;
+}
+.imgLegend{
+	text-align: center;
+    height: 12px;
+    line-height: 12px;
+}
+.height12{
+	height: 12px;
+	line-height: 12px;
+}
+.height334{
+	height: 334px;
+}
+.left{
+	float: left;
+}
+.width248{
+	width: 248px;
+}
+.width60{
+	width: 60px;
+}
+.width80{
+	width: 80px !important;
+}
+.width90{
+	width: 90px !important;
+}
+.width120{
+	width: 120px !important;
+}
+input[readonly]{
+	background: #ffffff !important;
+	height: 32px;
+}
+.input-group-addon{
+	background-color: #ffffff !important;
+}
+.board0{
+	border: 0px !important;
+}
+.bord-style{
+	border: solid 1px #e0e0e0;
+}
+.textAlignCenter{
+	text-align: center;
+}
+/*主导项目-明细分析-人力结构分析 began*/
+#tabpanel3 .col-sm-6:nth-child(1){
+	padding: 0px 20px 20px 0px;
+}
+#tabpanel3 .col-sm-6:nth-child(2){
+	padding: 0px 0px 20px 0px;
+}
+#tabpanel3 .col-sm-6:nth-child(3){
+	padding: 0px 20px 0px 0px;
+}
+#tabpanel3 .col-sm-6:nth-child(4){
+	padding: 0px;
+}
+#tabpanel3 .index-common-title-text{
+	font-weight: bold;
+}
+/*主导项目-明细分析-人力结构分析 end*/
+/*参与项目-明细分析-人力结构分析 began*/
+#part3 .col-sm-6:nth-child(1){
+	padding: 0px 20px 20px 0px;
+}
+#part3 .col-sm-6:nth-child(2){
+	padding: 0px 0px 20px 0px;
+}
+#part3 .col-sm-6:nth-child(3){
+	padding: 0px 20px 0px 0px;
+}
+#part3 .col-sm-6:nth-child(4){
+	padding: 0px;
+}
+#part3 .index-common-title-text{
+	font-weight: bold;
+}
+/*参与项目-明细分析-人力结构分析 end*/
+.fontSize8{
+	font-size: 8px;
+}
+.fontSize15{
+	font-size: 15px;
+}
+.fontRed{
+	color: red !important;
+}

@@ -1,0 +1,38 @@
+package ${package.ServiceImpl};
+
+import ${package.Entity}.${entity};
+import ${package.Mapper}.${table.mapperName};
+import ${package.Service}.${table.serviceName};
+import ${superServiceImplClassPackage};
+#if(${cfg.supportDubbo})
+import org.springframework.stereotype.Component;
+import org.apache.dubbo.config.annotation.Service;
+#else
+import org.springframework.stereotype.Service;
+#end
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * <p>
+ * $!{table.comment} 服务实现类
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+@Slf4j
+#if(${cfg.supportDubbo})
+@Component
+@Service(interfaceClass = ${table.serviceName}.class)
+#else
+@Service
+#end
+#if(${kotlin})
+open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperName}, ${entity}>(), ${table.serviceName} {
+
+}
+#else
+public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
+
+}
+#end

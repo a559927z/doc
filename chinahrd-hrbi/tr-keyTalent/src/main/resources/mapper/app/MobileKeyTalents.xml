@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.keyTalent.mvc.app.dao.MobileKeyTalentsDao">
+
+	<sql id="cardHead">
+		<![CDATA[
+			SELECT 
+			    vde.emp_id as empId,
+			    vde.user_name_ch as userName,
+			     vde.img_path as imgPath,
+			   vde.position_name as positionName,
+			   vde.organization_name as organizationName,
+			   dr.risk_flag as riskFlag,
+			   kt.key_talent_id as keyTalentId,
+			   kt.is_sychron as sychron,
+			   kt.create_emp_id as createEmpId,
+			   dktt.key_talent_type_name as keyTalentTypeName,
+			   jlys_content.content as encourageContent,
+			   tag.advantageTag,
+			   tag.inferiorityTag,
+			   log.content as logContent,
+			   ktf.key_talent_focuses_id as focusesId 
+		  ]]>
+	</sql>
+	
+	<!-- 离职风险预警 查询 -->
+	<select id="queryRunoffRiskWarnEmp" resultType="net.chinahrd.entity.dto.app.keyTalents.KeyTalentsCardDto" >
+		 <include refid="cardHead"></include>
+ 			FROM key_talent kt 
+  			inner join dimission_risk dr
+  				on kt.emp_id=dr.emp_id and kt.customer_id=dr.customer_id
+  			inner join dim_key_talent_type dktt
+  				on dktt.key_talent_type_id=kt.key_talent_type_id and kt.customer_id=dktt.customer_id
+ 			inner join v_dim_emp vde
+ 			    on vde.emp_id=kt.emp_id and kt.customer_id=vde.customer_id AND vde.run_off_date IS NULL
+  			left join (select key_talent_id,customer_id,
+		  			group_concat(case when type=1 then content else NULL end) advantageTag,
+	                group_concat(case when type=2 then content else NULL end) inferiorityTag
+    					 from key_talent_tags  
+     				group by key_talent_id,customer_id
+ 				 ) tag  
+  				on kt.key_talent_id=tag.key_talent_id and kt.customer_id=tag.customer_id  
+  			left join (select key_talent_id,customer_id,content 
+     					from key_talent_logs 
+ 						group by key_talent_id,customer_id
+  				) log  
+  				on kt.key_talent_id=log.key_talent_id and kt.customer_id=log.customer_id    
+ 			left join (
+         		select c.key_talent_id,c.customer_id,group_concat(c.content) as content from
+	        	 	(select kte.key_talent_id,kte.customer_id,de.content
+	          	    	 from key_talent_encourages kte
+	          	     	left join  dim_encourages de
+	         	      	on kte.encourages_id=de.encourages_id 
+	 	 	    		order by kte.key_talent_id,de.content
+		       		)c
+          			group by c.key_talent_id,c.customer_id
+  				) jlys_content  
+ 				 on kt.key_talent_id=jlys_content.key_talent_id and kt.customer_id=jlys_content.customer_id   
+  			left join  key_talent_focuses ktf
+ 			    on ktf.key_talent_id=kt.key_talent_id and ktf.customer_id=kt.customer_id and ktf.emp_id='' 
+  			where  dr.is_last=1 and (dr.risk_flag=1 or dr.risk_flag=2)
+  			and kt.customer_id = #{customerId}
+  			AND kt.is_delete=0 
+  			AND vde.organization_id IN
+  			<foreach collection="list" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+			order by dr.risk_flag,dktt.show_index,convert(vde.user_name_ch using gbk)    
+    </select>
+  
+
+   
+    
+  
+   
+
+   
+  
+	 
+<!-- 	 查询各个类型的关键人才数量 -->
+	<select id="queryKeyTalentTypePanel"  resultType="net.chinahrd.entity.dto.app.keyTalents.KeyTalentPanelDto" >
+		select dktt.key_talent_type_id as id,dktt.key_talent_type_name as name,
+					sum(case when kt.key_talent_type_id is not null then 1 else 0 end) as `count`
+					from dim_key_talent_type dktt
+		    left join ( 
+		       select kt.key_talent_type_id,kt.customer_id from key_talent kt
+		       inner join v_dim_emp vde 
+		       on kt.customer_id=vde.customer_id and kt.emp_id=vde.emp_id AND vde.run_off_date IS NULL
+		       WHERE kt.is_delete=0 
+	  			AND vde.organization_id IN
+	  			<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+					#{id}
+				</foreach>
+		    )kt
+   			on kt.key_talent_type_id=dktt.key_talent_type_id and kt.customer_id=dktt.customer_id
+ 			WHERE  dktt.customer_id=#{customerId}
+  			 group by dktt.key_talent_type_id
+	
+	</select>
+	<!-- 	 根据类型查询关键人才 -->
+	<select id="queryKeyTalentByType" resultType="net.chinahrd.entity.dto.app.keyTalents.KeyTalentsCardDto" >
+    	 <include refid="cardHead"></include> 
+ 			FROM key_talent kt 
+  			inner join dim_key_talent_type dktt
+  				on dktt.key_talent_type_id=kt.key_talent_type_id and kt.customer_id=dktt.customer_id
+ 			inner join v_dim_emp vde
+ 			    on vde.emp_id=kt.emp_id and kt.customer_id=vde.customer_id AND vde.run_off_date IS NULL
+  			left join (select key_talent_id,customer_id,
+		  			group_concat(case when type=1 then content else NULL end) advantageTag,
+	                group_concat(case when type=2 then content else NULL end) inferiorityTag
+    					 from key_talent_tags  
+     				group by key_talent_id,customer_id
+ 				 ) tag  
+  				on kt.key_talent_id=tag.key_talent_id and kt.customer_id=tag.customer_id  
+  			left join (select key_talent_id,customer_id,content 
+     					from key_talent_logs 
+ 						group by key_talent_id,customer_id
+  				) log  
+  				on kt.key_talent_id=log.key_talent_id and kt.customer_id=log.customer_id    
+ 			left join (
+         		select c.key_talent_id,c.customer_id,group_concat(c.content) as content from
+	        	 	(select kte.key_talent_id,kte.customer_id,de.content
+	          	    	 from key_talent_encourages kte
+	          	     	left join  dim_encourages de
+	         	      	on kte.encourages_id=de.encourages_id 
+	 	 	    		order by kte.key_talent_id,de.content
+		       		)c
+          			group by c.key_talent_id,c.customer_id
+  				) jlys_content  
+ 				 on kt.key_talent_id=jlys_content.key_talent_id and kt.customer_id=jlys_content.customer_id  
+  			left join (select emp_id,customer_id,risk_flag from dimission_risk where is_last=1 ) dr
+  				on kt.emp_id=dr.emp_id and kt.customer_id=dr.customer_id 
+			left join  key_talent_focuses ktf
+		    	on ktf.key_talent_id=kt.key_talent_id and ktf.customer_id=kt.customer_id and ktf.emp_id=#{empId}   
+  			where kt.customer_id = #{customerId}
+    		and kt.key_talent_type_id = #{keyTalentTypeId} 
+  			AND kt.is_delete=0 
+  			AND vde.organization_id IN
+  			<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+					
+			ORDER BY ktf.key_talent_focuses_id is not NULL DESC,if(dr.risk_flag is null or dr.risk_flag=0,100,dr.risk_flag),dktt.show_index,CONVERT(vde.user_name_ch USING GBK)
+		 limit #{rowBounds.offset} , #{rowBounds.limit}
+	</select>
+	
+	<!-- 	 根据类型查询关键人才  COUNT-->
+	<select id="queryKeyTalentByTypeCount" resultType="java.lang.Integer" >
+    	 SELECT COUNT(1) FROM key_talent kt 
+  			inner join dim_key_talent_type dktt
+  				on dktt.key_talent_type_id=kt.key_talent_type_id and kt.customer_id=dktt.customer_id
+ 			inner join v_dim_emp vde
+ 			    on vde.emp_id=kt.emp_id and kt.customer_id=vde.customer_id AND vde.run_off_date IS NULL
+  			where  kt.customer_id = #{customerId}
+    		and kt.key_talent_type_id = #{keyTalentTypeId} 
+  			AND kt.is_delete=0 
+  			AND vde.organization_id IN
+  			<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+	</select>
+	
+<!-- 	  		 查询各个部门的关键人才数量 （含有下级） -->
+	<select id="queryKeyTalentOrganPanel"  resultType="net.chinahrd.entity.dto.app.keyTalents.KeyTalentPanelDto">
+			SELECT
+				org.organization_id AS id,
+				org.organization_name AS NAME,
+				org.has_children,
+				dot.organization_type_level,
+				org.depth,
+				org.full_path,
+				org.has_children  as hasChildren,
+				sum(case when kt.customer_id is not null then 1 else 0 end) AS `count`
+			FROM
+				(
+					SELECT
+						t1.organization_id,
+						t1.customer_id,
+						t1.organization_name,
+						t1.organization_parent_id,
+						t1.full_path,
+						t1.has_children,
+						t1.organization_type_id,
+						t1.depth
+					FROM
+						dim_organization t1
+					WHERE
+						t1.customer_id = #{customerId}
+					  <choose>
+					  <when test="more == true">
+					  	AND t1.organization_id in
+						<foreach item="o" collection="list" open="(" separator="," close=")">
+						'${o}'
+						</foreach>
+					  </when>
+					  <otherwise>AND t1.organization_parent_id = #{organId}</otherwise>
+					  </choose>
+					
+				) org
+			LEFT JOIN (
+				SELECT
+					org.full_path,
+					kt.customer_id
+				FROM
+					key_talent kt
+				INNER JOIN v_dim_emp vde ON kt.customer_id = vde.customer_id
+				AND kt.emp_id = vde.emp_id
+				AND vde.run_off_date IS NULL
+				INNER JOIN dim_organization org 
+				ON org.organization_id = vde.organization_id
+				AND org.customer_id = vde.customer_id
+				WHERE
+					kt.is_delete = 0
+					AND kt.customer_id = #{customerId}
+			) kt ON kt.customer_id = org.customer_id
+			AND locate(org.full_path, kt.full_path)
+			LEFT JOIN dim_organization_type dot ON dot.organization_type_id = org.organization_type_id
+			AND org.customer_id = dot.customer_id
+			GROUP BY
+				org.organization_id
+			ORDER BY
+				org.has_children DESC,
+				dot.organization_type_level,
+				org.depth,
+				org.full_path;
+	</select>
+	
+	 <!-- 	 根据部门查询关键人才 -->
+	<select id="queryKeyTalentByOrgan" resultType="net.chinahrd.entity.dto.app.keyTalents.KeyTalentsCardDto" >
+    	 <include refid="cardHead"></include> 
+ 			FROM key_talent kt 
+  			inner join dim_key_talent_type dktt 
+  				on dktt.key_talent_type_id=kt.key_talent_type_id and kt.customer_id=dktt.customer_id
+ 			inner join v_dim_emp vde 
+ 			    on vde.emp_id=kt.emp_id and kt.customer_id=vde.customer_id AND vde.run_off_date IS NULL
+  			left join (select key_talent_id,customer_id,
+		  			group_concat(case when type=1 then content else NULL end) advantageTag,
+	                group_concat(case when type=2 then content else NULL end) inferiorityTag
+    					 from key_talent_tags  
+     				group by key_talent_id,customer_id
+ 				 ) tag  
+  				on kt.key_talent_id=tag.key_talent_id and kt.customer_id=tag.customer_id  
+  			left join (select key_talent_id,customer_id,content 
+     					from key_talent_logs 
+ 						group by key_talent_id,customer_id
+  				) log  
+  				on kt.key_talent_id=log.key_talent_id and kt.customer_id=log.customer_id    
+ 			left join (
+         		select c.key_talent_id,c.customer_id,group_concat(c.content) as content from
+	        	 	(select kte.key_talent_id,kte.customer_id,de.content
+	          	    	 from key_talent_encourages kte
+	          	     	left join  dim_encourages de
+	         	      	on kte.encourages_id=de.encourages_id 
+	 	 	    		order by kte.key_talent_id,de.content
+		       		)c
+          			group by c.key_talent_id,c.customer_id
+  				) jlys_content  
+ 				 on kt.key_talent_id=jlys_content.key_talent_id and kt.customer_id=jlys_content.customer_id
+  			left join (select emp_id,customer_id,risk_flag from dimission_risk where is_last=1 ) dr
+  				on kt.emp_id=dr.emp_id and kt.customer_id=dr.customer_id 
+			left join  key_talent_focuses ktf
+		    	on ktf.key_talent_id=kt.key_talent_id and ktf.customer_id=kt.customer_id and ktf.emp_id=#{empId}   
+  			where  kt.customer_id = #{customerId}
+  			AND kt.is_delete=0 
+  			AND vde.organization_id IN(
+						SELECT t1.organization_id FROM dim_organization t1 
+						WHERE
+							locate(
+								(
+									SELECT t.full_path FROM dim_organization t
+									WHERE t.organization_id = #{organizationId}
+									AND t.customer_id = #{customerId}
+								), t1.full_path
+							)
+						AND t1.customer_id = #{customerId}
+					)
+			ORDER BY ktf.key_talent_focuses_id is not NULL DESC,if(dr.risk_flag is null or dr.risk_flag=0,100,dr.risk_flag),dktt.show_index,CONVERT(vde.user_name_ch USING GBK)
+			limit #{rowBounds.offset} , #{rowBounds.limit}		
+	</select>
+	
+	<!--  根据部门查询关键人才  数量 -->
+	<select id="queryKeyTalentByOrganCount" resultType="java.lang.Integer" >
+    	 	SELECT COUNT(1)
+ 			FROM key_talent kt 
+  			inner join dim_key_talent_type dktt 
+  				on dktt.key_talent_type_id=kt.key_talent_type_id and kt.customer_id=dktt.customer_id
+ 			inner join v_dim_emp vde 
+ 			    on vde.emp_id=kt.emp_id and kt.customer_id=vde.customer_id AND vde.run_off_date IS NULL
+  			where  kt.customer_id = #{customerId}
+  			AND kt.is_delete=0 
+  			AND vde.organization_id IN(
+						SELECT t1.organization_id FROM dim_organization t1 
+						WHERE
+							locate(
+								(
+									SELECT t.full_path FROM dim_organization t
+									WHERE t.organization_id = #{organizationId}
+									AND t.customer_id = #{customerId}
+								), t1.full_path
+							)
+						AND t1.customer_id = #{customerId}
+					)
+	</select>
+
+
+	<!-- 关键人才列表 -->
+	<select id="queryKeyTalentByName"  resultType="net.chinahrd.entity.dto.app.common.EmpDto" >
+		  		SELECT
+		  	kt.key_talent_id AS keyTalentId,
+			vde.emp_id AS empId,
+			vde.img_path AS imgPath,
+			vde.user_name_ch AS userName,
+			vde.organization_name AS organizationName,
+			vde.position_name AS positionName,
+			vde.tel_phone AS phone,
+			vde.email 
+			FROM  key_talent kt 
+			INNER JOIN v_dim_emp vde 
+			on vde.emp_id=kt.emp_id and kt.customer_id=vde.customer_id 
+			WHERE vde.customer_id = #{customerId} 
+			AND vde.run_off_date IS NULL 
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+			AND kt.is_delete=0 
+			AND vde.organization_id IN
+			<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+			ORDER BY convert(vde.user_name_ch using GBK) 
+			LIMIT #{rowBounds.offset}, #{rowBounds.limit}
+				
+	</select>
+	<select id="queryKeyTalentByNameCount"  resultType="java.lang.Integer" >
+	       SELECT count(1)  
+	       FROM  key_talent kt 
+			INNER JOIN v_dim_emp vde 
+			on vde.emp_id=kt.emp_id and kt.customer_id=vde.customer_id 
+			WHERE vde.customer_id = #{customerId} 
+			AND vde.run_off_date IS NULL 
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+			AND kt.is_delete=0 
+			AND vde.organization_id IN
+			<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+	</select>
+	<select id="queryKeyTalentAll" resultType="net.chinahrd.entity.dto.app.keyTalents.KeyTalentsCardDto" >
+    	 <include refid="cardHead"></include> 
+ 			FROM key_talent kt 
+  			inner join dim_key_talent_type dktt
+  				on dktt.key_talent_type_id=kt.key_talent_type_id and kt.customer_id=dktt.customer_id
+ 			inner join v_dim_emp vde
+ 			    on vde.emp_id=kt.emp_id and kt.customer_id=vde.customer_id AND vde.run_off_date IS NULL
+  			left join (select key_talent_id,customer_id,
+		  			group_concat(case when type=1 then content else NULL end) advantageTag,
+	                group_concat(case when type=2 then content else NULL end) inferiorityTag
+    					 from key_talent_tags  
+     				group by key_talent_id,customer_id
+ 				 ) tag  
+  				on kt.key_talent_id=tag.key_talent_id and kt.customer_id=tag.customer_id  
+  			left join (select key_talent_id,customer_id,content 
+     					from key_talent_logs 
+ 						group by key_talent_id,customer_id
+  				) log  
+  				on kt.key_talent_id=log.key_talent_id and kt.customer_id=log.customer_id    
+ 			left join (
+         		select c.key_talent_id,c.customer_id,group_concat(c.content) as content from
+	        	 	(select kte.key_talent_id,kte.customer_id,de.content
+	          	    	 from key_talent_encourages kte
+	          	     	left join  dim_encourages de
+	         	      	on kte.encourages_id=de.encourages_id 
+	 	 	    		order by kte.key_talent_id,de.content
+		       		)c
+          			group by c.key_talent_id,c.customer_id
+  				) jlys_content  
+ 				 on kt.key_talent_id=jlys_content.key_talent_id and kt.customer_id=jlys_content.customer_id
+  			left join (select emp_id,customer_id,risk_flag from dimission_risk where is_last=1 ) dr
+  				on kt.emp_id=dr.emp_id and kt.customer_id=dr.customer_id 
+			left join  key_talent_focuses ktf
+		    	on ktf.key_talent_id=kt.key_talent_id and ktf.customer_id=kt.customer_id and ktf.emp_id=#{empId}   
+  			where kt.customer_id = #{customerId}
+  			AND kt.is_delete=0 
+  			AND vde.organization_id IN
+  			<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+					
+			ORDER BY ktf.key_talent_focuses_id is not NULL DESC,if(dr.risk_flag is null or dr.risk_flag=0,100,dr.risk_flag),dktt.show_index,CONVERT(vde.user_name_ch USING GBK)
+		 limit #{rowBounds.offset} , #{rowBounds.limit}	
+	</select>
+	<select id="queryKeyTalentAllCount" resultType="java.lang.Integer" >
+    	 	SELECT COUNT(1)
+ 			FROM key_talent kt 
+ 			inner join v_dim_emp vde
+ 			    on vde.emp_id=kt.emp_id and kt.customer_id=vde.customer_id AND vde.run_off_date IS NULL 
+  			where kt.customer_id = #{customerId}
+  			AND kt.is_delete=0 
+  			AND vde.organization_id IN
+  			<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+	</select>
+	
+	
+</mapper>

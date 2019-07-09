@@ -1,0 +1,339 @@
+@CHARSET "UTF-8";
+
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p,
+	blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn,
+	em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var,
+	b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, input, select,
+	textarea, label, legend, article, aside, canvas, details, embed, figure,
+	figcaption, footer, header, hgroup, menu, nav, output, ruby, section,
+	summary, time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline
+}
+
+ol, ul {
+	list-style: none
+}
+
+
+html {
+	background-color: #f9f9f9;
+	font: 16px/1 STHeiti, Arial;
+	color: #666;
+	word-wrap: break-word;
+	word-break: break-all;
+	text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%
+}
+
+a {
+	color: #666;
+	text-decoration: none
+}
+
+a.link-highlight {
+	color: #2f75bb
+}
+
+main {
+	min-height: 360px
+}
+.vs-cartype {
+	height: 113px
+}
+
+.vs-cartype .box {
+	display: table;
+	width: 100%;
+	height: 110px;
+	background-color: #fff;
+	border: solid #c3c3c3;
+	border-width: 1px 0 2px;
+	overflow: hidden;
+	position: relative
+}
+
+.vs-cartype .box.box-fixed {
+	z-index: 1000;
+	position: fixed;
+	top: 0;
+	left: 0
+}
+
+.vs-cartype .box .tit {
+	display: table-cell;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 80px;
+	border-right: solid #c3c3c3 1px;
+	box-shadow: 1px 0 0 #e9e9e9;
+	-webkit-box-shadow: 1px 0 0 #e9e9e9;
+	-moz-box-shadow: 1px 0 0 #e9e9e9;
+	font-size: 14px;
+	text-align: center;
+	vertical-align: middle
+}
+
+.vs-cartype .box .tit h1 {
+	margin-top: 2px
+}
+
+/* .vs-cartype .box .tit p { */
+/* 	margin: 2px 0; */
+/* 	font-size: 18px */
+/* } */
+
+/* .vs-cartype .box .tit p strong { */
+/* 	color: #2f75bb */
+/* } */
+
+/* .vs-cartype .box .tit p span { */
+/* 	color: #939393 */
+/* } */
+
+.vs-cartype .box .cont {
+	display: table-cell;
+	overflow: hidden;
+	position: relative
+}
+
+.vs-cartype .box .cont .slide {
+	width: 480px;
+	height: 110px;
+	position: absolute;
+	top: 0;
+	left: 0
+}
+
+.vs-cartype .box .cont .slide td {
+	width: 99px;
+	height: 80px;
+	border-right: solid #c3c3c3 1px;
+	padding: 10px 10px 10px;
+	font-size: 14px;
+	line-height: 20px;
+	text-align: center;
+	vertical-align: middle;
+	position: relative
+}
+
+.vs-cartype .box .cont .slide td span {
+	font-size: 10px;
+	font-style: italic;
+	color: #939393;
+	line-height: 10px;
+	position: absolute;
+	right: 5px;
+	bottom: 5px
+}
+
+.vs-cartype .box .cont .slide td .icon-cross {
+	display: none;
+	width: 18px;
+	height: 18px;
+	background-color: #666;
+	border-radius: 9px;
+	text-align: center;
+	overflow: hidden;
+	position: absolute;
+	top: 2px;
+	right: 4px;
+	color: white;
+	line-height: 18px;
+}
+
+.vs-cartype .box .cont .slide td .icon-cross::before {
+	margin-top: 4px
+}
+
+.vs-cartype .box .cont .slide td.added {
+	text-align: left
+}
+
+.vs-cartype .box .cont .slide td.added .icon-add {
+	display: none
+}
+
+.vs-cartype .box .cont .slide td.added .icon-cross {
+	display: block
+}
+
+.vs-carsift {
+	background-color: #fff;
+	overflow: hidden
+}
+
+.vs-carsift p {
+	float: left;
+	height: 18px;
+	margin-left: 38px;
+	padding: 11px 0;
+	font-size: 14px;
+	line-height: 18px
+}
+
+.vs-carsift .checkbox {
+	margin-right: 8px;
+	vertical-align: top
+}
+
+.vs-cardata .box {
+	display: table;
+	width: 100%;
+	background-color: #f9f9f9;
+	border-bottom: solid #c3c3c3 1px;
+	overflow: hidden
+}
+
+.vs-cardata .tit {
+	display: table-cell;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 80px;
+	background: #fff;
+	border-right: solid #c3c3c3 1px;
+	box-shadow: 1px 0 0 #e9e9e9;
+	-webkit-box-shadow: 1px 0 0 #e9e9e9;
+	-moz-box-shadow: 1px 0 0 #e9e9e9;
+	font-size: 14px
+}
+
+.vs-cardata .tit dt {
+	height: 38px;
+	z-index: 10;
+	position: relative
+}
+
+.vs-cardata .tit dt h1 {
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 6000px;
+	padding: 0 12px;
+	background-color: #f9f9f9;
+	border: solid #c3c3c3;
+	border-width: 1px 0;
+	font-size: 16px;
+	line-height: 36px;
+	position: absolute;
+	top: 0;
+	left: 0
+}
+.vs-cardata .tit dt span {
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 6000px;
+	padding: 5px 12px 0 15px;
+	background-color: #f9f9f9;
+	border: solid #c3c3c3;
+	border-width: 1px 0;
+	font-size: 12px;
+	line-height: 36px;
+	position: absolute;
+	color: #939393;
+	vertical-align: middle;
+
+    height: 47px;
+	top: 0;
+	left: 0
+}
+.vs-cardata .tit dt h1 span {
+	font-size: 12px;
+	color: #939393;
+	position: absolute;
+	top: 0;
+	left: 210px
+}
+
+.vs-cardata .tit dd {
+	display: table;
+	width: 100%
+}
+
+.vs-cardata .tit dd span {
+	display: table-cell;
+	padding: 0 2px;
+	height: 47px;
+	border-bottom: solid #e9e9e9 1px;
+	font-size: 12px;
+	color: #939393;
+	line-height: 14px;
+	text-align: center;
+	vertical-align: middle
+}
+
+.vs-cardata .tit dd .inquiry-span {
+	height: 63px
+}
+
+.vs-cardata .cont {
+	display: table-cell;
+	overflow: hidden;
+	position: relative
+}
+
+.vs-cardata .cont .slide {
+	width: 480px;
+	position: absolute;
+	top: 0;
+	left: 0
+}
+
+.vs-cardata .cont tr.highlight {
+	color: #2f75bb
+}
+
+.vs-cardata .cont th {
+	height: 38px
+}
+
+.vs-cardata .cont td {
+	width: 115px;
+	height: 47px;
+	padding: 0 2px;
+	border: solid #e9e9e9;
+	border-width: 0 1px 1px 0;
+	font-size: 12px;
+	line-height: 14px;
+	text-align: center;
+	vertical-align: middle
+}
+
+.vs-cardata .cont .inquiry-td {
+	height: 63px
+}
+
+.vs-cardata .cont .price-inquiry {
+	color: #f60;
+	display: block;
+	padding: 5px 0
+}
+
+.vs-cardata .cont .icon-inquiry {
+	position: relative;
+	text-align: left;
+	display: block;
+	width: 58px;
+	padding-left: 45px;
+	height: 28px;
+	line-height: 28px;
+	margin: 0 6px;
+	color: #fff;
+	background-color: #2371be;
+	border-radius: 2px
+}
+
+.vs-cardata .cont .icon-inquiry .icon-mobile {
+	position: absolute;
+	top: 7px;
+	left: 30px;
+	height: 14px
+}

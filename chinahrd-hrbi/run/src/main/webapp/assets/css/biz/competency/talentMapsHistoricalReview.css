@@ -1,0 +1,115 @@
+.talentmaps-history {
+	font-size: 14px;
+	color: #777777;
+}
+.talentmaps-history .rightBody{
+    width: 100%;
+    background-color: #ecf0f1;
+    padding: 20px;
+}
+.talentmaps-history .rightTitle{
+	height: 34px;
+	margin-left: -15px;
+}
+.talentmaps-history .bottom-div-one{
+	width: 100%;
+    _height: 500px;
+	min-height: 500px;
+	background-color: #fff;
+}
+.panel-main{
+	padding: 20px 80px;
+}
+.ui-step-cont{
+	width: 100px;
+}
+.ui-step-cont-circle{
+	width: 19px;
+	height: 19px;
+	background-image: url("../../../img/talentmaps/view-his.png");
+	position: relative;
+	left: 39.5px;
+}
+.ui-step-line{
+	position: relative;
+    left: 48px;
+    top: -1px;
+    margin-bottom: -2px;
+	width: 2px;
+	min-height: 60px;
+	background-color: #999;
+}
+.ui-step-cont .ui-step-cont-text{
+	font-size: 16px;
+	color: #666;
+	text-align: center;
+}
+.ui-step-cont-time{
+	font-size: 12px;
+	color: #666;
+	text-align: center;
+}
+.ui-step-two{
+	position: relative;
+	top: 105px;
+	right: -15px;
+}
+.ui-step-two .ui-step-cont-text{
+	font-size: 14px;
+	color: #666;
+	text-align: center;
+}
+.name-font{
+	font-size: 14px;
+	color: #0099cc;
+}
+
+#section-3-{
+	margin-top: 20px;
+}
+.col-style{
+	position: relative;
+	left: -140px;
+	top: 60px;
+}
+.left{
+	float: left;
+}
+.emp-img{
+	background-image: url("../../../img/base/u483.png");
+	width: 60px;
+	height: 60px;
+	float: left;
+	border-radius: 30px;
+}
+.emp-text{
+	text-align: left; 
+	height: 60px; 
+	line-height: 30px; 
+	margin-left: 10px;
+	float: left;
+}
+.no-conten{
+	height: 50px;
+}
+
+.norecords { 
+	border-width: 2px !important; 
+	font-weight: bold; 
+	left: 40%; 
+	margin: 5px; 
+	padding: 6px; 
+	position: absolute; 
+	text-align: center; 
+	font-size: 20px;
+	color: yellowgreen;
+	width: auto; 
+	z-index: 102; 
+}
+.auditing-map{
+	background: url("../../../img/talentmaps/auditing-map.png") no-repeat;
+	width: 20px;
+	height: 13px;
+	position: relative;
+	left: 40%;
+}

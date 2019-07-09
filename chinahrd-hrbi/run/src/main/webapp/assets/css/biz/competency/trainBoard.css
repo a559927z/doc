@@ -1,0 +1,294 @@
+.train-board {
+    position: relative;
+    padding-left: 120px;
+}
+.height20{
+	height: 20px !important;
+	line-height: 20px !important;
+}
+.bottom-info{
+	height: 30px;
+	font-size: 12px;
+	color: #999999;
+	padding-left: 20px;
+}
+.ct-dissmiss .column{
+    padding: 2px!important;
+}
+
+#page-one{display: block;}
+#page-two{display: none;}
+#page-three{display: none;}
+.text-date{
+    margin-left: 5px;
+    color: #999;
+}
+.noData{margin-top: 50px; font-size: 12px; color: #999; text-align: center;}
+
+.train-board .bottom-div >.chart-view .col-xs-12:nth-child(2){
+    height: 350px;
+}
+/* .train-board .bottom-div .bottom-div-first{
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+} */
+.train-board .bottom-div .bottom-div-first span{
+    color: #999;
+    margin-left: 10px;
+}
+.train-board .bottom-div .bottom-div-first h5{
+    display: inline-block;
+}
+.train-board .bottom-div .bottom-div-right{
+    position: absolute;
+    right: 30px;
+    top: 10px;
+
+}
+.train-board .bottom-div .bottom-div-right>div{
+    display: inline-block;
+    background-color: rgb(242,242,242);
+    color: rgb(102,102,102);
+    padding: 4px 8px;
+    margin:0 -2px;
+    cursor: pointer;
+}
+.train-board .bottom-div .bottom-div-right>div.select{
+    background-color: rgb(211,211,211);
+    color: rgb(51,51,51);
+}
+.train-board .bottom-div .bottom-div-first a{
+    float: right;
+    text-decoration: none;
+    cursor: pointer;
+}
+.train-board .bottom-div .bottom-div-second{
+    color: #999;
+    margin-left: 10px;
+}
+/*页面通用样式 begin*/
+
+.train-board .table-view{
+    display: none;
+}
+.bottom-div-two > .row > div{
+    height: 385px;
+}
+.bottom-div-two > .row > div:nth-child(2){
+    border-left:1px solid #e0e0e0;
+}
+.bottom-div-two .row .bottom-div-first{
+    color: #333;
+}
+.bottom-div-three{
+    height: 960px !important;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.conditionBtn{
+    cursor: pointer;
+    position: absolute;
+    top: -48px;
+    left: 220px;
+    font-size: 12px;
+    width: 108px;
+    height: 48px;
+    line-height: 47px;
+    margin-left: 10px;
+    border: 1px solid #e0e0e0;
+    border-bottom: 0px;
+    z-index: 1;
+    background-color: #fff;
+    text-indent: 10px;
+}
+.conditionBtnListBody{
+    position: relative;
+    /*min-height: 276px;*/
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px !important;
+}
+
+/*筛选条件 begin*/
+.dis-search{width: 280px;font-size: 12px !important;}
+.dis-search-input{line-height:2 !important;font-size: 12px !important;float: left;width: 74%;height: 34px;margin-top: 1px;border: 1px solid #e0e0e0;font-size: 12px;padding-top: 4px;padding-left: 12px;}
+.dis-search-input-btn{cursor:pointer;font-size: 12px !important;float: left;width: 26%;background-color: #009edd;height: 36px;line-height:36px;border: 1px solid #e0e0e0;padding-left: 9px;margin-left: -1px;color: #fff;}
+.dis-search-tip{display: inline-block;color: #888;line-height: 2;padding: 6px 28px;}
+
+
+.condition-body-list{
+    width: 100%;
+    float: left;
+    margin-bottom: 14px;
+}
+.condition-body-list-title{
+    text-align: right;
+    width: 64px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+.condition-input-text{
+    width: 120px;
+    height: 24px;
+    line-height: 2;
+    padding-left: 4px;
+    margin-top: -2px;
+}
+.condition-text-one{
+    margin-left: 6px;
+    margin-right: 6px;
+}
+.condition-btn{
+    float: left;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 24px;
+    line-height: 24px;
+    /*color: #444444;*/
+    margin-right: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+.condition-btn-selected{
+    background-color: #009edd;
+    color: #fff;
+    cursor: default;
+}
+
+.condition-btn-too-icon{
+    position: absolute;
+    top: 8px;
+    right: 6px;
+    background-image: url("../../../img/index/y.png");
+    width: 7px;
+    height: 7px;
+}
+/*筛选条件 end*/
+
+/*弹出框 begin*/
+.ZBSetUp-drag-middle{
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    margin-top: 30px;
+}
+.BSetUp-col{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+.BSetUp-line{
+    width: 100%;
+    float: left;
+    margin-bottom: 30px;
+}
+.BSetUp-text-line{
+    color: #888888;
+    text-align: left;
+    margin-bottom: 8px;
+}
+.BSetUp-text-last-line{
+    margin-bottom: 30px;
+}
+.color-div{
+    width: 12px;
+    height: 12px;
+    margin-top: 6px;
+}
+.green-color-div{
+    background-color: #5ab700;
+}
+.orange-color-div{
+    background-color: #eda100;
+}
+.BSetUp-text-one{
+    margin-top: 3px;
+    margin-left: 6px;
+}
+.BSetUp-input{
+    width: 58px;
+    height: 24px;
+    padding-left: 8px !important;
+    margin-left: 8px;
+    font-size: 12px !important;
+}
+.BSetUp-text-two{
+    margin-top: 3px;
+    margin-left: 12px;
+}
+
+/*.drag-middle-C{*/
+    /*margin-top: 5px;*/
+/*}*/
+.BSetUp-line-two{
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+}
+.BSetUp-line-three{
+    border-bottom: 1px dashed #e8ecf0;
+}
+.CSetUp-text-one{
+    margin-top: 6px;
+}
+.CSetUp-select{
+    margin-top: 4px;
+    margin-left: 8px;
+    width: 132px;
+    height: 24px;
+}
+.CSetUp-text-two{
+    width: 100%;
+    text-align: left;
+    color: #888888;
+    padding-top: 8px;
+    padding-bottom: 20px;
+}
+.CSetUp-text-checkbox{
+    margin-top: 3px;
+    margin-right: 18px;
+    margin-left: 2px;
+    cursor: pointer;
+}
+/*弹出框 end*/
+
+/*media begin*/
+@media (max-width: 680px) {
+    .condition-body-list-title {width: 100%;text-align: left;}
+    .condition-bottom{padding-left: 0px;}
+    .condition-text-one{display: none;}
+    .condition-input-text-too{clear: both;margin-top: 6px;}
+
+    .conditionBtn{top: -65px;left: -11px;border-bottom: 1px solid #e0e0e0;}
+    .conditionBtnListBody{margin-top: 110px;}
+    .dis-search{top: -115px;}
+}
+
+/*media end*/
+
+#yearTrendChart,#subOrganContrastChart,#peopleCompareChart,#teacherChart{
+    height: 330px;
+}
+#coverageContrastChart,#trainTypeNumChart,#satisfactionChart{
+    height: 350px;
+}
+#trainProjectModal .modal-dialog{
+    width:750px;
+}
+#trainTypeTable{
+    width: 710px;
+}
+#trainProjectModal .modal-dialog>.modal-content>.modal-body{
+    min-height: 560px;
+}
+#trainProjectModal .tab-content{
+    padding:15px 1px;
+}
+#trainProjectModal .tab-content .col-xs-12{
+    padding: 0;
+}
+#trainTypeTable .ui-jqgrid tr.ui-row-ltr td:nth-child(2),#trainDeailTable .ui-jqgrid tr.ui-row-ltr td:nth-child(4){
+    text-overflow: ellipsis;
+}

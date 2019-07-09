@@ -1,0 +1,584 @@
+.row{margin-left:0px; margin-right:0px;}
+
+.salary-board {
+    position: relative;
+    padding-left: 120px;
+}
+.ct-dissmiss .column{
+    padding: 2px!important;
+}
+
+#page-one{display: block;}
+#page-two{display: none;}
+#page-three{display: none;}
+#page-four{display: none;}
+
+.salary-board .table-view{
+    display: none;
+}
+.bottom-div-two > .row > div{
+    height: 385px;
+}
+.bottom-div-three{
+    height: 420px;
+}
+.bottom-div-two > .row > div:nth-child(2){
+    border-left:1px solid #e0e0e0;
+}
+.bottom-div-two .row .bottom-div-first{
+    color: #333;
+}
+.bottom-div-four{
+    height: 560px !important;
+    min-height: 560px !important;
+}
+.conditionBtn{
+    cursor: pointer;
+    position: absolute;
+    top: -48px;
+    left: 220px;
+    font-size: 12px;
+    width: 108px;
+    height: 48px;
+    line-height: 47px;
+    margin-left: 10px;
+    border: 1px solid #e0e0e0;
+    border-bottom: 0px;
+    z-index: 1;
+    background-color: #fff;
+    text-indent: 10px;
+}
+.conditionBtnListBody{
+    position: relative;
+    /*min-height: 276px;*/
+    padding: 0px;
+    padding-left: 20px;
+    padding-top: 24px;
+    /* padding-right: 10px; */
+    font-size: 12px !important;
+}
+.paddingTop20{
+	padding-top: 20px;
+}
+
+/*绛涢�夋潯浠� begin*/
+.dis-search {
+	width: 280px;
+	font-size: 12px !important;
+}
+
+.dis-search .dis-search-input {
+	line-height: 2 !important;
+    font-size: 12px !important;
+    float: left;
+    width: 74%;
+    height: 36px;
+    padding-left: 10px;
+    border: 1px solid #e0e0e0;
+    font-size: 12px;
+    color: #aaaaaa;
+}
+
+.dis-search .dis-search-input-btn {
+	cursor: pointer;
+    font-size: 12px !important;
+    float: left;
+    width: 26%;
+    background-color: #0099cc;
+    height: 36px;
+    line-height: 36px;
+    border: 1px solid #0099cc;
+    padding-left: 9px;
+    margin-left: -1px;
+    color: #fff;
+}
+
+.dis-search-tip {
+	display: inline-block;
+	color: #888;
+	line-height: 2;
+	padding: 6px 28px;
+}
+
+.dis-insure-search {
+	width: 500px;
+	font-size: 12px !important;
+}
+
+.dis-insure-search .dis-search-input {
+	line-height: 2 !important;
+	font-size: 12px !important;
+	float: left;
+	width: 30%;
+	height: 34px;
+	border: 1px solid #e0e0e0;
+	font-size: 12px;
+	margin: 1px 20px 0 0;
+	color: #aaaaaa;
+}
+
+.dis-insure-search .dis-search-select {
+	line-height: 2 !important;
+	float: left;
+	width: 20%;
+	vertical-align: middle;
+	margin: 3px 20px 0 0;
+}
+
+.dis-insure-search .dis-search-input-btn {
+	cursor: pointer;
+	font-size: 12px !important;
+	float: left;
+	width: 15%;
+	background-color: #009edd;
+	height: 36px;
+	line-height: 36px;
+	border: 1px solid #e0e0e0;
+	margin-right: 5px;
+	color: #fff;
+	text-align: center;
+}
+
+.condition-body-list{
+    width: 100%;
+    float: left;
+    margin-bottom: 14px;
+}
+.condition-body-list-title{
+    text-align: right;
+    width: 64px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+.salary-board .bottom-div .bottom-div-right{
+    position: absolute;
+/*     right: 30px; */
+	width: 100%;
+	text-align: center;
+    top: 20px;
+
+}
+.salary-board .bottom-div .bottom-div-right>div{
+    display: inline-block;
+    background-color: rgb(242,242,242);
+    color: rgb(102,102,102);
+    padding: 4px 8px;
+    margin:0 -2px;
+    cursor: pointer;
+}
+.salary-board .bottom-div .bottom-div-right>div.select{
+    background-color: rgb(211,211,211);
+    color: rgb(51,51,51);
+}
+.condition-input-text{
+    width: 120px;
+    height: 24px;
+    line-height: 2;
+    padding-left: 4px;
+    margin-top: -2px;
+}
+.condition-text-one{
+    margin-left: 6px;
+    margin-right: 6px;
+}
+.condition-btn{
+    float: left;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 24px;
+    line-height: 24px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+.condition-btn-selected{
+    background-color: #009edd;
+    color: #fff;
+    cursor: default;
+}
+
+.condition-btn-too-icon{
+    position: absolute;
+    top: 8px;
+    right: 6px;
+    background-image: url("../../../img/index/y.png");
+    width: 7px;
+    height: 7px;
+}
+/*绛涢�夋潯浠� end*/
+
+/*寮瑰嚭妗� begin*/
+.ZBSetUp-drag-middle{
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    margin-top: 30px;
+}
+.BSetUp-col{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+.BSetUp-line{
+    width: 100%;
+    float: left;
+    margin-bottom: 30px;
+}
+.BSetUp-text-line{
+    color: #888888;
+    text-align: left;
+    margin-bottom: 8px;
+}
+.BSetUp-text-last-line{
+    margin-bottom: 30px;
+}
+.color-div{
+    width: 12px;
+    height: 12px;
+    margin-top: 6px;
+}
+.green-color-div{
+    background-color: #5ab700;
+}
+.orange-color-div{
+    background-color: #eda100;
+}
+.BSetUp-text-one{
+    margin-top: 3px;
+    margin-left: 6px;
+}
+.BSetUp-input{
+    width: 58px;
+    height: 24px;
+    padding-left: 8px !important;
+    margin-left: 8px;
+    font-size: 12px !important;
+}
+.BSetUp-text-two{
+    margin-top: 3px;
+    margin-left: 12px;
+}
+
+/*.drag-middle-C{*/
+    /*margin-top: 5px;*/
+/*}*/
+.BSetUp-line-two{
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+}
+.BSetUp-line-three{
+    border-bottom: 1px dashed #e8ecf0;
+}
+.CSetUp-text-one{
+    margin-top: 6px;
+}
+.CSetUp-select{
+    margin-top: 4px;
+    margin-left: 8px;
+    width: 132px;
+    height: 24px;
+}
+.CSetUp-text-two{
+    width: 100%;
+    text-align: left;
+    color: #888888;
+    padding-top: 8px;
+    padding-bottom: 20px;
+}
+.CSetUp-text-checkbox{
+    margin-top: 3px;
+    margin-right: 18px;
+    margin-left: 2px;
+    cursor: pointer;
+}
+.CSetUp-text-checkbox-text{
+    margin-left: 4px;
+}
+.CSetUp-text-checkbox-input{
+    /*margin-top: 4px !important;*/
+    /*margin-bottom: 4px !important;*/
+}
+/*寮瑰嚭妗� end*/
+
+/*media begin*/
+@media (max-width: 680px) {
+    .condition-body-list-title {width: 100%;text-align: left;}
+    .condition-bottom{padding-left: 0px;}
+    .condition-text-one{display: none;}
+    .condition-input-text-too{clear: both;margin-top: 6px;}
+
+    .conditionBtn{top: -65px;left: -11px;border-bottom: 1px solid #e0e0e0;}
+    .conditionBtnListBody{margin-top: 110px;}
+    .dis-search{top: -115px;}
+}
+
+/*media end*/
+
+/*绂忓埄绫诲瀷鍥捐〃鏍峰紡 begin*/
+.welfare-main{
+    width: 100%;
+    font-size: 13px;
+    color: #000;
+    overflow-y: auto;
+}
+.welfare-main .welfare-row-hred{
+    line-height: 3;
+}
+.welfare-main .welfare-row-hred .welfare-title{
+    display: inline-table;
+    width: 18%;
+    padding-right: 10px;
+}
+.welfare-main .welfare-row-hred .welfare-bar-main{
+    display: inline-table;
+    text-align: center;
+}
+.welfare-main .welfare-row-hred .welfare-col{
+    display: inline-table;
+    width: 22%;
+    text-align: center;
+}
+
+.welfare-main .welfare-row{
+    line-height: 3;
+}
+.welfare-main .welfare-row .welfare-title{
+    display: inline-table;
+    width: 18%;
+    text-align: right;
+    padding-right: 10px;
+    border-right: 1px solid #CCCCCC;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.welfare-main .welfare-row .welfare-bar-main{
+    display: inline-table;
+    position: relative;
+}
+.welfare-main .welfare-row .welfare-bar{
+    display: inline-table;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    background-color: #5cb7f1;
+    text-align: right;
+}
+.welfare-main .welfare-row .welfare-bar-txt{
+    margin-left: 8px;
+}
+.welfare-main .welfare-row .welfare-col{
+    display: inline-table;
+    width: 22%;
+    text-align: center;
+}
+
+/*绂忓埄绫诲瀷鍥捐〃鏍峰紡 end*/
+
+#yearTrendChart,#subOrganContrastChart,#peopleCompareChart,#coverageContrastChart,#trainTypeNumChart,#satisfactionChart,#teacherChart,#insureChart,#insureMoneyChart,#insureNoMoneyChart,#shareTotalYearChart,#shareTendencyYearChart,#shareStaffTotalChart,#shareSubOrgTotalChart{
+    height: 330px;
+}
+
+#salaryDiff .loadingmessage{margin-top:190px !important;}
+
+#insurePager.ui-jqgrid-pager,#insureMoneyPager.ui-jqgrid-pager,#insureNoMoneyPager.ui-jqgrid-pager{
+    height: 35px;
+    border: 0;
+}
+#insurePager .ui-pager-control,#insureMoneyPager .ui-pager-control,#insureNoMoneyPager .ui-pager-control{
+    height: 35px;
+}
+#insurePager.ui-jqgrid-pager .ui-pg-table>tbody>tr>td:first-child,#insureMoneyPager.ui-jqgrid-pager .ui-pg-table>tbody>tr>td:first-child,#insureNoMoneyPager.ui-jqgrid-pager .ui-pg-table>tbody>tr>td:first-child{
+    width: 1px;
+}
+
+/*common*/
+.red{
+    color: #d3521a !important;
+}
+.green{
+    color: #6fb12d !important;
+}
+
+.borderright0{
+    border-right:0px !important;
+}
+.borderbottom0{
+    border-bottom:0px !important;
+}
+.borderright1{
+    border-right:1px solid #e0e0e0 !important;
+}
+.borderbottom1{
+    border-bottom:1px solid #e0e0e0 !important;
+}
+.bordertop0{
+    border-top: 0px !important;
+}
+.borderleft0{
+    border-left:0px !important;
+}
+.paddingleft0{
+    padding-left: 0px !important;
+}
+.paddingright20{
+	padding-right: 20px;
+}
+.padding0{
+    padding:10px 0px !important;
+}
+.margin10{
+    margin: 10px 0px !important;
+}
+.padding0Only{
+	padding: 0px !important;
+}
+.marginleft15{
+    margin-left: 15px;
+}
+.marginleft20{
+    margin-left: 20px;
+}
+.marginBottom10{
+	margin-bottom: 10px !important;
+}
+.paddingBottom20{
+	padding-bottom: 20px;
+}
+.height300{
+    height:300px !important;
+}
+.height320{
+    height:320px !important;
+}
+.height350{
+    height:350px !important;
+}
+.height380{
+    height:380px !important;
+}
+.height385{
+    height:385px !important;
+}
+.height420{
+    height:420px !important;
+}
+.height760{
+    height:760px !important;
+}
+.height458{
+	height: 458px !important;
+}
+.height426{
+	height: 426px !important;
+}
+.height20{
+	height: 20px !important;
+	line-height: 20px !important;
+}
+.bottom-info{
+	height: 30px;
+	font-size: 12px;
+	color: #999999;
+}
+.right{
+	text-align: right !important;
+}
+.floatright{
+	float: right;
+}
+.tooltip-title{
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: bold;
+	font-family: "Microsoft YaHei";
+}
+.width180{
+	width: 180px;
+}
+.width160{
+	width: 160px;
+}
+.width90{
+	width: 90px;
+}
+.width70{
+	width: 70px;
+}
+.tooltip-content{
+	display: inline-block;
+}
+.tooltip-content-child{
+	float: left;
+	text-align: justify;
+	text-align-last: justify;
+	color: #ffffff;
+	font-size: 14px;
+	font-family: "Microsoft YaHei";
+}
+.tooltip-content-span{
+	color: #ffffff;
+	font-size: 14px;
+	font-family: "Microsoft YaHei";
+}
+.width100{
+	width: 100% !important;
+}
+.chart-title{
+	margin-top: 20px;
+	margin-bottom: 20px;
+	font-size: 14px;
+	color: #444444;
+}
+.chart-unit{
+	padding: 0px !important;
+	margin-top: 20px;
+	font-size: 12px;
+	color: #999999;
+}
+
+
+.ui-jqgrid-sortable{cursor:default !important;}
+.ui-jqgrid-sortable:hover{color:#777 !important;}
+
+.nodata{text-align: center; color:#ccc; margin-top:45px; font-family: '瀹嬩綋';}
+
+/*钖叕宸紓搴﹀矖浣嶈〃*/
+#salaryDiff .jqgfirstrow{display:none;}
+#salaryDiff .ui-jqgrid .ui-jqgrid-labels,
+#salaryDiff .ui-jqgrid .ui-jqgrid-btable{border-left:0px !important;}
+#salaryDiff .ui-jqgrid-hdiv .ui-jqgrid-htable{border-top: 0px !important;}
+#salaryDiff .ui-jqgrid .ui-jqgrid-labels th,
+#salaryDiff .ui-jqgrid tr.ui-row-ltr td,
+#salaryDiff .ui-jqgrid .ui-jqgrid-btable{border-right:0px !important;}
+/*涓嬬骇缁勭粐鍥烘诞姣�*/
+#subOrgFixedFloat .ui-jqgrid .ui-jqgrid-btable{border-left:0px !important; border-right:0px !important;}
+#subOrgFixedFloat .ui-jqgrid-bdiv{border-left: 1px solid #e1e1e1 !important; border-right:1px solid #e1e1e1 !important;}
+#subOrgFixedFloat .ui-jqgrid-view{border-bottom: 1px solid #e1e1e1;}
+/*骞寸粓濂栭噾鎬婚涓庡埄娑︾殑骞村害瓒嬪娍*/
+#yearEndBonus .ui-jqgrid .ui-jqgrid-btable{border-left:0px !important; border-right:0px !important;}
+#yearEndBonus .ui-jqgrid-bdiv{border-left: 1px solid #e1e1e1 !important; border-right:1px solid #e1e1e1 !important;}
+#yearEndBonus .ui-jqgrid-view{border-bottom: 1px solid #e1e1e1;}
+/*Cr*/
+#moreCrGrid .ui-jqgrid-view{  border: 0px !important;}
+#moreCrGrid .ui-jqgrid .ui-jqgrid-labels{border-left:0px !important;}
+#moreCrGrid .ui-jqgrid tr.ui-row-ltr td,
+#moreCrGrid .ui-jqgrid .ui-jqgrid-labels th{border-right:0px !important;}
+#moreCrGrid .ui-jqgrid .ui-jqgrid-btable{border-left:0px !important; border-right:0px !important;}
+
+
+.modal-dialog{width:80%;}
+
+/*灏忎簬992px*/
+@media (max-width: 992px) {
+    .salary-board .index-common-title-center{left:100px; height: 29px; overflow: auto;}
+    #salaryWelfare{left:120px;}
+    #positionRate{left:155px;}
+    .salary-board .index-common-title-center .title-center-text{margin-right:5px;}
+}
+
+/*澶т簬768px骞朵笖灏忎簬992px*/
+@media (min-width: 768px) and (max-width: 992px) {
+    .salary-board .accord-yj-float{height: 52px; margin-top: 24px;}
+    .salary-board .accord-yj-float-value{font-size:24px;}
+}

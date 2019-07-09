@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="综合功能">
+		<menu code="RenCaiSouSuo" name="人才搜索" url="talentSearch/toTalentSearchView" icon="" mobile="false" relies="">
+			
+		</menu>
+	</menus>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.sequenceCount.mvc.pc.dao.SequenceCountDao">
+
+    <resultMap id="sequenceCountMap" type="net.chinahrd.entity.dto.pc.SequenceItemsDto">
+        <id property="itemId" column="sequence_id"/>
+        <result property="itemName" column="sequence_name"/>
+        <result property="prefix" column="curt_name"/>
+        <collection property="subItems" ofType="net.chinahrd.entity.dto.pc.SequenceItemsDto">
+            <id property="itemId" column="sequence_sub_id"/>
+            <result property="itemName" column="sequence_sub_name"/>
+            <result property="prefix" column="sub_curt_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="querySequenceOrSub" resultMap="sequenceCountMap">
+    SELECT
+        ds.sequence_id,
+        ds.sequence_name,
+        ds.curt_name,
+        dss.sequence_sub_id,
+        dss.sequence_sub_key,
+        dss.sequence_sub_name,
+        dss.curt_name AS sub_curt_name
+    FROM dim_sequence ds
+    LEFT JOIN dim_sequence_sub dss ON ds.customer_id = dss.customer_id AND ds.sequence_id = dss.sequence_id
+    WHERE ds.customer_id = #{customerId}
+    ORDER BY ds.show_index,dss.show_index
+    </select>
+
+    <select id="querySequenceCount" resultType="net.chinahrd.entity.dto.pc.sequenceCount.SequenceCountDto">
+        SELECT
+        jr.sequence_id AS sequenceId,
+        <if test="hasSub == true">
+            jr.sequence_sub_id AS sequenceSubId,
+        </if>
+        jr.ability_id AS abilityId,
+        da.curt_name AS abilityPrefix,
+        da.ability_name AS abilityName,
+        da.show_index AS abilityShowIndex,
+        <if test="hasJobTitle == true">
+            jr.job_title_id AS jobTitleId,
+            djt.job_title_name AS jobTitleName,
+            djt.show_index AS jobTitleShowIndex,
+        </if>
+        jr.ability_lv_id AS abilityLvId,
+        dal.curt_name AS abilityLvPrefix,
+        dal.show_index AS abilityLvShowIndex,
+        count(vde.emp_id) AS empCount
+        FROM job_relation jr
+        LEFT JOIN v_dim_emp vde ON vde.customer_id = jr.customer_id
+        AND vde.sequence_id = jr.sequence_id
+        <if test="hasSub == true">
+            AND vde.sequence_sub_id = jr.sequence_sub_id
+        </if>
+        AND vde.ability_id = jr.ability_id
+        <if test="hasJobTitle == true">
+            AND vde.job_title_id = jr.job_title_id
+        </if>
+        AND vde.ability_lv_id = jr.ability_lv_id
+        AND vde.is_regular = 1
+        AND vde.run_off_date IS NULL
+        <if test="organList != null and organList.size() > 0">
+            AND vde.organization_id IN 
+            <foreach collection="organList" item="organId" open="(" close=")" separator=",">
+            '${organId}'
+            </foreach>
+        </if>
+        LEFT JOIN dim_ability da ON da.customer_id = jr.customer_id AND da.ability_id = jr.ability_id
+        <if test="hasJobTitle == true">
+            LEFT JOIN dim_job_title djt ON djt.customer_id = jr.customer_id AND djt.job_title_id = jr.job_title_id
+        </if>
+        LEFT JOIN dim_ability_lv dal ON dal.customer_id = jr.customer_id AND dal.ability_lv_id = jr.ability_lv_id
+        WHERE jr.customer_id = #{customerId}
+        <if test="hasSub == true">
+            <if test="sequenceId != null">
+                AND jr.sequence_id = #{sequenceId}
+            </if>
+            <if test="subSequenceIds != null and subSequenceIds.size > 0">
+                AND jr.sequence_sub_id IN
+                <foreach collection="subSequenceIds" item="subSeqId" separator="," open="(" close=")">
+                    #{subSeqId}
+                </foreach>
+            </if>
+        </if>
+        AND jr.`year` = (
+          SELECT MAX(tjr.`year`) FROM job_relation tjr WHERE tjr.customer_id = #{customerId} AND tjr.sequence_id = #{sequenceId}
+        )
+        GROUP BY sequenceId,
+        <if test="hasSub == true">sequenceSubId,</if>
+        abilityId,abilityPrefix,abilityName,abilityShowIndex,
+        <if test="hasJobTitle == true">jobTitleId,jobTitleName,jobTitleShowIndex,</if>
+        abilityLvId,abilityLvPrefix,abilityLvShowIndex
+        ORDER BY sequenceId,
+        <if test="hasSub == true">sequenceSubId,</if>
+        abilityShowIndex desc ,<if test="hasJobTitle == true">jobTitleShowIndex,</if>abilityLvShowIndex
+    </select>
+
+    <select id="findJobTitleCount" resultType="int">
+        SELECT count(jt.job_title_id) FROM dim_job_title jt WHERE jt.customer_id = #{customerId}
+    </select>
+</mapper>

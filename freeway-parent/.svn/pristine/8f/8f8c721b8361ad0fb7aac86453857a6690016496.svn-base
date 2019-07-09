@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>freeway-facade</artifactId>
+        <groupId>net.chinahrd</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>freeway-platform-facade</artifactId>
+    <description>平台系统之facade</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.chinahrd</groupId>
+            <artifactId>freeway-common</artifactId>
+            <version>${freeway.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.chinahrd</groupId>
+            <artifactId>freeway-base-facade</artifactId>
+            <version>${freeway.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+    </dependencies>
+
+
+</project>

@@ -1,0 +1,411 @@
+.row .col-sm-4 .widget-box .widget-body, .row .col-xs-12 .widget-box .widget-body {
+    min-height: 225px !important;
+}
+
+.row .col-sm-6 .widget-box .widget-body {
+    min-height: 300px !important;
+}
+
+.ui-jqgrid-hdiv .ui-jqgrid-htable {
+    border-top: none;
+}
+
+.ui-jqgrid .ui-jqgrid-labels {
+    background: #FFFFFF none;
+}
+
+.ui-jqgrid .ui-jqgrid-labels .ui-jqgrid-sortable {
+    color: #555;
+}
+
+.mt30 {
+    margin-top: 30px!important;
+}
+
+.static_icon {
+    display: inline-block;
+    background: url(../../img/other/sequence_count_ico.png) no-repeat -40px -5px;
+    width: 5px;
+    height: 14px;
+    margin: 0 8px -2px 0;
+}
+
+.column .widget-toolbar span {
+    padding: 2px;
+    color: #fff !important;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.column .widget-toolbar a {
+    font-size: 12px;
+    text-decoration: underline;
+}
+
+.column .widget-toolbar .green {
+    background-color: #23C6C8;
+    padding: 3px 7px;
+}
+
+/******* 鍥㈤槦鎻愰啋 *******/
+.p-grid-title {
+    width: 100%;
+    height: 30px;
+    margin-top: 5px;
+}
+
+.p-grid-title .birth-img {
+    display: inline-block;
+    background: url("../../img/manage/birth.png") no-repeat 0 0;
+    width: 18px;
+    height: 23px;
+    vertical-align: bottom;
+}
+
+.p-grid-title .font-title {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.l-td-birthday {
+    font-size: 12px;
+    line-height: 24px;
+    color: #333;
+}
+
+.l-td-birthday span.last {
+    color: #0066cc;
+}
+
+.l-td-birthday table {
+    border-left: #e1e1e1 1px solid;
+    border-top: #e1e1e1 1px solid;
+}
+
+.l-td-birthday table td {
+    border: #e1e1e1 1px solid;
+    border-left: 0;
+    border-top: 0;
+}
+
+.l-td-birthday table td.bg_default {
+    background-color: #0099cc;
+}
+
+.l-td-birthday table td.bg_highlight {
+    background-color: #F8921A;
+}
+
+.l-td-birthday table td.bg_highlight strong {
+    color: #FFF;
+}
+
+.l-td-birthday table td.bg_default_name {
+    background-color: #fff;
+}
+
+.l-td-birthday table td.bg_highlight_name {
+    background-color: #edfafe;
+}
+
+.update-time {
+    text-align: right;
+    margin-right: 10px;
+    line-height: 32px;
+}
+
+.wran-ul {
+    padding: 20px;
+}
+
+.wran-ul li span {
+    display: inline-block;
+    color: #FF0000;
+    font-size: 26px;
+}
+
+.remind-ul {
+    padding: 15px 0 0 15px;
+    font-size: 12px;
+}
+
+.remind-ul li {
+    min-height: 50px;
+}
+
+.remind-ul li > .bolder {
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.remind-ul li > .bolder .normal {
+    font-weight: normal;
+}
+
+.remind-ul li div {
+    padding-bottom: 4px;
+}
+
+.gainOfLoss-row {
+    margin-left: 15px;
+}
+
+.gainOfLoss-row .gainOfLoss-ul li {
+    margin: 15px auto;
+}
+
+.gainOfLoss-row .gainOfLoss-ul li > .bolder {
+    font-size: 14px;
+    line-height: 30px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#remindBody, #gainOfLossBody,#subOrgInfoTitle{
+    cursor: pointer;
+}
+#gainOfLossModal .tab-content{
+    padding: 16px 0;
+}
+#gainOfLossModal .tab-content .col-xs-12{
+    padding: 0;
+}
+
+/* 团队画像 */
+#teamImg-funel {
+	height : 183px;
+}
+
+.minInfo {
+	display: block;
+	float: left;
+	margin: 20px 0 0 6%;
+	border: 1px solid #019BD9;
+	text-align: center;
+	color: #019BD9;
+    width: 25%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 人才发展 */
+#talentDevel-bar {
+	height: 300px;
+}
+
+.talentDevel-bottom {
+	height: 160px;
+}
+.backColor {
+	color: #000;
+}
+.whiteColor {
+	color: #fff;
+}
+
+.txtPos-l{
+	font: bolder 24px 微软雅黑;
+}
+.txtPos-r{}
+
+
+#talentDevelModal .modal-dialog{
+	width: 950px;
+}
+/* .abilityInfo{
+	width:200px;
+} */
+#abInfoModal .modal-dialog{
+	width: 400px;
+}
+
+#talentDevelModal tr td a{
+	cursor: pointer;
+}
+
+
+@media (min-width: 768px) {
+    #remindModal .modal-dialog {
+        width: 800px;
+    }
+    #gainOfLossModal .modal-dialog {
+        width: 800px;
+        margin: 100px auto; 
+    }
+    #orgTreeGridModal .modal-dialog {
+        width: 800px;
+    }
+}
+
+/* 绩效目标 */ 
+.performance{padding: 12px;}
+.performance .tab{height: 32px; border-left: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5;}
+.performance .tab .title{border-top: 1px solid #e5e5e5; border-right: 1px solid #e5e5e5; width: 100px; height: 32px; text-align: center; padding-top: 5px; font-size: 14px; float: left; cursor: pointer;}
+.performance .tab .on{font-weight: bold; border-bottom: #fff; background: #fff; cursor: default !important;}
+.performance .tab .more{float: right; padding: 5px 10px 0 0;}
+.performance .body{padding: 5px 20px; overflow-x: hidden; overflow-y: auto; height:415px;}
+.performance .body table{border:0px; text-align: center; width: 100%; display:none;}
+.performance .body table th{border-bottom: 1px solid #e5e5e5; height: 40px; text-align: left;}
+.performance .body table td{border-bottom: 1px dotted #e5e5e5; height: 40px; text-align: left;}
+.performance .body table .center{text-align: center !important;}
+.performance .body table .nobb{border-bottom: 0px;}
+.performance .body table .bb{border-bottom: 1px solid #e5e5e5;}
+.performance .body table .bb .head{cursor: pointer;}
+.performance .body table .width10{width: 10%;}
+.performance .body table .width20{width: 20%;}
+.performance .body table .width30{width: 30%;}
+.performance .body table .hide{display: none;}
+
+
+
+#runOffWarnTab{
+	margin-left : -2px;
+	padding-top: 4px;
+	padding-bottom : 4px;
+}
+
+
+
+.head-pic{
+	height : 60px;
+	border : 2px solid #e7eaec;
+	cursor : pointer;
+}
+.mark-talent-type-work{
+	position : absolute;
+	left : 40px;
+	top : 4px;
+	background-color : #DB3700;
+	color : #fff;
+	font-weight : bold;
+	width : 14px;
+	height : 14px;
+	line-height : 14px;
+	font-size : 12px;
+	    text-align: center;
+}
+.mark-talent-type{
+	position : absolute;
+	right : 2px;
+	top : 4px;
+	background-color : #DB3700;
+	color : #fff;
+	font-weight : bold;
+	width : 14px;
+	height : 14px;
+	line-height : 14px;
+	font-size : 12px;
+}
+.emp-name-work{
+         float: left;
+            left: 59px;
+            position: absolute;
+            width: 130px;
+            top: 10px;
+            text-align: left;
+}
+.workovertime_time{
+         float: left;
+            left: 59px;
+            position: absolute;
+            width: 130px;
+            top: 30px;
+            text-align: left;
+}
+.work-div{
+	width:220px;
+}
+#riskEmpDetail,#workLifeDetail{
+	height : 240px;
+	width : 930px;
+	overflow : auto;
+}
+
+#riskEmpDetail>div,#workLifeDetail>div{
+	padding : 10px;
+}
+#riskEmpDetail .emp-name,#workLifeDetail .emp-name{
+	padding-top : 8px;
+}
+
+
+#showWarningModal .modal-dialog{
+	width : 940px;
+}
+
+
+.tooltipZrw .base-info{
+	height : 100px;
+}
+.tooltipZrw .base-info .head-pic{
+	height : 80px;
+}
+
+.tooltipZrw .risk-detail-info{
+	border : 1px solid #e7eaec;
+	margin-left : 12px;
+	height: 258px;
+	max-height: 258px;
+ 	overflow-y:scroll;overflow-x:hidden; 
+}
+.tooltipZrw .suggest-info{
+	line-height : 28px;
+	border : 1px solid #e7eaec;
+	margin-left : 12px;
+	height: 258px;
+	max-height: 258px;
+}
+.tooltipZrw .risk-detail-info>div,.tooltipZrw .suggest-info>div{
+	margin-top : 8px;
+	height : 250px;
+	width : 300px;
+}
+
+.tooltipZrw .base-info .row:last-child div{
+	padding-bottom : 8px;
+}
+.tooltipZrw .base-info .risk-flag{
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+
+.span_note{
+	margin-left: 15px;
+	color: gray;
+}
+
+.workOvertime_h1{
+    white-space: nowrap;
+    width: 113px;
+       color: #333333;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: left;
+}
+.workOvertime_h2{
+    white-space: nowrap;
+    width: 53px;
+    color: #333333;
+    font-family: "微软雅黑 Bold","微软雅黑";
+    font-weight: 700;
+    font-size: 13px;
+    font-style: normal;
+    line-height: 20px;
+    text-align: left;
+}
+.workOvertime_h4{
+    white-space: nowrap;
+    width: 53px;
+    color: #333333;
+    font-family: "微软雅黑 Bold","微软雅黑";
+    font-weight: 700;
+    font-size: 13px;
+    font-style: normal;
+    line-height: 20px;
+    text-align: left;
+}

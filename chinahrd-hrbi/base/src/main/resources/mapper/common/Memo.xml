@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.common.MemoDao">
+
+    <!-- 备忘录锦囊Map  -->
+    <resultMap id="MemoTipsMap" type="net.chinahrd.entity.dto.pc.common.ItemDto">
+        <id  property="id" column="quota_memo_tips_id" />
+        <result property="name" column="title" />
+        <collection property="childs" ofType="net.chinahrd.entity.dto.pc.common.ItemDto">
+            <id property="id" column="quota_memo_tips_item_id" />
+            <result property="name" column="content" />
+        </collection>
+    </resultMap>
+
+    <select id="findMemoTips" parameterType="string" resultMap="MemoTipsMap">
+    SELECT
+	  qmt.quota_memo_tips_id,
+	  qmt.title,
+	  qmti.quota_memo_tips_item_id,
+	  qmti.content
+    FROM quota_memo_tips qmt
+    LEFT JOIN quota_memo_tips_item qmti
+        ON qmt.quota_memo_tips_id = qmti.quota_memo_tips_id
+	    AND qmt.customer_id = qmti.customer_id
+	<where>
+        <if test="customerId != null">
+        AND qmt.customer_id = #{customerId}
+        </if>
+    </where>
+    ORDER BY qmt.show_index,qmti.show_index
+    </select>
+
+    <select id="findAllMemo" resultType="net.chinahrd.entity.dto.pc.common.MemoResultDto">
+    SELECT
+        qm.memo_id AS id,
+        qm.customer_id AS customerId,
+        qm.content AS content,
+        qm.emp_id AS createEmpId,
+        qm.create_time AS createTime,
+        vde.user_name AS userName,
+        vde.user_name_ch AS userNameCh,
+        vde.img_path AS imgPath,
+        IF(qms.memo_status_id IS NULL, 0, 1) isRead,
+        IF(qm.emp_id = qms.emp_id, 1, 0) AS hasDelete
+    FROM quota_memo qm
+    INNER JOIN v_dim_emp vde ON vde.emp_id = qm.emp_id AND vde.customer_id = qm.customer_id
+    LEFT JOIN quota_memo_status qms ON qm.memo_id = qms.memo_id AND qm.customer_id = qms.customer_id AND qms.emp_id = #{empId}
+    WHERE qm.is_delete = 0
+    <if test="customerId != null">
+    AND qm.customer_id = #{customerId}
+    </if>
+    <if test="quotaId != null">
+    AND qm.quota_id = #{quotaId}
+    </if>
+    <if test="organizationId != null">
+    AND qm.organization_id = #{organizationId}
+    </if>
+    ORDER BY qm.create_time DESC
+    </select>
+
+    <update id="deleteMemo" >
+    UPDATE quota_memo SET is_delete = 1, delete_time = SYSDATE() WHERE memo_id = #{memoId} AND customer_id = #{customerId}
+    </update>
+
+    <insert id="addMemo" parameterType="net.chinahrd.entity.dto.pc.common.MemoCreateDto">
+    INSERT INTO quota_memo (
+      memo_id,
+      customer_id,
+      quota_id,
+      content,
+      organization_id,
+      emp_id,
+      is_delete,
+      create_time
+    )
+    VALUES (
+      #{dto.memoId},
+      #{dto.customerId},
+      #{dto.quataId},
+      #{dto.content},
+      #{dto.organizationId},
+      #{dto.createEmpId},
+      0,
+      #{dto.createTime}
+    )
+    </insert>
+
+    <insert id="addMemoStatus" parameterType="net.chinahrd.entity.dto.pc.common.MemoStatusDto">
+      INSERT INTO quota_memo_status (
+        memo_status_id,
+        customer_id,
+        memo_id,
+        emp_id,
+        read_time
+      )
+      VALUES
+      (
+        #{dto.memoStatusId},
+        #{dto.customerId},
+        #{dto.memoId},
+        #{dto.empId},
+        #{dto.readTime}
+      )
+    </insert>
+
+</mapper>

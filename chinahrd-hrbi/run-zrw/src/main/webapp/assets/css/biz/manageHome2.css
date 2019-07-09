@@ -1,0 +1,562 @@
+.index{position: relative}
+.ct-circle-col{padding: 0px;}
+
+.index-yj-div:hover{background-color:#fafafa;}
+
+.index .index-time{margin-top: 4px;}
+.index-time-icon{background-image: url("../../img/index/time.png");width: 15px;height: 15px;margin-top: 4px;margin-right: 4px;}
+.index .index-set{width: 110px;height: 30px;line-height: 30px;text-align: center;background-color: #98a6a9;color: #ffffff;cursor: pointer;border-radius: 20px;}
+.index .index-set-icon{margin-top: 7px;margin-left: 12px;background-image: url("../../img/index/set.png");width: 17px;height: 16px;}
+.index .index-set-text{margin-left: 5px;}
+
+/*.index-common-title{position: relative;width: 100%;height: 40px;}*/
+/*.index-common-title-left{position: absolute;top: 12px;left: 10px;background-color: #88b7e0;width: 2px;height: 18px;}*/
+/*.index-common-title-text{position: absolute;top: 10px;left: 20px;}*/
+/*.index .index-common-title-right{float: right;background-color: #009edd;color: #ffffff;text-align: center;padding-left: 12px;padding-right: 12px;height: 24px;line-height: 24px;border-radius: 2px;margin-top: 8px;margin-right: 10px;}*/
+.index .index-common-title-right-href{float: right;height: 24px;line-height: 24px;margin-top: 10px;margin-right: 18px;cursor: pointer;}
+
+.index .index-yj-div{position: relative;height: 270px;border: 1px solid #e0e0e0;margin-right: -1px;margin-bottom: -1px;cursor: pointer;}
+.index .index-yj-div-update{height: 268px;}
+.index .index-jy-body{margin-left: 10px;margin-right: 10px;margin-bottom: 10px;background-color: #ffffff;}
+.index .index-yj-div-top{padding-top: 10px;padding-right: 10px;padding-left: 10px;width: 100%;float: left;}
+.index .index-jy-middle{padding-left: 20px;padding-right: 20px;padding-bottom: 18px;}
+.index .index-yj-float{position: relative;width: 130px;height: 70px;margin: 0 auto;margin-top: 74px;text-align: center;}
+.index .index-yj-div-bottom-value{overflow: hidden;white-space: nowrap;text-overflow: ellipsis;width: 93%;}
+
+.index .index-yj-float-value{font-size: 50px;}
+.index .index-yj-float-people{position: absolute;top: 42px;right: 0px;color: #777777;font-size: 12px;}
+.index .index-yj-float-text{text-align: center;font-size: 12px;color: #777777;}
+.index .index-yj-div-bottom{position: absolute;bottom: 0px;width: 100%;height: 40px;line-height: 40px;border-top: 1px solid #e0e0e0;padding-right: 10px;padding-left: 10px;}
+.index .index-yj-div-bottom-right{margin-top: 14px;background-image: url("../../img/index/continue.png");width: 10px;height: 14px;}
+.index .index-son-body{background-color: #ffffff;}
+.index .index-son-title{width: 100%;height: 40px;line-height: 40px;}
+.index .index-son-middle{width: 100%;height: 290px;padding-left: 20px;padding-right: 20px;padding-bottom: 18px;}
+
+.index-yj-div-tdtx .index-yj-float-value{color: #666666;}
+.index-jy-middle .index-yj-float-value{color: #76B237;}
+.index-jy-middle .index-yj-warn-value{color: #e7191b;}
+.index-jy-middle .index-yj-risk-value{color: rgb(238,179,0);}
+
+/* 预警 begin */
+.index .index-jy-middle .index-yj-div{height: 230px;}
+.index .index-jy-middle .index-yj-div-update{height: 228px;}
+.span_note {
+    margin-left: 15px;
+    color: gray;
+}
+.head-pic {
+    height: 60px;
+    border: 2px solid #e7eaec;
+    cursor: pointer;
+}
+.mark-talent-type{
+    position : absolute;
+    right : 2px;
+    top : 4px;
+    background-color : #DB3700;
+    color : #fff;
+    font-weight : bold;
+    width : 14px;
+    height : 14px;
+    line-height : 14px;
+    font-size : 12px;
+}
+.mark-talent-type-work{
+    position : absolute;
+    left : 40px;
+    top : 4px;
+    background-color : #DB3700;
+    color : #fff;
+    font-weight : bold;
+    width : 14px;
+    height : 14px;
+    line-height : 14px;
+    font-size : 12px;
+    text-align: center;
+}
+.work-div{
+    width:220px;
+}
+.emp-name-work{
+    float: left;
+    left: 59px;
+    position: absolute;
+    width: 130px;
+    top: 10px;
+    text-align: left;
+}
+.work-over-time{
+    float: left;
+    left: 59px;
+    position: absolute;
+    width: 130px;
+    top: 30px;
+    text-align: left;
+}
+.work-over-time-h1{
+
+    white-space: nowrap;
+    width: 113px;
+    color: #333333;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: left;
+}
+.work-over-time-h2{
+    white-space: nowrap;
+    width: 53px;
+    color: #333333;
+    font-family: "微软雅黑 Bold","微软雅黑";
+    font-weight: 700;
+    font-size: 13px;
+    font-style: normal;
+    line-height: 20px;
+    text-align: left;
+}
+.tooltipZrw .base-info{
+    height : 100px;
+}
+.tooltipZrw .base-info .head-pic{
+    height : 80px;
+}
+
+.tooltipZrw .risk-detail-info{
+    border : 1px solid #e7eaec;
+    margin-left : 12px;
+    height: 258px;
+    max-height: 258px;
+    overflow-y:scroll;overflow-x:hidden;
+}
+.tooltipZrw .suggest-info{
+    line-height : 28px;
+    border : 1px solid #e7eaec;
+    margin-left : 12px;
+    height: 258px;
+    max-height: 258px;
+}
+.tooltipZrw .risk-detail-info>div,.tooltipZrw .suggest-info>div{
+    margin-top : 8px;
+    height : 250px;
+    width : 300px;
+}
+
+.tooltipZrw .base-info .row:last-child div{
+    padding-bottom : 8px;
+}
+.tooltipZrw .base-info .risk-flag{
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+#riskEmpDetail,#workLifeDetail{
+    height: 316px;
+    width: 932px;
+    overflow: auto;
+}
+#riskEmpDetail>div,#workLifeDetail>div{
+    padding : 10px;
+}
+#riskEmpDetail .emp-name,#workLifeDetail .emp-name{
+    padding-top : 8px;
+}
+/* 预警 end */
+/*当季人才损益 begin*/
+.index .index-yj-div-djrcsy{font-size: 14px;}
+.index .index-djrcsy-table-left{float:left;position:relative;border:1px solid #e0e0e0;height: 274px;width: 20%;}
+.index .index-djrcsy-table-right{float:left;border:1px solid #e0e0e0;height: 92px;width: 80%;margin-left: -1px;margin-bottom: -1px;padding-left: 18px;}
+.index .index-djrcsy-left-value{font-size: 34px;color: #009edd;text-align:center;width: 100%;margin-top: 98px;}
+.index .index-djrcsy-left-text{position:absolute;text-align: center;width: 100%;font-size: 12px;top: 146px;}
+.index .blue-text{color: #009edd;}
+.index .index-djrcsy-table-title{margin-top: 22px;margin-bottom: 4px;}
+#personnel{cursor: pointer;}
+/*#personnel:hover{background-color:#fafafa;}*/
+/*当季人才损益 end*/
+/*绩效目标 begin*/
+.index .index-jxmb-tab{height: 38px;width: 100%;border-left: 1px solid #e0e0e0;border-bottom: 1px solid #e0e0e0;}
+.index .index-jxmb-btn{border-top: 1px solid #e0e0e0;border-right: 1px solid #e0e0e0;width: 100px;height: 38px;line-height: 38px;text-align: center;float: left;cursor: pointer;background-color: #fafafa;border-bottom: 1px solid #e5e5e5;}
+.index .index-jxmb-btn-select{border-top: 2px solid #009edd;border-bottom: #ffffff;background: #ffffff;line-height: 36px;cursor: default;}
+.index .index-jxmb-title{float:left;width:100%;height:34px;line-height:34px;border: 1px solid #e0e0e0;border-top: 0px;border-bottom: 0px;}
+.index .index-jxmb-title-div{float:left;height:34px;line-height:34px;font-weight: bolder;}
+.index .index-jxmb-title-right{width: 20%;text-align: center;}
+.index .index-jxmb-title-left{width: 80%;padding-left: 20px;}
+.index .index-jxmb-body{float:left;overflow-x: hidden;overflow-y: auto;width:100%;height: 205px;}
+.index .index-jxmb-table{width: 100%;border: 1px solid #e0e0e0;}
+.index-jxmb-table td{height: 34px;}
+.index-jxmb-table tr{border-bottom: 1px solid #e0e0e0;}
+.index .index-jxmb-table-80{width: 80%;text-align: left;padding-left: 20px;}
+.index .index-jxmb-table-20{width: 20%;text-align: center;}
+.index .index-jxmb-href{float: right;line-height: 32px;cursor: pointer;color: #009edd;}
+.index .jxmb-body{width: 100%;height: 235px;overflow-x: hidden;overflow-y: auto;}
+/*绩效目标 end*/
+/*员工管理 begin*/
+.index .index-yj-div-body{padding-left: 22px;padding-right: 22px;}
+.index .yj-search{width: 100%;height: 38px;}
+.index .yj-search-input{float: left;width: 78%;height: 34px;line-height: 34px;margin-top: 1px;border: 1px solid #e0e0e0;font-size: 12px;padding: 0 0 0 12px;}
+.index .yj-search-input-btn{float: left;width: 22%;background-color: #009edd;height: 36px;border: 1px solid #e0e0e0;text-align: center;padding-top: 8px;margin-left: -1px;}
+.index .yj-search-icon{background-image: url("../../img/index/index-search-icon.png");width: 18px;height: 17px;display: inline-block;}
+.index .index-rc-text{font-size: 26px;
+    width: 100%;
+    text-align: center;
+    margin-top: 75px;
+    margin-bottom: 4px;}
+.index .index-rc-tips{line-height: 22px;color: #a9a9a9;}
+.index .ct-circle-main{position: relative; height: 70px;width: 72px;margin: auto;border: 2px solid #e1e1e1;border-radius: 50%;text-align: center;}
+.index .ct-circle-main .img-rc-head{height: 100%; width: 100%;}
+/*.img-rc-head:hover{border:2px solid #009edd;}*/
+.index .index-rc-middle{padding-top: 60px;padding-right: 4px;padding-left: 4px;}
+.index .index-rc-btn{border-radius:2px;width: 176px;height: 30px;line-height: 30px;background-color: #009edd;margin: 0 auto;margin-top: 25px;text-align: center;color: #ffffff;font-size: 12px;cursor: pointer;}
+.index .index-tdtx-right{display:none;float: right;background-color: #009edd;color: #ffffff;text-align: center;padding-left: 10px;padding-right: 10px;height: 24px;line-height: 24px;border-radius: 2px;margin-top: -2px;margin-right: -2px;font-size: 12px;cursor: pointer;}
+.index .img-rc-head-name{text-align: center;padding-top: 4px;}
+.index .ct-circle-add{position: relative; height: 70px;width:70px;margin: auto;border: 2px solid #e1e1e1;border-radius: 50%;text-align: center;cursor: pointer;  }
+.index .ct-circle-del{
+    position: absolute;
+    background-image: url("../../img/index/del-btn.png");
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    right: 0px;
+}
+.index .ct-circle-add-img{
+    background-image: url("../../img/index/add.png");
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    margin-right: 2px;
+    margin-top: 22px;
+}
+/*.ct-circle-add:hover{border: 2px solid #009edd;}*/
+/*员工管理 end*/
+/*团队画像 begin*/
+.index .teamImg-middle{
+    position: relative;
+}
+.index .teamImg-funel{
+    height: 320px;
+    width: 80%;
+    position: absolute;
+    left: -64px;
+    top: -18px;
+}
+.index .teamImg-data{
+    position: absolute;
+    right: 12px;
+    top: 90px;
+    width: 38%;
+
+}
+.index .teamImg-data-son{
+    position: relative;
+    float: right;
+    width: 33.3%;
+    height: 58px;
+    /*padding-left: 26px;*/
+}
+.index .teamImg-data-number{
+    text-align: center;
+    line-height: 38px;
+}
+.index .teamImg-data-text{
+    font-size: 12px;
+}
+.index .teamImg-data-value{
+    font-size: 28px;
+}
+.index .teamImg-data-tips{
+    position: absolute;
+    bottom: 6px;
+    width: 100%;
+    text-align: center;
+}
+/*团队画像 end*/
+/*下属组织信息 begin*/
+/*#treegrid{*/
+    /*width: 100%;*/
+/*}*/
+/*#treegridbody{*/
+    /*width: 100%;*/
+/*}*/
+/*#gbox_treegrid{*/
+    /*width: 100%;*/
+/*}*/
+#toTeamImgView:hover{
+    background-color:#fafafa;
+    cursor: pointer;
+}
+#teamImg-funel{
+    cursor: pointer!important;
+}
+#treegrid_userName{
+    border-right: 2px solid #e1e1e1 !important;
+    /*border-bottom: 0px !important;*/
+}
+.ui-jqgrid-hdiv .ui-jqgrid-htable{
+    border-top: 1px solid #e1e1e1;
+    border-left: 1px solid #e1e1e1;
+    border-right: 1px solid #e1e1e1;
+}
+.index #treegridbody{
+    #height: 268px;
+}
+.index .ct-glyphicon-plus{
+    background-image: url("../../img/index/ct-glyphicon-plus.png");
+    width: 9px;
+    height: 9px;
+}
+.index .ct-glyphicon-plus{
+    background-image: url("../../img/index/ct-glyphicon-plus.png");
+    width: 9px;
+    height: 9px;
+    margin-left: 2px;
+    margin-top: 6px;
+}
+.index .ct-glyphicon-minus{
+    background-image: url("../../img/index/ct-glyphicon-minus.png");
+    width: 9px;
+    height: 9px;
+    margin-left: 2px;
+    margin-top: 6px;
+}
+/*下属组织信息 end*/
+/*绩效目标 begin*/
+ #performance_dep{
+     display: table;
+     width: 100%;
+     border: 1px solid #e0e0e0;
+     border-top: 0px;
+     font-size: 12px;
+}
+ #performance_dep .performance-dep-one{
+     width: 80%;
+     text-align: center;
+     font-size: 14px;
+ }
+#performance_dep .performance-dep-two{
+    width: 20%;
+    text-align: center;
+    font-size: 14px;
+}
+#performance_dep tr{
+    border-bottom: 1px solid #e0e0e0;
+    height: 39px;
+}
+#performance_dep .performance-dep-td-one{
+    padding-left: 20px;
+}
+.index-yj-div.index-yj-div-rc:hover,.index-yj-div.index-yj-div-tdtx:hover{
+    background-color:#ffffff;
+    cursor: default;
+}
+.index-yj-div-rc .yj-search-input-btn{
+    cursor: pointer;
+}
+#performance_sub{
+    display: none;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-top: 0px;
+    font-size: 12px;
+    text-align: center;
+}
+#performance_sub tr{
+    border-bottom: 1px solid #e0e0e0;
+}
+#performance_sub tbody tr{
+    cursor: pointer;
+}
+#performance_sub th{
+    height: 47px;
+}
+#performance_sub th{
+    text-align: center;
+}
+#performance_sub .performance-sub-one{
+    width: 15%;
+}
+#performance_sub .performance-sub-two{
+    width: 15%;
+}
+#performance_sub .performance-sub-three{
+    width: 15%;
+}
+#performance_sub .performance-sub-four{
+    width: 55%;
+}
+#searchEmpTable {
+    min-height: 310px;
+}
+#gainOfLossModal .tab-content{
+    padding: 16px 0;
+}
+#gainOfLossModal .tab-content .col-xs-12{
+    padding: 0;
+}
+/*绩效目标 end*/
+/*团队提醒 begin*/
+.index .birthdayBtn{
+    font-size: 10px;
+    float: right;
+    margin-left: 2px;
+    border-radius: 4px;
+    padding: 2px 3px;
+    cursor: pointer;
+}
+.index .birthdayBtnSelect{
+    background-color: #009edd;
+    color: #ffffff;
+}
+
+.p-grid-title {
+    width: 100%;
+    height: 30px;
+    margin-top: 5px;
+}
+.p-grid-title .birth-img {
+    display: inline-block;
+    background: url("../../img/manage/birth.png") no-repeat 0 0;
+    width: 18px;
+    height: 23px;
+    vertical-align: bottom;
+}
+.p-grid-title .font-title {
+    font-weight: bold;
+    font-size: 14px;
+}
+.l-td-birthday {
+    font-size: 12px;
+    line-height: 24px;
+    color: #333;
+    width: 770px;
+}
+.l-td-birthday .l-birthday-table{
+    border-left: #e1e1e1 1px solid;
+    display: inline-block;
+}
+.l-td-birthday .l-birthday-table .l-birthday-child{
+    padding: 0 1px;
+    text-align: center;
+    border-right: #e1e1e1 1px solid;
+    display: inline-block;
+}
+.l-td-birthday .l-birthday-table .l-birthday-head{
+    width: 750px;
+}
+.l-td-birthday .l-birthday-table .l-birthday-child a{
+    text-decoration: none;
+}
+.l-td-birthday .l-birthday-table .l-birthday-head .l-birthday-child{
+    background-color: #0099cc;
+    color: #f0f0f0;
+}
+.l-td-birthday .l-birthday-table .l-birthday-head div.bg_highlight {
+    background-color: #F8921A;
+}
+.l-td-birthday .l-birthday-table .l-birthday-body{
+    max-height: 480px;
+    overflow-y: auto;
+    float: left;
+    width: 767px;
+}
+.l-td-birthday .l-birthday-table .l-birthday-body .l-birthday-main{
+    width: 750px;
+}
+.l-td-birthday .l-birthday-table .l-birthday-body .l-birthday-child {
+    background-color: #fff;
+}
+.l-td-birthday .l-birthday-table .l-birthday-body .l-birthday-child span{
+    display: inline-block;
+    width: 100%;
+}
+.l-td-birthday .l-birthday-table .l-birthday-body div.bg_highlight_name {
+    background-color: #edfafe;
+}
+.l-td-birthday .l-birthday-table .l-birthday-foot{
+    width: 750px;
+    border-top: #e1e1e1 1px solid;
+    float: left;
+}
+.l-td-birthday .l-birthday-table .l-birthday-foot .l-birthday-child{
+    border-bottom: #e1e1e1 1px solid;
+}
+.l-td-birthday span.last {
+    color: #0066cc;
+}
+.l-td-birthday table {
+    border-left: #e1e1e1 1px solid;
+    border-top: #e1e1e1 1px solid;
+}
+.l-td-birthday table td {
+    border: #e1e1e1 1px solid;
+    border-left: 0;
+    border-top: 0;
+}
+.l-td-birthday table tbody{
+    max-height: 500px;
+    overflow-y: auto;
+}
+.l-td-birthday table td.bg_default {
+    background-color: #0099cc;
+}
+.l-td-birthday table td.bg_highlight {
+    background-color: #F8921A;
+}
+.l-td-birthday table td.bg_highlight strong {
+    color: #FFF;
+}
+.l-td-birthday table td.bg_default_name {
+    background-color: #fff;
+}
+.l-td-birthday table td.bg_highlight_name {
+    background-color: #edfafe;
+}
+.l-td-birthday table td span{
+    display: inline-table;
+    width: 100%;
+}
+/*团队提醒 end*/
+/*版本号 start*/
+.versionNumber{
+	text-align: center;
+}
+.versionNumber span{
+	cursor: pointer;
+}
+.versionModalBody span {
+	font-size: 18px;
+}
+/*版本号 end*/
+
+
+/*media begin*/
+@media (max-width: 1430px) {
+    .index .index-rc-btn {display: none;}
+    .index .index-tdtx-right {display: block;}
+    .index .index-rc-middle{padding-top: 50px;}
+    .ct-col-md-3{width: 50%;margin-bottom: 20px;}
+}
+@media (max-width: 1050px) {
+    .birthdayBtnGroup{
+        float: left;
+        clear: both;
+        margin-top: 5px;
+        margin-left: -10px;
+    }
+}
+@media (max-width: 990px) {
+    .index .teamImg-data {width: 48%;}
+}
+@media (min-width: 768px) {
+    #gainOfLossModal .modal-dialog {
+        width: 900px;
+        margin: 40px auto;
+    }
+    #showWarningModal .modal-dialog{
+        width : 940px;
+    }
+    #remindModal .modal-dialog {
+        width: 800px;
+    }
+}
+/*media end*/
+/*#showDragBtn{display: none;}*/

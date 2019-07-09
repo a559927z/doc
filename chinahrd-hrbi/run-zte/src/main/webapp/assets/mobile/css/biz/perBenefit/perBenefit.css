@@ -1,0 +1,58 @@
+
+html,body::-webkit-scrollbar{width:100%;;height:100%;}
+html,body{overflow: hidden;}
+
+.perBenefit {
+	background-color: white;
+/* 	margin-top: 5px; */
+}
+.benefit-operator,.benefit-normal{min-width:30px;
+float: left;height:55px;text-align: center;font-family: 'Applied Font Regular', 'Applied Font';font-size: 11px;
+    color: #999999;padding: 0;
+}
+/*  div .benefit-normal:last-child{ */
+/* 	min-width:50px; */
+/* } */
+.benefit-operator{
+	min-width:20px;
+}
+.benefit-operator span,.benefit-normal span{font-size: 23px;white-space: nowrap;width: 100%;}
+.benefit-normal label{font-size: 11px;}
+.benefit-normal .benefit-value{font-weight: 400;color: red;font-family: 'Applied Font Bold', 'Applied Font';}
+
+.benefit-note{float: left;width: 100%;margin-top: 5px;padding-left: 10px;padding-right: 10px}
+.benefit-note label{font-size: 12px;vertical-align: middle;}
+.benefit-note .warn-icon{float: left;width: 20px;height:20px;background-size:cover;background-image:url("../../../img/icon-warn.png") }
+.benefit-note .smile-face{float: left;width: 20px;height:20px;background-size:cover;background-image:url("../../../img/smile-face.png") }
+
+
+/* .accord-dismiss-normal{float: left;margin-top: 40px;text-align:left;min-width:180px;} */
+/* .accord-dismiss-normal .accord-main-number{font-size: 36px;font-weight: normal;} */
+/* .accord-dismiss-normal .accord-main-content{font-size: 15px;} */
+/* .accord-dismiss-normal .accord-main-note{font-size: 12px;color: #999999;margin-top: 5px;height: 15px;} */
+/* .accord-dismiss-normal .accord-main-date{font-size: 15px;padding-bottom: 5px;} */
+
+/* .accord-dismiss-normal .accord-main-note .accord-main-icon-yellow{float:left;margin-right:5px;margin-top:4px; background-color: yellow;width: 10px;height: 8px;border: 1px solid yellow;} */
+/* .accord-dismiss-normal .accord-main-note .accord-main-icon-red{float:left;margin-right:5px;margin-top:4px;background-color: red;width: 10px;height: 8px;border: 1px solid red;} */
+
+/* .accord-dismiss-normal .accord-main-note .accord-main-icon-note{float:left;margin-right:5px;} */
+/* .accord-dismiss-normal .accord-main-note .accord-main-icon-note-warn{float:left;margin-right:5px;} */
+/* .accord-dismiss-normal .accord-main-note .accord-main-icon-note-over{float:left;margin-right:5px;} */
+
+
+.benefitWarn{
+	background-image: url("../../../img/perbenefitWarn.png");	
+	width: 23px;
+	height:23px;
+	float: left;
+	background-size:cover;
+}
+.xyzt{
+	font-family:'Applied Font Bold', 'Applied Font';
+	font-size: 9px;
+	width: 100%;
+	margin: 0 10px 5px 10px;
+	height: 24px;
+	line-height: 24px;
+/* 	float: left; */
+}

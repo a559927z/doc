@@ -1,0 +1,661 @@
+.row{margin-left:0px; margin-right:0px;}
+
+.perbenefit-board {
+    position: relative;
+    padding-left: 0px;
+    font-size: 14px;
+    color: #777777;
+}
+.ct-dissmiss .column{
+    padding: 2px!important;
+}
+
+#page-one{display: block;}
+#page-two{display: none;}
+#page-three{display: none;}
+#page-four{display: none;}
+.leftListSet,.LSLSetUp{
+    cursor: pointer;
+}
+
+/*页面通用样式 begin*/
+.perbenefit-board .index-common-title{position: relative;width: 100%;height: 34px;}
+.perbenefit-board .index-common-title-left{position: absolute;top: 10px;left: 8px;background-color: #88b7e0;width: 2px;height: 15px;}
+.perbenefit-board .index-common-title-text{position: absolute;top: 6px;left: 20px;color: #444;}
+.perbenefit-board .index-common-title-center{position: absolute;left: 150px;top:-4px;}
+.perbenefit-board .index-common-title-center .title-center-text{display: inline-block;border:1px solid #e0e0e0;margin-right: 35px;}
+.perbenefit-board .index-common-title-center .title-center-text span:first-child{display: inline-block;color: #333;margin:0 5px;}
+.perbenefit-board .index-common-title-center .title-center-text span:nth-child(2){display: inline-block;background-color: #999;color: #fff;padding-left: 15px;font-size: 18px;}
+.perbenefit-board .index-common-title-center .title-center-text small{display: inline-block;background-color: #999;color: #fff;padding: 6px 10px 3px 5px;font-size: 12px;vertical-align: top;}
+.perbenefit-board .index-common-title-right{  float: right; margin: 6px 6px 0px 0px;  position: relative; background-color: #fff; padding: 0px 2px;}
+.perbenefit-board .index-common-title-right span{padding: 0px 4px; border-radius: 5px; cursor:pointer;  background: #efefef; border: 1px solid #ccc;}
+.perbenefit-board .index-common-title-right span.select{ background: #009EDD; color: #fff; cursor:default;   border: 1px solid #009EDD;}
+
+.perbenefit-board .rightBody{
+    width: 100%;
+    background-color: #fff;
+    padding: 5px;
+}
+
+.perbenefit-board .top-div{
+    height: 160px;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+}
+.perbenefit-board .bottom-div{
+    width: 100%;
+    /*height: 385px;*/
+    border: 1px solid #e0e0e0;
+}
+.perbenefit-board .bottom-div >.chart-view .col-xs-12:nth-child(2){
+    /*height: 350px;*/
+}
+.perbenefit-board .bottom-div .bottom-div-first{
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+}
+.perbenefit-board .bottom-div .bottom-div-first span{
+    color: #999;
+    margin-left: 10px;
+}
+.perbenefit-board .bottom-div .bottom-div-right{
+    position: absolute;
+    right: 30px;
+    top: 10px;
+    z-index: 999;
+}
+.perbenefit-board .bottom-div .bottom-div-right>div{
+    display: inline-block;
+    background-color: rgb(242,242,242);
+    color: rgb(102,102,102);
+    padding: 4px 8px;
+    margin:0 -2px;
+    cursor: pointer;
+}
+.perbenefit-board .bottom-div .bottom-div-right>div.select{
+    background-color: rgb(211,211,211);
+    color: rgb(51,51,51);
+}
+.perbenefit-board .bottom-div .bottom-div-first a{
+    float: right;
+    text-decoration: none;
+    cursor: pointer;
+}
+.perbenefit-board .bottom-div .bottom-div-second{
+    color: #999;
+    margin-left: 10px;
+}
+/*页面通用样式 begin*/
+
+/*左边导航 begin*/
+.perbenefit-board .leftBody{
+    position: fixed;
+    width: 130px;
+    left: 0px;
+    top: 0px;
+}
+.perbenefit-board .leftListBigDiv{
+    position: relative;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-indent : 14px;
+    font-weight: bold;
+}
+.perbenefit-board .leftListSet{
+    background-image: url("../../../img/index/setUp.png");
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 12px;
+    top: 17px;
+}
+.perbenefit-board .leftListDiv{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+    text-indent : 14px;
+}
+.perbenefit-board .selectList{
+    background-color: #fff;
+    cursor: default;
+}
+/*左边导航 end*/
+
+.perbenefit-board .LSLSetUp{
+    background-image: url("../../../img/index/setUp.png");
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 11px;
+    top: 10px;
+}
+
+/*table chart 切换 的 top 通用样式 begin*/
+.perbenefit-board .bottom-title{
+    height: 30px;
+}
+.perbenefit-board .bottom-left{
+    top: 4px;
+}
+.perbenefit-board .bottom-text{
+    top: 0px;
+}
+.perbenefit-board .bottom-text span{
+    color:#999;
+}
+.perbenefit-board .rightSetUpBtn{
+    position: absolute;
+    right: 0px;
+    top: 1px;
+    background-color: #fafafa;
+    cursor: pointer;
+}
+.perbenefit-board .rightSetUpBtnDiv{
+    position: relative;
+    float: left;
+    height: 30px;
+    width: 80px;
+    border: 1px solid #e0e0e0;
+    text-align:center;
+}
+.perbenefit-board .rightSetUpRight{
+    margin-left: -1px;
+}
+.perbenefit-board .rightSetUpBtnSelect{
+    border-bottom: 0px;
+    cursor: default;
+    background-color: #fff;
+}
+.rightSetUpBtnTop{
+    display: none;
+}
+.rightSetUpBtnSelect .rightSetUpBtnTop{
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #009edd;
+}
+.perbenefit-board .rightSetUpBtnDiv .text{
+    margin-top: 4px;
+}
+.rightSetUpBtnSelect .text{
+    margin-top: 2px !important;
+}
+
+.rightSetUpLeftShowIcon{
+    display: none;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-show1.png");
+    width: 18px;
+    height: 11px;
+    left: 7px;
+    top: 10px;
+}
+.rightSetUpRightShowIcon{
+    display: none;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-show2.png");
+    width: 13px;
+    height: 11px;
+    left: 9px;
+    top: 9px;
+}
+.rightSetUpLeftHideIcon{
+    display: block;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-hide1.png");
+    width: 18px;
+    height: 11px;
+    left: 7px;
+    top: 10px;
+}
+.rightSetUpRightHideIcon{
+    display: block;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-hide2.png");
+    width: 13px;
+    height: 11px;
+    left: 9px;
+    top: 9px;
+}
+.rightSetUpBtnSelect .rightSetUpLeftShowIcon{display: block;}
+.rightSetUpBtnSelect .rightSetUpLeftHideIcon{display: none;}
+.rightSetUpBtnSelect .rightSetUpRightShowIcon{display: block;}
+.rightSetUpBtnSelect .rightSetUpRightHideIcon{display: none;}
+/*table chart 切换 的 top 通用样式 begin*/
+
+
+/*第一行的数据块 begin*/
+.perbenefit-board .accord-yj-float{position: relative; height: 62px;margin: 0 auto;margin-top: 14px;text-align: center;}
+.perbenefit-board .accord-yj-float-value {
+    font-size: 40px;
+    color: #666666;
+}
+.perbenefit-board .accord-yj-float-people {
+    color: #777777;
+    font-size: 12px;
+}
+.perbenefit-board .accord-bottom-float{
+    position: relative; height: 48px;margin: 0 auto;margin-top: 0px;text-align: center;
+    font-size: 12px;
+    color: #777777;
+}
+.perbenefit-board .accord-bottom-float div{
+    margin-left: 2px;
+    margin-right: 2px;
+}
+.perbenefit-board .accord-bottom-float-text{
+    display: inline-block;
+}
+.perbenefit-board .accord-bottom-float-value{
+    display: inline-block;
+    font-size: 14px;
+}
+.perbenefit-board .accord-bottom-float-people{
+    display: inline-block;
+}
+.perbenefit-board .accord-bottom-float-arrow{
+    width: 12px;
+    height: 15px;
+    display: inline-block;
+}
+.perbenefit-board .accord-bottom-float-arrow-rise{
+    background-image: url("../../../img/index/arrow1.png");
+}
+.perbenefit-board .accord-bottom-float-arrow-drop{
+    background-image: url("../../../img/index/arrow2.png");
+}
+/*第一行的数据块 end*/
+
+.perbenefit-board .table-view{
+    display: none;
+}
+.bottom-div-two > .row > div{
+    height: 385px;
+}
+.bottom-div-two > .row > div:nth-child(2){
+    border-left:1px solid #e0e0e0;
+}
+.bottom-div-two .row .bottom-div-first{
+    color: #333;
+}
+.bottom-div-four{
+    height: 520px !important;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.conditionBtn{
+    cursor: pointer;
+    position: absolute;
+    top: -48px;
+    left: 220px;
+    font-size: 12px;
+    width: 108px;
+    height: 48px;
+    line-height: 47px;
+    margin-left: 10px;
+    border: 1px solid #e0e0e0;
+    border-bottom: 0px;
+    z-index: 1;
+    background-color: #fff;
+    text-indent: 10px;
+}
+.conditionBtnListBody{
+    position: relative;
+    /*min-height: 276px;*/
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px !important;
+}
+
+/*筛选条件 begin*/
+.dis-search{width: 280px;font-size: 12px !important;}
+.dis-search .dis-search-input{line-height:2 !important;font-size: 12px !important;float: left;width: 74%;height: 34px;margin-top: 1px;border: 1px solid #e0e0e0;font-size: 12px;padding-top: 4px;padding-left: 12px;}
+.dis-search .dis-search-input-btn{cursor:pointer;font-size: 12px !important;float: left;width: 26%;background-color: #009edd;height: 36px;line-height:36px;border: 1px solid #e0e0e0;padding-left: 9px;margin-left: -1px;color: #fff;}
+.dis-search-tip{display: inline-block;color: #888;line-height: 2;padding: 6px 28px;}
+
+.dis-insure-search{width: 500px; font-size: 12px !important;margin-left: 10px;}
+.dis-insure-search .dis-search-input{line-height:2 !important;font-size: 12px !important;float: left;width: 35%;height: 34px;margin-top: 1px;border: 1px solid #e0e0e0;font-size: 12px;padding-top: 4px;padding-left: 12px;}
+.dis-insure-search .dis-search-select{line-height:2 !important;float: left; width: 30%;vertical-align: middle;margin:3px 20px 0; }
+.dis-insure-search .dis-search-input-btn{cursor:pointer;font-size: 12px !important;float: left;width: 15%;background-color: #009edd;height: 36px;line-height:36px;border: 1px solid #e0e0e0;margin-right: 5px;color: #fff;text-align: center;}
+
+
+.condition-body-list{
+    width: 100%;
+    float: left;
+    margin-bottom: 14px;
+}
+.condition-body-list-title{
+    text-align: right;
+    width: 64px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+.condition-input-text{
+    width: 120px;
+    height: 24px;
+    line-height: 2;
+    padding-left: 4px;
+    margin-top: -2px;
+}
+.condition-text-one{
+    margin-left: 6px;
+    margin-right: 6px;
+}
+.condition-btn{
+    float: left;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 24px;
+    line-height: 24px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+.condition-btn-selected{
+    background-color: #009edd;
+    color: #fff;
+    cursor: default;
+}
+
+.condition-btn-too-icon{
+    position: absolute;
+    top: 8px;
+    right: 6px;
+    background-image: url("../../../img/index/y.png");
+    width: 7px;
+    height: 7px;
+}
+/*筛选条件 end*/
+
+/*弹出框 begin*/
+.ZBSetUp-drag-middle{
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    margin-top: 30px;
+}
+.BSetUp-col{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+.BSetUp-line{
+    width: 100%;
+    float: left;
+    margin-bottom: 30px;
+}
+.BSetUp-text-line{
+    color: #888888;
+    text-align: left;
+    margin-bottom: 8px;
+}
+.BSetUp-text-last-line{
+    margin-bottom: 30px;
+}
+.color-div{
+    width: 12px;
+    height: 12px;
+    margin-top: 6px;
+}
+.green-color-div{
+    background-color: #5ab700;
+}
+.orange-color-div{
+    background-color: #eda100;
+}
+.BSetUp-text-one{
+    margin-top: 3px;
+    margin-left: 6px;
+}
+.BSetUp-input{
+    width: 58px;
+    height: 24px;
+    padding-left: 8px !important;
+    margin-left: 8px;
+    font-size: 12px !important;
+}
+.BSetUp-text-two{
+    margin-top: 3px;
+    margin-left: 12px;
+}
+
+/*.drag-middle-C{*/
+/*margin-top: 5px;*/
+/*}*/
+.BSetUp-line-two{
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+}
+.BSetUp-line-three{
+    border-bottom: 1px dashed #e8ecf0;
+}
+.CSetUp-text-one{
+    margin-top: 6px;
+}
+.CSetUp-select{
+    margin-top: 4px;
+    margin-left: 8px;
+    width: 132px;
+    height: 24px;
+}
+.CSetUp-text-two{
+    width: 100%;
+    text-align: left;
+    color: #888888;
+    padding-top: 8px;
+    padding-bottom: 20px;
+}
+.CSetUp-text-checkbox{
+    margin-top: 3px;
+    margin-right: 18px;
+    margin-left: 2px;
+    cursor: pointer;
+}
+.CSetUp-text-checkbox-text{
+    margin-left: 4px;
+}
+.CSetUp-text-checkbox-input{
+    /*margin-top: 4px !important;*/
+    /*margin-bottom: 4px !important;*/
+}
+/*弹出框 end*/
+
+/*media begin*/
+@media (max-width: 768px) {
+    .condition-body-list-title {width: 100%;text-align: left;}
+    .condition-bottom{padding-left: 0px;}
+    .condition-text-one{display: none;}
+    .condition-input-text-too{clear: both;margin-top: 6px;}
+
+    .conditionBtn{top: -65px;left: -11px;border-bottom: 1px solid #e0e0e0;}
+    .conditionBtnListBody{margin-top: 110px;}
+    .dis-search{top: -115px;}
+
+    .symbol{height:65px !important;}
+    .symbol div{margin-top: 0px !important;}
+
+}
+
+/*大于768px并且小于1170px*/
+@media (min-width: 768px) and (max-width: 980px) {
+    .perbenefit-board .accord-yj-float{height: 52px; margin-top: 24px;}
+    .perbenefit-board .accord-yj-float-value{font-size:24px;}
+}
+
+/*media end*/
+
+.top0{
+    top:0px !important;
+}
+.bordertop0{
+    border-top: 0px !important;
+}
+.borderbottom{
+    border-bottom: 1px solid #e0e0e0;
+}
+.width45{
+    width:45px !important;
+}
+.width100pc{
+    width:100% !important;
+}
+.height180{
+    height:180px;
+}
+.padding5{
+    padding: 5px !important;
+}
+.padding5-0{
+    padding:5px 0px;
+}
+.paddingtop8{
+    padding-top:8px;
+}
+.paddingtop10{
+    padding-top: 10px !important;
+}
+.paddingtop35{
+    padding-top:35px;
+}
+.paddingbottom10{
+    padding-bottom: 10px !important;
+}
+.padding0{
+    padding:0px;
+}
+.textaligncenter{
+    text-align: center;
+}
+.marginbottom10{
+    margin-bottom:10px;
+}
+.margintop35{
+    margin-top:35px;
+}
+.margintop55{
+    margin-top:55px;
+}
+.fontsize30{
+    font-size:30px;
+}
+.height350{
+    height:350px;
+}
+
+.cursorpointer{
+    cursor:pointer;
+}
+.chart-view,.table-view{}
+.chart-view>div:nth-child(2),.table-view>table:nth-child(1){height:100%;}
+
+.ui-jqgrid-sortable{cursor:default !important;}
+.ui-jqgrid-sortable:hover{color:#777 !important;}
+
+.nodata{text-align: center; color:#ccc; margin-top:45px; font-family: '宋体';}
+.modal-dialog{width:80%;}
+
+.tooltip{width:180px !important;}
+
+.rightSetUpBtnDiv .glyphicon{margin-top:7px;}
+.rightSetUpBtnSelect .glyphicon{margin-top:5px !important;}
+
+/********************* 自定义表格页面样式 ****************************/
+.ui-jqgrid>.ui-jqgrid-view th:nth-child(3), .ui-jqgrid>.ui-jqgrid-view tr td:nth-child(3) {
+    background-color: #E3F8FE;
+}
+
+
+/*预警*/
+.trend-warn {
+    max-width: 350px;
+    margin-top: 30px;
+}
+
+.horizontal-line {
+    border-top: 1px solid #E4E4E4;
+}
+
+.warn-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.warn-detail {
+    min-height:90px;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.warn-detail label {
+    font-size: 18px;
+}
+/*.warn-detail .loadingmessage{padding-top: 0px !important; height:auto !important; margin-top: 35px;}*/
+
+.warn-icon {
+    height: 80px;
+    background: url(../../../img/base/icon-warn.png) no-repeat;
+}
+
+.smile-face {
+    height: 80px;
+    background: url(../../../img/base/smile-face.png) no-repeat;
+}
+
+.arrow-lower {
+    background: url(../../../img/base/arrow-lower.jpg) no-repeat scroll center;
+    width: 20px;
+    height: 38px;
+    display: inline-block;
+}
+
+.arrow-higher {
+    background: url(../../../img/base/arrow-higher.jpg) no-repeat scroll center;
+    width: 20px;
+    height: 38px;
+    display: inline-block;
+}
+
+.arrow-up {
+    background: url(../../../img/base/arrow-up.jpg) no-repeat scroll center;
+    width: 20px;
+    height: 38px;
+    display: inline-block;
+}
+
+.arrow-down {
+    background: url(../../../img/base/arrow-down.jpg) no-repeat scroll center;
+    width: 20px;
+    height: 38px;
+    display: inline-block;
+}
+
+.detail-msg, .warn-msg {
+    line-height: 36px;
+}
+
+.detail-msg {
+    font-weight: 700;
+}
+.be-change-chart{
+    height: 300px;
+    width: 398px;
+}
+.modal .loadingmessage{
+    float: left;
+    margin:140px 150px 0;
+}
+
+/*当前组织人均效益*/
+#orgBenefitText > div {
+    margin: 22px 12px 0 0;
+}
+
+#orgBenefitText .num {
+    font-size: 24px;
+}

@@ -1,0 +1,51 @@
+package net.chinahrd.modules.pub.web;
+
+
+import io.swagger.annotations.ApiOperation;
+import net.chinahrd.modules.pub.entity.ParamInfo;
+import net.chinahrd.modules.pub.request.ParamInfoReq;
+import net.chinahrd.modules.pub.service.ParamInfoService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
+import net.chinahrd.common.auth.InjectCurrentUser;
+import org.springframework.web.bind.annotation.RestController;
+import net.chinahrd.common.AbstractBaseController;
+
+import java.util.Date;
+
+/**
+ * <p>
+ *  前端控制器
+ * </p>
+ *
+ * @author cxhuo_gz
+ * @since 2019-03-21
+ */
+
+@InjectCurrentUser
+@RestController
+@RequestMapping("/pub/paramInfo")
+@Api(value="/pub/paramInfo",description="系统参数信息")
+public class ParamInfoController extends AbstractBaseController {
+    @Autowired
+	private ParamInfoService paramInfoService;
+
+    @ApiOperation(value = "增加参数数据", notes = "addParamInfo", httpMethod = "POST")
+    @PostMapping(value = "/addParamInfo")
+    public Object addParamInfo(ParamInfoReq paramInfoReq) {
+
+        Date now = new Date();
+        ParamInfo paramInfo = new ParamInfo();
+        BeanUtils.copyProperties(paramInfoReq,paramInfo);
+        paramInfo.setCreateBy(paramInfoReq.getCurrentUser().getUserName());
+        paramInfo.setCreateDate(now);
+        paramInfo.setUpdateBy(paramInfoReq.getCurrentUser().getUserName());
+        paramInfo.setUpdateDate(now);
+        boolean b = paramInfoService.save(paramInfo);
+        return setSuceessMsg("ok");
+    }
+}
+

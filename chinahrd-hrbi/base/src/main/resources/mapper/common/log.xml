@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.eis.aop.LogDao">
+
+	<insert id="insertLoginLog" parameterType="net.chinahrd.eis.aop.AopInformation">
+		INSERT INTO login_log (
+			login_log_id,
+			user_id,
+			user_key,
+			user_name,
+			user_name_ch,
+			ip_address,
+			login_time
+		) VALUES (
+			#{userLoginId},
+			#{userId},
+			#{userKey},
+			#{userName},
+			#{userNameCh},
+			#{ipAddress},
+			#{loginTime}
+		)
+	</insert>
+
+	<insert id="insertOperateLog" parameterType="net.chinahrd.eis.aop.AopInformation">
+		INSERT INTO operate_log (
+			user_id,
+			user_key,
+			user_name,
+			user_name_ch,
+			ip_address,
+			create_date,
+			description,
+			package,
+			clazz,
+			method,
+			params,
+			type,
+			use_time,
+			exception_code,
+			exception_detail
+		) VALUES (
+			#{userId},
+			#{userKey},
+			#{userName},
+			#{userNameCh},
+			#{ipAddress},
+			#{createDate},
+			#{description},
+			#{packageName},
+			#{clazz},
+			#{method},
+			#{params},
+			#{type},
+			#{useTime},
+			#{exceptionCode},
+			#{exceptionDetail}
+		)
+	</insert>
+
+</mapper>

@@ -1,0 +1,711 @@
+@media (max-width: 1181px) {
+    #talentLeft{
+    	width: 100% !important;
+    }
+    #talentRight{
+    }
+}
+ @media (min-width: 1176px) and (max-width: 1233px) {
+	#talentLeft{
+		width: 187px !important;
+	}
+}
+
+ @media(min-width: 1232px) {
+	#talentLeft{
+		width: 199px !important;
+	}
+}
+ @media(min-width: 1403px) {
+	.talentDiv{
+		width: 350px ;
+		margin-left: 20px;
+	}
+	.gridTab > tr:nth-child(4) > td:nth-child(2) > div >a:nth-child(1){
+		width: 30% !important;
+	}
+}
+  @media(min-width: 1323px) and (max-width: 1403px) {
+	.talentDiv{
+		width: 328px ;
+		margin-left: 20px;
+	}
+	.favoritstatu{
+		width: 104px !important;
+	}
+	.talenttype{
+		width: 286px !important;
+	}
+	.gridTab > tr:nth-child(4) > td:nth-child(2) > div >a:nth-child(1){
+		width: 30% !important;
+	}
+} 
+ @media(max-width: 1323px) {
+	.talentDiv{
+		width: 299px ;
+		margin-left: 10px;
+	}
+	#talentRight{
+		width: 937px;
+	}
+	.favoritstatu{
+		width: 94px !important;
+	}
+	.talenttype{
+		width: 269px !important;
+	}
+	.tablerow {
+    	margin: 0 10px 0 0px !important;
+	}
+	.gridTab > tr:nth-child(4) > td:nth-child(2) > div >a:nth-child(1){
+		width: 40% !important;
+	}
+}
+.sds{}
+.c999{
+    color: #999999;
+}
+.circle{
+    width: 16px; height: 16px; border-radius: 8px; display: inline-block; margin-top: 3px;
+}
+.backgroundred{
+    background: #cc0000;
+}
+.backgroundyellow{
+    background: #ECA500;
+}
+.backgroundgreen{
+    background: #00CC00;
+}
+.backgroundgray{
+    background: #999999;
+}
+.margintop2{
+    margin-top: 2px;
+}
+.margintop5{
+    margin-top: 5px;
+}
+.margintop8{
+    margin-top: 8px;
+}
+.marginright5{
+    margin-right: 5px;
+}
+.marginright18{
+    margin-right: 18px;
+}
+.marginleft18{
+    margin-left: 18px;
+}
+.marginleft10{
+    margin-left: 10px;
+}
+
+.padding0{
+    padding: 0px;
+}
+.paddingbottom3{
+    padding-bottom: 3px;
+}
+.paddingleft6{
+    padding-left: 6px;
+}
+.paddingtop6{
+    padding-top: 6px;
+}
+.padding10{
+    padding: 10px;
+}
+.padding12{
+    padding: 12px;
+}
+.paddingleft12{
+    padding-left: 12px;
+}
+.paddingtop12{
+    padding-top: 12px;
+}
+.paddingleft20{
+	padding-left: 20px;
+} 
+.paddingtop40{
+	padding-top: 40px;
+}
+.paddingbottom12{
+    padding-bottom: 12px;
+}
+.paddingbottom18{
+    padding-bottom: 18px;
+}
+
+.verticalalignmiddle{
+    vertical-align: middle !important;
+}
+.textaligncenter{
+    text-align: center;
+}
+
+.cursorpointer{
+    cursor: pointer;
+}
+
+.border{
+    border:1px solid #DDDDDD;
+}
+.borderleft{
+    border-left: 1px solid #DDDDDD;
+}
+.bordertop{
+    border-top: 1px solid #DDDDDD;
+}
+.borderbottom{
+    border-bottom: 1px solid #DDDDDD;
+}
+.borderright{
+    border-right: 1px solid #DDDDDD;
+}
+
+.fontsize12{
+    font-size: 12px;
+}
+.fontsize16{
+    font-size: 16px;
+}
+
+.portrait{
+    width: 100%; max-width: 60px; max-height: 60px; border:1px solid #EEEEEE;
+}
+
+.overflowauto{
+    overflow: auto;
+}
+
+.widthpc100{
+    width: 100%;
+}
+
+#txtSearchName{
+    border-radius: 3px !important;
+    background: url("../../../img/talent/searchName.png") no-repeat left 10px center;
+    font-size: 12px;
+    color: #999999;
+    padding: 0 0 0 30px;
+    
+}
+
+/*begin*/
+body>.page-content{
+    width: 100% !important;
+}
+body{
+    min-height: initial;
+}
+.scroll{
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.background-fff{
+    background: #fff;
+}
+.background-f9f9f9{
+    background: #f9f9f9;
+}
+.listopration{
+    max-height: 24px; overflow: hidden; line-height: 12px; margin-bottom: 8px !important;
+}
+
+.listoprationstyle div{
+    cursor: pointer;
+}
+.listoprationstyle div:hover{
+    text-decoration-line: underline;
+    color: #337ab7 !important;
+}
+
+.tabli{
+    padding:10px 0px; cursor: pointer;
+}
+.active{
+   cursor: default !important; background: #fff;
+}
+.tabli .name{
+    float:left; 
+    width: 67%; 
+    margin-left:5%;
+}
+.tabli .name .icon{
+    width: 16px; border: 0px; margin-right: 5px;
+}
+.tabli .name .help{
+    width: 16px; border: 0px; cursor: pointer;
+}
+.tabli .num{
+    float:right; width:28%;
+}
+.tabli .badge{
+	border: 1px solid #d9d8d9 !important;
+	background-color: #f0f0f0 !important;
+	font-size: 12px;
+	color: #999999;
+}
+.iconli{
+    border-top: 1px solid #f8f8f8; padding: 10px 0px 3px 0px; margin-bottom: 8px;
+}
+.iconli .avatar{
+    margin: 0px 8%;
+}
+.iconli .avatar .col{
+    width: 33%; float: left; text-align: center;
+}
+.iconli .avatar img{
+    border: 0px; width: 24px; height: 24px; cursor: pointer;
+}
+.iconli .direct{
+    border-bottom: 1px solid #ddd; height: 8px;
+}
+.iconli .direct div{
+    width: 33%;  float: left; text-align: center;
+}
+.iconli .direct .active0{
+    margin-left: 0%;
+}
+.iconli .direct .active1{
+    margin-left: 33%;
+}
+.iconli .direct .active2{
+    margin-left: 66%;
+}
+.iconli .direct div img{
+    border: 0px; position: relative; top: 2px;
+}
+
+.cate{
+    padding: 10px 8%; cursor: pointer;
+}
+#cate0 .active,#cate1 .active,#cate2 .active{
+    background: #CDE7FC;
+    cursor: default;
+}
+.cate .name{
+    float: left; width: 80%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+}
+.cate .num{
+    float: left; width: 20%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+}
+
+.ztree li a.curSelectedNode{
+    background: #CDE7FC !important;
+    border: 1px solid #97cffc !important;
+}
+
+#tWarning .active{
+    display: block !important;
+}
+
+.nodatagrid{
+    text-align: left;
+    padding: 30px 12px;
+    color: #ccc;
+    font-size: 16px;
+}
+.nodatalist{
+    padding: 8px;
+    height: 117px;
+}
+.nodatalist div{
+    text-align: center;
+    margin: 50px;
+    color: #ccc;
+    font-size: 16px;
+}
+.key-talent-icon img{
+    margin: 0 3px;
+}
+
+
+	.talentDiv{
+		height: 375px;
+		border: 1px solid #e0e0e0;
+		background-color: #ffff;
+/* 		margin-left: auto; */
+/* 		margin-right: auto; */
+		margin-top: 75px;
+		float: left;
+		
+	}
+	.talentimg{
+		margin: -50px auto 0 0;
+	    padding-left: 40px;
+	}
+	.talenttype{
+		margin: -20px 0 0 0;
+		width: 308px;
+		position: absolute;
+	}
+	.talenttypelist{
+		margin-top: -18px;
+		width: 113px !important;
+	}
+	.operat{
+		margin-top: 10px;
+		width: 113px !important;
+		margin-right: -19px !important;
+	}
+	.operat2{
+		margin-top: 10px;
+		width: 113px !important;
+		margin-right: -10px !important;
+		z-index: 1000;
+	}
+	.favoritstatu{
+		margin-top: 10px;
+		width: 113px;
+		margin-left: -16px !important;
+	}
+	.img-circle{
+		width: 90px;
+		height: 90px;
+		border: 2px solid #0099cc;
+	}
+	.mybadge{
+		border: 2px solid #0099cc;
+		background-color: #fff !important;
+		font-size: 11px;
+		color: #444444;
+	}
+	.active > div:nth-child(2) > .badge{
+		border: 2px solid #0099cc !important;
+		background-color: #0099cc !important;
+		color: #fff !important;
+	}
+	.shift{
+		background-color: #0099cc !important;
+		font-weight: bold;
+		margin: 0 -25px;
+		
+	}
+	.talentdismiss-parent{
+		margin-top: 40px;
+		padding-left: 40px;
+	}
+	.talentdismiss{
+		height: 39px;
+	}
+	.talentdismiss-title{
+		color: #999999;
+		font-size: 12px;
+		
+	}
+	.talentdismiss-value{
+		color: #444444;
+		font-size: 12px;
+	}
+	.favorited{
+		background: url("../img/talent/talent_view_status_favorited.png") no-repeat;
+		margin: 0 3px;
+	}
+	.notfavorited{
+		background: url("../img/talent/talent_view_status_unfavorit.png") no-repeat;
+		margin: 0 3px;
+	}
+	.shift->span{
+		    display: block;
+		    height: auto;
+		    max-width: 100%;
+	}
+	.change{
+		height: auto;
+		width: auto;
+		margin: 0 3px;
+	}
+	.talentname{
+		color: #444444;
+		font-size: 18px;
+		margin: 0;
+		font-weight: bold;
+	}
+	.talentposition{
+		color: #666666;
+		font-size: 12px;
+		margin: 0
+	}
+	.midname{
+		margin: 0 0 40px 1px;
+	}
+	.backgroundgray {
+    	background: #999999 none repeat scroll 0 0;
+	}
+	.circle {
+	    border-radius: 8px;
+	    display: inline-block;
+	    height: 16px;
+	    margin-top: 3px;
+	    width: 16px;
+	}
+	.content-title{
+		color: #999999;
+		font-size: 12px;
+	}
+	.content-num{
+		color: #666666;
+		font-size: 12px;
+	}
+	.content-date{
+		color: #999999;
+		font-size: 10px;
+	}
+	.margintop5{
+		margin: 10px 70px 20px 0;
+		border-top: 1px solid #999999;
+	}
+	.table{
+    	border: 0px solid #e3e3e3;
+	}
+	.tablerow{
+		margin: 0 35px 20px;
+	}
+	.table > tbody> tr{
+    	border-top: 1px solid #e3e3e3;
+	}
+	.table > tbody> tr:nth-child(1){
+    	border-top: 0px solid #e3e3e3!important;
+	}
+	.table > tbody> tr > td{
+    	border-top: 0px solid #e3e3e3;
+	}
+	
+	.table{
+    	border-top: 0px solid #e3e3e3;
+	}
+	.table > tbody:.gridTab >tr >td:nth-child(2){float: right;margin: 0 -10px 0 0;}
+	.table > tbody:.gridTab >tr >td:nth-child(1){float: left;}
+	
+	.table > tbody:.gridTab >tr >td:nth-child(2) a{font-size: 12px;}
+	.gridTab > tr:nth-child(4) > td:nth-child(1) {
+		width: 30%;
+	}
+	.gridTab > tr:nth-child(4) > td:nth-child(2) {
+		width: 70%;
+	}
+	.gridTab > tr:nth-child(4) > td:nth-child(2) > div{
+		text-align: right;
+	}
+	.gridTab > tr:nth-child(4) > td:nth-child(2) > div >a:nth-child(1){
+		float: left;
+		width: 40%;
+	}
+	.shiftbtn{
+		background-image: url(../../../img/talent/talent_view_btn.png);
+		height: 20px;
+		width: 20px;
+		cursor: pointer;
+	}
+	.change{
+		cursor: pointer;
+	}
+	.margintop40{margin-top: 40px;}
+	.margintop30{margin-top: 30px;}
+	.marginleft50{margin-left: 50px;}
+	.marginright50{margin-right: 50px;}
+	.floatleft{float: left;}
+	.floatright{float: right;}
+	.paddingtop10{padding-top: 10px}
+	.width50{width: 50% }
+	.height38{height: 38px}
+	.keytalentTitle{
+		margin: 40px 0 0 50px;
+		color: 
+	}
+	.title{
+	    color: #0099cc;
+	    font-size: 26px;
+	}
+	.title > span {
+		vertical-align: middle;
+	}
+	.titleNum{
+	    color: #999999;
+	    font-size: 26px;
+	}
+	label{vertical-align: unset !important;}
+	.switchBtnL{
+		width: 28px;
+		height: 28px;
+		border: 1px solid rgb(204,204,204);
+		border-radius: 15% 0 0 15%;
+		float: left;
+	}
+	.switchBtnR{
+		width: 28px;
+		height: 28px;
+		border: 1px solid rgb(204,204,204);
+		border-radius: 0 15% 15% 0;
+		float: left;
+	}
+	.switchBtnL > img{
+		margin: 3.5px 0 0 3.5px;
+	}
+	.switchBtnR > img{
+		margin: 4.5px 0 0 4.5px;
+	}
+	.fofofo{
+		background-color: #f0f0f0;
+	}
+	body {
+		background-color: #fff !important;
+	}
+	.listTab{
+		border: 1px solid #e0e0e0;
+	}
+	.listTabTr{
+		125px !important
+	}
+	.listTabImg{
+		vertical-align: middle !important;
+		margin-right: 16px;
+	}
+	.staffname{
+	}
+	.StaffDep{
+	}
+	.tbheadfont{
+		font-size: 13px;
+		color: #444444;
+	}
+	.addTalentBtn{
+		border: 1px dashed #0099cc;
+		color: #0099cc;
+    	font-size: 12px;
+	}
+	#talentLeft{
+		padding-left: 15px !important;
+		padding-right: 15px !important;
+		border: 1px solid #d9d8d9 !important;
+		top: 0px !important;
+	}
+/* 	 构造立体边框 */
+	#talentTab{
+		border-bottom: 1px solid #d9d8d9 !important;
+	}
+/* 	选中处 */
+	.active {
+		
+		border-top: 1px solid #d9d8d9 !important;
+		border-bottom: 1px solid #d9d8d9 !important;
+		border-left: 0px;
+		border-right: 0px;
+	}
+	.active + div{
+		
+		border-top: 1px solid #f8f8f8 !important;
+	}
+	
+	.active - div{
+		border-bottom: 1px solid #f8f8f8 !important;
+	}
+	#talentCate{
+		border-bottom: 1px solid #f8f8f8 !important;
+	}
+	#talentRisk{
+		
+	}
+.base-info > div{
+	margin:1 auto;
+	position: relative;
+	overflow: auto;
+	max-width: 300px
+}
+	.base-info div:nth-child(2)  span:nth-child(1){
+		color: #444444;
+		font-size: 13px;
+		font-weight:bold;
+	}
+	.base-info div:nth-child(2) span:nth-child(2){
+		color: #666666 !important;
+		font-size: 13px;
+		font-weight: normal !important;
+	}
+	.base-info div:nth-child(3){
+		color: #999999;
+		margin-top: 16px;
+		font-size: 10px;
+	}
+	.base-info div:nth-child(4){
+		color: #444444;
+		font-size: 14px;
+		margin-top: 5px;
+		font-weight: bold;
+		text-align: center;
+	}
+	#abInfoModalLable{
+		border-left: 3px solid #0099cc;
+	    padding-left: 5px;
+	}
+	.menubar{
+		width: 350px;
+		
+	}
+	.tlisttdhead, .tlisttdbody{
+		min-width: 276px;
+	}
+	.tlisttdbody{
+		min-width: 276px;
+	}
+	.tlistleftimg{
+	}
+	.tlistleft{
+		height: 90px;
+		width: 90px;
+		margin: 30px 0 30px 50px;
+		float: left;
+		position: relative;
+	}
+	.tlistright{
+		position: absolute;
+		clear: both;
+		margin: 57px 150px;
+	}
+	.tlistleftbadge{
+		
+	}
+	.grid {
+		max-width: 100%!important;
+	}
+	
+	#talentRight{
+		min-width: 770px;
+	}
+	.colnopadding{
+		margin-top: -20px !important;
+		margin-left: -20px !important;
+	}
+	.tablebadge {
+    	display: table;
+	}
+	.addtalentname{
+		margin: 60px 100px 35px 50px;
+	}
+	.addtalenttype{
+		margin: 30px 100px 0 50px;
+	}
+	.gridTab > tr > td:nth-child(2){
+		float:right;
+	}
+	
+	tr >td:nth-child(1){
+		float:left;
+	}
+	.maxwidth600{
+		max-width:600px !important;
+	}
+	.textoverflowNewLine{
+		white-space: normal;
+		overflow: hidden;
+	}
+	.listTab >tbody>tr>td> div  .content.textoverflowellipsis{
+		max-width: 80% !important;
+		float: left!important;
+	}
+	

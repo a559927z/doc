@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!ELEMENT menus (menu+ )>
+<!ATTLIST menus code CDATA #REQUIRED>
+<!ATTLIST menus name CDATA #REQUIRED>
+
+<!ELEMENT menu (fields? | layouts?)>
+<!ATTLIST menu code CDATA #REQUIRED>
+<!ATTLIST menu name CDATA #REQUIRED>
+<!ATTLIST menu url CDATA #REQUIRED>
+<!ATTLIST menu icon CDATA #IMPLIED>
+<!ATTLIST menu mobile  (true|false) #IMPLIED>
+<!ATTLIST menu relies CDATA #IMPLIED>
+<!ELEMENT layouts (layout+)>
+<!ELEMENT layout (plug-in?)>
+<!ATTLIST layout code CDATA #REQUIRED>
+<!ATTLIST layout name CDATA #REQUIRED>
+<!ATTLIST layout relies CDATA #IMPLIED>
+<!ATTLIST layout img CDATA #IMPLIED>
+<!ELEMENT plug-in EMPTY>
+<!ATTLIST plug-in code CDATA #REQUIRED>
+<!ATTLIST plug-in name CDATA #REQUIRED>
+
+
+<!ELEMENT fields (field+)>
+<!ELEMENT field EMPTY>
+<!ATTLIST field code CDATA #REQUIRED>
+<!ATTLIST field name CDATA #REQUIRED>
+
+
+

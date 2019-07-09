@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.admin.DaysDao">
+
+	<!-- 节假日表-->
+	<select id="queryDays" resultType="net.chinahrd.entity.dto.pc.admin.DaysDto">
+		SELECT
+		  t.`days`,
+		  t.`is_holiday` AS 'isHoliday',
+		  t.`is_work_flag` AS 'isForkFlag',
+		  t.`is_vacation` AS 'isVacation'
+		FROM
+		  days t
+		  <where>
+		  	1=1
+			  <if test="days != null and days != '' and days != '0000-00-00'">
+			  	AND t.days = #{days}
+			  </if>
+			  <if test="beginDay != null and beginDay != '' and beginDay != '0000-00-00' and endDay != null and endDay != '' and endDay != '0000-00-00'">
+			  	AND t.days BETWEEN CAST(#{beginDay} AS DATE) AND CAST(#{endDay} AS DATE)
+			  </if>
+			  <if test="isHoliday != null and isHoliday != ''">
+			  	AND t.is_holiday = #{isHoliday}
+			  </if>
+			  <if test="isForkFlag != null and isForkFlag != ''">
+			  	AND t.is_work_flag = #{isForkFlag}
+			  </if>
+			  <if test="isVacation != null and isVacation != ''">
+			  	AND t.is_vacation = #{isVacation}
+			  </if>
+		  </where>
+	</select>
+
+	<select id="getCount" resultType="java.lang.Integer">
+		SELECT
+		  count(1)
+		FROM
+		  days t
+		  <where>
+		  	1=1
+			  <if test="days != null and days != '' and days != '0000-00-00'">
+			  	AND t.days = #{days}
+			  </if>
+			  <if test="beginDay != null and beginDay != '' and beginDay != '0000-00-00' and endDay != null and endDay != '' and endDay != '0000-00-00'">
+			  	AND t.days BETWEEN CAST(#{beginDay} AS DATE) AND CAST(#{endDay} AS DATE)
+			  </if>
+			  <if test="isHoliday != null and isHoliday != ''">
+			  	AND t.is_holiday = #{isHoliday}
+			  </if>
+			  <if test="isForkFlag != null and isForkFlag != ''">
+			  	AND t.is_work_flag = #{isForkFlag}
+			  </if>
+			  <if test="isVacation != null and isVacation != ''">
+			  	AND t.is_vacation = #{isVacation}
+			  </if>
+		  </where>
+	</select>
+
+</mapper>

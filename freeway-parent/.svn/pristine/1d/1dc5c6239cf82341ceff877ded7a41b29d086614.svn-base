@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.modules.pub.dao.LogInfoDAO">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="net.chinahrd.modules.pub.entity.LogInfo">
+        <id column="log_id" property="logId" />
+        <result column="op_name" property="opName" />
+        <result column="op_desc" property="opDesc" />
+        <result column="user_name" property="userName" />
+        <result column="log_type" property="logType" />
+        <result column="request_ip" property="requestIp" />
+        <result column="request_method" property="requestMethod" />
+        <result column="request_uri" property="requestUri" />
+        <result column="remote_host" property="remoteHost" />
+        <result column="user_agent" property="userAgent" />
+        <result column="params" property="params" />
+        <result column="exec_time" property="execTime" />
+        <result column="error_info" property="errorInfo" />
+        <result column="revision" property="revision" />
+        <result column="create_by" property="createBy" />
+        <result column="create_date" property="createDate" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_date" property="updateDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        revision,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        log_id, op_name, op_desc, user_name, log_type, request_ip, request_method, request_uri, remote_host, user_agent, params, exec_time, error_info
+    </sql>
+
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.modules.pub.dao.DatasourceInfoDAO">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="net.chinahrd.modules.pub.entity.DatasourceInfo">
+        <id column="datasource_id" property="datasourceId" />
+        <result column="datasource_name" property="datasourceName" />
+        <result column="db_type" property="dbType" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="url" property="url" />
+        <result column="initial_size" property="initialSize" />
+        <result column="max_active" property="maxActive" />
+        <result column="max_idle" property="maxIdle" />
+        <result column="note" property="note" />
+        <result column="create_by" property="createBy" />
+        <result column="create_date" property="createDate" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_date" property="updateDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        datasource_id, datasource_name, db_type, username, password, url, initial_size, max_active, max_idle, note
+    </sql>
+    <select id="listDatasourceInfo" parameterType="java.util.Map" resultType="net.chinahrd.modules.pub.response.DatasourceInfoRes">
+        select
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        datasource_id, datasource_name, db_type, username, password, url, initial_size, max_active, max_idle, note
+        from pub_datasource_info t
+        where 1 = 1
+        <if test="datasourceName != null and datasourceName != ''">
+            and t.datasource_name like CONCAT('%', #{datasourceName}, '%')
+        </if>
+        <if test="dbType != null and dbType != ''">
+            and t.db_type = #{dbType}
+        </if>
+
+    </select>
+
+</mapper>

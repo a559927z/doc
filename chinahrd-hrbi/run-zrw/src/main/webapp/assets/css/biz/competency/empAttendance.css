@@ -1,0 +1,527 @@
+body.navbar-fixed{
+	overflow: auto;
+}
+.main-container:after{
+	background-color: #fff;
+}
+.main-contents{
+	background-color: #fff;
+/* 	text-align: center; */
+}
+.left{
+	float: left;
+}
+.nav-content{
+	width: 100%; 
+	height: 62px; 
+	line-height: 62px;
+	vertical-align: middle;
+	background-color: #f1f2f7;
+	-webkit-box-shadow: 0 0 5px 5px #e4e4e4;
+	-moz-box-shadow: 0 0 5px 5px #e4e4e4;
+	box-shadow: 0 0 5px 5px #e4e4e4;
+}
+.nav-content i{
+	vertical-align: middle;
+}
+.nav-content span{
+	vertical-align: middle;
+}
+.nav-attendance{
+	margin-top: 20px;
+}
+.nav-attendance-img-m{
+	margin: 0px auto; 
+	width: 800px; 
+	height: 266px; 
+	background: url('../../../../assets/img/icon/man.png') no-repeat;
+}
+.nav-attendance-img-w{
+	margin: 0px auto; 
+	width: 800px; 
+	height: 266px; 
+	background: url('../../../../assets/img/icon/woman.png') no-repeat;
+}
+.attendance-info{
+	margin: 20px auto; 
+	width: 800px; 
+	height: 385px; 
+	border: 1px solid #e0e0e0;
+}
+.attendance-other-day{
+	margin: 20px auto; 
+	width: 800px; 
+	border: 1px solid #e0e0e0;
+}
+
+
+
+.user-img{
+	margin: auto; 
+	margin-top: 20px;
+	width: 120px;
+	height: 120px;
+	background: url('../../../../assets/img/icon/mistiness-img.png')
+}
+.index{font-size: 14px;color: #777777;}
+.index-common-title{position: relative; width: 100%; height: 34px; top: 10px;}
+.index-common-title-left{position: absolute; top: 10px; left: 20px; background-color: #88b7e0; width: 2px; height: 15px;}
+.index-common-title-text{position: absolute; width: 200px; font-size: 14px; top: 6px; left: 30px; color: #666;}
+.img-left{
+	display: inline-block;
+	width: 300px; 
+	float: left; 
+	padding: 20px 0 0 50px;
+}
+.img-right{
+	display: inline-block;
+	width: 300px; 
+	float: left; 
+	margin-left: 200px; 
+	padding: 50px 0 0 22px
+}
+.text-year{
+	font-size: 90px; 
+	color: #dde4f2;
+}
+.text-date{
+	font-size: 18px; 
+	color: #7d7e80;
+}
+.text-cue{
+	font-size: 12.5px; 
+	color: #7d7e80;
+}
+.right-text-cue{
+	font-size: 26px; 
+	color: #7d7e80;
+}
+.right-text-time{
+	font-size: 90px; 
+	color: #9acc6f;
+}
+.attendance-info-left{
+	width: 293px; 
+	height: 385px; 
+	border-right: 1px solid #e0e0e0; 
+	float: left;
+}
+.attendance-info-right{
+	width: 500px; 
+	height: 365px; 
+	float: left;
+}
+.user-info1{
+	height: 254px; 
+	border-bottom: 1px solid #e0e0e0; 
+	padding-top: 1px; 
+	text-align: center;
+}
+.text-bold18{
+	margin-top: 6px; 
+	font-size: 18px; 
+	color: #444; 
+	font-weight: bold;
+}
+.text-font12{
+	font-size: 12px; 
+	color: #666;
+}
+.margin-top8{
+	margin-top: 8px;
+}
+.margin-top20{
+	margin-top: 20px;
+}
+.padding20{
+	padding: 20px;
+}
+.margin-left20{
+	margin-left: 20px;
+}
+.margin-lr20{
+	margin: 0 20px;
+}
+.font-size12999{
+  font-size: 12px; 
+  color: #999;
+}
+.font-size12666{
+	font-size: 12px; 
+	color: #666;
+}
+.font-size2409c{
+	font-size: 24px; 
+	color: #0099cc;
+}
+.height131{
+	margin-top: 38px;
+	height: 131px;
+	line-height: 45px;
+	vertical-align: middle;
+}
+.height280{
+	height: 280px;
+}
+.height30{
+	height: 30px;
+}
+.font-size14444{
+	margin: 0 0 0 20px; 
+	font-size: 13px; 
+	color: #444; 
+	font-weight: bold;
+}
+.text-btn{
+	margin: 0 auto; 
+	width: 100px; 
+	height: 26px; 
+	line-height: 26px; 
+	text-align: center; 
+	background-color: #0099cc; 
+	color: #fff; 
+	font-size: 12px; 
+	border: 1px solid #0d80a6; 
+	cursor: pointer;
+}
+.text-btn:hover {
+	filter:alpha(opacity=50); 
+	-moz-opacity:0.5; 
+	opacity:0.5;
+}
+.text-btn:active {
+	filter:alpha(opacity=50); 
+	-moz-opacity:0.5; 
+	opacity:0.5;
+}
+#attendanceAdjustmentModal .modal-dialog{
+	width: 950px;
+	max-height: 555px;
+	margin: auto;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+#attendanceAdjustmentModal.popup-modal > .modal-dialog > .modal-content{
+	margin:auto;
+}
+.weather-img{
+	margin: 0 auto;
+	vertical-align: middle;
+	width: 26px;
+	height: 26px;
+	background: url('../../../../assets/img/icon/qing.png');
+}
+.remind-left{
+	width: 29px;
+	height: 26px;
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 5px;
+	margin-left: 80px;
+	background: url("../../../../assets/img/icon/remind-left.png") no-repeat;
+}
+.remind-right{
+	width: 28px;
+	height: 26px;
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 5px;
+	background: url("../../../../assets/img/icon/remind-right.png") no-repeat;
+}
+/** 考勤调整弹框begin */
+.selection{
+	margin-right: 14px;
+}
+.title-span{
+	margin: 10px 0 20px 5px;
+}
+.modal-content-right{
+/* 	margin-top: 37px; */
+	width: 100%;
+	height: 391px;
+	border: 1px solid #a4a4a4; 
+	margin-bottom: 20px;
+}
+.modal-content-right .content-header{
+	width: 100%; 
+	height: 30px; 
+	line-height: 30px; 
+	background-color: #0099cc; 
+	color: #fff;
+	text-align: center;
+}
+.instruction{
+	margin-top: 20px;
+	margin-left: 10px;
+	text-align: left;
+	font-size: 14px;
+}
+.adjstment-table{
+	font-size: 13px;
+	color: #999;
+}
+.td_content{
+	color: #000;
+}
+.adjstment-table select, textarea, input{
+	color: #000;
+}
+.instruction li{
+	padding: 5px 0;
+}
+.adjstment-table td{
+	padding: 5px;
+}
+.submit-btn{
+	margin: auto;
+	width: 60px;
+	height: 24px;
+	line-height: 24px;
+	color: #fff;
+	background-color: #09c;
+	cursor: pointer;
+}
+.submit-now-btn{
+	margin: auto;
+	width: 60px;
+	height: 24px;
+	line-height: 22px;
+	color: #fff;
+	background-color: #c0c0c0;
+	display: none;
+}
+.cancel-btn{
+	margin-left: 30px;
+	border: 1px solid #999;
+	width: 60px;
+	height: 24px;
+	color: #999;
+	line-height: 22px;
+	cursor: pointer;
+}
+.btn-style{
+	margin: auto;
+	width: 150px;
+	height: 33px;
+	line-height: 60px;
+	text-align: center;
+}
+.exception-div{
+	margin: 2px 10px 0 172px;
+	width: 15px;
+	height: 15px;
+	background-color: #f75025;
+}
+.batch-submit-remind-img{
+	margin: 0 auto;
+	width: 100px;
+	height: 150px;
+	background: url('../../../img/icon/u3371.png') no-repeat;
+}
+.batch-submit-remind-text{
+	font-size: 15px;
+	text-align: center;
+}
+.adjustment-body{
+	height: 290px;
+}
+.adjustment-div{
+	padding: 0 15px;
+}
+.card-info-img{
+	margin-left: 20px;
+	width: 19px;
+	height: 22px;
+	background: url('../../../img/base/tip.gif') no-repeat;
+	cursor: pointer;
+	float: left;
+}
+.input-time{
+	width: 60px;
+	font-size: 13px;
+	color: #000 !important;
+}
+.table-condensed{
+	width: 190px;
+}
+.datetimepicker-hours .table-condensed thead{
+	display: none;	
+}
+.datetimepicker-minutes .table-condensed thead{
+	display: none;	
+}
+/** 考勤调整弹框end */
+.remind-remainder{
+	margin-top: -320px; 
+	margin-left: 799px;
+	float: left; 
+	width: 125px; 
+	height: 36px; 
+	line-height: 36px;
+	color: #0099cc;
+	border-top: 1px solid #0099cc; 
+	border-bottom: 1px solid #0099cc;
+}
+.remind-remainder-img{
+	vertical-align: middle;
+	text-align: center;
+	margin-top: -5px;
+	margin-left: 104px;
+	background: url('../../../img/icon/count-down.png') no-repeat;
+	width: 44px;
+	height: 44px;
+	line-height: 44px;
+}
+.remind-remainder-text{
+	margin-left: 5px;
+	color: #0099cc;
+	font-size: 12px;
+	text-align: right;
+}
+.remainder-num{
+	width: 30px;
+	font-size: 16px;
+}
+.remainder-tian{
+	font-size: 6px;
+	margin-left: -3px;
+}
+/* .tooltip-ul{ */
+/* 	width: 200px; */
+/* } */
+
+.weather-icon{
+	width: 32px;
+	height: 32px;
+	display: inline-block;
+	margin: 0 8px 0 187px;
+}
+.attendance_bar{
+	margin-top: 20px;
+	height: 280px;
+}
+.height260{
+	height: 260px;
+}
+.grid {
+	width: 100%;
+}
+.tooltip .tooltip-inner{
+	font-size: 13px;
+	max-width: 300px;
+	text-align: left;
+}
+.tooltip .tooltip-inner .tooltip-ul,.tooltip .tooltip-inner .tooltip-ul li{
+	list-style: inherit;
+	list-style-type: decimal!important;
+}
+.tr-height{
+	height: 40px;
+}
+#tr_exceptionWarn{
+	display: none;
+}
+#tr_resultWarn{
+	display: none;
+}
+#tr_batchExceptionWarn{
+	display: none;
+}
+#tr_batchResultWarn{
+	display: none;
+}
+.warning{
+	font-size: 10px;
+	color: #999;
+}
+.shade{
+	display: inline-block;
+}
+.tooltip-one {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    opacity: .8;
+    -moz-opacity: .8;
+    filter: alpha(opacity=80);
+	z-index: 1055;
+	background: #000 url("../../../img/emp/1.png") no-repeat;
+}
+.tooltip-one .tooltipOneBtn{
+	position: absolute;
+	width: 177px;
+	height: 88px;
+	top: 52%;
+	left: 45%;
+	cursor: pointer;
+}
+.tooltip-block {
+	display: none;
+	overflow: hidden;
+}
+.tooltip-two-bg {
+	position: absolute;
+	background:url("../../../img/emp/2.png") no-repeat;
+	width: 843px;
+	height: 520px;
+	z-index: 1055;
+}
+.tooltip-three-bg {
+	position: absolute;
+	background:url("../../../img/emp/3.png") no-repeat;
+	width: 744px;
+	height: 278px;
+	z-index: 1055;
+}
+.tooltip-three-bg .tooltipThreeBtn{
+	position: absolute;
+	width: 177px;
+	height: 88px;
+	top: 68%;
+	left: 24%;
+	cursor: pointer;
+}
+.tooltip-four-bg {
+	position: absolute;
+	background:url("../../../img/emp/4.png") no-repeat;
+	width: 673px;
+	height: 544px;
+	z-index: 1055;
+}
+.tooltip-four-bg .tooltipFourBtn{
+	position: absolute;
+	width: 177px;
+	height: 88px;
+	top: 83%;
+	left: 26%;
+	cursor: pointer;
+}
+.tooltip-five-bg {
+	position: absolute;
+	background:url("../../../img/emp/5.png") no-repeat;
+	width: 577px;
+	height: 369px;
+	z-index: 1055;
+}
+.tooltip-five-bg .tooltipFiveBtn{
+	position: absolute;
+	width: 177px;
+	height: 88px;
+	top: 76%;
+	left: 18%;
+	cursor: pointer;
+}
+.shade-patch{
+	position: absolute;
+	background-color: #000;
+	opacity: .8;
+	-moz-opacity: .8;
+	filter: alpha(opacity=80);
+	z-index: 1055;
+}

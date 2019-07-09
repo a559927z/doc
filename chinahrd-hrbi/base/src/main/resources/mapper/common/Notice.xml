@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.eis.notice.dao.NoticeDao">
+	
+	<!-- 上级 -->
+    <select id="queryHFEmpInfos" resultType="net.chinahrd.eis.notice.dto.SimpleEmpDto">
+		select d.emp_hf_id as headId,
+		d2.user_name_ch as headName,
+		d2.email,
+		d2.tel_phone as telPhone,
+		GROUP_CONCAT(DISTINCT d.organization_id) as organId,
+		GROUP_CONCAT(DISTINCT o.organization_name) as organName,
+		GROUP_CONCAT(DISTINCT d.emp_id) as empId,
+		GROUP_CONCAT(DISTINCT d.user_name_ch) as empName,
+		date_format(date_add(NOW(), interval -1 day),'%Y-%m-%d') as dateStr
+		from v_dim_emp d
+		LEFT JOIN v_dim_emp d2 on d2.emp_id=d.emp_hf_id
+		LEFT JOIN dim_organization o on o.organization_id=d.organization_id
+		where d.customer_id = #{customerId}
+		and d.emp_id in
+		<foreach collection="empIds" item="id" separator="," open="(" close=")">
+			#{id}
+		</foreach>
+		GROUP BY d.emp_hf_id,d2.user_name_ch,d2.email,d2.tel_phone
+    </select>
+    
+    <!-- 架构负责人 or bP-->
+    <select id="queryOrgHeadOrBPEmpInfos" resultType="net.chinahrd.eis.notice.dto.SimpleEmpDto">		
+<!-- 		select r.emp_id as headId, -->
+<!-- 		d2.user_name_ch as headName, -->
+<!-- 		d2.email, -->
+<!-- 		d2.tel_phone as telPhone, -->
+<!-- 		GROUP_CONCAT(DISTINCT e.organization_id) as organId, -->
+<!-- 		GROUP_CONCAT(DISTINCT o.organization_name) as organName, -->
+<!-- 		GROUP_CONCAT(DISTINCT e.emp_id) as empId, -->
+<!-- 		GROUP_CONCAT(DISTINCT e.user_name_ch) as empName, -->
+<!-- 		date_format(date_add(NOW(), interval -1 day),'%Y-%m-%d') as dateStr -->
+<!-- 		from organization_emp_relation r -->
+<!-- 		INNER JOIN ( -->
+<!-- 			SELECT d.emp_id,d.organization_id,d.user_name_ch FROM v_dim_emp d -->
+<!-- 			where d.emp_id in  -->
+<!-- 			<foreach collection="empIds" item="id" separator="," open="(" close=")">#{id}</foreach> -->
+<!-- 		) e on e.organization_id = r.organization_id -->
+<!-- 		LEFT JOIN v_dim_emp d2 on r.emp_id = d2.emp_id -->
+<!-- 		LEFT JOIN dim_organization o on o.organization_id=r.organization_id -->
+<!-- 		where r.sys_code_item_id=(select i.sys_code_item_id from sys_code_item i where i.code_group_id='personType' and i.sys_code_item_key=#{role}) -->
+<!-- 		and r.customer_id=#{customerId} -->
+<!-- 		GROUP BY r.emp_id,d2.user_name_ch,d2.email,d2.tel_phone -->
+		
+		
+		select r.emp_id as headId,
+		d2.user_name_ch as headName,
+		d2.email,
+		d2.tel_phone as telPhone,
+		GROUP_CONCAT(DISTINCT e.organization_id) as organId,
+		GROUP_CONCAT(DISTINCT o.organization_name) as organName,
+		GROUP_CONCAT(DISTINCT e.emp_id) as empId,
+		GROUP_CONCAT(DISTINCT e.user_name_ch) as empName,
+		date_format(date_add(NOW(), interval -1 day),'%Y-%m-%d') as dateStr
+		from organization_emp_relation r
+		inner join population_relation_month prm.emp_id = r.emp_id and prm.population_name = 'BP' <!-- 代码有问题，这里先硬编码为BP人群 by jxzhang on 2016-08-25 -->
+		INNER JOIN (
+			SELECT d.emp_id,d.organization_id,d.user_name_ch FROM v_dim_emp d
+			where d.emp_id in 
+			<foreach collection="empIds" item="id" separator="," open="(" close=")">#{id}</foreach>
+		) e on e.organization_id = r.organization_id
+		LEFT JOIN v_dim_emp d2 on r.emp_id = d2.emp_id
+		LEFT JOIN dim_organization o on o.organization_id=r.organization_id
+		where 
+<!-- 			r.sys_code_item_id=(select i.sys_code_item_id from sys_code_item i where i.code_group_id='personType' and i.sys_code_item_key=#{role}) -->
+<!-- 			and -->
+			r.customer_id=#{customerId}
+		GROUP BY r.emp_id,d2.user_name_ch,d2.email,d2.tel_phone
+    </select>
+ 
+</mapper>

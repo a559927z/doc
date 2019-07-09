@@ -1,0 +1,65 @@
+.row .col-sm-4 .widget-box .widget-body, .row .col-xs-12 .widget-box .widget-body {
+    min-height: 225px !important;
+}
+
+.row>.col-sm-6>.widget-box>.widget-body {
+    min-height: 300px !important;
+}
+
+.mt30 {
+    margin-top: 30px!important;
+}
+
+.static_icon {
+    display: inline-block;
+    background: url(../../img/other/sequence_count_ico.png) no-repeat -40px -5px;
+    width: 5px;
+    height: 14px;
+    margin: 0 8px -2px 0;
+}
+
+.update-time {
+    text-align: right;
+    margin-right: 10px;
+    line-height: 32px;
+}
+
+
+.abilityLv-pie, .workLocation-pie, .sex-pie, .age-bar, 
+.companyAge-bar, .blood-pie, .constellatory-bar, .personality-pie{
+	height : 270px;
+}
+
+.lidyZone {
+	width: 60px;
+	color: #FF88A2;
+	font-size: 20px;
+	text-align: center;
+}
+.manZone {
+	width: 60px;
+	color: #019BD9;
+	font-size: 20px;
+	text-align: center;
+}
+.lidyVal, .manVal {
+	font-size: 30px;
+}
+
+.marry_state {
+	height: 277px;
+	text-align: center;
+}
+
+.marry_state .leftBar, .marry_state .rightBar {
+	background-color : #019BD9;
+	width:87px;
+}
+.marry_state .leftBar span, .marry_state .rightBar span {
+	color: #fff;
+}
+
+
+
+
+

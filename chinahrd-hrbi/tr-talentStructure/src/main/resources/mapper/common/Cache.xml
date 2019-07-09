@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.talentStructure.module.CacheDao">
+	
+	
+	<!-- 查询能力层级最大的索引 -->
+	<select id="queryAbilityMaxIdx" resultType="int">
+	SELECT MAX(tda.show_index) FROM dim_ability tda WHERE tda.customer_id = #{customerId}
+	</select>
+</mapper>

@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="run-vue:war">
+    <output-path>$PROJECT_DIR$/run-vue/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>run-vue</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="run-vue.war">
+      <element id="artifact" artifact-name="run-vue:war exploded" />
+    </root>
+  </artifact>
+</component>

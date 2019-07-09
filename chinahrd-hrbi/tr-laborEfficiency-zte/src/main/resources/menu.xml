@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="胜任力">
+		<menu code="LaoDongLiXiaoNeng" name="劳动力效能" url="laborEfficiency/toLaborEfficiencyView" icon="" mobile="false" relies="">
+		</menu>
+	</menus>

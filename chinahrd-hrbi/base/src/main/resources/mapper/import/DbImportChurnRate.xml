@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.db.input.dao.DbImportChurnRateDao">
+
+
+	<resultMap id="rsMECMap"
+		type="net.chinahrd.db.input.Entity.churnRate.MonthlyEmpCountEntity">
+		<result property="monthly_emp_id" column="monthly_emp_id" />
+		<result property="customer_id" column="customer_id" />
+		<result property="organization_id" column="organization_id" />
+		<result property="organization_full_path" column="organization_full_path" />
+		<result property="month_begin" column="month_begin" />
+		<result property="month_begin_sum" column="month_begin_sum" />
+		<result property="month_end" column="month_end" />
+		<result property="month_end_sum" column="month_end_sum" />
+		<result property="month_count" column="month_count" />
+		<result property="month_count_sum" column="month_count_sum" />
+		<result property="un_act_count" column="un_act_count" />
+		<result property="act_count_sum" column="act_count_sum" />
+		<result property="un_act_count_sum" column="un_act_count_sum" />
+		<result property="year_month" column="year_month" />
+		<result property="refresh" column="refresh" />
+		<result property="refreshStr" column="refreshStr" />
+	</resultMap>
+	
+
+	<select id="queryMonthlyEmpCount" resultMap="rsMECMap">
+		SELECT 
+				t4.monthly_emp_id, t4.customer_id,  
+				t4.month_begin,
+				t5.emp_count as month_end, 
+				IFNULL((t4.month_begin + t5.emp_count) / 2.0, 0) as month_count, 
+				t4.month_begin_sum as month_begin_sum, 
+				t5.emp_count_sum as month_end_sum, 
+				IFNULL((t4.month_begin_sum + t5.emp_count_sum) / 2.0, 0) as month_count_sum,
+				IFNULL(tt.actCount, 0) act_count, IFNULL(tt1.unActCount, 0) un_act_count,
+				t4.organization_full_path
+		FROM monthly_emp_count t4 
+		LEFT JOIN (
+				SELECT count(1) actCount, t2.organization_id FROM run_off_record t1 
+				left JOIN v_dim_emp t2 on t2.emp_id = t1.emp_id AND t1.customer_id = t2.customer_id
+				left JOIN dim_run_off t3 on t1.run_off_id = t3.run_off_id AND t3.customer_id = t1.customer_id
+				where 
+					t1.run_off_date BETWEEN #{first_day} AND #{dbNow} 
+				AND t3.type = 1
+				GROUP BY t2.organization_id
+			) tt on tt.organization_id = t4.organization_id
+		LEFT JOIN (
+				SELECT count(1) unActCount, t2.organization_id FROM run_off_record t1 
+				left JOIN v_dim_emp t2 on t2.emp_id = t1.emp_id AND t1.customer_id = t2.customer_id
+				left JOIN dim_run_off t3 on t1.run_off_id = t3.run_off_id AND t3.customer_id = t1.customer_id
+				where 
+					t1.run_off_date BETWEEN #{first_day} AND #{dbNow} 
+				AND t3.type = 2
+				GROUP BY t2.organization_id
+			) tt1 on tt1.organization_id = t4.organization_id
+		LEFT JOIN history_emp_count t5 on t5.customer_id = t4.customer_id 
+			and t5.organization_id = t4.organization_id
+			and t5.type = 1 
+		WHERE t4.`year_month` = #{year_month}
+			and t4.customer_id= #{customer_id}
+		 	and t5.`day` = #{dbNow}
+	</select>
+	
+	
+	<select id="deleteMonthlyEmpCount"> DELETE FROM `monthly_emp_count` Where customer_id = #{customer_id} AND  `YEAR_MONTH` = #{year_month}</select>
+	<insert id="replaceMonthlyEmpCountByBeginMonth" >
+		INSERT INTO monthly_emp_count (
+			monthly_emp_id,
+			customer_id,
+			organization_id,
+			organization_full_path,
+			month_begin,
+			month_begin_sum,
+			`YEAR_MONTH`,
+			refresh
+		) 
+		SELECT
+			REPLACE (UUID(), '-', ''),
+			#{customer_id}, t1.organization_id,
+			t1.full_path,
+			t1.emp_count,
+			t1.emp_count_sum,
+			#{year_month},
+			#{day1}
+		FROM
+			 history_emp_count t1 
+		WHERE t1.`day` = #{day1} AND t1.type = 1
+	</insert>
+
+	<update id="updateMonthlyEmpCountByYesterday"  parameterType="java.util.List">
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+                update monthly_emp_count 
+                <set>
+                  month_end=#{item.month_end},
+                  month_end_sum=#{item.month_end_sum},
+                  month_count=#{item.month_count},
+                  month_count_sum=#{item.month_count_sum},
+                  act_count=#{item.act_count},
+                  un_act_count=#{item.un_act_count},
+                  act_count_sum=#{item.act_count_sum},
+                  un_act_count_sum=#{item.un_act_count_sum},
+                  refresh=#{item.refreshStr}
+                </set>
+                where monthly_emp_id = #{item.monthly_emp_id} and customer_id = #{item.customer_id}
+         </foreach>
+    </update>
+    
+    <!-- 流失记录 -->
+	<insert id="callRunOffRecord" statementType="CALLABLE">
+		CALL pro_fetch_run_off_record(
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+		 	#{p_user_id, mode=IN, jdbcType=VARCHAR}
+		 	)
+	</insert>
+	
+</mapper>

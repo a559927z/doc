@@ -1,0 +1,98 @@
+
+.teamTotal {
+	text-align:center;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: normal;
+    font-style: normal;
+    color: #1E1E1E;
+/*     color: #999999; */
+}
+.changeCardPanel{
+	margin-top: 10px;
+}   
+.teamCard{
+	width:32%;
+	text-align: center;
+	padding: 0;
+	float: left;
+	height:50px;
+}
+.teamCardSplit{
+	float: left;
+	width: 1px;
+	margin-top:10px;
+	height:50px;
+	background-color: #B1ABAB;
+}
+.teamCard .label{
+	font-size: 14px;
+    color: #1E1E1E;
+    font-weight: 400;
+    font-style: normal;
+    line-height: normal;
+    display:block;
+    background-color: #ffffff !important;
+}
+.teamCard .value{
+	height:35px;
+	color: #1E1E1E;
+	font-weight: 400;
+    font-style: normal;
+}
+.teamCard .value label{
+
+	font-size: 11px;
+}
+.teamCard .value span{
+
+	font-size: 28px;
+}
+
+#gridNode{
+	text-align: left;
+	font-size: 13px;
+	width:100%;
+	line-height:40px;
+	padding-left: 15px;
+	 border-bottom: 1px solid #d7d7d7;
+	 	color: #999999;
+}
+
+.ui-jqgrid-hdiv .ui-jqgrid-htable {
+     border-top: 0px solid #d7d7d7;
+	    border-bottom: 0px solid #d7d7d7;
+}
+.ui-jqgrid .ui-jqgrid-labels {
+    background: #f3f5f7;
+    text-align: center;
+    border-bottom: 1px solid #d7d7d7; 
+}
+
+.jqgfirstrow{
+	display: none;
+}
+#jqg10{
+	border: 0px;
+	
+}
+
+.scrollTable-hide{
+/* 	min-width: 600px; */
+	position:absolute;
+	border: 1px solid #C1C1C1;
+	height: 2px;
+	left:0;
+	top:2px;
+	background-color:#C1C1C1; 
+}
+.scrollTable{
+/* 	min-width: 600px; */
+	position:absolute;
+	border: 1px solid #000000;
+	height: 3px;
+	left:13px;
+	bottom:10px;
+	z-index:1000;
+	background-color:#000000; 
+}

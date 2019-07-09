@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.admin.OrganDao">
+
+    <resultMap id="organMap" type="net.chinahrd.entity.dto.pc.admin.OrganDto">
+        <id property="organizationId" column="organization_id" jdbcType="VARCHAR"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="organizationTypeId" column="organization_type_id"/>
+        <result property="organizationKey" column="organization_key"/>
+        <result property="organizationParentId" column="organization_parent_id"/>
+        <result property="organizationName" column="organization_name" jdbcType="VARCHAR"/>
+        <result property="note" column="note"/>
+        <result property="isSingle" column="is_single"/>
+        <result property="fullPath" column="full_path"/>
+        <result property="hasChildren" column="has_children"/>
+        <result property="halfCheck" column="half_check"/>
+        <result property="level" column="level"/>
+        <result property="depth" column="depth"/>
+        <result property="userId" column="user_id"/>
+        <result property="empId" column="emp_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userNameCh" column="user_Name_Ch"/>
+    </resultMap>
+
+
+    <!-- 并集权限（用户、角色） -->
+    <sql id="permitSQL">
+        SELECT DISTINCT
+        vo.organization_id,
+        vo.organization_name,
+        vo.organization_parent_id,
+        vo.has_children,
+        vo.full_path,
+        dot.organization_type_level as level,
+        vo.depth,
+        eo.half_check
+        FROM
+        dim_organization vo
+        <!-- 		INNER JOIN emp_organization_relation eo on eo.organization_id = vo.organization_id and eo.customer_id = vo.customer_id -->
+        INNER JOIN user_organization_relation eo on eo.organization_id = vo.organization_id and eo.customer_id =
+        vo.customer_id
+        <!-- 		INNER JOIN dim_role r ON r.role_id = ro.role_id and ro.customer_id = r.customer_id -->
+        <!-- 		INNER JOIN user_role_relation ur ON ur.role_id = r.role_id and r.customer_id = ur.customer_id -->
+        <!-- 			   AND ur.user_id = #{userId} -->
+        <!-- 		INNER JOIN dim_user u ON u.emp_id = eo.emp_id and eo.customer_id = u.customer_id and u.is_lock = 0 -->
+        INNER JOIN dim_user u ON u.user_id = eo.user_id and eo.customer_id = u.customer_id
+        and u.is_lock = 0
+        LEFT JOIN dim_organization_type dot ON dot.organization_type_id = vo.organization_type_id
+        WHERE
+        u.user_id = #{userId}
+        <if test="customerId != null">
+            AND vo.customer_id = #{customerId}
+        </if>
+
+        UNION
+
+        SELECT DISTINCT
+        vo.organization_id,
+        vo.organization_name,
+        vo.organization_parent_id,
+        vo.has_children,
+        vo.full_path,
+        dot.organization_type_level as level,
+        vo.depth,
+        t.half_check
+        FROM
+        dim_organization vo
+        INNER JOIN role_organization_relation t ON t.organization_id = vo.organization_id AND vo.customer_id =
+        t.customer_id
+        INNER JOIN user_role_relation t1 ON t1.role_id = t.role_id and t.customer_id = t1.customer_id
+        INNER JOIN dim_user t2 ON t2.user_id = t1.user_id and t1.customer_id = t2.customer_id and t2.is_lock = 0
+        LEFT JOIN dim_organization_type dot ON dot.organization_type_id = vo.organization_type_id
+        WHERE
+        t2.user_id = #{userId}
+        <if test="customerId != null">
+            AND vo.customer_id = #{customerId}
+        </if>
+    </sql>
+
+
+    <!--
+    /*==============================================================*/
+    /*  配置页面使用-配置数据权限							            */
+    /*==============================================================*/
+     -->
+    <!-- 查出superAdmin的ID -->
+    <select id="findSuperAdminIdByUserKey" resultType="java.lang.String">
+        SELECT user_id from dim_user where user_key = #{userKey}
+    </select>
+     
+    <!-- 登录人所有数据权限 -->
+    <select id="queryOrganPermit" resultMap="organMap">
+        SELECT organization_id, organization_name, organization_parent_id,has_children, full_path,level, depth,
+        half_check
+        FROM (
+        <include refid="permitSQL"></include>
+        ) t
+        ORDER BY t.level, t.depth, t.organization_id, t.half_check
+    </select>
+
+
+    <!-- superAdmin所有数据权  -->
+    <select id="queryOrganPermitBySuperAdmin" resultMap="organMap">
+        SELECT DISTINCT
+        vo.organization_id,
+        vo.organization_name,
+        vo.organization_parent_id,
+        vo.has_children,
+        vo.full_path,
+        dot.organization_type_level AS LEVEL,
+        vo.depth,
+        0 as half_check
+        FROM
+        dim_organization vo
+        LEFT JOIN dim_organization_type dot ON dot.organization_type_id = vo.organization_type_id
+        AND vo.customer_id=dot.customer_id
+        WHERE
+        <if test="customerId != null">
+            vo.customer_id = #{customerId}
+        </if>
+        ORDER BY vo.depth
+    </select>
+
+
+    <!-- role2organ -->
+    <!-- isOrganPermit==true 角色下所有数据权限 -->
+    <!-- isOrganPermit==false 角色下所有带状态数据,用作机构树配置半勾情况 -->
+    <select id="queryRoleOrgans" resultMap="organMap">
+        SELECT DISTINCT
+        vo.organization_id,
+        vo.organization_name,
+        vo.organization_parent_id,
+        vo.full_path as fullPath,
+        ro.half_check as halfCheck
+        FROM
+        role_organization_relation ro
+        INNER JOIN dim_organization vo ON vo.organization_id = ro.organization_id AND vo.customer_id=ro.customer_id
+        WHERE
+        ro.role_id =#{roleId} and ro.customer_id = #{customerId}
+        <if test="isOrganPermit == true">
+            and ro.half_check = 0
+        </if>
+    </select>
+    <!-- role2organ -->
+    <!-- 删除角色下所有数据权限 -->
+    <delete id="deleteRoleOrganization" parameterType="string">
+		DELETE FROM role_organization_relation WHERE role_id = #{roleId} and customer_id = #{customerId}
+    </delete>
+
+
+    <!-- role2organ -->
+    <!-- 角色配置数据 -->
+    <insert id="addRoleOrganization" parameterType="net.chinahrd.entity.dto.pc.admin.RoleOrganizationDto">
+        INSERT INTO role_organization_relation
+        (
+        role_organization_id,
+        customer_id,
+        role_id,
+        organization_id,
+        half_check
+        )
+        VALUES
+        <foreach collection="dtos" item="dto" separator=",">
+            (
+            #{dto.roleOrganizationId},
+            #{dto.customerId},
+            #{dto.roleId},
+            #{dto.organizationId},
+            #{dto.halfCheck}
+            )
+        </foreach>
+    </insert>
+
+
+    <!-- user2organ -->
+    <!-- isOrganPermit==true 用户下所有数据权限 -->
+    <!-- isOrganPermit==false 用户下所有带状态数据,用作机构树配置半勾情况 -->
+    <select id="queryUserOrgans" resultMap="organMap">
+        SELECT DISTINCT
+        vo.organization_id,
+        vo.organization_name,
+        vo.organization_parent_id,
+        vo.full_path as fullPath,
+        uor.half_check as halfCheck
+        FROM
+        user_organization_relation uor
+        INNER JOIN dim_organization vo ON vo.organization_id = uor.organization_id AND vo.customer_id=uor.customer_id
+        WHERE
+        uor.user_id =#{userId} and uor.customer_id = #{customerId}
+        <if test="isOrganPermit == true">
+            and ro.half_check = 0
+        </if>
+    </select>
+    <!-- user2organ -->
+    <!-- 删除用户下所有数据权限 -->
+    <delete id="deleteUserOrganization" parameterType="string">
+		DELETE FROM user_organization_relation WHERE user_id = #{userId} and customer_id = #{customerId}
+    </delete>
+    <!-- user2organ -->
+    <!-- 用户配置数据 -->
+    <insert id="addUserOrganization" parameterType="net.chinahrd.entity.dto.pc.admin.EmpOrganizationDto">
+        INSERT INTO user_organization_relation
+        (
+        user_organization_id,
+        customer_id,
+        user_id,
+        organization_id,
+        half_check,
+        create_user_id,
+        create_time
+        )
+        VALUES
+        <foreach collection="dtos" item="dto" separator=",">
+            (
+            #{dto.userOrganizationId},
+            #{dto.customerId},
+            #{dto.userId},
+            #{dto.organizationId},
+            #{dto.halfCheck},
+            #{dto.createUserId},
+            #{dto.createTime}
+            )
+        </foreach>
+        <!--  CALL pro_fetch_emp_organization( #{dto.customerId},'3cfd3db15ffc4c119e344e82eb8cbb19'); -->
+    </insert>
+
+
+    <!--
+    /*==============================================================*/
+    /*  指标页面使用-机构树选择							                */
+    /*==============================================================*/
+     -->
+    <!-- 机构树选择organTeeSelector -->
+    <select id="queryOrganTree" resultType="net.chinahrd.entity.dto.pc.admin.TreeDto">
+        SELECT DISTINCT
+        vo.organization_id as id,
+        vo.organization_name as name,
+        vo.organization_parent_id as parentId,
+        vo.has_children as children,
+        vo.full_path as fullPath
+        FROM
+        (<include refid="permitSQL"/>) vo
+        WHERE
+        vo.half_check = 0
+        ORDER BY vo.has_children desc, vo.level, vo.depth, vo.full_path
+    </select>
+
+    <select id="findOrganById" resultMap="organMap">
+		SELECT
+		dor.organization_id,
+		dor.organization_key,
+		dor.organization_name,
+		dor.organization_parent_id,
+		dor.full_path,
+		dor.has_children
+		FROM dim_organization dor
+		WHERE dor.customer_id = #{customerId}
+		AND dor.organization_id = #{organId}
+	</select>
+
+
+    <!-- superAdmin所有数据权  -->
+    <select id="queryOrganTreeBySuperAdmin" resultType="net.chinahrd.entity.dto.pc.admin.TreeDto">
+		SELECT DISTINCT
+			vo.organization_id as id,
+			vo.organization_name as name,
+			vo.organization_parent_id as parentId,
+			vo.has_children as children,
+			vo.full_path as fullPath
+		FROM
+ 			dim_organization vo 
+		INNER JOIN role_organization_relation ro on ro.organization_id = vo.organization_id and ro.customer_id = vo.customer_id
+		INNER JOIN dim_role r ON r.role_id = ro.role_id and ro.customer_id = r.customer_id
+		INNER JOIN user_role_relation ur ON ur.role_id = r.role_id and r.customer_id = ur.customer_id
+		INNER JOIN dim_user u ON u.user_id = ur.user_id and ur.customer_id = u.customer_id
+			and u.is_lock = 0
+		LEFT JOIN dim_organization_type dot ON dot.organization_type_id = vo.organization_type_id AND vo.customer_id=dot.customer_id 
+		WHERE vo.customer_id = #{customerId}
+		ORDER BY  dot.organization_type_level, vo.depth
+	</select>
+
+
+    <!-- 查询机构所拥用的员工 -->
+    <select id="queryEmpsByOrganId" resultType="net.chinahrd.entity.dto.pc.admin.UserDto">
+        SELECT
+        DISTINCT
+        <!-- 			du.user_id AS id, -->
+        <!-- 			du.user_id AS userId, -->
+        emp.emp_id AS empId,
+        emp.user_name AS userName,
+        emp.user_name_ch AS userNameCh
+        FROM
+        dim_organization vo
+        <!-- 		INNER JOIN role_organization_relation ro on vo.organization_id = ro.organization_id AND vo.customer_id=ro.customer_id  -->
+        <!-- 		INNER JOIN dim_role dr on dr.role_id = ro.role_id AND vo.customer_id=dr.customer_id  -->
+        <!-- 		INNER JOIN user_role_relation ur on ur.role_id = ro.role_id AND vo.customer_id=ur.customer_id  -->
+        INNER JOIN user_organization_relation ur on ur.organization_id = vo.organization_id AND
+        vo.customer_id=ur.customer_id
+        INNER JOIN dim_user du on ur.user_id = du.user_id and du.sys_deploy = 0 AND vo.customer_id=du.customer_id
+        and du.is_lock = 0
+        inner JOIN v_dim_emp emp on emp.emp_id = du.emp_id AND vo.customer_id=emp.customer_id
+        where vo.organization_id = #{organizationId} AND vo.customer_id=#{customerId}
+    </select>
+
+
+    <!-- 查询当前和下属部门在职员工数，包括子部门 -->
+    <select id="getEmpCountByOrganId" resultType="Integer">
+        SELECT DISTINCT
+        count(e.emp_id)
+        FROM
+        v_dim_emp e
+        WHERE
+        e.run_off_date IS NULL
+        AND e.is_regular = 1
+        <!-- 		AND e.organization_id =	#{organizationId}	 -->
+        AND e.organization_id IN
+        (
+        SELECT t1.organization_id FROM dim_organization t1
+        WHERE
+        locate(
+        (
+        SELECT t.full_path FROM dim_organization t
+        WHERE t.organization_id = #{organizationId}
+        AND t.customer_id = #{customerId}
+        ), t1.full_path
+        )
+        AND t1.customer_id = #{customerId}
+        )
+        AND e.customer_id=#{customerId}
+    </select>
+
+
+    <!-- 根据条件查询相关机构及机构负责人信息 -->
+    <select id="queryOrganManagerLists" resultType="net.chinahrd.entity.dto.pc.common.OrganManagerDto">
+	SELECT 
+		dor.organization_id AS organId,
+		dor.organization_key AS organkey,
+		dor.organization_name AS organName,
+		dor.organization_parent_id AS organPId,
+		oer.emp_id AS empId,
+		vde.user_name_ch AS userNameCh,
+		vde.email,
+		vde.tel_phone AS telPhone
+	FROM dim_organization dor
+	LEFT JOIN organization_emp_relation oer ON dor.customer_id = oer.customer_id AND dor.organization_id = oer.organization_id
+	LEFT JOIN sys_code_item ci ON oer.sys_code_item_id = ci.sys_code_item_id AND ci.sys_code_item_key = 1 AND ci.code_group_id = 'personType' AND ci.customer_id = oer.customer_id
+	LEFT JOIN v_dim_emp vde ON oer.customer_id = vde.customer_id AND oer.emp_id = vde.emp_id
+	WHERE dor.customer_id = #{customerId}
+	ORDER BY dor.full_path,dor.depth
+	</select>
+
+
+    <!-- 根据用户查询用户顶级机构 -->
+    <!-- 	<select id="queryOrganPermitTop" resultMap="organMap"> -->
+    <!-- 		SELECT  -->
+    <!-- 			dor.organization_id,  -->
+    <!-- 			dor.organization_name, -->
+    <!-- 			dor.organization_parent_id, -->
+    <!-- 			dor.has_children, -->
+    <!-- 			dor.full_path, -->
+    <!-- 			dor.depth -->
+    <!-- 		FROM user_organization_relation urr  -->
+    <!-- 		INNER JOIN dim_organization dor ON urr.organization_id=dor.organization_id AND urr.customer_id = dor.customer_id -->
+    <!-- 		LEFT JOIN ( -->
+    <!-- 			SELECT organization_id, customer_id FROM user_organization_relation   -->
+    <!-- 			WHERE user_id = #{userId} AND  half_check=0 AND customer_id = #{customerId} -->
+    <!-- 		) p ON  dor.organization_parent_id = p.organization_id AND p.customer_id = dor.customer_id -->
+    <!-- 		WHERE p.organization_id is null -->
+    <!-- 			AND urr.user_id = #{userId}  -->
+    <!-- 			AND urr.customer_id = #{customerId} -->
+    <!-- 			AND urr.half_check=0 -->
+    <!-- 	</select> -->
+
+
+    <!--
+    /*==============================================================*/
+    /*  数据导入页面使用								                */
+    /*==============================================================*/
+     -->
+    <!-- 查询所有机构 -->
+    <select id="queryOrganAll" resultMap="organMap">
+		SELECT
+			vo.organization_id,
+			vo.organization_key
+		FROM
+			dim_organization vo
+		where customer_id = #{customerId} and vo.organization_key in (#{organKeyList})
+	</select>
+
+    <!-- 查询机构的直接机构列表-->
+    <select id="queryDirectOrgans" resultMap="organMap">
+        SELECT DISTINCT
+        vo.organization_id,
+        vo.organization_name,
+        vo.organization_parent_id,
+        p.organization_name as organizationParentName,
+        vo.has_children
+        FROM dim_organization vo
+        LEFT JOIN dim_organization p
+        ON vo.organization_parent_id=p.organization_id AND vo.customer_id=p.customer_id
+        WHERE
+        (vo.customer_id = #{customerId} and vo.organization_parent_id=#{orgPid})
+        <if test="isShowSelf == true">
+            or vo.organization_id = #{orgPid}
+        </if>
+        order by vo.full_path
+    </select>
+
+
+    <!-- 通过orgPid查出所有子孙机构 -->
+    <select id="queryOrgansByPid" resultType="String">
+        SELECT
+        t1.organization_id
+        FROM
+        dim_organization t1
+        WHERE
+        t1.customer_id = #{customerId}
+        AND locate(
+        (
+        SELECT
+        t.full_path
+        FROM
+        dim_organization t
+        WHERE
+        t.customer_id = t1.customer_id
+        AND t.organization_id = #{orgPid}
+        ),
+        t1.full_path
+        )
+        <if test="isHideSelf == true">
+            AND t1.organization_id != #{orgPid}
+        </if>
+    </select>
+
+	<select id="findList" resultType="net.chinahrd.entity.dto.pc.admin.OrganDto">
+		SELECT 
+			t.`customer_id` AS 'customerId',
+			t.`organization_id` AS 'organizationId',
+			t.`organization_name` AS 'organizationName',
+			t.`organization_key` AS 'organizationKey',
+			t.`organization_parent_id` AS 'organizationParentId',
+			p.`organization_name` AS 'organizationParentName',
+			t.`depth` AS 'dept'
+			
+		FROM dim_organization t 
+		     LEFT JOIN dim_organization p
+		        ON t.organization_parent_id=p.organization_id AND t.customer_id=p.customer_id
+		<where>
+			t.customer_id = #{org.customerId}
+			<if test="org != null and org.organizationId != null and org.organizationId != ''">
+				AND t.organization_id=#{org.organizationId}
+			</if>
+			<if test="org != null and org.organizationName != null and org.organizationName != ''">
+				AND t.organization_name=#{org.organizationName}
+			</if>
+			<if test="org != null and org.organizationKey != null and org.organizationKey != ''">
+				AND t.organization_key=#{org.organizationKey}
+			</if>
+			<if test="org != null and org.organizationParentId != null and org.organizationParentId != ''">
+				AND t.organization_parent_id=#{org.organizationParentId}
+			</if>
+			<if test="org != null and org.organizationParentName != null and org.organizationParentName != ''">
+				AND t.organization_parent_name=#{org.organizationParentName}
+			</if>
+			<if test="org != null and org.depth != null and org.depth != '' and org.depth != -1">
+				AND t.depth=#{org.depth}
+			</if>
+			<if test="org != null and org.organizationTypeId != null and org.organizationTypeId != ''">
+				AND t.organization_type_id = #{org.organizationTypeId}
+			</if>
+		</where>
+			
+	</select>
+
+</mapper>

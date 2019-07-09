@@ -1,0 +1,1188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.zte.laborEfficiency.mvc.pc.dao.LaborEfficiencyDao">
+	<cache-ref namespace="net.chinahrd.ehcache.normal" />
+	<resultMap type="net.chinahrd.entity.dtozte.pc.laborefficiency.LaborEfficiencyDto" id="baseMap">
+		<result column="empId" property="empId" />
+		<result column="userName" property="userName" />
+		<result column="conNum" property="conNum" />
+		<result column="img_path" property="imgPath" />
+		<result column="hour_count" property="hourCount" />
+		<result column="date" property="date" />
+		<result column="checkWorkTypeId" property="checkWorkTypeId" />
+		<result column="checkWorkTypeName" property="checkWorkTypeName" />
+		<result column="avgNum" property="avgNum" />
+		<result column="curtName" property="curtName" />
+	</resultMap>
+	<!-- 查询包含字迹的组织机构id -->
+	<sql id="queryOrganIdAll">
+		(
+		SELECT
+			o.organization_id
+		FROM
+			dim_organization o
+		WHERE
+			LOCATE(
+				(
+					SELECT
+						o1.full_path
+					FROM
+						dim_organization o1
+					WHERE
+						o1.organization_id = #{organId}
+					AND o1.customer_id = #{customerId}
+				),
+				o.full_path
+			)
+		AND o.customer_id = #{customerId}
+		)
+	</sql>
+	<!-- 人群遍历 -->
+	<sql id="populationForEach">
+		<if test="listPopulationIds!=null and listPopulationIds.size()>0">
+			AND e.emp_id IN (SELECT pr.emp_id FROM population_relation AS pr WHERE pr.population_id IN
+			<foreach collection="listPopulationIds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			)
+		</if>
+	</sql>
+	<!-- 获取劳动力效能值 -->
+	<select id="getLaborEfficiencyValue" resultType="java.util.HashMap" useCache="false">
+		SELECT
+			IFNULL(
+				SUM(IFNULL(a.at_hour, 0)),
+				0
+			) actualNum,
+			IFNULL(
+				SUM(
+					IFNULL(a.th_hour, 0)
+				),
+				0
+			) shouldNum
+		FROM
+			emp_attendance_month a
+		WHERE
+			a.year_month = #{date}
+		AND a.customer_id = #{customerId}
+		AND EXISTS(
+			SELECT
+				1
+			FROM
+				history_dim_organization_month t1
+			WHERE
+				locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.organization_id = #{organId}
+						AND t.customer_id = #{customerId}
+					), t1.full_path
+				)
+			AND t1.customer_id = #{customerId}
+			AND t1.organization_id = a.organization_id
+			AND t1.`year_month` = a.`year_month`
+		)
+		<!-- AND a.organization_id IN <include refid="queryOrganIdAll"></include> -->
+	</select>
+	<!-- 加班时长 -->
+	<select id="queryOvertimeHours" resultType="java.util.HashMap" useCache="false">
+		SELECT
+			a.conNum curNum,
+			b.conNum oldNum,
+			a.conNum - b.conNum comNum,
+			c.conNum curPNum,
+			d.conNum oldPNum
+		FROM
+			(
+				SELECT
+					'f' flag,
+					IFNULL(SUM(IFNULL(o.ot_hour, 0)), 0) conNum
+				FROM
+					emp_attendance_month o
+				WHERE
+					o.`year_month` = #{curDate}
+				AND o.customer_id = #{customerId}
+				AND EXISTS(
+					SELECT 1
+					FROM history_dim_organization_month h
+					WHERE LOCATE(
+						(
+							SELECT
+								o1.full_path
+							FROM
+								dim_organization o1
+							WHERE
+								o1.organization_id = #{organId}
+							AND o1.customer_id = #{customerId}
+						), h.full_path
+					)
+					AND h.customer_id = #{customerId}
+					AND h.organization_id = o.organization_id
+					AND h.`year_month` = #{curDate}
+				)
+			) a
+		LEFT JOIN (
+			SELECT
+				'f' flag,
+				IFNULL(SUM(IFNULL(o.ot_hour, 0)), 0) conNum
+			FROM
+				emp_attendance_month o
+			WHERE
+				o.`year_month` = #{beforeDate}
+			AND o.customer_id = #{customerId}
+			AND EXISTS(
+				SELECT 1
+				FROM history_dim_organization_month h
+				WHERE LOCATE(
+					(
+						SELECT
+							o1.full_path
+						FROM
+							dim_organization o1
+						WHERE
+							o1.organization_id = #{organId}
+						AND o1.customer_id = #{customerId}
+					), h.full_path
+				)
+				AND h.customer_id = #{customerId}
+				AND h.organization_id = o.organization_id
+				AND h.`year_month` = #{beforeDate}
+			)
+		) b ON a.flag = b.flag
+		LEFT JOIN (
+			SELECT
+				'f' flag,
+				COUNT(1) conNum
+			FROM
+				dim_emp_month e
+			WHERE
+				e.customer_id = #{customerId}
+			AND e.`year_month` = #{curDate}
+			AND EXISTS(
+				SELECT 1
+				FROM history_dim_organization_month h
+				WHERE LOCATE(
+					(
+						SELECT
+							o1.full_path
+						FROM
+							dim_organization o1
+						WHERE
+							o1.organization_id = #{organId}
+						AND o1.customer_id = #{customerId}
+					), h.full_path
+				)
+				AND h.customer_id = #{customerId}
+				AND h.organization_id = e.organization_id
+				AND h.`year_month` = #{curDate}
+			)
+		) c ON a.flag = c.flag
+		LEFT JOIN (
+			SELECT
+				'f' flag,
+				COUNT(1) conNum
+			FROM
+				dim_emp_month e
+			WHERE
+				e.customer_id = #{customerId}
+			AND e.`year_month` = #{beforeDate}
+			AND EXISTS(
+				SELECT 1
+				FROM history_dim_organization_month h
+				WHERE LOCATE(
+					(
+						SELECT
+							o1.full_path
+						FROM
+							dim_organization o1
+						WHERE
+							o1.organization_id = #{organId}
+						AND o1.customer_id = #{customerId}
+					), h.full_path
+				)
+				AND h.customer_id = #{customerId}
+				AND h.organization_id = e.organization_id
+				AND h.`year_month` = #{beforeDate}
+			)
+		) d ON a.flag = d.flag
+	</select>
+	<!-- 加班预警 -->
+	<select id="queryOvertimeWarningCount" resultType="java.util.HashMap" useCache="false">
+		SELECT
+			count(1) conNum,
+			GROUP_CONCAT(a.user_name_ch) userName
+		FROM
+			(
+				SELECT
+					o.user_name_ch,
+					SUM(IFNULL(o.hour_count, 0)) conNum
+				FROM
+					emp_overtime_day o
+				WHERE
+					o.customer_id = #{customerId}
+				AND o.organization_id IN <include refid="queryOrganIdAll"></include>
+				AND o.days <![CDATA[<]]> #{maxDate}
+				AND o.days <![CDATA[>=]]> #{minDate}
+				GROUP BY
+					o.emp_id
+			) a
+		WHERE
+			a.conNum <![CDATA[>]]> #{otTime}
+	</select>
+	<!-- 加班预警明细 -->
+	<select id="queryOvertimeWarningDetail" resultMap="baseMap" useCache="false">
+		SELECT
+			a.emp_id,
+			a.user_name_ch userName,
+			a.conNum,
+			a.img_path
+		FROM
+			(
+				SELECT
+					o.emp_id,
+					o.user_name_ch,
+					IFNULL(
+						SUM(IFNULL(o.hour_count, 0)),
+						0
+					) conNum,
+					e.img_path
+				FROM
+					emp_overtime_day o
+				INNER JOIN v_dim_emp e ON o.emp_id = e.emp_id
+				AND o.customer_id = e.customer_id
+				WHERE 
+					o.customer_id = #{customerId}
+				AND o.organization_id IN <include refid="queryOrganIdAll"></include>
+				AND o.days <![CDATA[<]]> #{maxDate}
+				AND o.days <![CDATA[>=]]> #{minDate}
+				GROUP BY
+					o.emp_id
+			) a
+		WHERE
+			a.conNum <![CDATA[>]]> #{otTime}
+		ORDER BY conNum DESC,CONVERT(a.user_name_ch using GBK);
+	</select>
+	<!-- 加班预警明细-人员加班线图 -->
+	<select id="queryOvertimeWarningPersonHours" resultMap="baseMap" useCache="true">
+		SELECT
+			o.emp_id empId,
+			o.user_name_ch userName,
+			IFNULL(o.hour_count, 0) hour_count,
+			o.days date
+		FROM
+			emp_overtime_day o
+		WHERE 
+				o.customer_id = #{customerId}
+			AND o.days <![CDATA[<]]> #{maxDate}
+			AND o.days <![CDATA[>=]]> #{minDate}
+			AND o.emp_id = #{empId}
+		ORDER BY
+			o.days
+	</select>
+	
+	<!-- 加班时长趋势-人均时长 -->
+	<select id="queryOvertimeAvgHours" resultMap="baseMap" useCache="true">
+		SELECT
+			x.year_month date,
+			x.conNum / em.conNum avgNum
+		FROM
+			(
+				SELECT
+					o.year_month,
+					IFNULL(
+						SUM(IFNULL(o.ot_hour, 0)),
+						0
+					) conNum
+				FROM
+					emp_attendance_month o
+				<if test="listPopulationIds!=null and listPopulationIds.size()>0">
+					INNER JOIN population_relation_month pr ON O.emp_id = pr.emp_id
+					AND O.`year_month` = pr.`year_month`
+					AND pr.population_id IN
+					<foreach collection="listPopulationIds" open="(" close=")" separator="," item="crowd">
+						#{crowd}
+					</foreach>
+				</if>
+				WHERE
+					o.customer_id = #{customerId}
+				<if test="startYearMonth != null and startYearMonth != ''">
+					AND o.year_month <![CDATA[>=]]> #{startYearMonth}
+				</if>
+				<if test="endYearMonth != null and endYearMonth != ''">
+					AND o.year_month <![CDATA[<=]]> #{endYearMonth}
+				</if>
+				<if test="date != null and date != ''">
+					AND o.year_month <![CDATA[>=]]> #{date}
+				</if>
+				AND EXISTS(
+					SELECT
+						1
+					FROM
+						history_dim_organization_month t1
+					WHERE
+						locate(
+							(
+								SELECT t.full_path
+								FROM dim_organization t
+								WHERE t.organization_id = #{organId}
+								AND t.customer_id = #{customerId}
+							), t1.full_path
+						)
+					AND t1.customer_id = #{customerId}
+					AND t1.organization_id = o.organization_id
+					AND t1.`year_month` = o.`year_month`
+				)
+				GROUP BY
+					o.year_month
+			) x
+		LEFT JOIN (
+			SELECT e.`year_month`,
+				count(1) conNum
+			FROM
+				dim_emp_month e
+			<if test="listPopulationIds!=null and listPopulationIds.size()>0">
+				INNER JOIN population_relation_month pr ON e.emp_id = pr.emp_id
+				AND e.`year_month` = pr.`year_month`
+				AND pr.population_id IN
+				<foreach collection="listPopulationIds" open="(" close=")" separator="," item="crowd">
+					#{crowd}
+				</foreach>
+			</if>
+			WHERE 
+				e.customer_id = #{customerId}
+			<if test="startYearMonth != null and startYearMonth != ''">
+				AND e.`year_month` <![CDATA[>=]]> #{startYearMonth}
+			</if>
+			<if test="endYearMonth != null and endYearMonth != ''">
+				AND e.`year_month` <![CDATA[<=]]> #{endYearMonth}
+			</if>
+			<if test="date != null and date != ''">
+				AND e.`year_month` <![CDATA[>=]]> #{date}
+			</if>
+			AND EXISTS(
+				SELECT
+					1
+				FROM
+					history_dim_organization_month t1
+				WHERE
+					locate(
+						(
+							SELECT t.full_path
+							FROM dim_organization t
+							WHERE t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						), t1.full_path
+					)
+				AND t1.customer_id = #{customerId}
+				AND t1.organization_id = e.organization_id
+				AND t1.`year_month` = e.`year_month`
+			)
+			GROUP BY e.`year_month`
+		) em ON x.year_month = em.`year_month`
+		ORDER BY
+			x.year_month
+	</select>
+	<!-- 加班时长趋势-总时长 -->
+	<select id="queryOvertimeTotalHours" resultMap="baseMap" useCache="false">
+		SELECT
+			o.year_month date,
+			IFNULL(
+				SUM(IFNULL(o.ot_hour, 0)),
+				0
+			) conNum
+		FROM
+			emp_attendance_month o
+		INNER JOIN v_dim_emp e ON o.customer_id = e.customer_id
+		AND o.emp_id = e.emp_id
+		WHERE
+			o.customer_id = #{customerId}
+		<if test="listPopulationIds!=null and listPopulationIds.size()>0">
+			INNER JOIN population_relation_month pr ON O.emp_id = pr.emp_id
+			AND O.`year_month` = pr.`year_month`
+			AND pr.population_id IN
+			<foreach collection="listPopulationIds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+		</if>
+		<if test="startYearMonth != null and startYearMonth != ''">
+			AND o.year_month <![CDATA[>=]]> #{startYearMonth}
+		</if>
+		<if test="endYearMonth != null and endYearMonth != ''">
+			AND o.year_month <![CDATA[<=]]> #{endYearMonth}
+		</if>
+		<if test="date != null and date != ''">
+			AND o.year_month <![CDATA[>=]]> #{date}
+		</if>
+		AND EXISTS(
+			SELECT
+				1
+			FROM
+				history_dim_organization_month t1
+			WHERE
+				locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.organization_id = 'fcb4d31b3470460f93be81cf1dd64cf0'
+						AND t.customer_id = 'b5c9410dc7e4422c8e0189c7f8056b5f'
+					), t1.full_path
+				)
+			AND t1.customer_id = 'b5c9410dc7e4422c8e0189c7f8056b5f'
+			AND t1.organization_id = o.organization_id
+			AND t1.`year_month` = o.`year_month`
+		)
+		GROUP BY o.year_month
+		ORDER BY o.year_month
+	</select>
+	<!-- 加班情况 -->
+	<select id="queryOvertimeCondition" resultMap="baseMap" useCache="false">
+		SELECT
+			o.emp_id empId,
+			e.user_name_ch userName,
+			IFNULL(
+				SUM(IFNULL(o.ot_hour, 0)),
+				0
+			) conNum,
+			e.img_path,
+			o.year_month date
+		FROM
+			emp_attendance_month o
+		INNER JOIN v_dim_emp e ON o.customer_id = e.customer_id
+		AND o.emp_id = e.emp_id
+		WHERE
+			o.customer_id = #{customerId}
+		AND o.organization_id IN <include refid="queryOrganIdAll"></include>
+		<include refid="populationForEach"></include>
+		AND	o.year_month = #{date}
+		GROUP BY
+			e.emp_id
+		ORDER BY 
+			conNum DESC
+	</select>
+	<!-- 加班情况-人员加班线图 -->
+	<select id="queryOvertimeConditionPersonHours" resultMap="baseMap" useCache="true">
+		SELECT
+			o.emp_id empId,
+			o.user_name_ch userName,
+			IFNULL(o.hour_count, 0) hour_count,
+			o.days date
+		FROM
+			emp_overtime_day o
+		WHERE
+			o.customer_id = #{customerId}
+		AND o.year_months = #{date}
+		AND o.emp_id = #{empId}
+		ORDER BY
+			o.days
+	</select>
+	
+	<!-- 劳动力效能对比 -->
+	<select id="queryLaborEfficiencyRatio" resultType="net.chinahrd.entity.dtozte.pc.laborefficiency.LaborEfficiencyDto">
+		SELECT
+			IFNULL(sum(IFNULL(eam.at_hour, 0)), 0) actualAttendance,
+			IFNULL(sum(IFNULL(eam.th_hour, 0)), 0) beInAttendance,
+			IF(IFNULL(sum(IFNULL(eam.th_hour, 0)), 0) = 0, 0, ROUND(IFNULL(sum(IFNULL(eam.at_hour, 0)), 0)/IFNULL(sum(IFNULL(eam.th_hour, 0)), 0), 4)) attendanceRate
+		FROM
+			emp_attendance_month eam
+		<if test="listPopulationIds!=null and listPopulationIds.size()>0">
+			INNER JOIN population_relation_month pr ON eam.emp_id = pr.emp_id
+			AND eam.`year_month` = pr.`year_month`
+			AND pr.population_id IN 
+			<foreach collection="listPopulationIds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+		</if>
+		WHERE eam.customer_id = #{customerId}
+		AND eam.`year_month` BETWEEN #{beginTime} AND #{endTime}
+		AND EXISTS(
+			SELECT
+				1
+			FROM
+				history_dim_organization_month t1
+			WHERE
+				locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.organization_id = #{organId}
+						AND t.customer_id = #{customerId}
+					), t1.full_path
+				)
+			AND t1.customer_id = #{customerId}
+			AND t1.organization_id = eam.organization_id
+			AND t1.`year_month` = eam.`year_month`
+		)
+	</select>
+	
+	<select id="queryParentOrganId" resultType="String">
+		select 
+			don.organization_parent_id
+		from dim_organization don 
+		where don.customer_id=#{customerId}
+			and don.organization_id=#{organId}
+	</select>
+	
+	<select id="queryOrgan" resultType="net.chinahrd.entity.dtozte.pc.laborefficiency.LaborEfficiencyDto">
+		select 
+			don.organization_id organId,
+			don.organization_name organName,
+			don.organization_parent_id parentId,
+			don.has_children hasChildren
+		from dim_organization don 
+		where don.customer_id=#{customerId}
+			and (don.organization_id=#{organId} or don.organization_parent_id=#{organId})
+	</select>
+	<!-- 正常考勤表最大最小时间 -->
+	<select id="findMinMaxTime" resultType="java.util.HashMap">
+		SELECT
+			MIN(eam.`year_month`) minTime,
+			MAX(eam.`year_month`) maxTime
+		FROM
+			emp_attendance_month eam
+		WHERE
+			eam.customer_id = #{customerId}
+	</select>
+	
+	<!-- 劳动力效能明细 -->
+	<select id="queryLaborEfficiencyDetailCount" resultType="Integer">
+		SELECT count(1) from
+		(SELECT 
+			ead.emp_id empId
+		FROM emp_attendance_month ead
+		WHERE ead.customer_id = #{customerId}
+		AND ead.`year_month` BETWEEN #{beginTime} AND #{endTime}
+		AND EXISTS (
+			SELECT 1
+			FROM history_dim_organization t1
+			WHERE
+				locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.organization_id = #{organId}
+						AND t.customer_id = #{customerId}
+					), t1.full_path
+				)
+			AND t1.organization_id = ead.organization_id
+			<if test="listTime!=null and listTime.size()>0">
+				AND t1.days IN 
+				<foreach collection="listTime" open="(" close=")" separator="," item="days">
+				#{days.date}
+				</foreach>
+			</if>
+		)
+		GROUP BY ead.emp_id) tt
+	</select>
+	<select id="queryLaborEfficiencyDetail" resultType="net.chinahrd.entity.dtozte.pc.laborefficiency.LaborEfficiencyDto">
+		SELECT 
+			ead.emp_id empId, 
+			ead.user_name_ch empName, 
+			IFNULL(sum(IFNULL(ead.at_hour, 0)), 0) actualAttendance,
+			IFNULL(sum(IFNULL(ead.th_hour, 0)), 0) beInAttendance,
+			IF(IFNULL(sum(IFNULL(ead.at_hour, 0)), 0) = 0, 0, IFNULL(sum(IFNULL(ead.at_hour, 0)), 0) / IFNULL(sum(IFNULL(ead.th_hour, 0)), 0)) attendanceRate
+		FROM emp_attendance_month ead
+		WHERE ead.customer_id = #{customerId}
+		AND ead.`year_month` BETWEEN #{beginTime} AND #{endTime}
+		AND EXISTS (
+			SELECT 1
+			FROM history_dim_organization t1
+			WHERE
+				locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.organization_id = #{organId}
+						AND t.customer_id = #{customerId}
+					), t1.full_path
+				)
+			AND t1.organization_id = ead.organization_id
+			<if test="listTime!=null and listTime.size()>0">
+				AND t1.days IN 
+				<foreach collection="listTime" open="(" close=")" separator="," item="days">
+				#{days.date}
+				</foreach>
+			</if>
+		)
+		GROUP BY ead.emp_id
+		ORDER BY attendanceRate, convert(ead.user_name_ch using GBK)
+		LIMIT #{rowBounds.offset}, #{rowBounds.limit}
+	</select>
+	<!-- 劳动力效能趋势 -->
+	<select id="queryLaborEfficiencyTrend" resultType="net.chinahrd.entity.dtozte.pc.laborefficiency.LaborEfficiencyDto">
+		<!-- SELECT
+			eam.`year_month` yearMonth,
+			sum(IFNULL(eam.at_hour, 0)) actualAttendance,
+			sum(IFNULL(eam.th_hour, 0)) beInAttendance,
+		IF (sum(IFNULL(eam.at_hour, 0)) = 0, 0, sum(IFNULL(eam.at_hour, 0)) / sum(IFNULL(eam.th_hour, 0))) attendanceRate
+		FROM
+			(
+				SELECT pr.emp_id
+				FROM population_relation AS pr
+				WHERE customer_id = #{customerId}
+				AND days = #{days}
+				<if test="listPopulationIds!=null and listPopulationIds.size()>0">
+					AND pr.population_id IN 
+					<foreach collection="listPopulationIds" open="(" close=")" separator="," item="crowd">
+					#{crowd}
+					</foreach>
+				</if>
+				GROUP BY pr.emp_id
+			) pr 
+		STRAIGHT_JOIN v_dim_emp e ON e.emp_id = pr.emp_id 
+		STRAIGHT_JOIN emp_attendance_month eam ON e.customer_id = eam.customer_id
+		AND e.emp_id = eam.emp_id 
+		STRAIGHT_JOIN (
+			SELECT customer_id,
+				organization_id
+			FROM dim_organization t1
+			WHERE
+				locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.organization_id = #{organId}
+						AND t.customer_id = #{customerId}
+					), t1.full_path
+				)
+		) a ON a.organization_id = e.organization_id
+		AND a.customer_id = e.customer_id
+		WHERE eam.`year_month` = #{yearMonth}
+		GROUP BY eam.`year_month`
+		ORDER BY eam.`year_month` -->
+		
+		SELECT
+			eam.`year_month` yearMonth,
+			IFNULL(SUM(IFNULL(eam.at_hour, 0)), 0) actualAttendance,
+			IFNULL(SUM(IFNULL(eam.th_hour, 0)), 0) beInAttendance,
+			IF (IFNULL(SUM(IFNULL(eam.th_hour, 0)), 0) = 0, 0, ROUND(IFNULL(SUM(IFNULL(eam.at_hour, 0)), 0) / IFNULL(SUM(IFNULL(eam.th_hour, 0)), 0), 4)) attendanceRate
+		FROM emp_attendance_month eam
+		<if test="listPopulationIds!=null and listPopulationIds.size()>0">
+			INNER JOIN population_relation_month pr ON eam.emp_id = pr.emp_id
+			AND eam.`year_month` = pr.`year_month`
+			AND pr.population_id IN
+			<foreach collection="listPopulationIds" open="(" close=")" separator="," item="crowd">
+			#{crowd}
+			</foreach>
+		</if>
+		WHERE eam.customer_id = #{customerId}
+		AND eam.`year_month` BETWEEN #{beginTime} AND #{endTime}
+		AND EXISTS(
+			SELECT
+				1
+			FROM
+				history_dim_organization_month t1
+			WHERE
+				locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.organization_id = #{organId}
+						AND t.customer_id = #{customerId}
+					), t1.full_path
+				)
+			AND t1.customer_id = #{customerId}
+			AND t1.organization_id = eam.organization_id
+			AND t1.`year_month` = eam.`year_month`
+		)
+		GROUP BY eam.`year_month`
+		ORDER BY eam.`year_month`
+	</select>
+	<!-- 组织机构加班统计 -->
+	<select id="queryOvertimeByOrgan" resultType="net.chinahrd.entity.dtozte.pc.laborefficiency.LaborEfficiencyDto">
+		SELECT
+			a.`year_month` yearMonth,
+			a.hourCount,
+			b.count,
+			IF(b.count=0, 0, ROUND(a.hourCount/b.count, 4)) avgNum
+		FROM
+			(
+				SELECT eam.`year_month`,
+					IFNULL( SUM(IFNULL(eam.ot_hour, 0)), 0 ) hourCount
+				FROM emp_attendance_month eam
+				<if test="listPopulationIds!=null and listPopulationIds.size()>0">
+					INNER JOIN population_relation_month pr ON eam.emp_id = pr.emp_id
+					AND eam.`year_month` = pr.`year_month`
+					AND pr.population_id IN
+					<foreach collection="listPopulationIds" open="(" close=")" separator="," item="crowd">
+						#{crowd}
+					</foreach>
+				</if>
+				WHERE eam.customer_id = #{customerId}
+				AND eam.`year_month` BETWEEN #{beginTime} AND #{endTime}
+				AND eam.ot_hour <![CDATA[<>]]> 0
+				AND EXISTS(
+					SELECT
+						1
+					FROM
+						history_dim_organization_month t1
+					WHERE
+						locate(
+							(
+								SELECT t.full_path
+								FROM dim_organization t
+								WHERE t.organization_id = #{organId}
+								AND t.customer_id = #{customerId}
+							), t1.full_path
+						)
+					AND t1.customer_id = #{customerId}
+					AND t1.organization_id = eam.organization_id
+					AND t1.`year_month` = eam.`year_month`
+				)
+				GROUP BY eam.`year_month`
+				ORDER BY eam.`year_month`
+			) a
+		LEFT JOIN (
+			SELECT e.`year_month`,
+				count(1) count
+			FROM
+				dim_emp_month e
+			<if test="listPopulationIds!=null and listPopulationIds.size()>0">
+				INNER JOIN population_relation_month pr ON e.emp_id = pr.emp_id
+				AND e.`year_month` = pr.`year_month`
+				AND pr.population_id IN
+				<foreach collection="listPopulationIds" open="(" close=")" separator="," item="crowd">
+					#{crowd}
+				</foreach>
+			</if>
+			WHERE 
+				e.customer_id = #{customerId}
+			AND e.`year_month` BETWEEN #{beginTime} AND #{endTime}
+			AND EXISTS(
+					SELECT
+						1
+					FROM
+						history_dim_organization_month t1
+					WHERE
+						locate(
+							(
+								SELECT t.full_path
+								FROM dim_organization t
+								WHERE t.organization_id = #{organId}
+								AND t.customer_id = #{customerId}
+							), t1.full_path
+						)
+					AND t1.customer_id = #{customerId}
+					AND t1.organization_id = e.organization_id
+					AND t1.`year_month` = e.`year_month`
+				)
+				GROUP BY e.`year_month`
+				ORDER BY e.`year_month`
+		) b ON a.`year_month` = b.`year_month`
+	</select>
+	<!-- 考勤类型分布-获取时间 -->
+	<select id="queryCheckWorkTypeForDate" resultType="java.util.HashMap" useCache="false">
+		SELECT
+			MAX(t.year_months) maxDate,
+			MIN(t.year_months) minDate
+		FROM
+			emp_attendance_day t
+		WHERE t.customer_id = #{customerId}
+		<!-- AND t.organization_id IN <include refid="queryOrganIdAll"></include> -->
+	</select>
+	<!-- 考勤类型分布 -->
+	<select id="queryCheckWorkTypeLayout" resultMap="baseMap" useCache="false">
+		SELECT
+			x.checkwork_type_name checkWorkTypeName,
+			SUM(IFNULL(x.conNum, 0)) conNum
+		FROM
+			(
+				SELECT
+					t.checkwork_type_name,
+					IFNULL(
+						SUM(IFNULL(a.hour_count, 0)),
+						0
+					) conNum,
+					t.show_index
+				FROM
+					emp_attendance_day a
+				LEFT JOIN dim_checkwork_type t ON a.checkwork_type_id = t.checkwork_type_id
+				AND a.customer_id = t.customer_id
+				WHERE
+					a.customer_id = #{customerId}
+				AND a.organization_id IN <include refid="queryOrganIdAll"></include>
+				AND a.year_months = #{date}
+				GROUP BY
+					t.checkwork_type_id
+				UNION
+					SELECT
+						t.checkwork_type_name,
+						IFNULL(
+							SUM(IFNULL(o.hour_count, 0)),
+							0
+						) conNum,
+						t.show_index
+					FROM
+						emp_overtime_day o
+					LEFT JOIN dim_checkwork_type t ON o.checkwork_type_id = t.checkwork_type_id
+					AND o.customer_id = t.customer_id
+					WHERE
+						o.customer_id = #{customerId}
+					AND o.organization_id IN <include refid="queryOrganIdAll"></include>
+					AND o.year_months = #{date}
+					GROUP BY
+						t.checkwork_type_id
+					UNION
+						SELECT
+							t.checkwork_type_name,
+							IFNULL(
+								SUM(IFNULL(ot.hour_count, 0)),
+								0
+							) conNum,
+							t.show_index
+						FROM
+							emp_other_day ot
+						LEFT JOIN dim_checkwork_type t ON ot.customer_id = t.customer_id
+						AND ot.checkwork_type_id = t.checkwork_type_id
+						WHERE
+							ot.customer_id = #{customerId}
+						AND ot.organization_id IN <include refid="queryOrganIdAll"></include>
+						AND ot.year_months = #{date}
+						GROUP BY
+							t.checkwork_type_id
+			) x
+		WHERE
+			x.checkwork_type_name IS NOT NULL
+		GROUP BY
+			x.checkwork_type_name
+		ORDER BY
+			x.show_index
+	</select>
+	<!-- 出勤明细-总数 -->
+	<select id="queryAttendanceDetailCount" resultType="java.lang.Integer" useCache="true">
+		SELECT
+			count(ad.emp_id) conNum
+		FROM
+			emp_attendance_month ad
+		WHERE
+			ad.customer_id = #{customerId}
+		AND ad.organization_id IN <include refid="queryOrganIdAll"></include>
+		<if test="userName != null and userName != ''">
+			AND ad.user_name_ch LIKE CONCAT('%', #{userName}, '%')
+		</if>
+		<if test="date != null and date != ''">
+			AND ad.year_month = #{date}
+		</if>
+	</select>
+	<!-- 出勤明细 -->
+	<select id="queryAttendanceDetail" resultType="net.chinahrd.entity.dtozte.pc.laborefficiency.LaborEfficiencyGridDto" useCache="false">
+		SELECT
+			x.emp_id empId,
+			x.userName,
+			x.organId,
+			x.organName,
+			x.actualNum,
+			x.shouldNum,
+			x.percentNum,
+			x.overtimeNum,
+			z.*
+		FROM
+			(
+				SELECT
+					adl.emp_id,
+					adl.userName,
+					adl.organId,
+					adl.organName,
+					adl.actualNum,
+					adl.shouldNum,
+					adl.overtimeNum,
+					IFNULL(
+						adl.actualNum * 100 / adl.shouldNum,
+						0
+					) percentNum
+				FROM
+					(
+						SELECT
+							ad.emp_id,
+							ad.user_name_ch userName,
+							ad.organization_id organId,
+							o.organization_name organName,
+							IFNULL(ad.at_hour, 0) actualNum,
+							IFNULL(ad.th_hour, 0) shouldNum,
+							IFNULL(ad.ot_hour, 0) overtimeNum
+						FROM
+							emp_attendance_month ad
+						LEFT JOIN dim_organization o ON ad.organization_id = o.organization_id
+						AND ad.customer_id = o.customer_id
+						WHERE
+							ad.customer_id = #{customerId}
+						AND ad.organization_id IN <include refid="queryOrganIdAll"></include>
+						<if test="userName != null and userName != ''">
+							AND ad.user_name_ch LIKE CONCAT('%', #{userName}, '%')
+						</if>
+						<if test="date != null and date != ''">
+							AND ad.year_month = #{date}
+						</if>
+						ORDER BY
+							CONVERT(ad.user_name_ch using GBK)
+						LIMIT #{start}, #{rows}
+					) adl
+			) x
+		LEFT JOIN (
+			SELECT
+				otct.emp_id,
+				<foreach collection="list" item="item" separator=",">
+					SUM(
+						CASE
+						WHEN otct.curtName = #{item} THEN
+							otct.conNum
+						ELSE
+							0
+						END
+					) #{item}
+				</foreach>
+			FROM
+				(
+					SELECT
+						otd.emp_id,
+						CONCAT('ctName', ct.curt_name) curtName,
+						ct.checkwork_type_name,
+						IFNULL(
+							SUM(IFNULL(otd.hour_count, 0)),
+							0
+						) conNum
+					FROM
+						emp_other_day otd
+					LEFT JOIN dim_checkwork_type ct ON otd.customer_id = ct.customer_id
+					AND otd.checkwork_type_id = ct.checkwork_type_id
+					WHERE
+						otd.customer_id = #{customerId}
+					AND otd.organization_id IN <include refid="queryOrganIdAll"></include>
+					<if test="userName != null and userName != ''">
+						AND otd.user_name_ch LIKE CONCAT('%', #{userName}, '%')
+					</if>
+					<if test="date != null and date != ''">
+						AND	otd.year_months = #{date}
+					</if>
+					GROUP BY
+						otd.emp_id
+				) otct
+			GROUP BY
+				otct.emp_id
+		) z ON x.emp_id = z.emp_id
+	</select>
+	<!-- 个人出勤明细总数 -->
+	<select id="queryOnePersonDetailCount" resultType="java.lang.Integer" useCache="true">
+		SELECT
+			count(1) conNum
+		FROM
+			(
+				SELECT
+					x.days,
+					x.user_name_ch,
+					IFNULL(x.actualNum, 0) actualNum,
+					IFNULL(x.shouldNum, 0) shouldNum,
+					IFNULL(y.hour_count, 0) overtimeNum
+				FROM
+					(
+						SELECT
+							ad.user_name_ch,
+							ad.hour_count actualNum,
+							ad.theory_hour_count shouldNum,
+							ad.days
+						FROM
+							emp_attendance_day ad
+						WHERE
+							ad.customer_id = #{customerId}
+						<if test="date != null and date != ''">
+							AND ad.year_months = #{date}
+						</if>
+						AND ad.organization_id = #{organId}
+						AND ad.emp_id = #{empId}
+					) x
+				LEFT JOIN (
+					SELECT
+						od.hour_count,
+						od.days
+					FROM
+						emp_overtime_day od
+					WHERE
+						od.customer_id = #{customerId}
+					<if test="date != null and date != ''">
+						AND od.year_months = #{date}
+					</if>
+					AND od.organization_id = #{organId}
+					AND od.emp_id = #{empId}
+				) y ON x.days = y.days
+				UNION
+					SELECT
+						z.days,
+						z.user_name_ch,
+						IFNULL(w.actualNum, 0) actualNum,
+						IFNULL(w.shouldNum, 0) shouldNum,
+						IFNULL(z.hour_count, 0) overtimeNum
+					FROM
+						(
+							SELECT
+								ad.user_name_ch,
+								ad.hour_count actualNum,
+								ad.theory_hour_count shouldNum,
+								ad.days
+							FROM
+								emp_attendance_day ad
+							WHERE
+								ad.customer_id = #{customerId}
+							<if test="date != null and date != ''">
+								AND ad.year_months = #{date}
+							</if>
+							AND ad.organization_id = #{organId}
+							AND ad.emp_id = #{empId}
+						) w
+					RIGHT JOIN (
+						SELECT
+							od.user_name_ch,
+							od.hour_count,
+							od.days
+						FROM
+							emp_overtime_day od
+						WHERE
+							od.customer_id = #{customerId}
+						<if test="date != null and date != ''">
+							AND od.year_months = #{date}
+						</if>
+						AND od.organization_id = #{organId}
+						AND od.emp_id = #{empId}
+					) z ON w.days = z.days
+			) fir
+	</select>
+	<!-- 个人出勤明细 -->
+	<select id="queryOnePersonDetail" resultType="net.chinahrd.entity.dtozte.pc.laborefficiency.LaborEfficiencyGridDto" useCache="true">
+		SELECT
+			DATE_FORMAT(fir.days,'%Y-%m-%d') dateMonth,
+			fir.actualNum,
+			fir.shouldNum,
+			fir.overtimeNum,
+			sec.*
+		FROM
+			(
+				SELECT
+					x.days,
+					x.user_name_ch,
+					IFNULL(x.actualNum, 0) actualNum,
+					IFNULL(x.shouldNum, 0) shouldNum,
+					IFNULL(y.hour_count, 0) overtimeNum
+				FROM
+					(
+						SELECT
+							ad.user_name_ch,
+							ad.hour_count actualNum,
+							ad.theory_hour_count shouldNum,
+							ad.days
+						FROM
+							emp_attendance_day ad
+						WHERE
+							ad.customer_id = #{customerId}
+						<if test="date != null and date != ''">
+							AND ad.year_months = #{date}
+						</if>
+						AND ad.organization_id = #{organId}
+						AND ad.emp_id = #{empId}
+					) x
+				LEFT JOIN (
+					SELECT
+						od.hour_count,
+						od.days
+					FROM
+						emp_overtime_day od
+					WHERE
+						od.customer_id = #{customerId}
+					<if test="date != null and date != ''">
+						AND od.year_months = #{date}
+					</if>
+					AND od.organization_id = #{organId}
+					AND od.emp_id = #{empId}
+				) y ON x.days = y.days
+				UNION
+					SELECT
+						z.days,
+						z.user_name_ch,
+						IFNULL(w.actualNum, 0) actualNum,
+						IFNULL(w.shouldNum, 0) shouldNum,
+						IFNULL(z.hour_count, 0) overtimeNum
+					FROM
+						(
+							SELECT
+								ad.user_name_ch,
+								ad.hour_count actualNum,
+								ad.theory_hour_count shouldNum,
+								ad.days
+							FROM
+								emp_attendance_day ad
+							WHERE
+								ad.customer_id = #{customerId}
+							<if test="date != null and date != ''">
+								AND ad.year_months = #{date}
+							</if>
+							AND ad.organization_id = #{organId}
+							AND ad.emp_id = #{empId}
+						) w
+					RIGHT JOIN (
+						SELECT
+							od.user_name_ch,
+							od.hour_count,
+							od.days
+						FROM
+							emp_overtime_day od
+						WHERE
+							od.customer_id = #{customerId}
+						<if test="date != null and date != ''">
+							AND od.year_months = #{date}
+						</if>
+						AND od.organization_id = #{organId}
+						AND od.emp_id = #{empId}
+					) z ON w.days = z.days
+			) fir
+		LEFT JOIN (
+			SELECT
+				otct.days,
+				<foreach collection="list" item="item" separator=",">
+					SUM(
+						CASE
+						WHEN otct.curtName = #{item} THEN
+							otct.conNum
+						ELSE
+							0
+						END
+					) #{item}
+				</foreach>
+			FROM
+				(
+					SELECT
+						otd.days,
+						CONCAT('ctName', ct.curt_name) curtName,
+						ct.checkwork_type_name,
+						IFNULL(otd.hour_count, 0) conNum
+					FROM
+						emp_other_day otd
+					LEFT JOIN dim_checkwork_type ct ON otd.customer_id = ct.customer_id
+					AND otd.checkwork_type_id = ct.checkwork_type_id
+					WHERE
+						otd.customer_id = #{customerId}
+					AND otd.organization_id = #{organId}
+					AND otd.year_months = #{date}
+					AND otd.emp_id = #{empId}
+				) otct
+		) sec ON fir.days = sec.days
+		ORDER BY fir.days
+		LIMIT #{start}, #{rows}
+	</select>
+	<!-- 出勤明细-考勤类型 -->
+	<select id="queryCheckWorkType" resultMap="baseMap" useCache="true">
+		SELECT
+			ct.checkwork_type_id checkworkTypeId,
+			ct.checkwork_type_name checkworkTypeName,
+			CONCAT('ctName',ct.curt_name) curtName
+		FROM
+			dim_checkwork_type ct
+		WHERE 
+			ct.customer_id = #{customerId}
+		<if test="list != null and list != ''">
+			<foreach collection="list" item="item" open="AND ct.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		ORDER BY
+			ct.show_index
+	</select>
+</mapper>

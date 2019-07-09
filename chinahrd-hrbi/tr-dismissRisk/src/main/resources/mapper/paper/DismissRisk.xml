@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.dismissRisk.mvc.pc.dao.DismissRiskDao">
+
+    <!--获取直接下属有离职风险的人员数据 -->
+    <select id="queryDirectRisk" resultType="net.chinahrd.entity.dto.pc.accordDismiss.DismissRiskDto">
+		SELECT
+			vde.emp_id AS empId,
+			vde.user_name_ch AS userNameCh,
+			dr.risk_flag AS riskFlag,
+			dktt.key_talent_type_id AS keyTalentTypeId,
+			dktt.key_talent_type_name AS keyTalentTypeName,
+			sr.separation_risk_id AS separationRiskId,
+			sr.separation_risk_name AS separationRiskName
+		FROM v_dim_emp vde
+		INNER JOIN dimission_risk dr ON dr.emp_id = vde.emp_id and vde.customer_id= dr.customer_id AND dr.risk_flag IN (1,2)
+		LEFT JOIN dimission_risk_item ri ON ri.dimission_risk_id = dr.dimission_risk_id and vde.customer_id= ri.customer_id AND ri.risk_flag IN (1,2)
+		LEFT JOIN dim_separation_risk sr ON sr.separation_risk_id = ri.separation_risk_id and vde.customer_id= sr.customer_id 
+		LEFT JOIN key_talent kt ON vde.emp_id = kt.emp_id AND kt.is_delete = 0 and vde.customer_id= kt.customer_id
+		LEFT JOIN dim_key_talent_type dktt ON dktt.key_talent_type_id = kt.key_talent_type_id and kt.customer_id= dktt.customer_id 
+		WHERE vde.run_off_date IS NULL
+		AND vde.emp_hf_id = #{empId}
+		AND vde.customer_id = #{customerId}
+		ORDER BY dr.risk_flag,CONVERT(vde.user_name_ch USING gbk)
+    </select>
+
+    <!-- 查询下级组织员工数据 -->
+    <select id="querySubOrganEmpInfo" resultType="net.chinahrd.entity.dto.pc.accordDismiss.DismissRiskDto">
+    SELECT
+		vde.emp_id AS empId,
+		vde.user_name_ch AS userNameCh,
+		vde.emp_hf_id AS parentEmpId,
+		vde.organization_name AS organizationName,
+		vde.sequence_name AS sequenceName,
+		da.ability_name AS abilityName,
+		dperf.performance_name AS performanceName,
+		sr.separation_risk_id AS separationRiskId,
+		sr.separation_risk_name AS separationRiskName
+   	FROM v_dim_emp vde
+    LEFT JOIN dimission_risk dr ON dr.emp_id = vde.emp_id and vde.customer_id= dr.customer_id 
+    LEFT JOIN dimission_risk_item ri ON ri.dimission_risk_id = dr.dimission_risk_id and vde.customer_id= ri.customer_id 
+    LEFT JOIN dim_separation_risk sr ON sr.separation_risk_id = ri.separation_risk_id and vde.customer_id= sr.customer_id 
+    LEFT JOIN dim_ability da ON da.ability_id = vde.ability_id AND da.customer_id = vde.customer_id
+    LEFT JOIN dim_performance dperf ON dperf.performance_id = vde.performance_id AND dperf.customer_id = vde.customer_id
+    WHERE vde.emp_id in (
+      SELECT t1.underling_emp_id
+      FROM underling t1
+      WHERE t1.emp_id = #{empId}
+      AND t1.customer_id = #{customerId}
+    )
+	AND vde.emp_id != #{empId}
+	AND vde.customer_id= #{customerId}  
+	AND vde.run_off_date is null
+	ORDER BY CASE WHEN dr.risk_flag IS NOT NULL THEN 1 ELSE 0 END DESC, dperf.show_index DESC, CONVERT(vde.user_name_ch USING gbk) ASC
+    </select>
+
+    <!-- 查询流失风险回顾员工数据 -->
+    <select id="queryDimissRissReviewInfo" resultType="net.chinahrd.entity.dto.pc.accordDismiss.DismissRiskReviewDto">
+        SELECT
+	        vde.emp_id AS empId,
+	        vde.user_name_ch AS userNameCh,
+	        vde.organization_name AS organizationName,
+	        vde.rank_name AS rankName,
+	        vde.run_off_date AS runOffDate,
+	        COUNT(dr.risk_date) AS riskCount,
+	        MAX(dr.risk_date) AS riskDate,
+	        (SELECT COUNT(drt.risk_date) FROM dimission_risk drt WHERE drt.risk_flag != 3 AND drt.customer_id =
+	        ror.customer_id AND ror.emp_id = drt.emp_id) AS warnCount,
+	        (SELECT MAX(drt.risk_date) FROM dimission_risk drt WHERE drt.risk_flag != 3 AND drt.customer_id =
+	        ror.customer_id AND ror.emp_id = drt.emp_id) AS warnDate
+        FROM run_off_record ror
+        INNER JOIN v_dim_emp vde ON ror.emp_id = vde.emp_id AND ror.customer_id = vde.customer_id AND ror.run_off_date =
+        vde.run_off_date
+        INNER JOIN v_dim_emp t1 ON vde.emp_id = t1.emp_id AND t1.emp_hf_id = #{empId}
+        LEFT JOIN dimission_risk dr ON ror.emp_id = dr.emp_id AND dr.customer_id = ror.customer_id
+        WHERE vde.customer_id = #{customerId}
+        <choose>
+            <when test="period == 1">
+                AND dr.risk_date &gt;= date_add(ror.run_off_date, interval -1 year)
+            </when>
+            <when test="period == 3">
+                AND dr.risk_date &gt;= date_add(ror.run_off_date, interval -1 quarter)
+            </when>
+            <otherwise>
+                AND dr.risk_date &gt;= date_add(ror.run_off_date, interval -1 month)
+            </otherwise>
+        </choose>
+        GROUP BY vde.emp_id
+    </select>
+
+    <select id="queryEmpRiskDetail" resultType="net.chinahrd.entity.dto.pc.common.RiskTreeDto">
+        select der.separation_risk_id as id, der.separation_risk_parent_id as pid,
+        der.separation_risk_name as name,rr.risk_flag as riskFlag,rr.emp_id as empId ,
+        rr.topRiskFlag,rr.note ,rr.topRiskId from dim_separation_risk der
+        LEFT JOIN
+        (
+        select r.customer_id,er.separation_risk_id,ri.risk_flag ,r.emp_id,r.risk_flag as
+        topRiskFlag,r.note,r.dimission_risk_id as topRiskId
+        from dimission_risk r
+        LEFT JOIN dimission_risk_item ri
+        on r.dimission_risk_id = ri.dimission_risk_id
+        AND r.customer_id= ri.customer_id
+        LEFT JOIN dim_separation_risk er
+        on er.separation_risk_id = ri.separation_risk_id
+        AND r.customer_id= er.customer_id
+        where r.emp_id = #{empid}
+        and r.is_last=1
+        <!-- 		and r.risk_date=(select max(risk_date) risk_date  -->
+        <!-- 					    	    from dimission_risk  -->
+        <!-- 								where customer_id=#{customerId}  -->
+        <!-- 									and emp_id=#{empid}  -->
+        <!-- 						    ) -->
+        ) rr
+        on rr.separation_risk_id = der.separation_risk_id AND der.customer_id=rr.customer_id AND der.customer_id=
+        #{customerId}
+        order by der.show_index
+    </select>
+    <select id="queryEmpRiskDefaultDetail" resultType="net.chinahrd.entity.dto.pc.common.RiskTreeDto">
+		select -1 as id ,'' as name,null as pid,0 as riskFlag
+		union
+		SELECT separation_risk_id as id,
+	           separation_risk_name as name,
+	           separation_risk_parent_id as pid,
+	            0 as riskFlag
+		FROM  dim_separation_risk
+		      where customer_id=#{customerId}
+    </select>
+    <select id="queryEmpAllRiskDetail" resultType="net.chinahrd.entity.dto.pc.common.RiskDto">
+		select distinct dimission_risk_id as id,
+		  risk_flag as riskFlag,
+		  risk_date as riskDate,
+		  note from dimission_risk 
+			where customer_id=#{customerId} 
+				and emp_id=#{empId} 
+		order by risk_date desc
+		limit 0,5 
+    </select>
+
+    <select id="queryRiskEmpIds" resultType="java.lang.String">
+        SELECT DISTINCT dr.emp_id as empId FROM dimission_risk dr
+        WHERE dr.customer_id=#{customerId}
+        and dr.is_last = 1
+        and risk_date >= date_add(SYSDATE(), interval -1 day)
+        and dr.risk_flag in
+        <foreach item="item" collection="condList" open="(" separator="," close=")">#{item}</foreach>
+    </select>
+</mapper>

@@ -1,0 +1,33 @@
+系统部署用户
+superAdmin
+123456
+
+admin
+123456
+
+jxzhang
+123456
+
+#####一、项目环境说明#############################
+1.1、项目在公司内网源上 ：172.16.9.80：83
+	通过花生壳映射外网：zrw2015.oicp.net:83
+
+1.2、SVN路径为：内网：http://172.16.9.80：83/svn/chinahrd/trunk/mup-all
+				外网：http://zrw2015.oicp.net:83/svn/chinahrd/trunk/mup-all
+				
+1.3、下载代码的用户名和密码（Map<jxzhang, 123456>）
+
+1.4、任务管理系统：http:/.42.62.24.7/redmine
+
+1.5、项目运行：
+	使用MAVEN运行，选择mup-all项目右键-->debug as-->clear install（前提有maven插件）	
+	选择mup-paper项目右键-->debug as-->jetty:run（前提有maven插件）	
+
+1.6、项目访问url：http://localhost:8080/mup-parper
+	用户名：admin
+	密    码：123456
+
+#####二、项目开发说明#############################	
+
+	
+#####三、项目部署说明#############################

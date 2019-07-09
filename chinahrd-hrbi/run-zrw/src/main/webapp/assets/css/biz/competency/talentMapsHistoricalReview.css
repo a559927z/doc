@@ -1,0 +1,96 @@
+body{background-color: #fff;}
+.talentmaps-history {font-size: 14px;color: #777777;}
+.talentmaps-history .rightBody{
+    width: 100%;
+    background-color: #fff;
+    padding: 5px;
+}
+.talentmaps-history .rightSetUpTitle{
+	margin: 10px 0px 5px;
+}
+.rightSetUpTitle a:link {
+	text-decoration: none;
+}
+.rightSetUpTitle a:visited {
+	text-decoration: none;
+}
+.rightSetUpTitle a:hover {
+	text-decoration: none;
+	color: #009edd;
+}
+.rightSetUpTitle a:active {
+	text-decoration: none;
+}
+.talentmaps-history .bottom-div{
+	width: 100%;
+    _height: 500px;
+	min-height: 500px;
+    border: 1px solid #e0e0e0;
+}
+#myNav_div{
+	left: 10px;
+}
+#myNav li a{
+	font-size: 12px;
+}
+#myScrollspy{
+	margin-top: 15px;
+}
+.emp-img{
+	background-image: url("../../../img/base/u483.png");
+	width: 60px;
+	height: 60px;
+	float: left;
+	border-radius: 30px;
+}
+.emp-text{
+	text-align: left; 
+	height: 60px; 
+	line-height: 30px; 
+	margin-left: 10px;
+	float: left;
+}
+/* 左边导航步骤begin */
+ol {
+	list-style: none outside none;
+	margin: 0;
+	padding: 0;
+}
+.ui-step-line{
+	border-left: 3px solid #0080ff;
+	margin-left: 37px; 
+	min-height: 20px;
+	margin-top: -24px;
+}
+.ui-step-cont {
+	width: 120px;
+	text-align: left;
+}
+.ui-step-cont-circle {
+	position: absolute;
+	left: 52px;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background-color: #0080ff;
+}
+.ui-step-cont-text {
+	position: relative;
+	left: 70px;
+	font-size: 12px;
+	top: -7px;
+}
+.ui-step-cont-time{
+	position: relative;
+	left: 70px;
+	font-size: 12px;
+	top: -7px;
+	display: block;
+}
+.ui-step-cont{
+	cursor: pointer;
+}
+.name-font{
+	font-size: 12px;
+}
+/* 左边导航步骤end */

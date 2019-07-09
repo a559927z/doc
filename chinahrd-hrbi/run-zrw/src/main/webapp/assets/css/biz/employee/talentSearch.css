@@ -1,0 +1,131 @@
+.search-header {
+    margin-top: 100px;
+}
+
+.search-header .row:first-child {
+    text-align: center;
+}
+
+.search-header .search-title {
+    font-size: 36px;
+    font-weight: bolder;
+    letter-spacing: 10px;
+}
+
+.search-header .input-group input {
+    height: 44px !important;
+	line-height: 44px !important;
+	color: #999999 !important;
+	border-color: #0099cc !important;
+}
+.search-header .input-group {
+	float:left;
+	width:92%;
+}
+.spn-search{
+	float:right;
+	width:5%;
+	margin-left: 16px;
+}
+.spn-search a{
+	cursor:pointer;
+	font-size:14px;
+	color: #999999;
+	text-decoration: none;
+}
+.search-header .input-group button.btn-search {
+    background-color: #0099cc !important;
+    width: 95px;
+    height: 44px !important;
+    border: 1px solid #0099cc;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+.search-header .hint {
+    display: block;
+    color: #666666;
+    margin-top: 24px;
+    font-size: 14px;
+}
+
+@media only screen and (max-width: 767px) {
+    .search-header {
+        margin-top: 50px;
+    }
+    .search-header .input-group button.btn-search{
+        width: 70px;
+    }
+}
+.emp_col{
+    margin-left: 10px;
+}
+.panel {
+	border: none !important;
+	background-color: #ffffff !important;
+}
+.panel .bottom-row {
+	border: none !important;
+	padding: 0px 10px 10px;
+}
+.panel .title-text {
+	font-weight: bold;
+	color: #e7191b
+}
+.panel .head-row {
+	margin: 0px;
+    padding: 0px;
+    margin-top: 24px;
+    margin-bottom: 10px;
+}
+.panel .head-row .search-row{
+    padding-right: 30px;
+}
+.panel .head-row .info-row{
+    padding: 0px;
+}
+.panel .input-group input {
+    border-color: #e0e0e0;
+    font-size: 12px;
+    color: #999999;
+    padding-left: 10px;
+}
+.panel .hint {
+    display: block;
+    color: #666666;
+    margin-top: 15px;
+    font-size: 14px;
+}
+.panel .input-group button.btn-search {
+    background-color: #0099cc !important;
+    width: 80px;
+    height: 34px;
+    border: 1px solid #0099cc;
+    color: #ffffff !important;
+}
+ .search-title-left-return {
+	font-size:14px;
+    bottom: 0;
+    text-align: center;
+    margin-left:15px;
+}
+.search-title-left-return a{
+	cursor:pointer;
+    text-decoration: none;
+    color:blue;
+}
+.panel .content-row {
+    padding: 0px;
+    border: solid 1px #e0e0e0;
+}
+.panel .grid-row {
+    padding-bottom: 20px;
+}
+.page-content .normal-row{
+	margin: 0px !important;
+	padding : 0px !important;
+}
+.page-content .img-row{
+    margin-top: 180px;
+    margin-bottom: 54px;
+}

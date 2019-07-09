@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.clientImg.mvc.pc.dao.ClientImgDao">
+    <cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+    <!-- 获取下属（销售人员）信息 -->
+    <select id="querySubSalesEmps" resultType="net.chinahrd.entity.dto.pc.common.GraphNodesDto" useCache="true">
+    SELECT
+      vde.emp_id AS id,
+      vde.user_name_ch AS text,
+      IFNULL(sem.sales_target, 0) salesTarget,
+	  IFNULL(sem.sales_money_month / sem.sales_target,0) perNum
+    FROM v_dim_emp vde
+    LEFT JOIN sales_emp_month sem
+		ON vde.customer_id = sem.customer_id AND vde.emp_id = sem.emp_id
+		AND sem.`year_month` = #{yearMonth}
+    WHERE vde.customer_id = #{customerId}
+    AND (vde.emp_id = #{empId} OR vde.emp_id IN (
+        SELECT tvde.emp_id FROM v_dim_emp tvde
+        INNER JOIN sales_emp tse ON tvde.customer_id = tse.customer_id AND tvde.emp_id = tse.emp_id
+        WHERE tvde.emp_hf_id = #{empId}
+        AND tvde.customer_id = #{customerId}
+        AND tvde.run_off_date IS NULL
+    ))
+    </select>
+
+    <!-- 获取销售人员及上级信息 -->
+    <select id="querySalesEmpHfInfo" resultType="net.chinahrd.entity.dto.pc.common.GraphNodesDto" useCache="true">
+    SELECT
+        vde.emp_id AS id,
+        vde.user_name_ch AS text,
+        if(vde.emp_id =  #{empId},0,1) AS isParent
+    FROM v_dim_emp vde
+    WHERE vde.customer_id = #{customerId}
+    AND (vde.emp_id = #{empId} OR vde.emp_id = (
+        SELECT tvde.emp_hf_id
+        FROM v_dim_emp tvde
+        WHERE tvde.emp_id = #{empId}
+        AND tvde.customer_id = #{customerId}
+        AND tvde.run_off_date IS NULL
+    ))
+    ORDER BY isParent DESC
+    </select>
+
+    <!-- 获取下属（销售人员）客户信息 -->
+    <select id="querySalesEmpClients" resultType="net.chinahrd.entity.dto.pc.common.GraphNodesDto" useCache="true">
+    SELECT
+      dsc.client_id AS id,
+      dsc.curt_name AS text,
+      dsc.client_name AS fullName,
+      secr.emp_id AS parent
+    FROM dim_sales_client dsc
+    INNER JOIN sales_emp_client_relation secr ON dsc.client_id = secr.client_id AND dsc.customer_id = secr.customer_id
+    WHERE dsc.customer_id = #{customerId}
+    <if test="empIds != null and empIds.size() > 0">
+    AND secr.emp_id IN 
+    <foreach collection="empIds" item="empId" open="(" close=")" separator=",">
+        '${empId}'
+    </foreach>
+    </if>
+    </select>
+
+    <!-- 获取客户信息 -->
+    <select id="querySalesEmpClientInfo" resultType="net.chinahrd.entity.dto.pc.common.GraphNodesDto" useCache="true">
+        SELECT
+	        dsc.client_id AS id,
+	        dsc.curt_name AS text,
+	        dsc.client_name AS fullName,
+	        secr.emp_id AS parent
+        FROM dim_sales_client dsc
+        INNER JOIN sales_emp_client_relation secr ON dsc.client_id = secr.client_id AND dsc.customer_id = secr.customer_id
+        WHERE dsc.customer_id = #{customerId}
+        AND dsc.client_id = #{clientId}
+    </select>
+
+    <!-- 获取销售客户维度信息 -->
+    <select id="querySalesClientDimension" resultType="net.chinahrd.entity.dto.pc.common.GraphNodesDto" useCache="true">
+    SELECT
+        scdr.sales_client_dimension_id AS id,
+        dscd.client_dimension_name AS text,
+        scdr.client_id AS parent
+    FROM dim_sales_client_dimension dscd
+    INNER JOIN sales_client_dimension_relation scdr ON dscd.client_dimension_id = scdr.client_dimension_id AND dscd.customer_id = scdr.customer_id
+    WHERE dscd.customer_id = #{customerId}
+    <if test="clientIds != null and clientIds.size() > 0">
+    AND scdr.client_id IN
+    <foreach collection="clientIds" item="clientId" open="(" close=")" separator=",">
+        '${clientId}'
+    </foreach>
+    </if>
+    </select>
+    
+    <!-- 获取销售客户基本信息 -->
+    <select id="querySalesClientBaseInfo" resultType="net.chinahrd.entity.dto.pc.clientImg.ClientBaseInfoDto" useCache="true">
+    	SELECT dsc.client_id clientId, dsc.client_name clientName, dsc.curt_name curtName, dsc.company_nature nature,
+			dsc.client_owned_industry industry, dsc.client_type clientType, dsc.client_turnover turnover, 
+			dsc.emp_num empNum, dsc.leader_num leaderNum, CONCAT(dsc.province, dsc.city, dsc.area, dsc.street) address,
+			dsc.client_telephone clientTel, dsc.client_email clientEmail
+		FROM dim_sales_client dsc
+		WHERE dsc.customer_id = #{customerId} AND dsc.client_id = #{clientId}
+    </select>
+	
+	<!-- 获取销售客户联系人信息 -->
+	<select id="querySalesClientContacts" resultType="net.chinahrd.entity.dto.pc.clientImg.ClientContactsDto" useCache="true">
+		SELECT scc.contacts_id contactsId, scc.contacts_name contactsName, scc.sex, scc.contacts_dept dept, scc.contacts_parent_name parentName, 
+			scc.post, scc.age, scc.native_place nativePlace, scc.marriage, scc.children, scc.interest, scc.disposition, 
+			scc.contacts_telephone contactsTel, scc.contacts_email contactsEmail
+		FROM sales_client_contacts scc
+		WHERE scc.customer_id = #{customerId} AND scc.client_id = #{clientId}
+	</select>
+	
+	<!-- 获取销售客户纪要信息 -->
+	<select id="querySalesClientSummary" resultType="net.chinahrd.entity.dto.pc.clientImg.ClientSummaryDto" useCache="true">
+		SELECT scs.summary_id summaryId, scs.note, scs.key_note keyNote, scs.interested_product product, scs.summary_principal principal
+		FROM sales_client_summary scs
+		WHERE scs.customer_id = #{customerId} AND scs.client_id = #{clientId}
+	</select>
+
+</mapper>

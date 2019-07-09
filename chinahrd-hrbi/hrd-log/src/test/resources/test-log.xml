@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		"
+	default-lazy-init="true">
+
+	<context:component-scan base-package="net.chinahrd" />
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="annotationClass" value="org.springframework.stereotype.Repository" />
+		<property name="basePackage" value="net.chinahrd.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+
+	<!-- 开发/测试环境 -->
+	<beans profile="test">
+		<!-- datasource -->
+		<bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource"
+			destroy-method="close">
+			<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+			<property name="url" value="jdbc:mysql://120.236.148.37:3369/mup-zrw" />
+			<property name="username" value="mup" />
+			<property name="password" value="1z2x3c123" />
+			<property name="defaultAutoCommit" value="false" />
+		</bean>
+
+		<!-- mybatis -->
+		<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+			<property name="dataSource" ref="dataSource" />
+			<property name="plugins">
+				<array>
+					<bean class="net.chinahrd.pagination.PaginationPlugin">
+						<property name="properties">
+							<value>
+								dialectClass=net.chinahrd.pagination.MySQLDialect
+							</value>
+						</property>
+					</bean>
+				</array>
+			</property>
+			<!-- <property name="mapperLocations" value="classpath*:*/*.xml" /> -->
+		</bean>
+	</beans>
+
+</beans>

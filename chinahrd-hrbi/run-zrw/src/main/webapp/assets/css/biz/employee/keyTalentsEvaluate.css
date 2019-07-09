@@ -1,0 +1,489 @@
+@media only screen and (max-width: 1243px) {
+    .img-follow{
+    	margin: -550px 440px 0 !important;
+    }
+}
+.page-content {
+    width: 100%;
+    height: 100%;
+}
+
+.page-content a {
+    cursor: hand;
+}
+
+.col-xs-2 img {
+    margin-left: -5px;
+}
+
+.contentTitle span {
+    font-family: "微软雅黑 Bold", "微软雅黑";
+    text-align: left;
+    font-size: 14px;
+}
+
+.automaticLabel {
+    margin-top: 20px;
+    background-color: #FFFFFF;
+    width: 100%;
+}
+
+.labelText {
+    height: 25px;
+    padding: 10px;
+}
+
+.labelRight {
+    float: right;
+    margin-right: 20px;
+}
+
+.labelText span {
+    text-align: right;
+    font-size: 14px;
+}
+
+.labelContent {
+    margin: 20px;
+    width: 90%;
+}
+
+.head-pic {
+    height: 80px;
+    border: 2px solid #e7eaec;
+    cursor: pointer;
+}
+
+.excellentLabelContent {
+    float: left;
+    width: 100%;
+    padding-bottom: 8px;
+    margin-top: 0px !important;
+}
+
+.LabelContent .base-info .row:last-child div {
+    padding-bottom: 8px;
+}
+
+.col-xs-12 span {
+    margin-left: 5px;
+}
+
+#contentLabel span {
+    font-size: 14px;
+    background-color: #e7eaec;
+}
+
+.excellent {
+    width: 100%;
+    height: 30px;
+}
+
+.excellentNum {
+    float: left;
+    width: 60%;
+    height: 30px;
+    margin-left: 20px;
+}
+
+.excellentNum span:first-child {
+    font-size: 20px;
+    color: #00CC00;
+    margin-right: 10px;
+}
+
+.addExcellent {
+    width: 28%;
+    float: right;
+    height: 30px;
+}
+
+.inferioritylabelContent {
+    float: right;
+    width: 48%;
+    padding-bottom: 8px;
+}
+
+.inferiority {
+    width: 100%;
+    height: 30px;
+}
+
+.inferiorityNum {
+    float: left;
+    width: 60%;
+    height: 30px;
+    margin-left: 20px;
+}
+
+.inferiorityNum span:first-child {
+    font-size: 20px;
+    color: red;
+    margin-right: 10px;
+}
+
+.addInferiority {
+    width: 28%;
+    float: right;
+    height: 30px;
+    cursor: pointer;
+}
+
+.addExcellent a {
+    color: #009999;
+    cursor: pointer;
+}
+
+.hrAbout {
+    width: 1px;
+    height: 120px;
+    float: left;
+    background-color: #cccccc;
+}
+
+#myExcellentLabelContent {
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+#myExcellentLabelContent span {
+    margin-left: 5px;
+    margin-top: 2px;
+    background-color: #00CC00;
+    font-size: 14px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+#othersExcellentLabelContent {
+    margin-top: 5px;
+    margin-left: 15px;
+}
+
+#othersExcellentLabelContent span {
+    margin-left: 5px;
+    background-color: #e7eaec;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#myInferiorityLabelContent {
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+#myInferiorityLabelContent span {
+    margin-left: 5px;
+    background-color: red;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#othersInferiorityLableContent {
+    margin-top: 5px;
+    margin-left: 15px;
+}
+
+#othersInferiorityLableContent span {
+    margin-left: 5px;
+    background-color: #e7eaec;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#manualLabelDetailModal .modal-dialog {
+    width: 770px;
+}
+
+#manualLabelDetailModal .risk-detail-info, #manualLabelDetailModal .suggest-info {
+    border: 1px solid #e7eaec;
+    margin-left: 12px;
+    overflow: auto;
+}
+
+#manualLabelDetailModal .suggest-info {
+    line-height: 28px;
+}
+
+#manualLabelDetailModal .risk-detail-info > div, #manualLabelDetailModal .suggest-info > div {
+    margin-top: 8px;
+    height: 250px;
+    width: 330px;
+}
+
+#manualLabelDetailModal .base-info .row:last-child div {
+    padding-bottom: 8px;
+}
+
+.advantageLable {
+    font-size: 20px;
+    margin: 5px;
+    color: green;
+}
+
+.shortBoardLable {
+    font-size: 20px;
+    margin: 5px;
+    color: red;
+}
+
+#addLabelDetailModal .modal-dialog {
+    width: 410px;
+}
+
+#addLabelDetailModal .add-risk-detail-info > div {
+    margin-top: 8px;
+    height: 160px;
+    width: 340px;
+}
+
+.col-xs-6 {
+    width: 380px;
+}
+
+.col-xs-11 {
+    width: 350px;
+}
+
+.descriptionButton {
+    float: right;
+    margin-right: 10px;
+}
+
+#operationInformation {
+    float: right;
+}
+
+.incentiveFactors .Contentlabel {
+    height: 80px;
+}
+
+.trackingLog {
+    background-color: #FFFFFF;
+    width: 100%;
+}
+
+.trackingLog table {
+    width: 100%;
+}
+
+.trackingLog table td {
+    height: 30px;
+    font-size: 14px;
+}
+
+.operationLog {
+    background-color: #e7eaec;
+}
+
+#coreLabelDetailModal .modal-dialog {
+    width: 410px;
+}
+
+#checkboxCore {
+    margin-left: 15px;
+}
+
+#logLabelDetailModal .modal-dialog {
+    width: 410px;
+}
+
+.more {
+    float: right;
+}
+
+.hideMore {
+    display: none;
+}
+
+#smoreBtnMy, #sreduceBtnMy, #imoreBtnMy, #ireduceBtnMy {
+    margin-right: 15px;
+}
+.img-follow div{
+		border-radius: 50%;
+	}
+	.img-follow{
+		margin: -550px auto 0;
+    	position: relative;
+	}
+	#circle_bot{  
+	    background-color: #fff;
+	    height: 270px;
+	    margin: 0;
+	    width: 270px;  
+    } 
+	#circle_bot2{  
+	    background-color: rgb(229, 246, 249);
+	    height: 214px;
+	    margin: -242px 0 0 28px;
+	    width: 214px;
+    }   
+    #circle_mid {  
+	    background-color: #fff;
+	    height: 155px;
+	    margin: -184px 0 0 57px;
+	    width: 155px;
+    }  
+    #circle_top{  
+	    background-color: rgb(230, 220, 210);
+	    height: 135px;
+	    margin: -145px 0 0 67px;
+	    width: 135px;
+    }  
+	.bgc243246246{
+		background-color: rgb(243,246,246);
+	}
+	.autocoretag-follow{
+		height: 220px;
+		min-width: 1130px;
+		overflow: hidden;
+	}
+	.manultag-follow{
+		height: 350px;
+		margin: 10px 0 0 0;
+		min-width: 1130px;
+		overflow: hidden;
+	}
+	.tag-follow + span{
+		margin: 10px auto auto 10px
+	}
+	.autocoretag-follow > div,
+	.manultag-follow > div{
+		background-color: rgb(243,246,246);
+	}
+	.autocoretag-follow > div:nth-child(1),
+	.manultag-follow > div:nth-child(1){
+		margin-left: 10px;
+	}
+	.autocoretag-follow > div:nth-child(2),
+	.manultag-follow > div:nth-child(2){
+		margin-left: 10px;
+	
+	}
+	.manultag-follow > div:nth-child(1){
+		height: 330px;
+	}
+	.autocoretag-follow > div:nth-child(1){
+		height: 220px;
+	}
+	.manultag-follow > div:nth-child(2){
+		height: 330px;
+	
+	}
+	.autocoretag-follow > div:nth-child(2){
+		height: 220px;
+	
+	}
+	.title-follow-left{
+		margin:20px 0 0 20px;
+		border-bottom: 2px solid rgb(227,230,230);
+		width: 80%;
+		height: 30px;
+	}
+	.title-follow-right{
+		margin:20px 30px 0 0px;
+		border-bottom: 2px solid rgb(227,230,230);
+		width: 70%;
+		height: 30px;
+	}
+	.content-follow-left{
+		margin-top: 18px;
+		height: 150px;
+	}
+	.content-follow-right{
+		margin-right:30px;
+		height: 150px;
+		width: 70%;
+	}
+	.title-follow-right >.tag-follow{
+	}
+	.content-follow-right >div{
+	}
+	.tag-follow{
+		float: left;
+		padding-top: 2px;
+		
+	}
+	.title-follow >span{
+		float: left;
+		font-size: 14px;
+		color: #444444;
+		padding-left: 10px;
+		vertical-align: middle;
+	}
+	.floatRight{float: right !important;}
+	.floatLeft{float: left !important;}
+	#toptitle > div:nth-child(2){
+		color: #444444;
+		margin-left: 10px;
+	}
+	#toptitle > div:nth-child(1){
+		color: #0099cc;
+		font-weight: bold;
+	}
+	#toptitle > div:nth-child(2){
+		margin-left: 20px;
+		min-width: 158px;
+	}
+	.fontsize16{
+	    font-size: 16px;
+	}
+	.log-follow{
+		margin-left: 10px;
+		min-width: 1120px;
+		overflow: hidden;
+		margin-top: 330px;
+	}
+	.log-follow >  .title-follow-left{
+		width: 1070px;
+	}
+	.log-follow > .content-follow-left > .logconter{
+		margin: 0px 0 0 20px;
+	}
+	.log-follow > .trackingLog > .logconter > .img-circle{
+	}
+	#empHeadPic{
+		height: 90px;
+	    width: 90px;
+		border-radius: 50%;
+		background-color: rgb(230, 220, 210);
+		border: 2px solid white !important;
+	}
+	.log-follow > .content-follow-left > .logconter > .info-follow{
+		margin: 23px 0 0 10px;
+	}
+	.log-follow > .content-follow-left > .logconter > .encourage-follow{
+	
+	}
+	
+	.logname{
+		float: left;
+		font-size: 14px;
+		color: #444444;
+	}
+	.logdate{
+		float: left;
+		font-size: 12px;
+		color:#999999
+	}
+	.operat-follow-btn{
+		z-index:100;
+		margin:18px -15px;
+	}
+	.cursorpointer {
+	    cursor: pointer;
+	}
+	.logconter .logcontent{
+		background-color: rgb(248,248,248);
+		border-radius: 1%;
+		inline-size: 100%;
+		outline: 1px solid #1111;
+		padding: 20px;
+		box-shadow: -0px -1px 9px grey;
+	}
+	body{
+		background-color: white;
+	}
+	.marginbuttom10{
+		margin-bottom: 10px;
+	}

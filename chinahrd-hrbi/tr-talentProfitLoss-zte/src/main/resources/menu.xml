@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="胜任力">
+		<menu code="RenCaiSunYi" name="人才损益" url="talentProfitLoss/toTalentProfitLossView" icon="" mobile="false" relies="">
+			<!--<layouts>-->
+				<!--<layout code="xxxx" name="查看模块"  relies="">-->
+					<!--<plug-in code="xxxx" name="查看模块"/>-->
+				<!--</layout>-->
+			<!--</layouts>-->
+		</menu>
+	</menus>

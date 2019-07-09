@@ -1,0 +1,946 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="0e31c711-c5d0-431e-8fda-7cd9a8e51740" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/base/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/base/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hrd-util/hrd-util.iml" beforeDir="false" afterPath="$PROJECT_DIR$/hrd-util/hrd-util.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-vue/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/run-vue/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-zrw/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/run-zrw/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/run/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run/src/main/resources/conf/jdbc.properties" beforeDir="false" afterPath="$PROJECT_DIR$/run/src/main/resources/conf/jdbc.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run/src/main/resources/spring-db.xml" beforeDir="false" afterPath="$PROJECT_DIR$/run/src/main/resources/spring-db.xml" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/tr-recruitBoard/target/" />
+    <ignored path="$PROJECT_DIR$/tr-positionCompetency/target/" />
+    <ignored path="$PROJECT_DIR$/tr-promotionBoard/target/" />
+    <ignored path="$PROJECT_DIR$/tr-humanInventory/target/" />
+    <ignored path="$PROJECT_DIR$/tr-talentProfile/target/" />
+    <ignored path="$PROJECT_DIR$/tr-organizationalStructure/target/" />
+    <ignored path="$PROJECT_DIR$/base/target/" />
+    <ignored path="$PROJECT_DIR$/tr-keyTalent/target/" />
+    <ignored path="$PROJECT_DIR$/tr-homePage/target/" />
+    <ignored path="$PROJECT_DIR$/hrd-util/target/" />
+    <ignored path="$PROJECT_DIR$/target/" />
+    <ignored path="$PROJECT_DIR$/tr-empSatisfaction/target/" />
+    <ignored path="$PROJECT_DIR$/tr-manpowerCost/target/" />
+    <ignored path="$PROJECT_DIR$/tr-trainBoard/target/" />
+    <ignored path="$PROJECT_DIR$/tr-talentMaps/target/" />
+    <ignored path="$PROJECT_DIR$/tr-monthReport/target/" />
+    <ignored path="$PROJECT_DIR$/jar/target/" />
+    <ignored path="$PROJECT_DIR$/tr-employeePerformance/target/" />
+    <ignored path="$PROJECT_DIR$/hrd-weka/target/" />
+    <ignored path="$PROJECT_DIR$/tr-humanInventory-zrw/target/" />
+    <ignored path="$PROJECT_DIR$/tr-teamImg/target/" />
+    <ignored path="$PROJECT_DIR$/tr-talentContrast/target/" />
+    <ignored path="$PROJECT_DIR$/tr-clientImg/target/" />
+    <ignored path="$PROJECT_DIR$/tr-talentProfitLoss/target/" />
+    <ignored path="$PROJECT_DIR$/tr-sequenceCount/target/" />
+    <ignored path="$PROJECT_DIR$/run-vue/target/" />
+    <ignored path="$PROJECT_DIR$/tr-salesBoard/target/" />
+    <ignored path="$PROJECT_DIR$/tr-talentStructure/target/" />
+    <ignored path="$PROJECT_DIR$/run-zrw/target/" />
+    <ignored path="$PROJECT_DIR$/tr-talentSearch/target/" />
+    <ignored path="$PROJECT_DIR$/tr-empAttendance-zrw/target/" />
+    <ignored path="$PROJECT_DIR$/tr-laborEfficiency/target/" />
+    <ignored path="$PROJECT_DIR$/tr-benefit/target/" />
+    <ignored path="$PROJECT_DIR$/tr-salaryBoard/target/" />
+    <ignored path="$PROJECT_DIR$/run/target/" />
+    <ignored path="$PROJECT_DIR$/tr-dismissRisk/target/" />
+    <ignored path="$PROJECT_DIR$/tr-accordDismiss/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>framework</find>
+      <find>checkUserExist</find>
+      <find>findSuperAdminIdByUserKey</find>
+      <find>queryModule</find>
+      <find>laborEfficiency</find>
+      <find>empAttendance</find>
+      <find>hr-fo</find>
+      <find>hr</find>
+      <find>project-framework</find>
+    </findStrings>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/base/pom.xml" />
+        <option value="$PROJECT_DIR$/jar/pom.xml" />
+        <option value="$PROJECT_DIR$/run-vue/pom.xml" />
+        <option value="$PROJECT_DIR$/run-zrw/pom.xml" />
+        <option value="$PROJECT_DIR$/run/pom.xml" />
+        <option value="$PROJECT_DIR$/run/src/main/resources/conf/jdbc.properties" />
+        <option value="$PROJECT_DIR$/run/src/main/resources/spring-db.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$APPLICATION_HOME_DIR$/plugins/maven/lib/maven3" />
+        <option name="userSettingsFile" value="D:\Program Files\apache-maven-3.3.9\mvn-settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand />
+      <select />
+    </treeState>
+  </component>
+  <component name="MavenRunner">
+    <option name="skipTests" value="true" />
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="45" />
+    <option name="y" value="60" />
+    <option name="width" value="1750" />
+    <option name="height" value="1250" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+    <ConfirmationsSetting value="1" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <autoscrollFromSource ProjectPane="false" />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="base" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="run" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="run" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="run" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="run" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="run" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+              <item name="conf" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="tr-accordDismiss" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="tr-accordDismiss" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="tr-accordDismiss" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="tr-accordDismiss" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="tr-accordDismiss" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="net" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="tr-accordDismiss" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="net" type="462c0819:PsiDirectoryNode" />
+              <item name="chinahrd" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="tr-accordDismiss" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="net" type="462c0819:PsiDirectoryNode" />
+              <item name="chinahrd" type="462c0819:PsiDirectoryNode" />
+              <item name="accordDismiss" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chinahrd-hrbi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chinahrd-hrbi" type="462c0819:PsiDirectoryNode" />
+              <item name="tr-accordDismiss" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="net" type="462c0819:PsiDirectoryNode" />
+              <item name="chinahrd" type="462c0819:PsiDirectoryNode" />
+              <item name="accordDismiss" type="462c0819:PsiDirectoryNode" />
+              <item name="module" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../git/project-framework" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Maven.run [tomcat7:run]">
+    <configuration name="run [tomcat7:run]" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="tomcat7:run" />
+              </list>
+            </option>
+            <option name="pomFileName" value="pom.xml" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$/run" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+    <configuration name="run-zrw [tomcat7:run]" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="tomcat7:run" />
+              </list>
+            </option>
+            <option name="pomFileName" value="pom.xml" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$/run-zrw" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\Administrator\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="SvnFileUrlMappingImpl">
+    <option name="myMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\base" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\base" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\hrd-util" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\hrd-util" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\hrd-weka" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\hrd-weka" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\jar" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\jar" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\run" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\run" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\run-vue" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\run-vue" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\run-zrw" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\run-zrw" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-accordDismiss" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-accordDismiss" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-benefit" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-benefit" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-clientImg" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-clientImg" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-dismissRisk" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-dismissRisk" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-empAttendance-zrw" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-empAttendance-zrw" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-employeePerformance" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-employeePerformance" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-empSatisfaction" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-empSatisfaction" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-homePage" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-homePage" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-humanInventory" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-humanInventory" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-humanInventory-zrw" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-humanInventory-zrw" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-keyTalent" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-keyTalent" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-laborEfficiency" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-laborEfficiency" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-manpowerCost" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-manpowerCost" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-monthReport" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-monthReport" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-organizationalStructure" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-organizationalStructure" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-positionCompetency" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-positionCompetency" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-promotionBoard" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-promotionBoard" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-recruitBoard" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-recruitBoard" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-salaryBoard" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-salaryBoard" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-salesBoard" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-salesBoard" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-sequenceCount" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-sequenceCount" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentContrast" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentContrast" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentMaps" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentMaps" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentProfile" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentProfile" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentProfitLoss" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentProfitLoss" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentSearch" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentSearch" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentStructure" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-talentStructure" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-teamImg" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-teamImg" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-trainBoard" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi\tr-trainBoard" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+    <option name="myMoreRealMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\chinahrd-hrbi" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\chinahrd-hrbi" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0e31c711-c5d0-431e-8fda-7cd9a8e51740" name="Default Changelist" comment="" />
+      <created>1553321970480</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1553321970480</updated>
+      <workItem from="1553321973257" duration="1979000" />
+      <workItem from="1561644870190" duration="5560000" />
+      <workItem from="1561652263145" duration="5386000" />
+      <workItem from="1562074606587" duration="876000" />
+      <workItem from="1562075927285" duration="432000" />
+      <workItem from="1562079402051" duration="842000" />
+      <workItem from="1562662997725" duration="587000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="15662000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-7" y="-7" width="2062" height="1126" extended-state="6" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20409182" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Favorites" order="5" side_tool="true" />
+      <window_info id="Capture Tool" order="6" />
+      <window_info id="Web" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32955715" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3738414" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.5283213" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Spring" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Java Enterprise" order="10" />
+      <window_info anchor="bottom" id="Database Changes" order="11" show_stripe_button="false" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="12" visible="true" weight="0.32955715" />
+      <window_info anchor="bottom" id="Docker" order="13" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Messages" order="14" weight="0.32955715" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Capture Analysis" order="4" />
+      <window_info anchor="right" id="Maven Projects" order="5" visible="true" weight="0.32984033" />
+      <window_info anchor="right" id="Database" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="8" />
+      <window_info anchor="right" id="Bean Validation" order="9" />
+      <window_info anchor="right" id="Maven" order="10" visible="true" weight="0.20958084" />
+    </layout>
+    <layout-to-restore>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19810379" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Favorites" order="5" side_tool="true" />
+      <window_info id="Capture Tool" order="6" />
+      <window_info id="Web" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" order="0" weight="0.32955715" />
+      <window_info anchor="bottom" id="Message" order="1" />
+      <window_info anchor="bottom" id="Find" order="2" weight="0.32955715" />
+      <window_info anchor="bottom" id="Run" order="3" weight="0.3738414" />
+      <window_info anchor="bottom" id="Debug" order="4" weight="0.30484036" />
+      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="7" />
+      <window_info anchor="bottom" id="Spring" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="Java Enterprise" order="11" />
+      <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="13" />
+      <window_info anchor="bottom" id="Docker" order="14" show_stripe_button="false" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Capture Analysis" order="4" />
+      <window_info anchor="right" id="Maven Projects" order="5" visible="true" weight="0.32984033" />
+      <window_info anchor="right" id="Database" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="8" />
+      <window_info anchor="right" id="Bean Validation" order="9" />
+      <window_info anchor="right" id="Maven" order="10" visible="true" weight="0.20958084" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/tr-accordDismiss/src/main/java/net/chinahrd/accordDismiss/module/ApiDefine.java</url>
+          <line>38</line>
+          <properties />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/tr-clientImg/src/main/java/net/chinahrd/clientImg/module/Cache.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tr-clientImg/src/main/java/net/chinahrd/clientImg/module/MenuDefine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tr-clientImg/src/main/java/net/chinahrd/clientImg/module/ModuleDefine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tr-laborEfficiency/src/main/java/net/chinahrd/laborEfficiency/module/ApiDefine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tr-laborEfficiency/src/main/java/net/chinahrd/laborEfficiency/mvc/pc/controller/LaborEfficiencyController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="399">
+          <caret line="77" column="19" selection-start-line="77" selection-start-column="19" selection-end-line="77" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://D:/maven/repository/net/chinahrd/project-framework/3.0/project-framework-3.0.jar!/net/chinahrd/core/api/ApiRegisterAbstract.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run-vue/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-715">
+          <caret line="29" column="31" selection-start-line="29" selection-start-column="31" selection-end-line="29" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tr-accordDismiss/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="10" column="34" selection-start-line="10" selection-start-column="34" selection-end-line="10" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../git/project-framework/src/main/java/net/chinahrd/core/api/ApiRegisterAbstract.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="15" column="56" selection-start-line="15" selection-start-column="56" selection-end-line="15" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../git/project-framework/src/main/java/net/chinahrd/core/api/ApiRegister.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/maven/repository/net/chinahrd/project-framework/3.0/project-framework-3.0.pom">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run-zrw/src/main/resources/conf/jdbc.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="6" column="32" lean-forward="true" selection-start-line="6" selection-start-column="32" selection-end-line="6" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/eis/permission/service/RbacAuthorizerService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="40" column="23" lean-forward="true" selection-start-line="40" selection-start-column="23" selection-end-line="40" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/mvc/pc/controller/LoginController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="48" column="23" lean-forward="true" selection-start-line="48" selection-start-column="23" selection-end-line="48" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/mvc/pc/dao/admin/OrganDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="199">
+          <caret line="29" column="11" selection-start-line="29" selection-start-column="11" selection-end-line="29" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/mvc/pc/service/admin/impl/OrganServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="107">
+          <caret line="59" column="13" lean-forward="true" selection-start-line="59" selection-start-column="13" selection-end-line="59" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/eis/pagination/PaginationPlugin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="36" column="5" lean-forward="true" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/eis/permission/dao/ModuleSynchDatabase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="21" column="33" selection-start-line="21" selection-start-column="22" selection-end-line="21" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/resources/mapper/system/ModuleSynchDatabase.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="481">
+          <caret line="53" column="13" lean-forward="true" selection-start-line="53" selection-start-column="13" selection-end-line="53" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/eis/permission/dao/RbacAuthorizerDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="25" column="19" selection-start-line="25" selection-start-column="19" selection-end-line="25" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://D:/maven/repository/org/apache/shiro/shiro-core/1.2.3/shiro-core-1.2.3-sources.jar!/org/apache/shiro/authc/AbstractAuthenticator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="233">
+          <caret line="211" selection-start-line="211" selection-end-line="211" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run-zrw/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3515">
+          <caret line="185" column="63" selection-start-line="185" selection-start-column="63" selection-end-line="185" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/eis/permission/service/RbacAuthorizerServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="81" column="41" lean-forward="true" selection-start-line="81" selection-start-column="41" selection-end-line="81" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="341">
+          <caret line="29" column="36" selection-start-line="29" selection-start-column="36" selection-end-line="29" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="24" selection-start-line="24" selection-end-line="24" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jar/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="78" column="23" selection-start-line="78" selection-start-column="23" selection-end-line="78" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="14" column="36" selection-start-line="14" selection-start-column="36" selection-end-line="14" selection-end-column="36" />
+          <folding>
+            <element signature="n#dependencyManagement#0;n#project#0;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run/src/main/resources/spring-sms.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/eis/permission/ModuleSynchronizationImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="361">
+          <caret line="34" column="38" selection-start-line="34" selection-start-column="38" selection-end-line="34" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run/src/main/resources/spring-db.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1349">
+          <caret line="71" column="52" selection-start-line="71" selection-start-column="52" selection-end-line="71" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tr-teamImg/src/main/java/net/chinahrd/teamImg/module/ApiDefine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="570">
+          <caret line="44" selection-start-line="44" selection-end-line="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tr-accordDismiss/src/main/java/net/chinahrd/accordDismiss/module/ApiDefine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="437">
+          <caret line="37" column="39" selection-start-line="37" selection-start-column="39" selection-end-line="37" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tr-homePage/src/main/java/net/chinahrd/homepage/mvc/pc/controller/ManageHomeController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8531">
+          <caret line="489" column="33" selection-start-line="489" selection-start-column="33" selection-end-line="489" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/mvc/pc/controller/BaseController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="40" column="63" lean-forward="true" selection-start-line="40" selection-start-column="63" selection-end-line="40" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/eis/permission/EisWebContext.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="722">
+          <caret line="45" column="25" selection-start-line="45" selection-start-column="25" selection-end-line="45" selection-end-column="25" />
+          <folding>
+            <element signature="e#975#976#0" expanded="true" />
+            <element signature="e#1037#1038#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run/src/main/resources/conf/jdbc.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="18" column="22" selection-start-line="18" selection-start-column="15" selection-end-line="18" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run/src/main/resources/conf/config.properties">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/api/AccordDismissApi.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="40" column="20" selection-start-line="40" selection-start-column="20" selection-end-line="40" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/src/main/java/net/chinahrd/eis/permission/model/RbacUser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="439">
+          <caret line="64" column="7" lean-forward="true" selection-start-line="64" selection-start-column="7" selection-end-line="64" selection-end-column="7" />
+          <folding>
+            <element signature="e#3888#3889#0" expanded="true" />
+            <element signature="e#3912#3913#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>run</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.6" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

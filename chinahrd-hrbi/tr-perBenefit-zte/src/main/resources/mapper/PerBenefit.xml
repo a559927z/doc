@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.perBenefit.mvc.pc.dao.PerBenefitDao">
+    <cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+    <!-- 查询营业利润的最大日期 -->
+    <select id="findFteMaxDate" resultType="int" useCache="true">
+        select max(tp.`year_month`) from trade_profit tp
+        where tp.customer_id = #{customerId}
+        <if test="organizationId != null">
+            AND tp.organization_id = #{organizationId}
+        </if>
+    </select>
+
+    <select id="findBenefitResultYear" resultType="int" useCache="true">
+	SELECT max(mcv.`year`)
+	FROM manpower_cost_value mcv
+	WHERE mcv.organization_id = #{organId}
+	AND mcv.customer_id = #{customerId}
+	</select>
+
+    <select id="findPerBenefitResult" resultType="net.chinahrd.entity.dtozte.pc.probenefit.PerBenefitResultDto"
+            useCache="true">
+	SELECT
+		mcv.organization_id AS organId,
+		mcv.`year`,
+		mcv.budget_value AS budgetValue,
+		mc.cost,
+		tp.gainAmount AS gainAmount,
+		tp.salesAmount AS salesAmount,
+		tp.expenditure AS expenditure
+	FROM manpower_cost_value mcv
+	LEFT JOIN (
+		SELECT
+			tmc.organization_id,
+			SUM(tmc.cost) AS cost
+		FROM manpower_cost tmc
+		WHERE LEFT(tmc.`year_month`,4) = #{year}
+		AND tmc.organization_id = #{organId}
+		AND tmc.customer_id = #{customerId}
+	) mc ON mc.organization_id = mcv.organization_id
+	LEFT JOIN (
+		SELECT
+			ttp.organization_id,
+			sum(ttp.gain_amount) as gainAmount,
+			sum(ttp.expend_amount) as expenditure,
+			sum(ttp.sales_amount) as salesAmount
+		FROM trade_profit ttp
+		WHERE LEFT(ttp.`year_month`,4) = #{year}
+		AND ttp.organization_id = #{organId}
+		AND ttp.customer_id = #{customerId}
+	) tp ON tp.organization_id = mcv.organization_id
+	WHERE mcv.`year`= #{year}
+	AND mcv.organization_id = #{organId}
+	AND mcv.customer_id = #{customerId}
+	</select>
+
+
+    <select id="findAvgBenefit" resultType="net.chinahrd.entity.dtozte.pc.probenefit.AvgBenefitDto" useCache="true">
+	SELECT
+		tp.organization_id AS organId,
+		tp.`year_month` AS yearMonth,
+		tp.sales_amount/ecm.month_count_sum as income,
+		tp.gain_amount/ecm.month_count_sum as gain,
+		prev.income AS prevIncome,
+		prev.gain AS prevGain,
+		(tp.sales_amount/ecm.month_count_sum - prev.income)/prev.income AS incomeChain,
+		(tp.gain_amount/ecm.month_count_sum - prev.gain)/prev.gain AS gainChain
+	FROM trade_profit tp
+	LEFT JOIN history_emp_count_month ecm ON tp.organization_id = ecm.organization_id AND tp.`year_month` = ecm.`year_month`
+		AND tp.customer_id = ecm.customer_id AND ecm.type = 1
+	LEFT JOIN (
+		SELECT
+		ttp.organization_id,
+		ttp.sales_amount/tecm.month_count_sum as income,
+		ttp.gain_amount/tecm.month_count_sum as gain
+		FROM trade_profit ttp
+		LEFT JOIN history_emp_count_month tecm ON ttp.organization_id = tecm.organization_id AND ttp.`year_month` = tecm.`year_month`
+			AND ttp.customer_id = tecm.customer_id AND tecm.type = 1
+		WHERE ttp.`year_month` = #{prevYearMonth}
+		AND ttp.organization_id = #{organId}
+		AND ttp.customer_id = #{customerId}
+		
+	) prev on prev.organization_id = tp.organization_id
+	WHERE tp.`year_month` = #{yearMonth}
+	AND tp.organization_id = #{organId}
+	AND tp.customer_id = #{customerId}
+	
+	</select>
+
+    <select id="queryAvgBenefitTrendList" resultType="net.chinahrd.entity.dtozte.pc.probenefit.AvgBenefitTrendDto"
+            useCache="true">
+        SELECT
+          tp.`year_month` as yearMonth,
+          IF(#{type}=1,tp.sales_amount,tp.gain_amount)/ecm.month_count_sum as benefit,
+          (
+            SELECT
+            IF(#{type}=1,ctp.sales_amount,ctp.gain_amount)/cecm.month_count_sum
+            FROM trade_profit ctp
+            LEFT JOIN history_emp_count_month cecm ON ctp.organization_id = cecm.organization_id AND ctp.`year_month` =
+            cecm.`year_month` AND cecm.type = 1
+            AND ctp.customer_id = cecm.customer_id
+            WHERE ctp.organization_id = #{organId}
+            AND ctp.customer_id = #{customerId}
+            AND ctp.`year_month` = if(tp.`year_month`%100 = 1,tp.`year_month` - 89,tp.`year_month`-1)
+          ) AS chainBenefit,
+          (
+            SELECT
+              IF(#{type}=1,ytp.sales_amount,ytp.gain_amount)/yecm.month_count_sum
+            FROM trade_profit ytp
+            LEFT JOIN history_emp_count_month yecm ON ytp.organization_id = yecm.organization_id AND ytp.`year_month` =
+            yecm.`year_month` AND yecm.type = 1
+            AND ytp.customer_id = yecm.customer_id
+            WHERE ytp.organization_id = #{organId}
+            AND ytp.customer_id = #{customerId}
+            AND ytp.`year_month` = tp.`year_month`-100
+          ) AS yoyBenefit
+        FROM trade_profit tp
+        LEFT JOIN history_emp_count_month ecm ON tp.organization_id = ecm.organization_id
+                                      AND tp.`year_month` = ecm.`year_month`
+        AND tp.customer_id = ecm.customer_id AND ecm.type = 1
+        WHERE tp.organization_id = #{organId}
+        AND tp.customer_id = #{customerId}
+        AND tp.`year_month` BETWEEN #{minYearMonth} AND #{maxYearMonth}
+        ORDER BY tp.`year_month` DESC limit 0, 6
+    </select>
+
+    <select id="queryPayTrendList" resultType="net.chinahrd.entity.dtozte.pc.probenefit.AvgBenefitTrendDto"
+            useCache="true">
+        SELECT
+          mc.`year_month` AS yearMonth,
+          IF(#{type}=1,tp.sales_amount,tp.gain_amount)/mc.cost AS benefit,
+          (
+            SELECT
+              IF(#{type}=1,ctp.sales_amount,ctp.gain_amount)/cmc.cost
+            FROM manpower_cost cmc
+            LEFT JOIN trade_profit ctp ON cmc.customer_id = ctp.customer_id AND cmc.organization_id = ctp.organization_id
+            AND cmc.`year_month` = ctp.`year_month`
+            WHERE cmc.organization_id = #{organId}
+            AND cmc.customer_id = #{customerId}
+            AND cmc.`year_month` = if(mc.`year_month`%100 = 1,mc.`year_month` - 89,mc.`year_month`-1)
+          ) AS chainBenefit,
+          (
+            SELECT
+              IF(#{type}=1,ytp.sales_amount,ytp.gain_amount)/ymc.cost
+            FROM manpower_cost ymc
+            LEFT JOIN trade_profit ytp ON ymc.customer_id = ytp.customer_id AND ymc.organization_id = ytp.organization_id
+            AND ymc.`year_month` = ytp.`year_month`
+            WHERE ymc.organization_id = #{organId}
+            AND ymc.customer_id = #{customerId}
+            AND ymc.`year_month` = mc.`year_month`-100
+          ) AS yoyBenefit
+        FROM manpower_cost mc
+        LEFT JOIN trade_profit tp ON mc.customer_id = tp.customer_id AND mc.organization_id = tp.organization_id AND
+        mc.`year_month` = tp.`year_month`
+        WHERE mc.organization_id = #{organId}
+        AND mc.customer_id = #{customerId}
+        AND mc.`year_month` BETWEEN #{minYearMonth} AND #{maxYearMonth}
+        order by mc.`year_month` desc limit 0, 6
+    </select>
+
+    <!-- 查询下级组织人均效益 -->
+    <select id="queryOrgBenefit" resultType="net.chinahrd.entity.dtozte.pc.probenefit.PerBenefitDto" useCache="true">
+	SELECT
+		o.organization_id as id,
+		o.organization_name as organizationName,
+		(SELECT dor.has_children FROM dim_organization dor WHERE dor.organization_id = o.organization_id AND dor.customer_id = tp.customer_id) as hasChild,
+		SUM(tp.gain_amount) as profit,
+		SUM(tp.sales_amount) as salesAmount,
+		SUM(IF(#{type}=1,tp.sales_amount,tp.gain_amount))/((becm.month_begin_sum+eecm.month_end_sum)/2) as benefitValue
+	FROM trade_profit tp
+	LEFT JOIN history_emp_count_month becm ON tp.organization_id = becm.organization_id AND tp.customer_id = becm.customer_id
+											AND becm.`year_month` = #{minYearMonth} AND becm.type = 1
+	LEFT JOIN history_emp_count_month eecm ON tp.organization_id = eecm.organization_id AND tp.customer_id = eecm.customer_id
+											AND eecm.`year_month` = #{maxYearMonth} AND eecm.type = 1
+	LEFT JOIN dim_organization o on o.organization_id = tp.organization_id  and tp.customer_id = o.customer_id
+	WHERE o.organization_parent_id = #{organId}
+	AND tp.`year_month` BETWEEN #{minYearMonth} AND #{maxYearMonth}
+	AND tp.customer_id = #{customerId}
+	GROUP BY o.organization_id
+	ORDER BY benefitValue DESC
+	</select>
+
+    <select id="querySubOrganPay" resultType="net.chinahrd.entity.dtozte.pc.probenefit.PerBenefitDto" useCache="true">
+    SELECT
+        dor.organization_id AS organizationId,
+        dor.organization_name AS organizationName,
+        (
+            SELECT tdor.has_children
+            FROM dim_organization tdor
+            WHERE dor.organization_id = tdor.organization_id
+            AND dor.customer_id = tdor.customer_id
+        ) AS hasChild,
+        tp.sum1/mc.sum2 AS rangePer
+    FROM dim_organization dor
+    LEFT JOIN (
+        select
+            ttp.organization_id,
+            sum(IF(#{type}=1, ttp.sales_amount, ttp.gain_amount)) sum1
+        from trade_profit ttp
+        where ttp.`year_month` BETWEEN #{minYearMonth} and #{maxYearMonth}
+        AND ttp.customer_id=#{customerId}
+        GROUP BY ttp.organization_id
+    ) tp ON dor.organization_id = tp.organization_id
+    LEFT JOIN (
+        SELECT tmc.organization_id,sum(tmc.cost) sum2
+        FROM manpower_cost tmc
+        WHERE tmc.`year_month` BETWEEN #{minYearMonth} and #{maxYearMonth}
+          AND tmc.customer_id = #{customerId}
+        GROUP BY tmc.organization_id
+    ) mc ON  dor.organization_id = mc.organization_id
+    WHERE dor.customer_id = #{customerId}
+    AND dor.organization_parent_id = #{organId}
+    ORDER BY rangePer DESC
+    </select>
+
+    <select id="queryExecuteRateTrendList" resultType="net.chinahrd.entity.dto.pc.productivity.AvgBenefitTrendDto"
+            useCache="true">
+        SELECT
+          mc.`year_month`,
+          mc.cost/mc.cost_budget AS benefit,
+          (
+            SELECT
+              cmc.cost/cmc.cost_budget AS benefit
+            FROM manpower_cost cmc
+            WHERE cmc.organization_id = #{organId}
+            AND cmc.customer_id = #{customerId}
+            AND cmc.`year_month` = if(mc.`year_month`%100 = 1,mc.`year_month` - 89,mc.`year_month`-1)
+          ) AS chainBenefit,
+          (
+            SELECT
+              cmc.cost/cmc.cost_budget AS benefit
+            FROM manpower_cost cmc
+            WHERE cmc.organization_id = #{organId}
+            AND cmc.customer_id = #{customerId}
+            AND cmc.`year_month` = mc.`year_month`-100
+          ) AS yoyBenefit
+        FROM manpower_cost mc
+        WHERE mc.organization_id = #{organId}
+        AND mc.customer_id = #{customerId}
+        AND mc.`year_month` BETWEEN #{minYearMonth} AND #{maxYearMonth}
+        order by mc.`year_month` desc limit 0, 6
+    </select>
+
+    <select id="querySubOrganExecuteRate" resultType="net.chinahrd.entity.dtozte.pc.probenefit.PerBenefitDto"
+            useCache="true">
+        SELECT
+            mc.organization_id AS organizationId,
+            dor.organization_name AS organizationName,
+            (SELECT dor.has_children FROM dim_organization dor WHERE dor.organization_id = mc.organization_id AND
+            dor.customer_id = mc.customer_id) as hasChild,
+            SUM(mc.cost)/SUM(mc.cost_budget) AS rangePer
+        FROM manpower_cost mc
+        LEFT JOIN dim_organization dor ON dor.organization_id = mc.organization_id AND dor.customer_id = mc.customer_id
+        WHERE mc.customer_id = #{customerId}
+        AND dor.organization_parent_id = #{organId}
+        AND mc.`year_month` BETWEEN #{minYearMonth} AND #{maxYearMonth}
+        GROUP BY mc.organization_id,dor.organization_name
+        ORDER BY rangePer DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus name="驱动力" code="">
+		<menu code="YuanGongManYiDuZhongChengDu" name="员工满意度忠诚度" url="empSatisfaction/toEmpSatisfactionView" icon="" mobile="false">
+<!-- 			<block code="xxxx" >查看模块</block> -->
+		</menu>
+	</menus>

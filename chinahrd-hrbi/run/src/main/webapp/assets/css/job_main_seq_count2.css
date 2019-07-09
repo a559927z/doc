@@ -1,0 +1,269 @@
+html,body {
+	padding: 0px;
+	margin: 0px;
+	font-family:'微软雅黑';
+	color: #000000;
+	font-size: 12px;
+}
+.exportBtn {
+	border: 1px solid #CCCCCC;
+	padding: 2px 15px;
+	margin: 0px 5px 5px 0px;
+	cursor: pointer;
+	white-space: nowrap;
+}
+.exportBtn:hover{
+	color: #fff;
+	background: #FF6329;
+	border: 1px solid #FF6329;
+}
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.clearfix{
+   width:100%;
+   height:1px;
+   clear:both;
+}
+
+.detailseq_area .seqdetail .link{
+   clear:both;
+   margin-bottom:10px;
+   margin-left:20px;
+   padding-top:10px;	
+}
+
+.top {
+	margin-top: 10px;
+	width: 100%;
+	height: 36px;
+	border-top: 2px solid #DDDDDD;
+	border-bottom: 1px solid #DDDDDD;
+	background: #F8F8F7;
+	text-align: center;
+}
+
+.top .toptitle {
+	width: 200px;
+	margin-left: 10px;
+	line-height: 36px;
+}
+
+.top .toptitle span:first-child {
+	font-weight: bold;
+}
+
+.top .topdate {
+	width: 200px;
+	margin-right: 20px;
+	line-height: 36px;
+}
+
+
+.main div {
+	float: left;
+}
+
+.grid .span8{
+
+	min-width:400px;
+	*min-widht:400px;
+}
+
+.search_area {
+	margin-top: 20px;
+	margin-left: 10px;
+	width: 100%;
+}
+
+.search_area span {
+	margin-left: 30px;
+	font-size: 14px;
+	font-weight: bold;
+}
+#seqtable{
+	margin-top:50px;
+	margin-left:100px;
+}
+.search_area a {
+	margin-left: 20px;
+}
+#seqtableh{
+	width : 280px;	
+}
+#seqtableh ul ,#seqtable ul {
+	list-style-type: none;
+	height: 500px;
+	/* margin-top: 60px; */
+}
+
+#seqtable ul li,#seqtableh ul li {
+	height: 26px;
+	line-height: 26px;
+	margin-top: 10px;
+	border-bottom: 1px solid #DDDDDD;
+}
+
+#seqtable ul li .title,#seqtableh ul li .title{
+	font-size: 14px;
+	font-weight: 700;
+	color: #FFFFFF;
+	text-align: center;
+	width: 100px;
+	float: left;
+	font-family:'微软雅黑';
+}
+
+#seqtable ul li span{
+	width: 80px;
+	float: left;
+	text-align:right;
+}
+#seqtable ul li span.percent{
+	width:100px;
+}
+#seqtableh ul li span{
+   width: 50px;
+	float: left;
+	text-align:center;
+}
+
+#seqtable ul li .num,#seqtableh ul li .num{
+	text-align: right;
+}
+
+#seqtable ul .hover,#seqtableh ul .hover {
+	cursor: pointer;
+	background: #DDDDDD;
+}
+
+#seqtable ul .current{
+	background:#DDDDDD;
+}
+
+.main .seqdetail{
+   background:#E3E3E3;
+   margin-top:60px;
+}
+
+.grid .detailseq_area{
+	background:#E5E3E0;
+	margin-top:20px;
+	min-width:738px;
+	*min-width:738px;
+	width:738px
+}
+body .grid .span15{
+	width:738px;
+	min-width:738px;
+	*min-width:738px;
+}
+
+.seqdetail{
+    padding:20 20 0 20;
+    clear:both;
+}
+.seqdetail .childseq{
+   padding:0 10px 10px;
+}
+.seqdetail .title{
+   padding-left:10px;
+   margin-bottom:10px;
+   width:60%;
+   height:16px;
+   line-height:16px;
+   background:url("../img/base/job_main_seq_count_hd.png") no-repeat;
+}
+.seqdetail .childseq table{
+   margin-top:10px;
+   font-size:12px;
+   line-height:28px;
+   border-top: 1px solid gray;
+   border-left:1px solid gray;
+}
+#jobTitleGridgrid .l-grid-header-inner table,#jobTitleGridgrid .l-grid-body-inner table{
+	margin-top:0px;
+}
+#jobTitleGridgrid .l-grid-header{
+	background:none;
+	border-bottom:none;
+}
+#jobTitleGridgrid .l-grid-row-cell-inner{
+	margin-right:0px;
+}
+#jobTitleGridgrid .l-grid-totalsummary td:first-child{
+	background:#FFFFFF;
+	color:#333333;
+}
+
+.l-grid-header-table tr:first-child{
+	text-align:center;
+    background:#DDDDDD; 
+}
+
+.seqdetail .childseq table tbody{
+   background:#FFFFFF;
+
+}
+#jobTitleGridgrid .l-grid-row-cell-inner{
+	padding-left:3px;
+}
+.seqdetail .childseq table thead td{
+    border-bottom: 1px solid gray;
+    border-right:1px solid gray;
+}
+.seqdetail .childseq table tbody td{
+    border-bottom: 1px solid gray;
+    border-right:1px solid gray;
+}
+
+.seqdetail .l-grid-totalsummary tr td:first-child,.seqdetail .l-grid-row td:first-child{
+	background:none repeat scroll 0 0 #ffffff;
+	color:#333333;
+}
+.seqdetail .l-grid-row-cell{
+	margin-right:12px;
+}
+.seqdetail .l-grid-totalsummary .l-grid-totalsummary-cell-inner{
+	margin-right:6px;
+}
+.seqdetail .l-grid-header{
+	color:#333333;
+}
+
+.viewdetail a{
+	color:#008000;
+}
+
+.grid .link{
+	margin-top:20px;
+}
+
+.grid .link #totalNum{
+	weight:blod;
+	font-size:16px;
+	margin-left:10px;
+	margin-right:10px;
+}
+
+.detailseq_area .seqdetailclose{
+	cursor: pointer;
+	display: block;
+	height: 15px;
+	width: 15px;
+	background:url("../img/base/close-round-16.png") no-repeat;
+	
+}
+.detailseq_area .seqdetailclose:hover{
+	background-position: -15px 0px;
+}
+
+#navbox .jt {
+    background: url("../img/base/allbgs.png") no-repeat scroll -14px 0 transparent;
+    padding-left: 20px;
+}

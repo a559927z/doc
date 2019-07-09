@@ -1,0 +1,19 @@
+
+.top-content-note .warn-icon{width: 20px;height:20px;background-size:cover;background-image:url("../../../img/icon-warn.png") }
+.top-content-note .smile-face{width: 20px;height:20px;background-size:cover;background-image:url("../../../img/smile-face.png") }
+
+.benefitWarn{
+	background-image: url("../../../img/perbenefitWarn.png");	
+	width: 23px;
+	height:23px;
+	float: left;
+	background-size:cover;
+}
+.xyzt{
+	font-size: 9px;
+	width: 100%;
+	margin: 10px 10px 5px 10px;
+	height: 24px;
+	line-height: 24px;
+/* 	float: left; */
+}

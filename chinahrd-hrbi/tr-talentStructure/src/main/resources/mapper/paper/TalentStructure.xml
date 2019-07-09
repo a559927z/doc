@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.talentStructure.mvc.pc.dao.TalentStructureDao">
+    <cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+    <!-- 编制分析 -->
+    <select id="findBudgetAnalyse" resultType="net.chinahrd.entity.dto.pc.talentStructure.TalentStructureDto"
+            useCache="true">
+        SELECT
+        t2.number AS number,
+        IFNULL(sum(hec.emp_count_sum), 0) AS empCount
+        FROM budget_emp_number t2
+        LEFT JOIN history_emp_count hec ON t2.organization_id = hec.organization_id
+        AND hec.customer_id = t2.customer_id
+        AND hec.day = date_sub(#{now},interval 1 day)
+        AND hec.type in
+        <foreach collection="personTypeKey" item="type" separator="," open="(" close=")">
+            #{type}
+        </foreach>
+        WHERE
+        t2.organization_id = #{organId}
+        AND t2.YEAR = YEAR(#{now})
+        AND t2.customer_id = #{customerId}
+    </select>
+
+    <!-- 预警值更新 -->
+    <update id="updateConfigWarnValByNormal">
+    	UPDATE config SET config_val=#{normal} WHERE customer_id=#{customerId} AND config_key='RLJG-normal'
+    </update>
+    <update id="updateConfigWarnValByRisk">
+    	UPDATE config SET config_val=#{risk} WHERE customer_id=#{customerId} AND config_key='RLJG-risk'
+    </update>
+
+    <select id="queryOrganId" resultType="java.lang.String" useCache="true">
+    	SELECT DISTINCT organization_id
+    	FROM dim_organization
+    	WHERE customer_id = #{customerId}
+    </select>
+
+
+    <!-- 人力结构核心 -->
+    <select id="queryEmpInfo" resultType="net.chinahrd.entity.dto.pc.talentStructure.TalentStructureDto"
+            useCache="true">
+		SELECT
+			t2.emp_id empId,
+			t2.organization_parent_id organizationPId,
+			t2.organization_id organizationId,
+			t2.organization_name organizationName,
+			t2.ability_id abilityId,
+			t2.ability_name abilityName,
+			t2.work_place workPlace,
+			t2.degree degree,
+			t2.company_age companyAge,
+			t2.sequence_id sequenceId,
+			t2.sequence_name sequenceName,
+			t1.sequence_key seqKey,
+			t4.full_path,
+			concat(t3.curt_name,'级') abCurtName,
+			(SELECT MAX(curt_name) FROM dim_ability where customer_id =#{customerId} ) maxAbLevel
+		FROM
+			v_dim_emp t2 
+		LEFT JOIN dim_sequence t1 ON t1.customer_id = t2.customer_id AND t2.sequence_id = t1.sequence_id
+		LEFT JOIN dim_ability t3 on t3.ability_id = t2.ability_id AND t3.customer_id = t2.customer_id
+		LEFT JOIN dim_organization t4 on t4.organization_id = t2.organization_id AND t4.customer_id = t2.customer_id
+		WHERE
+			t2.customer_id = #{customerId} 
+			AND t2.organization_id in (
+				SELECT t0.organization_id FROM dim_organization t0
+				WHERE locate(
+					(SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{organId} AND t.customer_id = #{customerId}
+					), t0.full_path
+				)AND t0.customer_id = #{customerId}
+			)
+			AND t2.run_off_date is null
+		ORDER BY t3.show_index
+	</select>
+
+    <!-- 人力结构核心 -->
+    <select id="queryAbEmpCountBarBySeqId" resultType="net.chinahrd.entity.dto.pc.talentStructure.TalentStructureDto"
+            useCache="true">
+		SELECT
+			t2.emp_id empId,
+			t2.sequence_id sequenceId,
+			t2.sequence_name sequenceName,
+			concat(t3.curt_name,'级') abCurtName
+		FROM v_dim_emp t2
+		LEFT JOIN dim_ability t3 on t3.ability_id = t2.ability_id AND t3.customer_id = t2.customer_id
+		WHERE
+			t2.customer_id = #{customerId} 
+			AND t2.organization_id in (
+				SELECT t0.organization_id FROM dim_organization t0
+				WHERE locate(
+					(SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{organId} AND t.customer_id = #{customerId}
+					), t0.full_path
+				)AND t0.customer_id = #{customerId}
+			)
+			AND t2.sequence_id = #{seqId}
+			AND t2.run_off_date is null
+		ORDER BY t3.show_index
+	</select>
+
+
+    <resultMap id="talentStructureResultMap" type="net.chinahrd.entity.dto.pc.talentStructure.TalentStructureResultDto">
+        <id property="organId" column="organId"/>
+        <result property="organName" column="organName"/>
+        <collection property="subDtos" ofType="net.chinahrd.entity.dto.pc.talentStructure.TalentStructureResultSubDto">
+            <id property="typeId" column="typeId"/>
+            <result property="typeKey" column="typeKey"/>
+            <result property="typeName" column="typeName"/>
+            <result property="total" column="total"/>
+        </collection>
+    </resultMap>
+
+	<sql id="querySubOrganChild">
+		SELECT dor.organization_id AS parentId,dor.organization_name AS parentName,dor1.organization_id AS organization_id
+		FROM dim_organization dor
+		INNER JOIN dim_organization dor1 ON dor.customer_id = dor1.customer_id AND dor1.full_path like CONCAT('%',dor.full_path,'%')
+		WHERE dor.organization_parent_id = #{organId}
+		AND dor.customer_id = #{customerId}
+	</sql>
+
+
+
+    <!-- 获取当前组织管理者员工分布 -->
+    <select id="queryManageEmp4Organ"
+            resultType="net.chinahrd.entity.dto.pc.talentStructure.TalentStructureResultSubDto" useCache="true">
+        SELECT
+        IF(sci.sequence_key = #{manageSequence}, da.show_index, #{maxIdx}) AS show_index,
+        IF(sci.sequence_key = #{manageSequence}, sci.sequence_key, -1) as typeId,
+		IF(sci.sequence_key = #{manageSequence}, vde.ability_name, null) as typeName,
+        COUNT(vde.emp_id) AS total
+        FROM v_dim_emp vde
+        INNER JOIN dim_ability da on da.ability_id = vde.ability_id AND vde.customer_id = da.customer_id
+        LEFT JOIN dim_sequence sci ON sci.customer_id = vde.customer_id AND vde.sequence_id = sci.sequence_id
+        WHERE vde.run_off_date IS NULL
+        AND vde.customer_id = #{customerId}
+        <if test="organList != null and organList.size() > 0">
+            AND vde.organization_id IN (
+            <foreach collection="organList" item="organId" separator=",">
+                '${organId}'
+            </foreach>
+            )
+        </if>
+        GROUP BY typeId,typeName
+        ORDER BY show_index
+    </select>
+
+	<!-- 获取下级组织管理者员工分布 -->
+	<select id="queryManagerOrEmpList" resultMap="talentStructureResultMap" useCache="true">
+		SELECT
+			a.parentId AS organId,
+			a.parentName AS organName,
+			a.type AS typeKey,
+			a.abilityId AS typeId,
+			a.abilityName AS typeName,
+			COUNT(a.emp_id) AS total
+		FROM (
+			SELECT
+				tdor.parentId,
+				tdor.parentName,
+				IF(sci.sequence_key = #{manageSequence},da.show_index, #{maxIdx}) AS show_index,
+				IF(sci.sequence_key = #{manageSequence}, sci.sequence_key, -1) as type,
+				IF(sci.sequence_key = #{manageSequence}, vde.ability_id, -1) as abilityId,
+				IF(sci.sequence_key = #{manageSequence},vde.ability_name, null) as abilityName,
+				vde.emp_id
+			FROM v_dim_emp vde
+			INNER JOIN dim_ability da on da.ability_id = vde.ability_id AND vde.customer_id = da.customer_id
+			INNER JOIN (<include refid="querySubOrganChild" /> ) tdor ON tdor.organization_id = vde.organization_id
+			LEFT JOIN dim_sequence sci ON sci.customer_id = vde.customer_id AND vde.sequence_id = sci.sequence_id
+			WHERE vde.run_off_date IS NULL
+			AND vde.customer_id = #{customerId}
+		) a
+		GROUP BY a.parentId,a.abilityId
+		ORDER BY CONVERT(a.parentName USING GBK),a.show_index
+	</select>
+
+	<!-- 获取当前组织职级分布 -->
+	<select id="queryAbility4Organ" resultType="net.chinahrd.entity.dto.KVItemDto" useCache="true">
+	SELECT
+		IFNULL(da.ability_key, #{maxIdx}) AS typeId,
+		CONCAT(da.curt_name,'级') AS k,
+		COUNT(vde.emp_id) AS v
+	FROM v_dim_emp vde
+	LEFT JOIN dim_ability da on da.ability_id = vde.ability_id AND vde.customer_id = da.customer_id
+	WHERE vde.run_off_date IS NULL
+	AND vde.customer_id = #{customerId}
+	<if test="sequenceId != null">
+		AND vde.sequence_id = #{sequenceId}
+	</if>
+	<if test="organList != null and organList.size() > 0">
+		AND vde.organization_id IN (
+		<foreach collection="organList" item="organId" separator=",">
+			'${organId}'
+		</foreach>
+		)
+	</if>
+	GROUP BY da.curt_name
+	ORDER BY typeId
+	</select>
+
+	<!-- 获取下级组织职级分布 -->
+	<select id="queryAbilityToSubOrgan" resultMap="talentStructureResultMap" useCache="true">
+	SELECT
+		a.parentId AS organId,
+		a.parentName AS organName,
+		a.typeId AS typeId,
+		a.typeName AS typeName,
+		COUNT(a.emp_id) AS total
+	FROM (
+		SELECT
+		tdor.parentId,
+		tdor.parentName,
+		IFNULL(da.ability_key,#{maxIdx}) AS typeId,
+		CONCAT(da.curt_name,'级') AS typeName,
+		vde.emp_id
+		FROM v_dim_emp vde
+		INNER JOIN (<include refid="querySubOrganChild" />) tdor ON tdor.organization_id = vde.organization_id
+		LEFT JOIN dim_ability da on da.ability_id = vde.ability_id AND vde.customer_id = da.customer_id
+		WHERE vde.run_off_date IS NULL
+		AND vde.customer_id = #{customerId}
+	) a
+	GROUP BY a.parentId,a.typeId
+	ORDER BY CONVERT(a.parentName USING GBK),a.typeId
+	</select>
+
+	<!-- 获取当前组织职位序列分布 -->
+	<select id="querySequence4Organ" resultType="net.chinahrd.entity.dto.pc.SequenceItemsDto" useCache="true">
+	SELECT
+		ds.sequence_id AS itemId,
+		IFNULL(ds.show_index,(SELECT MAX(tds.show_index)+1 FROM dim_sequence tds WHERE tds.customer_id = #{customerId})) showIndex,
+		ds.sequence_name AS itemName,
+		COUNT(vde.emp_id) AS empCount
+	FROM v_dim_emp vde
+	LEFT JOIN dim_sequence ds on ds.customer_id = vde.customer_id AND vde.sequence_id = ds.sequence_id
+	WHERE vde.run_off_date IS NULL
+	AND vde.customer_id = #{customerId}
+	<if test="organList != null and organList.size() > 0">
+		AND vde.organization_id IN (
+		<foreach collection="organList" item="organId" separator=",">
+			'${organId}'
+		</foreach>
+		)
+	</if>
+	GROUP BY ds.sequence_id
+	ORDER BY empCount
+	</select>
+
+    <!-- 获取职位序列职级统计 -->
+    <select id="querySequenceAbilityCount" resultMap="talentStructureResultMap" useCache="true">
+    SELECT
+        da.curt_name AS organId,
+        CONCAT(da.curt_name,'级') AS organName,
+        ds.sequence_id AS typeId,
+        ds.sequence_name AS typeName,
+        COUNT(vde.emp_id) AS total
+    FROM v_dim_emp vde
+    INNER JOIN dim_sequence ds ON ds.customer_id = vde.customer_id AND vde.sequence_id = ds.sequence_id
+    INNER JOIN dim_ability da ON da.customer_id = vde.customer_id AND da.ability_id = vde.ability_id
+    WHERE vde.run_off_date IS NULL
+    AND vde.customer_id = #{customerId}
+    <if test="organList != null and organList.size() > 0">
+        AND vde.organization_id IN (
+        <foreach collection="organList" item="organId" separator=",">
+            '${organId}'
+        </foreach>
+        )
+    </if>
+    GROUP BY da.curt_name,ds.sequence_id
+    ORDER BY da.show_index,ds.show_index
+    </select>
+
+
+    <!-- 获取组织分布 -->
+    <select id="querySubOrganCount" resultType="net.chinahrd.entity.dto.KVItemDto" useCache="true">
+    SELECT
+        a.parentId AS organId,
+        a.parentName AS k,
+        COUNT(a.emp_id) AS v
+    FROM (
+        SELECT
+            tdor.parentId,
+            tdor.parentName,
+            vde.emp_id
+        FROM v_dim_emp vde
+        INNER JOIN (<include refid="querySubOrganChild" />) tdor ON tdor.organization_id = vde.organization_id
+        WHERE vde.run_off_date IS NULL
+        AND vde.customer_id = #{customerId}
+    ) a
+    GROUP BY a.parentId
+    ORDER BY v DESC,CONVERT(a.parentName USING GBK)
+    </select>
+
+    <!-- 查询工作地分布 -->
+    <select id="queryWorkplaceCount" resultType="net.chinahrd.entity.dto.KVItemDto" useCache="true">
+    SELECT
+        vde.work_place AS k,
+        COUNT(vde.emp_id) AS v
+    FROM v_dim_emp vde
+    WHERE vde.run_off_date IS NULL
+    AND vde.customer_id = #{customerId}
+    <if test="organList != null and organList.size() > 0">
+        AND vde.organization_id IN (
+        <foreach collection="organList" item="organId" separator=",">
+            '${organId}'
+        </foreach>
+        )
+    </if>
+    GROUP BY vde.work_place
+    ORDER BY v DESC,CONVERT(vde.work_place USING GBK) DESC
+    </select>
+
+	<!-- 获取当前组织学历分布 -->
+	<select id="queryDegree4Organ" resultType="net.chinahrd.entity.dto.KVItemDto" useCache="true">
+    SELECT
+        vde.degree_id AS k,
+        COUNT(vde.emp_id) AS v
+    FROM v_dim_emp vde
+    WHERE vde.run_off_date IS NULL
+	AND vde.customer_id = #{customerId}
+	<if test="organList != null and organList.size() > 0">
+		AND vde.organization_id IN (
+		<foreach collection="organList" item="organId" separator=",">
+			'${organId}'
+		</foreach>
+		)
+	</if>
+    GROUP BY vde.degree_id
+	</select>
+
+	<!-- 查询下级组织学历分布 -->
+	<select id="queryDegreeToSubOrgan" resultMap="talentStructureResultMap" useCache="true">
+    SELECT
+        a.parentId AS organId,
+        a.parentName AS organName,
+        a.typeId AS typeId,
+        COUNT(a.emp_id) AS total
+    FROM (
+        SELECT
+        tdor.parentId,
+        tdor.parentName,
+        vde.degree_id AS typeId,
+        vde.emp_id
+        FROM v_dim_emp vde
+        INNER JOIN (<include refid="querySubOrganChild" />) tdor ON tdor.organization_id = vde.organization_id
+        WHERE vde.run_off_date IS NULL
+        AND vde.customer_id = #{customerId}
+    ) a
+    GROUP BY a.parentId,a.typeId
+    ORDER BY CONVERT(a.parentName USING GBK)
+	</select>
+
+    <!-- 获取当前组织司龄分布 -->
+    <select id="queryCompanyAge4Organ" resultType="hashmap" useCache="true">
+    SELECT
+        <foreach collection="companyAges" item="e" separator=",">
+        SUM(IF(vde.company_age &gt;= '${e.min}' <if test="e.max != null"> AND vde.company_age &lt; '${e.max}'</if> , 1, 0)) AS '${e.desc}'
+        </foreach>
+    FROM v_dim_emp vde
+    WHERE vde.run_off_date IS NULL
+    AND vde.customer_id = #{customerId}
+    <if test="organList != null and organList.size() > 0">
+        AND vde.organization_id IN (
+        <foreach collection="organList" item="organId" separator=",">
+            '${organId}'
+        </foreach>
+        )
+    </if>
+    </select>
+
+    <!-- 查询下级组织司龄分布 -->
+    <select id="queryCompanyAgeToSubOrgan" resultType="hashmap" useCache="true">
+	SELECT
+		tdor.parentId,
+		tdor.parentName,
+		<foreach collection="companyAges" item="e" separator=",">
+			SUM(IF(vde.company_age &gt;= '${e.min}' <if test="e.max != null"> AND vde.company_age &lt; '${e.max}'</if> , 1, 0)) AS '${e.desc}'
+		</foreach>
+	FROM v_dim_emp vde
+	INNER JOIN (<include refid="querySubOrganChild" />) tdor ON tdor.organization_id = vde.organization_id
+	WHERE vde.run_off_date IS NULL
+	AND vde.customer_id = #{customerId}
+	GROUP BY tdor.parentId
+	ORDER BY CONVERT(tdor.parentName USING GBK)
+    </select>
+
+</mapper>

@@ -1,0 +1,555 @@
+.per {
+    position: relative;
+    padding-left: 120px;
+    font-size: 14px;
+    color: #777777;
+}
+
+#page-one {
+    display: block;
+}
+
+#page-two {
+    display: none;
+}
+
+/*页面通用样式 begin*/
+.red {
+    color: #e7191b;
+}
+
+.green {
+    color: #6fb12d;
+}
+
+.per .index-common-title {
+    position: relative;
+    width: 100%;
+    height: 34px;
+}
+
+.per .index-common-title-left {
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    background-color: #88b7e0;
+    width: 2px;
+    height: 15px;
+}
+
+.per .index-common-title-text {
+    position: absolute;
+    top: 6px;
+    left: 20px;
+    color: #444444;
+}
+
+.per .rightbody {
+    width: 100%;
+    background-color: #fff;
+    padding: 5px;
+}
+
+.per .top-div {
+    position: relative;
+    height: 160px;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+}
+
+.per .bottom-div {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    border: 1px solid #e0e0e0;
+}
+
+.per .bottom-div2 {
+    padding-top:12px;
+    height: 370px;
+}
+
+.per .rightdiv {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    padding-left: 6px;
+    padding-right: 6px;
+    color: #fff;
+    background-color: #009edd;
+    border-radius: 2px;
+    line-height: 24px;
+}
+
+.per .condition-input-text {
+    border-color: #a4a4a4;
+    width: 46px;
+    height: 24px;
+    padding-left: 6px;
+    margin-top: 2px;
+    margin-left: 4px;
+}
+
+.per .condition-text-one {
+    margin-left: 6px;
+    margin-right: 3px;
+    margin-top: 4px;
+}
+
+/*页面通用样式 end*/
+/*tab 切换 样式 begin*/
+.per .index-jxmb-tab {
+    position: relative;
+    font-size: 12px;
+    height: 34px;
+    width: 100%;
+    border-left: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.per .index-jxmb-btn {
+    border-top: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+    width: 90px;
+    height: 34px;
+    line-height: 32px;
+    text-align: center;
+    float: left;
+    cursor: pointer;
+    background-color: #fafafa;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.per .index-jxmb-btn-select {
+    border-top: 2px solid #009edd;
+    border-bottom: #ffffff;
+    background: #ffffff;
+    line-height: 30px;
+    cursor: default;
+}
+
+/*tab 切换 样式 end*/
+/*多出来的select begin*/
+.per .per-select {
+    cursor: pointer;
+    font-size: 12px;
+    position: absolute;
+    right: 0px;
+    width: 130px;
+    height: 26px;
+}
+
+/*多出来的select end*/
+/*左边导航 begin*/
+.per .leftbody {
+    position: absolute;
+    width: 120px;
+    left: 0px;
+    top: 0px;
+}
+
+.per .leftlistbigdiv {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-indent: 14px;
+    font-weight: bold;
+}
+
+.per .leftlistset {
+    background-image: url("../../../img/index/setUp.png");
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 12px;
+    top: 17px;
+    cursor: pointer;
+}
+
+.per .selectlist {
+    background-color: #fff;
+    cursor: default;
+}
+
+.per .leftlistdiv {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+    text-indent: 14px;
+}
+
+/*左边导航 end*/
+
+/*第一行的数据块 begin*/
+.per .accord-yj-float {
+    position: relative;
+    width: 110px;
+    height: 62px;
+    margin: 0 auto;
+    margin-top: 8px;
+    text-align: center;
+}
+
+.per .accord-yj-float-value {
+    font-size: 38px;
+    color: #666666;
+}
+
+.per .accord-yj-float-people {
+    position: absolute;
+    top: 32px;
+    right: -3px;
+    color: #777777;
+    font-size: 12px;
+}
+
+.per .index-yj-div-bottom {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    /*height: 32px;*/
+    line-height: 32px;
+    border-top: 1px solid #e0e0e0;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.per .index-yj-div-bottom-value {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 88%;
+}
+
+.per .index-yj-div-bottom-right {
+    margin-top: 10px;
+    background-image: url("../../../img/index/continue.png");
+    width: 10px;
+    height: 14px;
+}
+
+/*第一行的数据块 end*/
+
+.SetUpBody .leftBarArea {
+    height: 350px;
+}
+
+.SetUpBody .noPaddingLeft {
+    padding-left: 0px;
+}
+
+.SetUpBody .preStarBarChar {
+    height: 300px;
+}
+
+.SetUpBody .preDisTextArea {
+    width: 100%;
+    height: 40px;
+    text-align: center;
+}
+.SetUpBody .right-instructions{
+    position: absolute;
+    width: 11px;
+    height: 315px;
+    margin: 15px auto;
+}
+.SetUpBody .right-instructions .right-line{
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    border-left: 1px solid #e0e0e0;
+    z-index: 1;
+}
+.SetUpBody .right-instructions .right-arrow{
+    position: absolute;
+    top:145px;
+    width: 11px;
+    height: 25px;
+    background: #ffffff url("../../../img/base/right-icon.png") no-repeat;
+    z-index: 1;
+}
+.SetUpBody .rightPieArea {
+    height: 350px;
+    line-height: 260px;
+}
+
+.chartArea {
+    height: 260px;
+    padding-left: 25%;
+    padding-right: 30%;
+}
+
+.textArea {
+    padding-top: 15px;
+    padding-left: 13%;
+    color: #999999;
+}
+
+#preChange, #preUnusual {
+    margin-top: 60px;
+    height: 220px;
+}
+
+/*筛选条件 begin*/
+.per .per-select2 {
+    cursor: pointer;
+    font-size: 12px;
+    width: 130px;
+    height: 26px;
+    margin-top: -4px;
+}
+
+.conditionBtnListBody {
+    position: relative;
+    /* min-height: 276px; */
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px !important;
+}
+
+.bottom-div-three {
+    height: 900px !important;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.conditionBtn {
+    cursor: pointer;
+    position: absolute;
+    top: -48px;
+    left: 220px;
+    font-size: 12px;
+    width: 108px;
+    height: 48px;
+    line-height: 47px;
+    margin-left: 10px;
+    border: 1px solid #e0e0e0;
+    border-bottom: 0px;
+    z-index: 1;
+    background-color: #fff;
+    text-indent: 10px;
+}
+
+.condition-icon {
+    background-image: url("../../../img/index/x.png");
+    width: 7px;
+    height: 7px;
+    float: right;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+.dis-search {
+    width: 280px;
+    font-size: 12px !important;
+}
+
+.dis-search-input {
+    line-height: 2 !important;
+    font-size: 12px !important;
+    float: left;
+    width: 68%;
+    height: 34px;
+    margin-top: 1px;
+    border: 1px solid #e0e0e0;
+    font-size: 12px;
+    padding-top: 4px;
+    padding-left: 12px;
+}
+
+.dis-search-input-btn {
+    cursor: pointer;
+    font-size: 12px !important;
+    float: left;
+    width: 26%;
+    background-color: #009edd;
+    height: 36px;
+    line-height: 36px;
+    border: 1px solid #e0e0e0;
+    padding-left: 9px;
+    margin-left: -1px;
+    color: #fff;
+}
+
+.condition-body-list {
+    width: 100%;
+    float: left;
+    margin-bottom: 14px;
+}
+
+.condition-body-list-title {
+    text-align: right;
+    width: 64px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+.condition-btn {
+    float: left;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 24px;
+    line-height: 24px;
+    /*color: #444444;*/
+    margin-right: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+
+.condition-btn-selected {
+    background-color: #009edd;
+    color: #fff;
+    cursor: default;
+}
+
+.condition-bottom {
+    float: left;
+    width: 100%;
+    margin-top: 0px;
+    margin-bottom: 8px;
+    padding-left: 72px;
+}
+
+.condition-icon {
+    background-image: url("../../../img/index/x.png");
+    width: 7px;
+    height: 7px;
+    float: right;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+.condition-btn-one {
+    cursor: pointer;
+    font-size: 12px;
+    width: 58px;
+    height: 24px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    line-height: 22px;
+    color: #666666;
+    background-color: #fff;
+    margin-left: 20px;
+}
+
+.condition-btn-two {
+    cursor: pointer;
+    font-size: 12px;
+    width: 58px;
+    height: 24px;
+    text-align: center;
+    line-height: 22px;
+    color: #fff;
+    background-color: #009edd;
+}
+
+.condition-btn-too-icon {
+    position: absolute;
+    top: 8px;
+    right: 6px;
+    background-image: url("../../../img/index/y.png");
+    width: 7px;
+    height: 7px;
+}
+
+/*筛选条件 end*/
+
+/*主动流失率指标设置 弹出框 begin*/
+.BSetUp-line-two {
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+}
+
+.BSetUp-line-three {
+    border-bottom: 1px dashed #e8ecf0;
+}
+
+.CSetUp-text-one {
+    margin-top: 6px;
+}
+
+.CSetUp-select {
+    border-color: #a4a4a4;
+    margin-top: 4px;
+    margin-left: 8px;
+    width: 132px;
+    height: 24px;
+}
+
+.CSetUp-text-two {
+    width: 100%;
+    text-align: left;
+    color: #888888;
+    padding-top: 8px;
+    padding-bottom: 20px;
+}
+
+/*主动流失率指标设置 弹出框 end*/
+
+.ct-18 {
+    width: 18%;
+}
+
+.ct-28 {
+    width: 28%;
+}
+
+.showview {
+    cursor: pointer;
+}
+
+.showview:hover {
+    background-color: #fafafa;
+}
+
+.popup-modal .modal-title-small {
+    font-size: 13px;
+    color: #999;
+}
+#rightPieChart .loadingmessage{margin-top:45px;}
+.mainArea .loadingmessage{margin-top:80px;}
+
+@media (max-width: 860px) {
+    .ct-18 {
+        width: 100%;
+    }
+
+    .ct-28 {
+        width: 100%;
+    }
+}
+
+@media (max-width: 680px) {
+    .condition-body-list-title {
+        width: 100%;
+        text-align: left;
+    }
+
+    .condition-bottom {
+        padding-left: 0px;
+    }
+
+    .condition-input-text-too {
+        clear: both;
+        margin-top: 6px;
+    }
+
+    .conditionBtn {
+        top: -65px;
+        left: -11px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .conditionBtnListBody {
+        margin-top: 110px;
+    }
+
+    .dis-search {
+        top: -115px;
+    }
+}

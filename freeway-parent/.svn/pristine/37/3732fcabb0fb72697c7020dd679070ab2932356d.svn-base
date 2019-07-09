@@ -1,0 +1,17 @@
+package net.chinahrd.service.rbac;
+
+import net.chinahrd.response.RbacUserRes;
+
+/**
+ * 支持Realm调用dobbo服务
+ * @author wzmo
+ */
+public interface RealmService {
+    /**
+     * 根据用户名查询用户账号
+     * @author wzmo
+     * @param userName
+     * @return
+     */
+    RbacUserRes selectByUserName(String userName);
+}

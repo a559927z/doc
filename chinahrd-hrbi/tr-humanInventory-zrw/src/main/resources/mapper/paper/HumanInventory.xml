@@ -1,0 +1,2072 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.humanInventory.mvc.pc.dao.HumanInventoryDao">
+	<cache-ref namespace="net.chinahrd.ehcache.normal"/>
+	<resultMap type="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryChartDto" id="baseChartMap">
+		<result column="date" property="date"/>
+		<result column="sum_input" property="sumInput"/>
+		<result column="sum_output" property="sumOutput"/>
+		<result column="m_con" property="sumMoreCon"/>
+		<result column="m_gain" property="sumMoreGain"/>
+		<result column="l_con" property="sumLessCon"/>
+		<result column="l_gain" property="sumLessGain"/>
+		<result column="con_num" property="conNum"/>
+		<result column="project_id" property="projectId"/>
+		<result column="project_name" property="projectName"/>
+		<result column="sum_outlay" property="sumOutlay"/>
+		<result column="project_type_name" property="projectTypeName"/>
+		<result column="flag" property="flag"/>
+		<result column="sum_gain" property="sumGain"/>
+		<result column="input" property="input"/>
+		<result column="output" property="output"/>
+		<result column="gain" property="gain"/>
+		<result column="manPower" property="manPower"/>
+		<result column="avgNum" property="avgNum"/>
+	</resultMap>
+	<!-- 查询包含字迹的组织机构id -->
+	<sql id="queryOrganIdAll">
+		(
+		SELECT
+			o.organization_id
+		FROM
+			dim_organization o
+		WHERE
+			LOCATE(
+				(
+					SELECT
+						o1.full_path
+					FROM
+						dim_organization o1
+					WHERE
+						o1.organization_id = #{organId}
+					AND o1.customer_id = #{customerId}
+				),
+				o.full_path
+			)
+		AND o.customer_id = #{customerId}
+		)
+	</sql>
+	<!-- 通过缓存获取该架构的所有子孙组织机构ID -->
+	<sql id="queryFullOrganIdByContext">
+		<if test="subOrganIdList != null and subOrganIdList.size != 0">
+			AND p.organization_id in
+			<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+			'${oId}'
+			</foreach>
+		</if>
+	</sql>
+	<select id="queryProjectProgress" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select 
+			sys_code_item_id id, 
+			sys_code_item_name projectProgress
+		from sys_code_item 
+		where code_group_id='projectProgress'
+			and customer_id=#{customerId}
+		order by show_index
+	</select>
+	<!-- 本年项目总数和人均项目数 -->
+	<select id="getProjectConAndAvgNum" resultMap="baseChartMap" useCache="true">
+		SELECT
+			a.conNum,
+			IFNULL(b.conNum / c.conNum, 0) avgNum
+		FROM
+			(
+				SELECT
+					'f' flag,
+					count(DISTINCT p.project_id) conNum
+				FROM
+					project p
+				WHERE
+					p.customer_id = #{customerId}
+				<include refid="queryFullOrganIdByContext"></include>
+				AND (
+					YEAR (p.end_date) = #{year}
+					OR (
+						YEAR (p.start_date) <![CDATA[<=]]> #{year}
+						AND p.end_date IS NULL
+					)
+				)
+				AND p.project_parent_id = '-1'
+			) a
+		INNER JOIN (
+			SELECT
+				'f' flag,
+				COUNT(*) conNum
+			FROM
+				(
+				SELECT 
+					DISTINCT m.project_id, m.emp_id
+				FROM
+					project_manpower m
+				LEFT JOIN v_dim_emp e ON m.customer_id = e.customer_id
+				AND m.emp_id = e.emp_id
+				AND YEAR(m.date) = #{year}
+				WHERE
+					e.customer_id = #{customerId}
+				<if test="subOrganIdList != null and subOrganIdList.size != 0">
+					AND e.organization_id in
+					<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+					'${oId}'
+					</foreach>
+				</if>
+				) mm
+		) b ON a.flag = b.flag
+		INNER JOIN (
+			SELECT
+				'f' flag,
+				count(DISTINCT e.emp_id) conNum
+			FROM
+				v_dim_emp e
+			WHERE
+				e.customer_id = #{customerId}
+			<if test="subOrganIdList != null and subOrganIdList.size != 0">
+				AND e.organization_id in
+				<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+				'${oId}'
+				</foreach>
+			</if>
+		) c ON b.flag = c.flag
+	</select>
+	<!-- 本年项目投入产出 -->
+	<select id="getProjectInputOutputNum" resultMap="baseChartMap" useCache="true">
+		SELECT
+			IFNULL(sum(t.input), 0) sum_input,
+			IFNULL(sum(t.output), 0) sum_output
+		FROM
+			project p
+		RIGHT JOIN project_cost t ON p.customer_id = t.customer_id
+		AND p.project_id = t.project_id
+		WHERE YEAR(t.date) = #{year}
+		AND p.customer_id = #{customerId}
+		<include refid="queryFullOrganIdByContext"></include>
+		AND p.project_parent_id = '-1'
+	</select>
+	<!-- 本年项目负荷 -->
+	<select id="getProjectLoadNum" resultMap="baseChartMap" useCache="true">
+		SELECT
+			a.conNum * 100 / b.conNum perNum
+		FROM
+			(
+			SELECT
+				'f' flag,
+				COUNT(p.project_id) conNum
+			FROM
+				project p
+			WHERE
+				p.customer_id = #{customerId}
+			<include refid="queryFullOrganIdByContext"></include>
+			AND (YEAR (p.start_date) <![CDATA[<=]]> #{year} AND p.end_date IS NULL)
+			AND p.project_parent_id = '-1'
+			) a
+		INNER JOIN (
+				SELECT
+					'f' flag,
+					IFNULL(maxval, 0) conNum
+				FROM
+					project_maxvalue t
+				WHERE
+					t.customer_id = #{customerId}
+				AND t.organization_id  = #{organId}
+		) b ON a.flag = b.flag
+	</select>
+	
+	<!-- 主导项目记录数 -->
+	<select id="findLeadingProjectCount" resultType="int">
+		select count(projectId)
+		from(
+		select p.project_id as projectId,
+		p.project_name as projectName,
+		(select vde.user_name_ch from v_dim_emp vde where vde.emp_id=p.emp_id) as empName,
+		(select sum(input) from project_manpower pm where pm.project_id=p.project_id and date_format(pm.date,'%Y')=date_format(#{time},'%Y')) as manpowerInYear,
+		(select sum(input) from project_manpower pm where pm.project_id=p.project_id and date_format(pm.date,'%Y%m')=date_format(#{time},'%Y%m')) as manpowerInMonth,
+		(select sum(input) from project_manpower pm where pm.project_id=p.project_id and date_format(pm.date,'%Y%m')=date_format(DATE_SUB(#{time}, INTERVAL 1 MONTH),'%Y%m')) as manpowerLastMonth,
+		(select sum(input) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y')=date_format(#{time},'%Y')) as feeYearInput,
+		(select sum(input) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y%m')=date_format(#{time},'%Y%m')) as feeMonthInput,
+		(select sum(input) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y%m')=date_format(DATE_SUB(#{time}, INTERVAL 1 MONTH),'%Y%m')) as feeLastMonthInput,
+		(select sum(gain) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y')=date_format(#{time},'%Y')) as gainInYear,
+		(select sum(gain) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y%m')=date_format(#{time},'%Y%m')) as gainInMonth,
+		(select sum(gain) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y%m')=date_format(DATE_SUB(#{time}, INTERVAL 1 MONTH),'%Y%m')) as gainLastMonth,
+		p.start_date as startDate,
+		p.end_date as endDate,
+		(select sys_code_item_name from sys_code_item where code_group_id='projectProgress' and sys_code_item_id=p.project_progress_id) as projectProgress
+		from project p
+		where p.customer_id=#{customerId} 
+		<include refid="queryFullOrganIdByContext"></include>
+		<if test="projectProgress != null and projectProgress != ''">
+			and p.project_progress_id=#{projectProgress}
+		</if>
+		<if test="keyName != null and keyName != ''">
+			and p.project_name like CONCAT('%',#{keyName},'%')
+		</if>
+		<if test="startDate != null and startDate != ''">
+			and p.start_date >= #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			and p.end_date &lt;= #{endDate}
+		</if>
+		AND p.project_parent_id=-1
+		group by projectId
+		) tt
+		where 1=1
+		<if test="startManpowerInYear != null and startManpowerInYear >= 0">
+			and if(tt.manpowerInYear is null, 0, tt.manpowerInYear) >= #{startManpowerInYear}
+		</if>
+		<if test="endManpowerInYear != null and endManpowerInYear >= 0">
+			and if(tt.manpowerInYear is null, 0, tt.manpowerInYear) &lt;= #{endManpowerInYear}
+		</if>
+		<if test="startManpowerInMonth != null and startManpowerInMonth >= 0">
+			and if(tt.manpowerInMonth is null, 0, tt.manpowerInMonth) >= #{startManpowerInMonth}
+		</if>
+		<if test="endManpowerInMonth != null and endManpowerInMonth >= 0">
+			and if(tt.manpowerInMonth is null, 0, tt.manpowerInMonth) &lt;= #{endManpowerInMonth}
+		</if>
+		<if test="startManpowerLastMonth != null and startManpowerLastMonth >= 0">
+			and if(tt.manpowerLastMonth is null, 0, tt.manpowerLastMonth) >= #{startManpowerLastMonth}
+		</if>
+		<if test="endManpowerLastMonth != null and endManpowerLastMonth >= 0">
+			and if(tt.manpowerLastMonth is null, 0, tt.manpowerLastMonth) &lt;= #{endManpowerLastMonth}
+		</if>
+		<if test="startFeeYearInput != null and startFeeYearInput >= 0">
+			and if(tt.feeYearInput is null, 0, tt.feeYearInput) >= #{startFeeYearInput}
+		</if>
+		<if test="endFeeYearInput != null and endFeeYearInput >= 0">
+			and if(tt.feeYearInput is null, 0, tt.feeYearInput) &lt;= #{endFeeYearInput}
+		</if>
+		<if test="startFeeMonthInput != null and startFeeMonthInput >= 0">
+			and if(tt.feeMonthInput is null, 0, tt.feeMonthInput) >= #{startFeeMonthInput}
+		</if>
+		<if test="endFeeMonthInput != null and endFeeMonthInput >= 0">
+			and if(tt.feeMonthInput is null, 0, tt.feeMonthInput) &lt;= #{endFeeMonthInput}
+		</if>
+		<if test="startFeeLastMonthInput != null and startFeeLastMonthInput >= 0">
+			and if(tt.feeLastMonthInput is null, 0, tt.feeLastMonthInput) >= #{startFeeLastMonthInput}
+		</if>
+		<if test="endFeeLastMonthInput != null and endFeeLastMonthInput >= 0">
+			and if(tt.feeLastMonthInput is null, 0, tt.feeLastMonthInput) &lt;= #{endFeeLastMonthInput}
+		</if>
+		<if test="startGainInYear != null">
+			and if(tt.gainInYear is null, 0, tt.gainInYear) >= #{startGainInYear}
+		</if>
+		<if test="endGainInYear != null">
+			and if(tt.gainInYear is null, 0, tt.gainInYear) &lt;= #{endGainInYear}
+		</if>
+		<if test="startGainInMonth != null">
+			and if(tt.gainInMonth is null, 0, tt.gainInMonth) >= #{startGainInMonth}
+		</if>
+		<if test="endGainInMonth != null">
+			and if(tt.gainInMonth is null, 0, tt.gainInMonth) &lt;= #{endGainInMonth}
+		</if>
+		<if test="startGainLastMonth != null">
+			and if(tt.gainLastMonth is null, 0, tt.gainLastMonth) >= #{startGainLastMonth}
+		</if>
+		<if test="endGainLastMonth != null">
+			and if(tt.gainLastMonth is null, 0, tt.gainLastMonth) &lt;= #{endGainLastMonth}
+		</if>
+		<if test="principal != null and principal != ''">
+			and tt.empName like CONCAT('%',#{principal},'%')
+		</if>
+	</select>
+	<!-- 主导项目 -->
+	<select id="findLeadingProject" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select projectId, projectName, empName, 
+		if(tt.manpowerInYear is null, 0, tt.manpowerInYear) manpowerInYear, 
+		if(tt.manpowerInMonth is null, 0, tt.manpowerInMonth) manpowerInMonth, 
+		if(tt.manpowerLastMonth is null, 0, tt.manpowerLastMonth) manpowerLastMonth, 
+		(manpowerInMonth-manpowerLastMonth)/manpowerLastMonth as manpowerChangeRate, 
+		if(tt.feeYearInput is null, 0, tt.feeYearInput) feeYearInput, 
+		if(tt.feeMonthInput is null, 0, tt.feeMonthInput) feeMonthInput, 
+		if(tt.feeLastMonthInput is null, 0, tt.feeLastMonthInput) feeLastMonthInput, 
+		(feeMonthInput-feeLastMonthInput)/feeLastMonthInput as feeChangeRate, 
+		if(tt.gainInYear is null, 0, tt.gainInYear) gainInYear, 
+		if(tt.gainInMonth is null, 0, tt.gainInMonth) gainInMonth, 
+		if(tt.gainLastMonth is null, 0, tt.gainLastMonth) gainLastMonth, 
+		(gainInMonth-gainLastMonth)/gainLastMonth as gainChangeRate, 
+		startDate, endDate, projectProgress
+		from(
+		select p.project_id as projectId,
+		p.project_name as projectName,
+		(select vde.user_name_ch from v_dim_emp vde where vde.emp_id=p.emp_id) as empName,
+		(select sum(input) from project_manpower pm where pm.project_id=p.project_id and date_format(pm.date,'%Y')=date_format(#{time},'%Y')) as manpowerInYear,
+		(select sum(input) from project_manpower pm where pm.project_id=p.project_id and date_format(pm.date,'%Y%m')=date_format(#{time},'%Y%m')) as manpowerInMonth,
+		(select sum(input) from project_manpower pm where pm.project_id=p.project_id and date_format(pm.date,'%Y%m')=date_format(DATE_SUB(#{time}, INTERVAL 1 MONTH),'%Y%m')) as manpowerLastMonth,
+		(select sum(input) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y')=date_format(#{time},'%Y')) as feeYearInput,
+		(select sum(input) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y%m')=date_format(#{time},'%Y%m')) as feeMonthInput,
+		(select sum(input) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y%m')=date_format(DATE_SUB(#{time}, INTERVAL 1 MONTH),'%Y%m')) as feeLastMonthInput,
+		(select sum(gain) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y')=date_format(#{time},'%Y')) as gainInYear,
+		(select sum(gain) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y%m')=date_format(#{time},'%Y%m')) as gainInMonth,
+		(select sum(gain) from project_cost pc where pc.project_id=p.project_id and date_format(pc.date,'%Y%m')=date_format(DATE_SUB(#{time}, INTERVAL 1 MONTH),'%Y%m')) as gainLastMonth,
+		p.start_date as startDate,
+		p.end_date as endDate,
+		(select sys_code_item_name from sys_code_item where code_group_id='projectProgress' and sys_code_item_id=p.project_progress_id) as projectProgress
+		from project p
+		where 
+			p.customer_id=#{customerId} 
+		<include refid="queryFullOrganIdByContext"></include>
+		<if test="projectProgress != null and projectProgress != ''">
+			and p.project_progress_id=#{projectProgress}
+		</if>
+		<if test="keyName != null and keyName != ''">
+			and p.project_name like CONCAT('%',#{keyName},'%')
+		</if>
+		<if test="startDate != null and startDate != ''">
+			and p.start_date >= #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			and p.end_date &lt;= #{endDate}
+		</if>
+		and p.project_parent_id=-1
+		group by projectId
+		) tt
+		where 1=1
+		<if test="startManpowerInYear != null and startManpowerInYear >= 0">
+			and if(tt.manpowerInYear is null, 0, tt.manpowerInYear) >= #{startManpowerInYear}
+		</if>
+		<if test="endManpowerInYear != null and endManpowerInYear >= 0">
+			and if(tt.manpowerInYear is null, 0, tt.manpowerInYear) &lt;= #{endManpowerInYear}
+		</if>
+		<if test="startManpowerInMonth != null and startManpowerInMonth >= 0">
+			and if(tt.manpowerInMonth is null, 0, tt.manpowerInMonth) >= #{startManpowerInMonth}
+		</if>
+		<if test="endManpowerInMonth != null and endManpowerInMonth >= 0">
+			and if(tt.manpowerInMonth is null, 0, tt.manpowerInMonth) &lt;= #{endManpowerInMonth}
+		</if>
+		<if test="startManpowerLastMonth != null and startManpowerLastMonth >= 0">
+			and if(tt.manpowerLastMonth is null, 0, tt.manpowerLastMonth) >= #{startManpowerLastMonth}
+		</if>
+		<if test="endManpowerLastMonth != null and endManpowerLastMonth >= 0">
+			and if(tt.manpowerLastMonth is null, 0, tt.manpowerLastMonth) &lt;= #{endManpowerLastMonth}
+		</if>
+		<if test="startFeeYearInput != null and startFeeYearInput >= 0">
+			and if(tt.feeYearInput is null, 0, tt.feeYearInput) >= #{startFeeYearInput}
+		</if>
+		<if test="endFeeYearInput != null and endFeeYearInput >= 0">
+			and if(tt.feeYearInput is null, 0, tt.feeYearInput) &lt;= #{endFeeYearInput}
+		</if>
+		<if test="startFeeMonthInput != null and startFeeMonthInput >= 0">
+			and if(tt.feeMonthInput is null, 0, tt.feeMonthInput) >= #{startFeeMonthInput}
+		</if>
+		<if test="endFeeMonthInput != null and endFeeMonthInput >= 0">
+			and if(tt.feeMonthInput is null, 0, tt.feeMonthInput) &lt;= #{endFeeMonthInput}
+		</if>
+		<if test="startFeeLastMonthInput != null and startFeeLastMonthInput >= 0">
+			and if(tt.feeLastMonthInput is null, 0, tt.feeLastMonthInput) >= #{startFeeLastMonthInput}
+		</if>
+		<if test="endFeeLastMonthInput != null and endFeeLastMonthInput >= 0">
+			and if(tt.feeLastMonthInput is null, 0, tt.feeLastMonthInput) &lt;= #{endFeeLastMonthInput}
+		</if>
+		<if test="startGainInYear != null">
+			and if(tt.gainInYear is null, 0, tt.gainInYear) >= #{startGainInYear}
+		</if>
+		<if test="endGainInYear != null">
+			and if(tt.gainInYear is null, 0, tt.gainInYear) &lt;= #{endGainInYear}
+		</if>
+		<if test="startGainInMonth != null">
+			and if(tt.gainInMonth is null, 0, tt.gainInMonth) >= #{startGainInMonth}
+		</if>
+		<if test="endGainInMonth != null">
+			and if(tt.gainInMonth is null, 0, tt.gainInMonth) &lt;= #{endGainInMonth}
+		</if>
+		<if test="startGainLastMonth != null">
+			and if(tt.gainLastMonth is null, 0, tt.gainLastMonth) >= #{startGainLastMonth}
+		</if>
+		<if test="endGainLastMonth != null">
+			and if(tt.gainLastMonth is null, 0, tt.gainLastMonth) &lt;= #{endGainLastMonth}
+		</if>
+		<if test="principal != null and principal != ''">
+			and tt.empName like CONCAT('%',#{principal},'%')
+		</if>
+		ORDER BY CONVERT(tt.projectName USING GBK)
+		LIMIT #{rowBounds.offset}, #{rowBounds.limit}
+	</select>
+	
+	<!-- 参与项目记录数 -->
+	<select id="findParticipateProjectCount" resultType="int">
+		select count(tt.projectId)
+		from (
+		select p.project_id as projectId,
+		p.project_name as projectName,
+		(select sum(input) from project_manpower where project_id=ppr.project_id and date_format(date,'%Y')=date_format(#{time},'%Y')) as manpowerInYear,
+		(select sum(input) from project_manpower where project_id=ppr.project_id and date_format(date,'%Y%m')=date_format(#{time},'%Y%m')) as manpowerInMonth,
+		(select sum(input) from project_manpower where project_id=ppr.project_id and date_format(date,'%Y%m')=date_format(DATE_SUB(#{time}, INTERVAL 1 MONTH),'%Y%m')) as manpowerLastMonth,
+		b.m manageSeries,
+		b.f functionalSeries,
+		b.p professionalSeries,
+		b.b businessSeries,
+		p.start_date as startDate,
+		p.end_date as endDate,
+		(select sys_code_item_name from sys_code_item where code_group_id='projectProgress' and sys_code_item_id=p.project_progress_id) as projectProgress
+		from project_partake_relation ppr
+		inner join project p on ppr.customer_id = p.customer_id and ppr.project_id=p.project_id
+		<if test="projectProgress != null and projectProgress != ''">
+			and p.project_progress_id=#{projectProgress}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			and p.start_date >= #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			and p.end_date &lt;= #{endDate}
+		</if>
+		<if test="keyName != null and keyName != ''">
+			and p.project_name like CONCAT('%',#{keyName},'%')
+		</if>
+		LEFT JOIN (
+			SELECT
+				a.project_id,
+				MAX(CASE WHEN a.curt_name = 'M' THEN a.con ELSE 0 END) m, 
+				MAX(CASE WHEN a.curt_name = 'F' THEN a.con ELSE 0 END) f, 
+				MAX(CASE WHEN a.curt_name = 'P' THEN a.con ELSE 0 END) p, 
+				MAX(CASE WHEN a.curt_name = 'B' THEN a.con ELSE 0 END) b 
+			FROM
+				(
+					SELECT pm.project_id, ds.curt_name, SUM(pm.input) con
+					FROM project_manpower pm
+					INNER JOIN v_dim_emp vde ON pm.customer_id = vde.customer_id
+					AND pm.emp_id = vde.emp_id
+					LEFT JOIN dim_sequence ds ON vde.customer_id = ds.customer_id
+					AND vde.sequence_id = ds.sequence_id
+					GROUP BY pm.project_id, ds.curt_name
+				) a
+			GROUP BY a.project_id
+		) b ON p.project_id = b.project_id
+		where 
+			ppr.customer_id=#{customerId} 
+		<if test="subOrganIdList != null and subOrganIdList.size != 0">
+			AND ppr.organization_id in
+			<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+			'${oId}'
+			</foreach>
+		</if>
+		group by projectId
+		) tt where 1=1
+		<if test="startManpowerInYear != null and startManpowerInYear >= 0">
+			and if(tt.manpowerInYear is null, 0, tt.manpowerInYear) >= #{startManpowerInYear}
+		</if>
+		<if test="endManpowerInYear != null and endManpowerInYear >= 0">
+			and if(tt.manpowerInYear is null, 0, tt.manpowerInYear) &lt;= #{endManpowerInYear}
+		</if>
+		<if test="startManpowerInMonth != null and startManpowerInMonth >= 0">
+			and if(tt.manpowerInMonth is null, 0, tt.manpowerInMonth) >= #{startManpowerInMonth}
+		</if>
+		<if test="endManpowerInMonth != null and endManpowerInMonth >= 0">
+			and if(tt.manpowerInMonth is null, 0, tt.manpowerInMonth) &lt;= #{endManpowerInMonth}
+		</if>
+		<if test="startManpowerLastMonth != null and startManpowerLastMonth >= 0">
+			and if(tt.manpowerLastMonth is null, 0, tt.manpowerLastMonth) >= #{startManpowerLastMonth}
+		</if>
+		<if test="endManpowerLastMonth != null and endManpowerLastMonth >= 0">
+			and if(tt.manpowerLastMonth is null, 0, tt.manpowerLastMonth) &lt;= #{endManpowerLastMonth}
+		</if>
+	</select>
+	<!-- 参与项目 -->
+	<select id="findParticipateProject" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select tt.projectId, tt.projectName, 
+		if(tt.manpowerInYear is null, 0, tt.manpowerInYear) manpowerInYear, 
+		if(tt.manpowerInMonth is null, 0, tt.manpowerInMonth) manpowerInMonth, 
+		if(tt.manpowerLastMonth is null, 0, tt.manpowerLastMonth) manpowerLastMonth, 
+		IFNULL((tt.manpowerInMonth - tt.manpowerLastMonth) / tt.manpowerLastMonth, 0) manpowerChangeRate,
+		tt.manageSeries, tt.functionalSeries, tt.professionalSeries, tt.businessSeries, 
+		tt.startDate, tt.endDate, tt.projectProgress
+		from (
+		select p.project_id as projectId,
+		p.project_name as projectName,
+		(select sum(input) from project_manpower where project_id=ppr.project_id and date_format(date,'%Y')=date_format(#{time},'%Y')) as manpowerInYear,
+		(select sum(input) from project_manpower where project_id=ppr.project_id and date_format(date,'%Y%m')=date_format(#{time},'%Y%m')) as manpowerInMonth,
+		(select sum(input) from project_manpower where project_id=ppr.project_id and date_format(date,'%Y%m')=date_format(DATE_SUB(#{time}, INTERVAL 1 MONTH),'%Y%m')) as manpowerLastMonth,
+		b.m manageSeries,
+		b.f functionalSeries,
+		b.p professionalSeries,
+		b.b businessSeries,
+		p.start_date as startDate,
+		p.end_date as endDate,
+		(select sys_code_item_name from sys_code_item where code_group_id='projectProgress' and sys_code_item_id=p.project_progress_id) as projectProgress
+		from project_partake_relation ppr
+		inner join project p on ppr.customer_id = p.customer_id and ppr.project_id=p.project_id
+		<if test="projectProgress != null and projectProgress != ''">
+			and p.project_progress_id=#{projectProgress}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			and p.start_date >= #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			and p.end_date &lt;= #{endDate}
+		</if>
+		<if test="keyName != null and keyName != ''">
+			and p.project_name like CONCAT('%',#{keyName},'%')
+		</if>
+		LEFT JOIN (
+			SELECT
+				a.project_id,
+				MAX(CASE WHEN a.curt_name = 'M' THEN a.con ELSE 0 END) m, 
+				MAX(CASE WHEN a.curt_name = 'F' THEN a.con ELSE 0 END) f, 
+				MAX(CASE WHEN a.curt_name = 'P' THEN a.con ELSE 0 END) p, 
+				MAX(CASE WHEN a.curt_name = 'B' THEN a.con ELSE 0 END) b 
+			FROM
+				(
+					SELECT pm.project_id, ds.curt_name, SUM(pm.input) con
+					FROM project_manpower pm
+					INNER JOIN v_dim_emp vde ON pm.customer_id = vde.customer_id
+					AND pm.emp_id = vde.emp_id
+					LEFT JOIN dim_sequence ds ON vde.customer_id = ds.customer_id
+					AND vde.sequence_id = ds.sequence_id
+					GROUP BY pm.project_id, ds.curt_name
+				) a
+			GROUP BY a.project_id
+		) b ON p.project_id = b.project_id
+		where 
+			ppr.customer_id=#{customerId} 
+		<if test="subOrganIdList != null and subOrganIdList.size != 0">
+			AND ppr.organization_id in
+			<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+			'${oId}'
+			</foreach>
+		</if>
+		group by projectId
+		) tt where 1=1
+		<if test="startManpowerInYear != null and startManpowerInYear >= 0">
+			and if(tt.manpowerInYear is null, 0, tt.manpowerInYear) >= #{startManpowerInYear}
+		</if>
+		<if test="endManpowerInYear != null and endManpowerInYear >= 0">
+			and if(tt.manpowerInYear is null, 0, tt.manpowerInYear) &lt;= #{endManpowerInYear}
+		</if>
+		<if test="startManpowerInMonth != null and startManpowerInMonth >= 0">
+			and if(tt.manpowerInMonth is null, 0, tt.manpowerInMonth) >= #{startManpowerInMonth}
+		</if>
+		<if test="endManpowerInMonth != null and endManpowerInMonth >= 0">
+			and if(tt.manpowerInMonth is null, 0, tt.manpowerInMonth) &lt;= #{endManpowerInMonth}
+		</if>
+		<if test="startManpowerLastMonth != null and startManpowerLastMonth >= 0">
+			and if(tt.manpowerLastMonth is null, 0, tt.manpowerLastMonth) >= #{startManpowerLastMonth}
+		</if>
+		<if test="endManpowerLastMonth != null and endManpowerLastMonth >= 0">
+			and if(tt.manpowerLastMonth is null, 0, tt.manpowerLastMonth) &lt;= #{endManpowerLastMonth}
+		</if>
+		ORDER BY CONVERT(tt.projectName USING GBK)
+		LIMIT #{rowBounds.offset}, #{rowBounds.limit}
+	</select>
+	
+	<!-- 人员统计记录数 -->
+	<select id="findEmployeeStatisticsCount" resultType="int">
+		select count(distinct a.emp_id)
+		from (
+			select vde.emp_id,
+				vde.user_name_ch,
+				vde.organization_name,
+				count(DISTINCT pm.project_id) as co1
+			from v_dim_emp vde
+			INNER JOIN project_manpower pm 
+				on vde.emp_id=pm.emp_id
+				and vde.customer_id=pm.customer_id
+			INNER JOIN project p
+				on pm.project_id=p.project_id
+				and pm.customer_id=p.customer_id
+				and (YEAR(p.end_date)=#{year} or p.end_date is NULL)
+			where vde.organization_id in 
+			(
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE locate(
+					(
+						SELECT t.full_path FROM dim_organization t
+						WHERE t.organization_id=#{organId} and t.customer_id=#{customerId}
+					), t1.full_path
+				) and t1.customer_id=#{customerId}
+			) 
+			and vde.customer_id=#{customerId}
+			<if test="keyName != null ">
+				and (vde.user_name_ch like CONCAT('%',#{keyName},'%') OR vde.emp_key like CONCAT('%',#{keyName},'%'))
+			</if>
+			GROUP BY vde.emp_id,vde.user_name_ch
+		) a
+		LEFT JOIN
+		(
+			select vde.emp_id,count(DISTINCT pm.project_id) as co2
+			from v_dim_emp vde
+			INNER JOIN project_manpower pm 
+				on vde.emp_id=pm.emp_id
+				and vde.customer_id=pm.customer_id
+			INNER JOIN project p
+				on pm.project_id=p.project_id
+				and pm.customer_id=p.customer_id
+				and  p.end_date is NULL
+			where vde.customer_id=#{customerId}
+			GROUP BY vde.emp_id
+		) b 
+			on a.emp_id=b.emp_id
+		LEFT JOIN
+		(
+			select DISTINCT p.emp_id from  project p
+			where (YEAR(p.end_date)=#{year} or p.end_date is NULL)
+		) c on a.emp_id=c.emp_id
+		where 1=1
+		<if test="startProjectNumInYear != null and startProjectNumInYear >= 0">
+			and (case when a.co1 is null then 0 else a.co1 end) >= #{startProjectNumInYear}
+		</if>
+		<if test="endProjectNumInYear != null and endProjectNumInYear >= 0">
+			and (case when a.co1 is null then 0 else a.co1 end) &lt;= #{endProjectNumInYear}
+		</if>
+		<if test="startProjectNum != null and startProjectNum >= 0">
+			and (case when b.co2 is null then 0 else b.co2 end) >= #{startProjectNum}
+		</if>
+		<if test="endProjectNum != null and endProjectNum >= 0">
+			and (case when b.co2 is null then 0 else b.co2 end) &lt;= #{endProjectNum}
+		</if>
+		<if test="principal != null and principal != ''">
+			and (case when c.emp_id is null then 0 else 1 end) = #{principal}
+		</if>
+	</select>
+	<!-- 人员统计 -->
+	<select id="findEmployeeStatistics" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select a.emp_id as empId, 
+			a.user_name_ch as empName, 
+			a.organization_name as organName,
+			case when a.co1 is null then 0 else a.co1 end as projectNumInYear, 
+			case when b.co2 is null then 0 else b.co2 end as projectNum, 
+			case when c.emp_id is null then 0 else 1 end as isPrincipal
+		from (
+			select vde.emp_id,
+				vde.user_name_ch,
+				vde.organization_name,
+				count(DISTINCT pm.project_id) as co1
+			from v_dim_emp vde
+			INNER JOIN project_manpower pm 
+				on vde.emp_id=pm.emp_id
+				and vde.customer_id=pm.customer_id
+			INNER JOIN project p
+				on pm.project_id=p.project_id
+				and pm.customer_id=p.customer_id
+				and (YEAR(p.end_date)=#{year} or p.end_date is NULL)
+			where vde.organization_id in 
+			(
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE locate(
+					(
+						SELECT t.full_path FROM dim_organization t
+						WHERE t.organization_id=#{organId} and t.customer_id=#{customerId}
+					), t1.full_path
+				) and t1.customer_id=#{customerId}
+			) 
+			and vde.customer_id=#{customerId}
+			<if test="keyName != null ">
+				and (vde.user_name_ch like CONCAT('%',#{keyName},'%') OR vde.emp_key like CONCAT('%',#{keyName},'%'))
+			</if>
+			GROUP BY vde.emp_id,vde.user_name_ch
+		) a
+		LEFT JOIN
+		(
+			select vde.emp_id,count(DISTINCT pm.project_id) as co2
+			from v_dim_emp vde
+			INNER JOIN project_manpower pm 
+				on vde.emp_id=pm.emp_id
+				and vde.customer_id=pm.customer_id
+			INNER JOIN project p
+				on pm.project_id=p.project_id
+				and pm.customer_id=p.customer_id
+				and  p.end_date is NULL
+			where vde.customer_id=#{customerId}
+			GROUP BY vde.emp_id
+		) b 
+			on a.emp_id=b.emp_id
+		LEFT JOIN
+		(
+			select DISTINCT p.emp_id from project p
+			where (YEAR(p.end_date)=#{year} or p.end_date is NULL)
+		) c on a.emp_id=c.emp_id
+		where 1=1
+		<if test="startProjectNumInYear != null and startProjectNumInYear >= 0">
+			and (case when a.co1 is null then 0 else a.co1 end) >= #{startProjectNumInYear}
+		</if>
+		<if test="endProjectNumInYear != null and endProjectNumInYear >= 0">
+			and (case when a.co1 is null then 0 else a.co1 end) &lt;= #{endProjectNumInYear}
+		</if>
+		<if test="startProjectNum != null and startProjectNum >= 0">
+			and (case when b.co2 is null then 0 else b.co2 end) >= #{startProjectNum}
+		</if>
+		<if test="endProjectNum != null and endProjectNum >= 0">
+			and (case when b.co2 is null then 0 else b.co2 end) &lt;= #{endProjectNum}
+		</if>
+		<if test="principal != null and principal != ''">
+			and (case when c.emp_id is null then 0 else 1 end) = #{principal}
+		</if>
+		ORDER BY isPrincipal DESC, a.co1 DESC, b.co2 DESC, convert(a.user_name_ch using GBK)
+		LIMIT #{rowBounds.offset}, #{rowBounds.limit}
+	</select>
+	
+	<!-- 当前人力投入 -->
+	<select id="findCurrentEmployeeCount" resultType="int">
+		select count(DISTINCT vd.user_name_ch)
+		from project_manpower pm
+		inner join project p on p.customer_id=pm.customer_id and p.project_id=pm.project_sub_id
+		left join (select vde.emp_id, vde.user_name_ch, vde.customer_id, don.organization_name 
+			from v_dim_emp vde, dim_organization don 
+			where don.organization_id=vde.organization_id and don.customer_id=vde.customer_id) vd
+			on vd.emp_id=pm.emp_id and vd.customer_id=pm.customer_id
+		where pm.customer_id=#{customerId} 
+			and pm.project_id=#{projectId}
+		<if test="year != null and year != ''">
+			AND YEAR(pm.date) = #{year}
+		</if>
+		<if test="minDate != null and minDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[>=]]> #{minDate}
+		</if>
+		<if test="maxDate != null and maxDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[<=]]> #{maxDate}
+		</if>
+	</select>
+	<select id="findCurrentEmployee" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select vd.user_name_ch as empName,
+			pm.project_id as projectId,
+			vd.organization_name as projectName,
+			p.project_name subProjectName,
+			sum(pm.input) as manpowerInput,
+			pm.note as workContent
+		from project_manpower pm
+		inner join project p on p.customer_id=pm.customer_id and p.project_id=pm.project_sub_id
+		left join (select vde.emp_id, vde.user_name_ch, vde.customer_id, don.organization_name 
+			from v_dim_emp vde, dim_organization don 
+			where don.organization_id=vde.organization_id and don.customer_id=vde.customer_id) vd
+			on vd.emp_id=pm.emp_id and vd.customer_id=pm.customer_id
+		where pm.customer_id=#{customerId} 
+			and pm.project_id=#{projectId}
+			<if test="year != null and year != ''">
+				AND YEAR(pm.date) = #{year}
+			</if>
+			<if test="minDate != null and minDate != ''">
+				AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[>=]]> #{minDate}
+			</if>
+			<if test="maxDate != null and maxDate != ''">
+				AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[<=]]> #{maxDate}
+			</if>
+		group by vd.user_name_ch,p.project_id
+		order by sum(pm.input) desc
+	</select>
+	
+	<!-- 参与项目明细 -->
+	<select id="findParticipateProjectDetail" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select p.project_name as projectName,
+			case when vde.emp_id=p.emp_id then '负责人' else '参与者' END as empName,
+			SUM(pm.input) as manpowerInput,
+			p.start_date as startDate,
+			p.end_date as endDate,
+			(select sys_code_item_name from sys_code_item where sys_code_item_id=p.project_progress_id) as projectProgress
+		from v_dim_emp vde
+		INNER JOIN project_manpower pm 
+			on vde.emp_id=pm.emp_id
+			and vde.customer_id=pm.customer_id
+		INNER JOIN project p
+			on pm.project_id=p.project_id
+			and pm.customer_id=p.customer_id
+			and (YEAR(p.end_date)=#{year} or p.end_date is NULL)
+		where vde.customer_id =#{customerId}
+			and vde.emp_id=#{empId}
+		GROUP BY p.project_name
+		ORDER BY SUM(pm.input) DESC
+	</select>
+	
+	<!-- 人力投入环比趋势 -->
+	<select id="queryManpowerInputByMonth" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select sum(pm.input) as manpowerInput, 
+			date_format(pm.date, '%Y%m') as yearMonth
+		from project_manpower pm
+		inner join project p 
+			on pm.project_id=p.project_id
+		where pm.customer_id=#{customerId}
+			and pm.project_id=#{projectId}
+			<!-- and date_format(pm.date, '%Y%m')>date_format(date_sub(#{now}, interval 12 month),'%Y%m') -->
+			<!-- and p.organization_id=#{organId} -->
+		<if test="year != null and year != ''">
+			AND YEAR(pm.date) = #{year}
+		</if>
+		<if test="minDate != null and minDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[>=]]> #{minDate}
+		</if>
+		<if test="maxDate != null and maxDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[<=]]> #{maxDate}
+		</if>
+		group by date_format(pm.date, '%Y%m')
+		order by yearMonth DESC
+	</select>
+	
+	<!-- 子项目明细 -->
+	<select id="querySubprojectById" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto"> 
+		SELECT
+			p.project_id AS projectId, p.project_parent_id AS projectParentId,
+			p.project_name AS projectName, vde.user_name_ch empName, p.has_chilren AS hasChildren,
+			(
+				SELECT sum(pm1.input)
+				FROM project_manpower pm1
+				WHERE pm1.project_id = p.project_id
+				<if test="year != null and year != ''">
+					AND YEAR(pm1.date) = #{year}
+				</if>
+				<if test="minDate != null and minDate != ''">
+					AND DATE_FORMAT(pm1.date,'%Y%m') <![CDATA[>=]]> #{minDate}
+				</if>
+				<if test="maxDate != null and maxDate != ''">
+					AND DATE_FORMAT(pm1.date,'%Y%m') <![CDATA[<=]]> #{maxDate}
+				</if>
+			) AS manpowerInMonth,
+			(
+				SELECT sum(pm1.input)
+				FROM project_manpower pm1
+				WHERE pm1.project_id = p.project_id
+				<if test="befYear != null and befYear != ''">
+					AND YEAR(pm1.date) = #{befYear}
+				</if>
+				<if test="befMinDate != null and befMinDate != ''">
+					AND DATE_FORMAT(pm1.date,'%Y%m') <![CDATA[>=]]> #{befMinDate}
+				</if>
+				<if test="befMaxDate != null and befMaxDate != ''">
+					AND DATE_FORMAT(pm1.date,'%Y%m') <![CDATA[<=]]> #{befMaxDate}
+				</if>
+			) AS manpowerLastMonth,
+			b.m manageSeries, b.f functionalSeries, b.p professionalSeries, b.b businessSeries
+		FROM project p
+		INNER JOIN v_dim_emp vde ON p.customer_id = vde.customer_id AND p.emp_id = vde.emp_id
+		LEFT JOIN (
+			SELECT
+				a.project_id,
+				MAX(CASE WHEN a.curt_name = 'M' THEN a.con ELSE 0 END) m, 
+				MAX(CASE WHEN a.curt_name = 'F' THEN a.con ELSE 0 END) f, 
+				MAX(CASE WHEN a.curt_name = 'P' THEN a.con ELSE 0 END) p, 
+				MAX(CASE WHEN a.curt_name = 'B' THEN a.con ELSE 0 END) b 
+			FROM
+				(
+					SELECT pm.project_id, ds.curt_name, SUM(pm.input) con
+					FROM project_manpower pm
+					INNER JOIN v_dim_emp vde ON pm.customer_id = vde.customer_id
+					AND pm.emp_id = vde.emp_id
+					LEFT JOIN dim_sequence ds ON vde.customer_id = ds.customer_id
+					AND vde.sequence_id = ds.sequence_id
+					WHERE pm.customer_id = #{customerId}
+					<if test="year != null and year != ''">
+						AND YEAR(pm.date) = #{year}
+					</if>
+					<if test="minDate != null and minDate != ''">
+						AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[>=]]> #{minDate}
+					</if>
+					<if test="maxDate != null and maxDate != ''">
+						AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[<=]]> #{maxDate}
+					</if>
+					GROUP BY pm.project_id, ds.curt_name
+				) a
+			GROUP BY a.project_id
+		) b ON p.project_id = b.project_id
+		WHERE p.customer_id = #{customerId}
+		<if test="parentId != null">
+			AND p.project_parent_id=#{parentId}
+		</if>
+		<if test="projectId != null">
+			AND p.project_id=#{projectId}
+		</if>
+	</select>
+	
+	<!-- 投入产出比 -->
+	<select id="queryInputOutputByMonth" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select pc.project_id as projectId,
+			pc.input as inputFee,
+			pc.output as outputFee,
+			(pc.output/pc.input) as inputOutputRatio,
+			date_format(pc.date, '%Y%m') as yearMonth
+		from project_cost pc
+		inner join project p 
+			on pc.project_id=p.project_id
+		where pc.customer_id=#{customerId}
+			and pc.project_id=#{projectId}
+			<if test="year != null and year != ''">
+				YEAR(pc.date) = #{year}
+			</if>
+			<if test="minDate != null and minDate != ''">
+				AND date_format(pc.date, '%Y%m') <![CDATA[>=]]> #{minDate}
+			</if>
+			<if test="maxDate != null and maxDate != ''">
+				AND date_format(pc.date, '%Y%m') <![CDATA[<=]]> #{maxDate}
+			</if>
+		GROUP BY yearMonth
+		ORDER BY yearMonth DESC
+	</select>
+	<!-- 年投入产出比 -->
+	<select id="queryInputOutputByYear" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select pc.project_id as projectId,
+			sum(pc.input) as inputFeeInYear,
+			sum(pc.output) as outputFeeInYear
+		from project_cost pc
+		inner join project p 
+			on pc.project_id=p.project_id
+		where pc.customer_id=#{customerId}
+			and pc.project_id=#{projectId}
+			<if test="year != null and year != ''">
+				YEAR(pc.date) = #{year}
+			</if>
+			<if test="minDate != null and minDate != ''">
+				AND date_format(pc.date, '%Y%m') <![CDATA[>=]]> #{minDate}
+			</if>
+			<if test="maxDate != null and maxDate != ''">
+				AND date_format(pc.date, '%Y%m') <![CDATA[<=]]> #{maxDate}
+			</if>
+	</select>
+	<!-- 费用类型 -->
+	<select id="queryProjectInputTypeInfo" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select dpit.project_input_type_id as projectTypeId, 
+			dpit.project_input_type_name as projectTypeName 
+		from dim_project_input_type dpit 
+		where dpit.customer_id=#{customerId}
+		order by dpit.show_index
+	</select>
+	<!-- 费用明细 -->
+	<select id="queryFeeDetailById" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryInputTypeDto">
+		SELECT
+			tt.project_id as projectId,
+			tt.project_parent_id as projectParentId,
+			tt.project_name as projectName,
+			tt.has_chilren as hasChildren,
+			<foreach collection="listCost" index="index" item="cost">
+				SUM(case when tt.project_input_type_id=#{cost} then tt.outlay else 0 end) as cost#{index},
+			</foreach>
+			SUM(tt.outlay) as total
+		FROM
+		(SELECT
+			pid.project_id,
+			p.project_parent_id,
+			p.project_name,
+			p.has_chilren,
+			pid.project_input_type_id,
+			sum(outlay) outlay
+		FROM
+			project_input_detail pid
+		LEFT JOIN project p ON p.project_id = pid.project_id
+		WHERE pid.customer_id=#{customerId}
+			<if test="parentId != null">
+				AND p.project_parent_id=#{parentId}
+			</if>
+			<if test="projectId != null">
+				AND p.project_id=#{projectId}
+			</if>
+			<if test="year != null and year != ''">
+				AND YEAR(pid.date) = #{year}
+			</if>
+			<if test="minDate != null and minDate != ''">
+				AND date_format(pid.date, '%Y%m') <![CDATA[>=]]> #{minDate}
+			</if>
+			<if test="maxDate != null and maxDate != ''">
+				AND date_format(pid.date, '%Y%m') <![CDATA[<=]]> #{maxDate}
+			</if>
+		GROUP BY
+			project_id,
+			project_input_type_id) tt
+		GROUP BY tt.project_id
+	</select>
+	<!-- 项目投入产出费用相关返回结果字段数据 -->
+	<sql id="selectResultDatas">
+		<if test="quarter != null and quarter != ''">
+			CONCAT(YEAR(c.date),'/Q',QUARTER(c.date)) date,
+		</if>
+		<if test="quarter == null or quarter == ''">
+			DATE_FORMAT(c.date, '%y/%m') date,
+		</if>
+	</sql>
+	<!-- 项目投入产出费用相关group by/order by -->
+	<sql id="groupAndOrderParam">
+		<if test="quarter != null and quarter != ''">
+			GROUP BY QUARTER(c.date)
+			ORDER BY QUARTER(c.date)
+		</if>
+		<if  test="quarter == null or quarter == ''">
+			GROUP BY DATE_FORMAT(c.date, '%y/%m')
+			ORDER BY DATE_FORMAT(c.date, '%y/%m')
+		</if>
+	</sql>
+	
+	<!-- 投入产出分析 -->
+	<select id="queryInputOutputAmount" resultMap="baseChartMap" useCache="true">
+		SELECT
+			<include refid="selectResultDatas"></include>
+			sum(c.input) sum_input,
+			sum(c.output) sum_output
+		FROM
+			project p
+		LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+		AND p.project_id = c.project_id
+		WHERE YEAR(c.date) = #{year}
+		AND p.customer_id = #{customerId}
+		<include refid="queryFullOrganIdByContext"></include>
+		AND p.project_parent_id = '-1'
+		<include refid="groupAndOrderParam"></include>
+	</select>
+	<!-- 投入产出地图 -->
+	<select id="queryInputOutputMap" resultMap="baseChartMap" useCache="true">
+		SELECT
+			p.project_name,
+			SUM(c.input) sum_input,
+			SUM(c.output) sum_output
+		FROM
+			project p
+		LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+		AND p.project_id = c.project_id
+		WHERE p.customer_id = #{customerId}
+		AND (
+			(
+				YEAR (p.end_date) = #{year}
+			)
+			OR (
+				YEAR (p.start_date) <![CDATA[<=]]> #{year}
+				AND p.end_date IS NULL
+			)
+		)
+		AND YEAR (c.date) = #{year}
+		<include refid="queryFullOrganIdByContext"></include>
+		AND p.project_parent_id = '-1'
+		GROUP BY p.project_name
+	</select>
+	
+	<!-- 盈亏项目数，盈亏金额 -->
+	<select id="queryProfitLossProject" resultMap="baseChartMap" useCache="true">
+		SELECT tol.date, tol.m_con, tol.m_gain, tol.l_con, tol.l_gain
+		FROM (
+			SELECT wh.date, wh.m_con, wh.m_gain, wh.l_con, wh.l_gain
+			FROM
+				(
+					SELECT
+						IFNULL(a.date, b.date) date,
+						IFNULL(a.m_con, 0) m_con,
+						IFNULL(a.m_gain, 0) m_gain,
+						IFNULL(b.l_con, 0) l_con,
+						IFNULL(b.l_gain, 0) l_gain
+					FROM
+						(
+							SELECT
+								<include refid="selectResultDatas"></include>
+								count(1) m_con,
+								sum((c.output - c.input)) m_gain
+							FROM project p
+							LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+							AND p.project_id = c.project_id
+							WHERE YEAR (c.date) = #{year}
+							AND (c.output - c.input) <![CDATA[>]]> 0
+							AND p.customer_id = #{customerId}
+							<include refid="queryFullOrganIdByContext"></include>
+							AND p.project_parent_id = '-1'
+							<include refid="groupAndOrderParam"></include>
+						) a
+					LEFT JOIN (
+						SELECT
+							<include refid="selectResultDatas"></include>
+							count(1) l_con,
+							sum((c.output - c.input)) l_gain
+						FROM project p
+						LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+						AND p.project_id = c.project_id
+						WHERE YEAR (c.date) = #{year}
+						AND (c.output - c.input) <![CDATA[<]]> 0
+						AND p.customer_id = #{customerId}
+						<include refid="queryFullOrganIdByContext"></include>
+						AND p.project_parent_id = '-1'
+						<include refid="groupAndOrderParam"></include>
+					) b ON a.date = b.date
+					UNION
+						SELECT
+							IFNULL(g.date, h.date) date,
+							IFNULL(g.m_con, 0) m_con,
+							IFNULL(g.m_gain, 0) m_gain,
+							IFNULL(h.l_con, 0) l_con,
+							IFNULL(h.l_gain, 0) l_gain
+						FROM
+							(
+								SELECT
+									<include refid="selectResultDatas"></include>
+									count(1) m_con,
+									sum((c.output - c.input)) m_gain
+								FROM project p
+								LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+								AND p.project_id = c.project_id
+								WHERE YEAR (c.date) = #{year}
+								AND (c.output - c.input) <![CDATA[>]]> 0
+								AND p.customer_id = #{customerId}
+								<include refid="queryFullOrganIdByContext"></include>
+								AND p.project_parent_id = '-1'
+								<include refid="groupAndOrderParam"></include>
+							) g
+						RIGHT JOIN (
+							SELECT
+								<include refid="selectResultDatas"></include>
+								count(1) l_con,
+								sum((c.output - c.input)) l_gain
+							FROM project p
+							LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+							AND p.project_id = c.project_id
+							WHERE YEAR (c.date) = #{year}
+							AND (c.output - c.input) <![CDATA[<]]> 0
+							AND p.customer_id = #{customerId}
+							<include refid="queryFullOrganIdByContext"></include>
+							AND p.project_parent_id = '-1'
+							<include refid="groupAndOrderParam"></include>
+						) h ON g.date = h.date
+				) wh
+			UNION
+				SELECT
+					IFNULL(w.date, z.date) date,
+					IFNULL(w.m_con, 0) m_con,
+					IFNULL(w.m_gain, 0) m_gain,
+					IFNULL(z.l_con, 0) l_con,
+					IFNULL(z.l_gain, 0) l_gain
+				FROM
+					(
+						SELECT
+							'y' flag,
+							DATE_FORMAT(x.date, '%Y') date,
+							count(1) m_con,
+							sum(x.m_gain) m_gain
+						FROM
+							(
+								SELECT c.date, c.project_id, sum((c.output - c.input)) m_gain
+								FROM project p
+								LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+								AND p.project_id = c.project_id
+								WHERE YEAR (c.date) = #{year}
+								AND p.customer_id = #{customerId}
+								<include refid="queryFullOrganIdByContext"></include>
+								AND p.project_parent_id = '-1'
+								GROUP BY c.project_id
+							) x
+						WHERE x.m_gain <![CDATA[>]]> 0
+					) w
+				LEFT JOIN (
+					SELECT
+						'y' flag,
+						DATE_FORMAT(y.date, '%Y') date,
+						count(1) l_con,
+						sum(y.m_gain) l_gain
+					FROM
+						(
+							SELECT c.date, c.project_id, sum((c.output - c.input)) m_gain
+							FROM project p
+							LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+							AND p.project_id = c.project_id
+							WHERE YEAR (c.date) = #{year}
+							AND p.customer_id = #{customerId}
+							<include refid="queryFullOrganIdByContext"></include>
+							AND p.project_parent_id = '-1'
+							GROUP BY c.project_id
+						) y
+					WHERE y.m_gain <![CDATA[<]]> 0
+				) z ON w.flag = z.flag
+			) tol
+			ORDER BY tol.date
+	</select>
+	<!-- 盈利项目总额，亏损项目总额 -->
+	<select id="getProfitAndLossCountAmount" resultMap="baseChartMap" useCache="true">
+		SELECT
+			'A' flag,
+			IFNULL(sum(c.output-c.input), 0) sum_gain
+		FROM
+			project p
+		LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+		AND p.project_id = c.project_id
+		WHERE p.customer_id = #{customerId}
+		AND YEAR (c.date) = #{year}
+		AND (c.output-c.input) <![CDATA[>]]> 0
+		AND MONTH (c.date) = #{month}
+		<include refid="queryFullOrganIdByContext"></include>
+		AND p.project_parent_id = '-1'
+		UNION
+			SELECT
+				'B' flag,
+				IFNULL(sum(c.output-c.input), 0) sum_gain
+			FROM
+				project p
+			LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+			AND p.project_id = c.project_id
+			WHERE p.customer_id = #{customerId}
+			AND YEAR (c.date) = #{year}
+			AND (c.output-c.input) <![CDATA[<]]> 0
+			AND MONTH (c.date) = #{month}
+			<include refid="queryFullOrganIdByContext"></include>
+			AND p.project_parent_id = '-1'
+	</select>
+	<!-- 盈亏项目明细 -->
+	<select id="getProfitAndLossProjectDetail" resultMap="baseChartMap" useCache="true">
+		SELECT x.*
+		FROM
+			(
+			SELECT
+				'A' flag,
+				a.project_id,
+				a.project_name,
+				a.input,
+				a.output,
+				a.gain,
+				b.sum_gain
+			FROM
+				(
+					SELECT
+						p.project_id,
+						p.project_name,
+						c.input,
+						c.output,
+						(c.output-c.input) gain
+					FROM
+						project p
+					LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+					AND p.project_id = c.project_id
+					WHERE p.customer_id = #{customerId}
+					AND YEAR (c.date) = #{year}
+					AND MONTH (c.date) = #{month}
+					AND (c.output-c.input) <![CDATA[>]]> 0
+					<include refid="queryFullOrganIdByContext"></include>
+					AND p.project_parent_id = '-1'
+				) a,
+				(
+					SELECT
+						c.project_id,
+						sum(c.output-c.input) sum_gain
+					FROM
+						project p
+					LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+					AND p.project_id = c.project_id
+					WHERE p.customer_id = #{customerId}
+					AND YEAR (c.date) = #{year}
+					AND MONTH (c.date) <![CDATA[<=]]> #{month}
+					<include refid="queryFullOrganIdByContext"></include>
+					AND p.project_parent_id = '-1'
+					GROUP BY
+						c.project_id
+				) b
+			WHERE
+				a.project_id = b.project_id
+			UNION
+				SELECT
+					'B' flag,
+					e.project_id,
+					e.project_name,
+					e.input,
+					e.output,
+					e.gain,
+					f.sum_gain
+				FROM
+					(
+						SELECT
+							p.project_id,
+							p.project_name,
+							c.input,
+							c.output,
+							(c.output-c.input) gain
+						FROM
+							project p
+						LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+						AND p.project_id = c.project_id
+						WHERE p.customer_id = #{customerId}
+						AND YEAR (c.date) = #{year}
+						AND MONTH (c.date) = #{month}
+						AND (c.output-c.input) <![CDATA[<]]> 0
+						<include refid="queryFullOrganIdByContext"></include>
+						AND p.project_parent_id = '-1'
+					) e,
+					(
+						SELECT
+							c.project_id,
+							sum(c.output-c.input) sum_gain
+						FROM
+							project p
+						LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+						AND p.project_id = c.project_id
+						WHERE p.customer_id = #{customerId}
+						AND YEAR (c.date) = #{year}
+						AND MONTH (c.date) <![CDATA[<=]]> #{month}
+						<include refid="queryFullOrganIdByContext"></include>
+						AND p.project_parent_id = '-1'
+						GROUP BY
+							c.project_id
+					) f
+				WHERE
+					e.project_id = f.project_id
+			) x
+		GROUP BY x.flag, x.project_id
+		ORDER BY x.flag, x.gain DESC
+	</select>
+	<!-- 项目投入统计-人力统计 -->
+	<select id="queryProjectManpower" resultMap="baseChartMap" useCache="true">
+		SELECT
+			<if test="quarter != null and quarter != ''">
+				CONCAT(YEAR(m.date),'/Q',QUARTER(m.date)) date,
+			</if>
+			<if  test="quarter == null or quarter == ''">
+				DATE_FORMAT(m.date, '%y/%m') date,
+			</if>
+			sum(m.input) sum_input
+		FROM
+			project p
+		LEFT JOIN project_manpower m ON p.project_id = m.project_id
+		AND p.customer_id = m.customer_id
+		WHERE YEAR (m.date) = #{year}
+		AND p.customer_id = #{customerId}
+		<include refid="queryFullOrganIdByContext"></include>
+		AND p.project_parent_id = '-1'
+		<if test="quarter != null and quarter != ''">
+			GROUP BY QUARTER(m.date)
+			ORDER BY QUARTER(m.date)
+		</if>
+		<if  test="quarter == null or quarter == ''">
+			GROUP BY DATE_FORMAT(m.date, '%y/%m')
+			ORDER BY DATE_FORMAT(m.date, '%y/%m')
+		</if>
+	</select>
+	<!-- 项目投入统计-费用统计 -->
+	<select id="queryProjectInputCost" resultMap="baseChartMap" useCache="true">
+		SELECT
+			<include refid="selectResultDatas"></include>
+			SUM(c.input) sum_outlay
+		FROM
+			project p
+		LEFT JOIN project_cost c ON p.customer_id = c.customer_id
+		AND p.project_id = c.project_id
+		WHERE
+			p.customer_id = #{customerId}
+		AND YEAR (c.date) = #{year}
+		<include refid="queryFullOrganIdByContext"></include>
+		AND p.project_parent_id = '-1'
+		<include refid="groupAndOrderParam"></include>
+	</select>
+	<!-- 项目类型分析 -->
+	<select id="queryProjectType" resultMap="baseChartMap" useCache="true">
+		SELECT
+			t.project_type_name,
+			count(1) con_num
+		FROM
+			project p
+		LEFT JOIN dim_project_type t ON p.customer_id = t.customer_id
+		AND p.project_type_id = t.project_type_id
+		WHERE p.customer_id = #{customerId}
+		AND (
+			(
+				YEAR (p.end_date) = #{year}
+			)
+			OR (
+				YEAR (p.start_date) <![CDATA[<=]]> #{year}
+				AND p.end_date IS NULL
+			)
+		)
+		AND p.project_parent_id = '-1'
+		<include refid="queryFullOrganIdByContext"></include>
+		GROUP BY
+			t.project_type_name
+	</select>
+	
+	<!-- 获取项目投入费用类型名称 -->
+	<select id="queryProjectCostTypeNames" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			t.project_input_type_id projectInputTypeId,
+			t.project_input_type_name projectInputTypeName
+		FROM
+			dim_project_input_type t
+		WHERE
+			t.customer_id = #{customerId}
+		ORDER BY
+			t.show_index
+	</select>
+	<!-- 各部门人力投入 -->
+	<select id="getDepartmentInput" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select DISTINCT don.organization_name as organName, sum(pm.input) as manpowerInput
+		from project_manpower pm
+		inner join v_dim_emp vde 
+			on vde.emp_id=pm.emp_id
+			and vde.customer_id=pm.customer_id
+		inner join dim_organization don 
+			on don.organization_id=vde.organization_id
+			and don.customer_id=vde.customer_id
+		where pm.customer_id=#{customerId}
+			and pm.project_id=#{projectId}
+		<if test="year != null and year != ''">
+			and year(pm.date)=#{year}
+		</if>
+		<if test="minDate != null and minDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[>=]]> #{minDate}
+		</if>
+		<if test="maxDate != null and maxDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[<=]]> #{maxDate}
+		</if>
+		GROUP BY don.organization_id
+		ORDER BY manpowerInput DESC;
+	</select>
+	<!-- 职位序列人力投入 -->
+	<select id="getJobSeqInput" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select ds.sequence_name as organName, sum(pm.input) as manpowerInput
+		from project_manpower pm
+		inner join v_dim_emp vde
+			on pm.emp_id=vde.emp_id
+			and pm.customer_id=vde.customer_id
+		inner join dim_sequence ds
+			on ds.sequence_id=vde.sequence_id
+			and ds.customer_id=vde.customer_id
+		where pm.customer_id=#{customerId}
+			and pm.project_id=#{projectId}
+		<if test="year != null and year != ''">
+			and year(pm.date)=#{year}
+		</if>
+		<if test="minDate != null and minDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[>=]]> #{minDate}
+		</if>
+		<if test="maxDate != null and maxDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[<=]]> #{maxDate}
+		</if>
+		GROUP BY ds.sequence_name
+		ORDER BY ds.show_index
+	</select>
+	<!-- 职级人力投入 -->
+	<select id="getRankInput" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select CONCAT(da.curt_name,'级') as organName, sum(pm.input) as manpowerInput
+		from project_manpower pm
+		inner join v_dim_emp vde 
+			on pm.emp_id=vde.emp_id
+			and pm.customer_id=vde.customer_id
+		INNER JOIN dim_ability da
+			on vde.ability_id=da.ability_id
+			and vde.customer_id=da.customer_id
+		where pm.customer_id=#{customerId}
+			and pm.project_id=#{projectId}
+		<if test="year != null and year != ''">
+			and year(pm.date)=#{year}
+		</if>
+		<if test="minDate != null and minDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[>=]]> #{minDate}
+		</if>
+		<if test="maxDate != null and maxDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[<=]]> #{maxDate}
+		</if>
+		group by da.curt_name
+		order by da.curt_name desc
+	</select>
+	<!-- 工作地点人力投入 -->
+	<select id="getWorkplaceInput" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select DISTINCT vde.work_place as organName, sum(pm.input) as manpowerInput
+		from project_manpower pm
+		inner join v_dim_emp vde
+			on pm.emp_id=vde.emp_id
+			and pm.customer_id=vde.customer_id
+		where pm.customer_id=#{customerId}
+			and pm.project_id=#{projectId}
+		<if test="year != null and year != ''">
+			and year(pm.date)=#{year}
+		</if>
+		<if test="minDate != null and minDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[>=]]> #{minDate}
+		</if>
+		<if test="maxDate != null and maxDate != ''">
+			AND DATE_FORMAT(pm.date,'%Y%m') <![CDATA[<=]]> #{maxDate}
+		</if>
+		group by vde.work_place
+		ORDER BY sum(pm.input) DESC
+	</select>
+	<!-- 根据excel导入表数据内容，查找符合条件的负责人的名称 -->
+	<select id="queryProjectUserByImport" resultType="java.lang.String" useCache="true">
+		SELECT
+			u.user_key userName
+		FROM
+			dim_user u
+		WHERE
+			u.customer_id = #{customerId}
+		<foreach collection="list" item="item" open="AND u.user_key IN(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<!-- 根据excel导入表数据内容，查找符合条件的组织的名称 -->
+	<select id="queryProjectOrganIdByImport" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			o.organization_name organName,
+			o.organization_name_full organFullName
+		FROM
+			dim_organization o
+		WHERE
+			o.customer_id = #{customerId}
+		AND ( 1 = 1
+			<if test = "list != null and list != ''">
+				<foreach collection="list" item="item" open="AND o.organization_name IN(" separator="," close=")">
+					#{item}
+				</foreach>
+				<foreach collection="list" item="item" open="OR o.organization_name_full IN(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		)
+	</select>
+	<!-- 查询项目信息 -->
+	<select id="queryProjectMessage" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			p.project_id projectId,
+			p.project_name projectName
+		FROM
+			project p
+		WHERE
+			p.customer_id = #{customerId}
+	</select>
+	<!-- 根据项目名称查询项目信息 -->
+	<select id="queryProjectMessageByName" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			p.project_id projectId,
+			p.project_name projectName,
+			p.full_path fullPath
+		FROM
+			project p
+		WHERE
+			p.customer_id = #{customerId}
+			AND p.project_name = #{projectName}
+	</select>
+	<!-- 根据项目人力明细，查询项目信息 -->
+	<select id="queryProjectMessageByManpower" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			p.project_id projectId,
+			p.project_name projectName
+		FROM
+			project p
+		INNER JOIN project_cost pc ON p.customer_id = pc.customer_id
+		AND p.project_id = pc.project_id
+		WHERE
+			p.customer_id = #{customerId}
+		AND DATE_FORMAT(pc.date, '%Y-%m') = #{date}
+	</select>
+	<!-- 查询项目进度 -->
+	<select id="queryProjectProgressBySourceCodeItem" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			t.sys_code_item_id codeItemId,
+			t.sys_code_item_name codeItemName
+		FROM
+			sys_code_item t
+		WHERE
+			t.customer_id = #{customerId}
+		AND t.code_group_id = 'projectProgress'
+		ORDER BY t.show_index
+	</select>
+	<!-- 查询项目类型维度 -->
+	<select id="queryProjectTypeByDimProjectType" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			t.project_type_id projectTypeId,
+			t.project_type_name projectTypeName,
+			t.show_index showIndex
+		FROM
+			dim_project_type t
+		WHERE
+			t.customer_id = #{customerId}
+		ORDER BY t.show_index
+	</select>
+	<!-- 根据当前用户及类型名称查询项目类型信息 -->
+	<select id="queryProjectTypeByCustomerIdAndTypeName" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			t.project_type_id projectTypeId,
+			t.project_type_name projectTypeName
+		FROM
+			dim_project_type t
+		WHERE t.project_type_name = #{projectTypeName}
+			AND t.customer_id = #{customerId}
+	</select>
+	<!-- 查询主导组织 -->
+	<select id="queryProjectOrganMessage" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			o.organization_id organId,
+			o.organization_name organName,
+			o.organization_name_full organFullName
+		FROM
+			dim_organization o
+		WHERE
+			o.customer_id = #{customerId}
+	</select>
+	<!-- 根据组织名称查询组织信息 -->
+	<select id="queryProjectOrganMessageByName" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			o.organization_id organId,
+			o.organization_name organName,
+			o.organization_name_full organFullName
+		FROM
+			dim_organization o
+		WHERE
+			o.customer_id = #{customerId}
+		AND (
+			o.organization_name = #{organName}
+			OR o.organization_name_full = #{organName}
+		)
+	</select>
+	<!-- 根据父组织名称查询组织信息 -->
+	<select id="queryProjectOrganMessageByParentName" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			o.organization_id organId,
+			o.organization_name organName,
+			o.organization_name_full organFullName
+		FROM
+			dim_organization o
+		WHERE
+			LOCATE(
+				(
+					SELECT
+						o1.full_path
+					FROM
+						dim_organization o1
+					WHERE
+						o1.customer_id = #{customerId}
+					AND (
+						o1.organization_name = #{organParentName}
+						OR o1.organization_name_full = #{organParentName}
+					)
+				),
+				o.full_path
+			)
+		AND o.customer_id = #{customerId}
+		AND (
+			o.organization_name = #{organName}
+			OR o.organization_name_full = #{organName}
+		)
+	</select>
+	<!-- 查询项目负责人 -->
+	<select id="queryProjectPrincipalIdByName" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" useCache="true">
+		SELECT
+			u.emp_id empId,
+			u.user_key userKey
+		FROM
+			dim_user u
+		WHERE
+			u.customer_id = #{customerId}
+	</select>
+	<!-- 项目表添加操作 -->
+	<insert id="addProject" parameterType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		INSERT INTO project (
+			project_id,
+			customer_id,
+			project_key,
+			project_name,
+			emp_id,
+			organization_id,
+			project_type_id,
+			project_progress_id,
+			project_parent_id,
+			full_path,
+			has_chilren,
+			start_date,
+			<if test="dto.endDate != null and dto.endDate != ''">
+				end_date,
+			</if>
+			refresh
+		)
+		VALUES(
+			#{dto.projectId},
+			#{dto.customerId},
+			#{dto.projectKey},
+			#{dto.projectName},
+			#{dto.empId},
+			#{dto.organId},
+			#{dto.projectTypeId},
+			#{dto.projectProgressId},
+			#{dto.projectParentId},
+			#{dto.fullPath},
+			#{dto.hasChildren},
+			STR_TO_DATE(#{dto.startDate},'%Y-%m-%d'),
+			<if test="dto.endDate != null and dto.endDate != ''">
+				STR_TO_DATE(#{dto.endDate},'%Y-%m-%d'),
+			</if>
+			STR_TO_DATE(#{dto.refresh},'%Y-%m-%d')
+		)
+	</insert>
+	<!-- 项目类型维度表添加操作 -->
+	<insert id="addDimProjectType" parameterType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		INSERT INTO dim_project_type (
+			project_type_id,
+			customer_id,
+			project_type_name,
+			show_index,
+			refresh
+		)
+		VALUES(
+			#{dto.projectTypeId},
+			#{dto.customerId},
+			#{dto.projectTypeName},
+			#{dto.showIndex},
+			STR_TO_DATE(#{dto.refresh},'%Y-%m-%d')
+		)
+	</insert>
+	<!-- 项目投入费用明细表添加操作 -->
+	<insert id="addProjectInputDetail" parameterType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		INSERT INTO project_input_detail (
+			project_input_detail_id,
+			customer_id,
+			project_id,
+			project_input_type_id,
+			outlay,
+			date,
+			type
+			)
+		VALUES(
+			#{dto.projectInputDetailId},
+			#{dto.customerId},
+			#{dto.projectId},
+			#{dto.projectInputTypeId},
+			#{dto.outlay},
+			STR_TO_DATE(#{dto.date},'%Y-%m-%d'),
+			#{dto.type}
+		)
+	</insert>
+	<!-- 项目费用明细表添加操作 -->
+	<insert id="addProjectCost" parameterType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		INSERT INTO project_cost (
+			project_cost_id,
+			customer_id,
+			input,
+			output,
+			gain,
+			project_id,
+			date,
+			type
+			)
+		VALUES(
+			#{dto.projectCostId},
+			#{dto.customerId},
+			#{dto.input},
+			#{dto.output},
+			#{dto.gain},
+			#{dto.projectId},
+			STR_TO_DATE(#{dto.date},'%Y-%m-%d'),
+			#{dto.type}
+		)
+	</insert>
+	<!-- 主导项目参与项目关系表添加操作 -->
+	<insert id="addLeadAndPartakeProjectRelation" parameterType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		INSERT INTO project_partake_relation (
+			project_partake_id,
+			customer_id,
+			organization_id,
+			project_id,
+			refresh
+			)
+		VALUES(
+			#{dto.projectPartakeId},
+			#{dto.customerId},
+			#{dto.organId},
+			#{dto.projectId},
+			STR_TO_DATE(#{dto.refresh},'%Y-%m-%d')
+		)
+	</insert>
+	<!-- 根据项目id，修改项目信息 -->
+	<update id="updateProjectById" parameterType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto" >
+		UPDATE project
+		SET project_id = #{dto.projectId},
+			customer_id = #{customerId}
+			<if test="dto.projectKey != null and dto.projectKey != ''">
+				,project_key = #{dto.projectKey}
+			</if>
+			<if test="dto.projectName != null and dto.projectName != ''">
+				,project_name = #{dto.projectName}
+			</if>
+			<if test="dto.empId != null and dto.empId != ''">
+				,emp_id = #{dto.empId}
+			</if>
+			<if test="dto.organId != null and dto.organId != ''">
+				,organization_id = #{dto.organId}
+			</if>
+			<if test="dto.projectTypeId != null and dto.projectTypeId != ''">
+				,project_type_id = #{dto.projectTypeId}
+			</if>
+			<if test="dto.projectProgressId != null and dto.projectProgressId != ''">
+				,project_progress_id = #{dto.projectProgressId}
+			</if>
+			<if test="dto.projectParentId != null and dto.projectParentId != ''">
+				,project_parent_id = #{dto.projectParentId}
+			</if>
+			<if test="dto.fullPath != null and dto.fullPath != ''">
+				,full_path = #{dto.fullPath}
+			</if>
+			<if test="dto.hasChildren != null and dto.hasChildren != ''">
+				,has_chilren = #{dto.hasChildren}
+			</if>
+			<if test="dto.startDate != null and dto.startDate != ''">
+				,start_date = STR_TO_DATE(#{dto.startDate},'%Y-%m-%d')
+			</if>
+			<if test="dto.endDate != null and dto.endDate != ''">
+				,end_date = STR_TO_DATE(#{dto.endDate},'%Y-%m-%d')
+			</if>
+			<if test="dto.refresh != null and dto.refresh != ''">
+				,refresh = STR_TO_DATE(#{dto.refresh},'%Y-%m-%d')
+			</if>
+		WHERE project_id = #{dto.projectId}
+		AND customer_id = #{customerId}
+    </update>
+	
+	<!-- 检查项目是否存在 -->
+	<select id="queryProjectCount" resultType="int">
+		select count(1) 
+		from project p 
+		where p.customer_id=#{customerId}
+		<!-- and p.organization_id=#{organId} -->
+		and p.project_name=#{projectName}
+	</select>
+	<!-- 检查账户是否存在 -->
+	<select id="queryEmpCount" resultType="int">
+		select count(1)
+		from v_dim_emp vde
+		where vde.customer_id=#{customerId}
+		and vde.emp_key=#{userName}
+	</select>
+	<!-- 检查组织机构是否存在 -->
+	<select id="queryOrganizationCount" resultType="int">
+		select count(1)
+		from dim_organization don
+		where don.customer_id=#{customerId}
+		and don.organization_id=#{organId}
+	</select>
+	<!-- 查询项目人员信息 -->
+	<select id="queryProjectManpowerInfo" resultType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		select p.project_name as projectName, 
+		pm.emp_id as empId, 
+		vde.emp_key as empName,
+		pm.input as manpowerInput, 
+		(select p1.project_name from project p1 where p1.project_id=pm.project_sub_id) as subProjectName, 
+		pm.note as workContent
+		from project_manpower pm
+		inner join project p on pm.project_id=p.project_id
+		left join v_dim_emp vde on vde.emp_id=pm.emp_id
+		where pm.customer_id=#{customerId}
+		<!-- and p.organization_id=#{organId} -->
+		and date_format(pm.date,'%Y%m')=date_format(#{yearMonth},'%Y%m')
+	</select>
+	<!-- 统计人员信息是否重复 -->
+	<select id="queryManpowerCount" parameterType="java.util.Map" resultType="int">
+		select count(1) 
+		from project_manpower pm
+		inner join project p on pm.project_id=p.project_id
+		left join v_dim_emp vde on vde.emp_id=pm.emp_id 
+		where pm.customer_id=#{customerId}
+		and date_format(pm.date,'%Y%m')=date_format(#{yearMonth},'%Y%m')
+		and p.project_name=#{projectName}
+		and vde.emp_key=#{userName}
+		and pm.input=#{manpowerInput}
+		<if test="subProjectName != null and subProjectName != ''">
+			and pm.project_sub_id=(select p1.project_id from project p1 where p1.project_name=#{subProjectName})
+		</if>
+		<if test="subProjectName == null or subProjectName == ''">
+			and pm.project_sub_id is null
+		</if>
+		<if test="workContent != null">
+			and pm.note=#{workContent}
+		</if>
+	</select>
+	<!-- 统计项目人员信息 -->
+	<select id="queryProjectManpowerCount" parameterType="java.util.Map" resultType="int">
+		select count(1) 
+		from project_manpower pm
+		inner join project p on pm.project_id=p.project_id
+		left join v_dim_emp vde on vde.emp_id=pm.emp_id 
+		where pm.customer_id=#{customerId}
+		<!-- and p.organization_id=#{organId} -->
+		and date_format(pm.date,'%Y%m')=date_format(#{yearMonth},'%Y%m')
+		<if test="projectName != null and projectName != ''">
+			and p.project_name=#{projectName}
+		</if>
+		<if test="userName != null and userName != ''">
+			and vde.emp_key=#{userName}
+		</if>
+		<!-- <if test="subProjectName != null">
+			and pm.project_sub_id=(select p1.project_id from project p1 where p1.project_name=#{subProjectName})
+		</if> -->
+		<if test="manpowerInput != null and manpowerInput != ''">
+			and pm.input=#{manpowerInput}
+		</if>
+		<if test="workContent != null and workContent != ''">
+			and pm.note=#{workContent}
+		</if>
+	</select>
+	<!-- 导入项目人员数据 -->
+	<insert id="addProjectManpowerInfo" parameterType="net.chinahrd.entity.dto.pc.humanInventory.HumanInventoryDto">
+		insert into project_manpower (
+			project_manpower_id,
+	        customer_id, 
+	        emp_id, 
+	        input, 
+	        note, 
+	        project_id, 
+	        project_sub_id, 
+	        date, 
+	        type
+		)
+		values
+		<foreach collection="list" item="dto" separator=",">
+		(
+			#{dto.id},
+	        #{dto.customerId}, 
+	        #{dto.empId}, 
+	        #{dto.manpowerInput}, 
+	        #{dto.workContent}, 
+	        #{dto.projectId}, 
+	        #{dto.subProjectId}, 
+	        #{dto.yearMonth}, 
+	        #{dto.type}
+		)
+		</foreach>
+    </insert>
+    <!-- 删除第一次导入的项目人员数据 -->
+    <delete id="deleteProjectManpower" parameterType="string">
+		DELETE FROM project_manpower 
+		WHERE customer_id = #{customerId} 
+		and date_format(date,'%Y%m')=date_format(#{yearMonth},'%Y%m')
+    </delete>
+    <select id="queryEmpId" resultType="string">
+		select vde.emp_id as empId
+		from v_dim_emp vde
+		where vde.emp_key=#{userName}
+		and vde.customer_id=#{customerId}
+	</select>
+	<select id="queryProjectId" resultType="string">
+		select p.project_id as projectId
+		from project p
+		where p.project_name=#{projectName}
+		and p.customer_id=#{customerId}
+	</select>
+	<!-- 根据id删除项目表数据 -->
+    <delete id="deleteProjectDataByProjectId">
+		DELETE FROM project WHERE customer_id = #{customerId} AND project_id = #{projectId}
+    </delete>
+	<!-- 根据盘点日期删除项目投入费用明细表操作 -->
+    <delete id="deleteProjectInputDetailByDate">
+		DELETE FROM project_input_detail WHERE customer_id = #{customerId} AND project_id = #{projectId} AND DATE_FORMAT(date,'%Y-%m') = #{date} AND type = #{type}
+    </delete>
+	<!-- 根据盘点日期删除项目费用明细表操作 -->
+    <delete id="deleteProjectCostByDate">
+		DELETE FROM project_cost WHERE customer_id = #{customerId} AND project_id = #{projectId} AND DATE_FORMAT(date,'%Y-%m') = #{date} AND type = #{type}
+    </delete>
+	<!-- 根据项目id删除主导项目与参与项目关系表操作 -->
+    <delete id="deleteProjectPartakeRelationByProjectId">
+		DELETE FROM project_partake_relation WHERE customer_id = #{customerId} AND project_id = #{projectId}
+    </delete>
+    <select id="queryProjectManpowerInput" resultType="int">
+    	select sum(pm.input) from project_manpower pm
+		INNER JOIN project p on p.project_id=pm.project_id
+		where pm.customer_id=#{customerId}
+		and pm.project_id=#{projectId}
+		and p.organization_id=#{organId}
+    </select>
+    
+    <!-- 项目表获取时间区间 -->
+    <select id="queryDates" resultType="java.lang.String" useCache="true">
+    	SELECT
+			p.start_date
+		FROM
+			project p
+		WHERE
+			p.customer_id = #{customerId}
+		<include refid="queryFullOrganIdByContext"></include>
+		ORDER BY p.start_date
+		LIMIT 1
+    </select>
+    <!-- 明细分析-主导项目利润趋势 -->
+    <select id="queryProfitByYear" resultMap="baseChartMap" useCache="true">
+    	SELECT
+			DATE_FORMAT(pc.date, '%Y%m') date,
+			sum(pc.gain) gain
+		FROM
+			project p
+		INNER JOIN project_cost pc ON p.customer_id = pc.customer_id
+		AND p.project_id = pc.project_id
+		<if test="year != null and year != ''">
+			AND YEAR(pc.date) = #{year}
+		</if>
+		<if test="minDate != null and minDate != ''">
+			AND DATE_FORMAT(pc.date,'%Y%m') <![CDATA[>=]]> #{minDate}
+		</if>
+		<if test="maxDate != null and maxDate != ''">
+			AND DATE_FORMAT(pc.date,'%Y%m') <![CDATA[<=]]> #{maxDate}
+		</if>
+		WHERE
+			p.customer_id = #{customerId}
+		<include refid="queryFullOrganIdByContext"></include>
+		<if test="year != null and year != ''">
+			AND (
+				YEAR(p.end_date) = #{year}
+				OR (
+					YEAR(p.start_date) <![CDATA[<=]]> #{year}
+					AND p.end_date IS NULL
+				)
+			)
+		</if>
+		AND p.project_parent_id = '-1'
+		AND p.project_id = #{projectId}
+		GROUP BY
+			p.project_name,
+			DATE_FORMAT(pc.date, '%Y%m')
+		ORDER BY
+			DATE_FORMAT(pc.date, '%Y%m')
+    </select>
+    <!-- 明细分析-主导项目信息 -->
+    <select id="queryLeadingProjectInfo" resultMap="baseChartMap" useCache="true">
+    	SELECT
+			a.project_id,
+			a.project_name,
+			a.input,
+			b.manPower,
+			a.gain
+		FROM (
+	    	SELECT
+				p.project_id,
+				p.project_name,
+				IFNULL(SUM(pc.input), 0) input,
+				IFNULL(SUM(pc.gain), 0) gain
+			FROM
+				project p
+			LEFT JOIN project_cost pc ON p.customer_id = pc.customer_id
+			AND p.project_id = pc.project_id
+			WHERE
+				p.customer_id = #{customerId}
+			<include refid="queryFullOrganIdByContext"></include>
+			AND (
+				YEAR (p.end_date) = #{year}
+				OR (
+					YEAR (p.start_date) <![CDATA[<=]]> #{year}
+					AND p.end_date IS NULL
+				)
+			)
+			AND p.project_parent_id = '-1'
+			GROUP BY
+				p.project_id
+		) a
+		LEFT JOIN (
+			SELECT
+				p.project_id,
+				p.project_name,
+				IFNULL(SUM(pm.input), 0) manPower
+			FROM
+				project p
+			LEFT JOIN project_manpower pm ON p.customer_id = pm.customer_id
+			AND p.project_id = pm.project_id
+			WHERE
+				p.customer_id = #{customerId}
+			<include refid="queryFullOrganIdByContext"></include>
+			AND (
+				YEAR (p.end_date) = #{year}
+				OR (
+					YEAR (p.start_date) <![CDATA[<=]]> #{year}
+					AND p.end_date IS NULL
+				)
+			)
+			AND p.project_parent_id = '-1'
+			GROUP BY
+				p.project_id
+		) b ON a.project_id = b.project_id
+    </select>
+    <!-- 明细分析-主导项目信息 -->
+    <select id="queryPartakeProjectInfo" resultMap="baseChartMap" useCache="true">
+    	SELECT
+			ppr.project_id,
+			p.project_name,
+			IFNULL(SUM(pm.input),0) manpower
+		FROM
+			project_partake_relation ppr
+		INNER JOIN project p ON ppr.customer_id = p.customer_id
+		AND ppr.project_id = p.project_id
+		LEFT JOIN project_manpower pm ON p.customer_id = pm.customer_id
+		AND p.project_id = pm.project_id
+		AND YEAR(pm.date) = #{year}
+		WHERE
+			ppr.customer_id = #{customerId}
+		<if test="subOrganIdList != null and subOrganIdList.size != 0">
+			AND ppr.organization_id in
+			<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+			'${oId}'
+			</foreach>
+		</if>
+		GROUP BY
+			ppr.project_id
+    </select>
+</mapper>

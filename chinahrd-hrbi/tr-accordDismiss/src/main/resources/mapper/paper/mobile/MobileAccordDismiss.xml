@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.accordDismiss.mvc.app.dao.MobileAccordDismissDao">
+    
+	<!-- 查询子孙节点  查询当前机构及子机构的流失数据 -->
+	<select id="querySubDismissData" resultType="net.chinahrd.entity.dto.app.dismiss.DismissTrendDto">
+		SELECT
+		mec.organization_id AS organId,
+		vdo.organization_name as organName,
+    	mec.month_begin_sum as monthBegin,
+	    mec.month_end_sum as monthEnd,
+	    mec.month_end_sum as monthEnd,
+	    mec.month_count_sum as monthCount,
+	    mec.act_count_sum as accordCount,
+		mec.`year_month` AS yearMonth
+	FROM monthly_emp_count mec
+	inner JOIN dim_organization vdo 
+	on vdo.organization_id = mec.organization_id 
+		and mec.customer_id= vdo.customer_id 
+	WHERE mec.year_month >= #{startYearMonth} 
+	AND mec.customer_id = #{customerId}  
+	AND(vdo.organization_parent_id = #{organId}  
+<!-- 		OR vdo.organization_id = #{organId} -->
+	)
+	 ORDER BY mec.organization_id,mec.`year_month`
+    </select>
+    
+	
+    
+	<select id="queryDismissTrend" resultType="net.chinahrd.entity.dto.app.dismiss.DismissTrendDto">
+	SELECT
+		mec.organization_id AS organId,
+		mec.month_count_sum AS monthCount,
+		mec.act_count_sum AS accordCount,
+		mec.`year_month` AS yearMonth
+	FROM monthly_emp_count mec 
+	WHERE  mec.year_month >= #{startYearMonth} 
+	AND mec.customer_id = #{customerId}  
+	AND(
+	mec.organization_id = #{organId} 
+	<if test="queryParent==true">
+		OR mec.organization_id IN (
+		SELECT vdo1.organization_parent_id
+		FROM dim_organization vdo1
+		WHERE vdo1.organization_id = #{organId}
+		AND vdo1.customer_id = #{customerId}
+		)
+	</if>
+	)
+	ORDER BY mec.year_month
+	</select>
+
+	<select id="queryQuarterLastDay" resultType="string">
+		SELECT MAX(mec.refresh) FROM monthly_emp_count mec WHERE mec.customer_id  = #{customerId}
+	</select>
+
+
+
+
+	<select id="queryDisminss4Quarter" resultType="net.chinahrd.entity.dto.app.dismiss.DismissTrendDto">
+	SELECT
+		mec.month_begin_sum AS monthBegin,
+		mec.month_end_sum AS monthEnd,
+		mec.act_count_sum AS accordCount,
+		mec.`year_month` AS yearMonth
+	FROM monthly_emp_count mec
+	WHERE (
+		FLOOR(LEFT(mec.`year_month`,4)) = YEAR(#{quarterLastDay})
+		AND FLOOR((FLOOR(RIGHT(mec.`year_month`,2))+2)/3) = QUARTER (#{quarterLastDay})
+	)
+	AND mec.organization_id = #{organId}
+	AND mec.customer_id = #{customerId}
+	</select>
+	
+	<!-- 根据职级统计流失率 -->
+	<select id="queryDismissAbility" resultType="net.chinahrd.entity.dto.app.dismiss.DismissTypeDto">
+	SELECT
+		da.ability_id AS typeId,
+		da.curt_name AS typeName,
+		vde.runOffCount AS runOffCount 
+	FROM dim_ability da 
+	LEFT JOIN (
+		SELECT vde.ability_id,count(vde.emp_id) AS runOffCount  
+		FROM  run_off_record ror
+		INNER JOIN dim_run_off dro 
+			ON ror.run_off_id = dro.run_off_id
+			AND ror.customer_id = dro.customer_id
+			AND dro.type = 1
+		INNER JOIN v_dim_emp vde 
+			ON ror.emp_id = vde.emp_id 
+		where ror.run_off_date>=#{startYearMonth} 
+		AND vde.organization_id IN
+			(
+				SELECT t1.organization_id FROM dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT t.full_path FROM dim_organization t
+							WHERE t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						), t1.full_path
+					)
+				AND t1.customer_id = #{customerId}
+			)
+			GROUP BY vde.ability_id
+	)vde 
+	ON da.ability_id = vde.ability_id  
+	WHERE da.customer_id = #{customerId} 
+	AND da.type=0 
+	ORDER BY da.curt_name
+	</select>
+<select id="queryDismissEmpCount" resultType="int">
+		SELECT count(ror.emp_id) total
+		FROM run_off_record ror
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id
+									AND ror.customer_id = dro.customer_id
+									AND dro.type = 1 
+		INNER JOIN v_dim_emp vde 
+		ON vde.emp_id = ror.emp_id  
+		AND ror.customer_id = vde.customer_id 
+		where ror.run_off_date>=#{startYearMonth}  
+		AND ror.customer_id = #{customerId}  
+		AND vde.organization_id IN 
+			(
+				SELECT t1.organization_id FROM dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT t.full_path FROM dim_organization t
+							WHERE t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						), t1.full_path
+					)
+				AND t1.customer_id = #{customerId}
+			)
+</select>
+
+	<select id="queryDismissPref" resultType="net.chinahrd.entity.dto.app.dismiss.DismissTypeDto">
+	SELECT
+		dp.performance_id AS typeId,
+		dp.performance_name	AS typeName,
+		vde.runOffCount AS runOffCount 
+	FROM dim_performance dp 
+	LEFT JOIN (
+		SELECT vde.performance_id,count(vde.emp_id) AS runOffCount  
+		FROM  run_off_record ror
+		INNER JOIN dim_run_off dro 
+			ON ror.run_off_id = dro.run_off_id
+			AND ror.customer_id = dro.customer_id
+			AND dro.type = 1
+		INNER JOIN v_dim_emp vde 
+			ON ror.emp_id = vde.emp_id 
+		where ror.run_off_date>=#{startYearMonth} 
+		AND vde.organization_id IN 
+			(
+				SELECT t1.organization_id FROM dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT t.full_path FROM dim_organization t
+							WHERE t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						), t1.full_path
+					)
+				AND t1.customer_id = #{customerId}
+			)
+			GROUP BY vde.performance_id
+		)vde 
+	ON dp.performance_id = vde.performance_id  
+	WHERE dp.customer_id = #{customerId} 
+	ORDER BY dp.curt_name
+	</select>
+
+	
+	<select id="queryDismissCompanyAge" resultType="net.chinahrd.entity.dto.app.dismiss.DismissTypeDto">
+	SELECT
+	IF(vde.company_age &gt;= 0 AND vde.company_age &lt; 3, 1,
+		IF(vde.company_age &gt;= 3 AND vde.company_age &lt; 12, 2,
+		IF(vde.company_age &gt;= 12 AND vde.company_age &lt; 36, 3,
+		IF(vde.company_age &gt;= 36 AND vde.company_age &lt; 60, 4,
+		IF(vde.company_age &gt;= 60, 5,NULL))))) AS typeId,
+		count(vde.emp_id) AS runOffCount 
+	FROM v_dim_emp vde 
+	INNER JOIN ( 
+		SELECT ror.emp_id,
+			ror.customer_id
+		FROM run_off_record ror
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id
+									AND ror.customer_id = dro.customer_id
+									AND dro.type = 1
+		where ror.run_off_date>=#{startYearMonth} 
+
+	) tror ON tror.emp_id = vde.emp_id AND tror.customer_id = vde.customer_id 
+	WHERE vde.customer_id = #{customerId} 
+		AND vde.organization_id IN
+			(
+				SELECT t1.organization_id FROM dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT t.full_path FROM dim_organization t
+							WHERE t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						), t1.full_path
+					)
+				AND t1.customer_id = #{customerId}
+			)
+	GROUP BY typeId 
+	</select>
+	
+	<!--获取流失人员明细数据-->
+	<select id="queryRunOffDetail" resultType="net.chinahrd.entity.dto.app.dismiss.AccordDismissDto">
+    SELECT
+        vde.emp_id AS empId,
+        vde.user_name_ch AS userNameCh,
+        ror.is_warn AS isWarn,
+        vde.organization_name AS organizationName,
+        vde.is_key_talent as isKeyTalent,
+        vde.position_name AS positionName,
+		vde.sequence_id as sequenceId ,
+        vde.sequence_name AS sequenceName,
+		vde.ability_id as abilityId,
+		vde.ability_name AS abilityName,
+		per.performance_key as performanceKey,
+		vde.performance_name AS performanceName,
+		dktt.key_talent_type_id as keyTalentTypeId,
+		dktt.key_talent_type_name AS keyTalentTypeName,
+		dro.type AS roType,
+		ror.run_off_date AS roDate,
+		ror.where_abouts AS whereAbouts
+    FROM run_off_record ror
+    	INNER JOIN v_dim_emp vde ON ror.emp_id = vde.emp_id AND ror.customer_id = vde.customer_id AND ror.run_off_date = vde.run_off_date
+		INNER JOIN dim_performance per ON per.performance_id = vde.performance_id AND per.customer_id = vde.customer_id
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id AND dro.customer_id = ror.customer_id
+		LEFT JOIN key_talent kt ON vde.emp_id = kt.key_talent_id and vde.customer_id= kt.customer_id 
+		LEFT JOIN dim_key_talent_type dktt ON dktt.key_talent_type_id = kt.key_talent_type_id and kt.customer_id= dktt.customer_id 
+    WHERE 
+           ror.customer_id = #{customerId} AND ror.run_off_date BETWEEN #{startYearMonth} AND #{endYearMonth} 
+  	AND EXISTS 
+	    (SELECT 1 FROM dim_organization t1 WHERE 
+			locate(
+				(
+					SELECT t.full_path FROM dim_organization t
+					WHERE t.organization_id = #{organId}
+					AND t.customer_id = #{customerId}
+				),
+				t1.full_path ) and t1.organization_id = vde.organization_id
+		) 
+        AND ror.customer_id= #{customerId}  
+        ORDER BY roDate DESC
+        limit #{rowBounds.offset} , #{rowBounds.limit}
+    </select>
+    
+
+
+	<select id="queryRunOffCount" resultType="int">
+    SELECT
+        COUNT(1) 
+    FROM run_off_record ror
+    	INNER JOIN v_dim_emp vde ON ror.emp_id = vde.emp_id AND ror.customer_id = vde.customer_id AND ror.run_off_date = vde.run_off_date
+		INNER JOIN dim_performance per ON per.performance_id = vde.performance_id AND per.customer_id = vde.customer_id
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id AND dro.customer_id = ror.customer_id 
+    WHERE    ror.customer_id = #{customerId} AND ror.run_off_date BETWEEN #{startYearMonth} AND #{endYearMonth} 
+  	AND EXISTS 
+	    (SELECT 1 FROM dim_organization t1 WHERE
+			locate(
+				(
+					SELECT t.full_path FROM dim_organization t
+					WHERE t.organization_id = #{organId}
+					AND t.customer_id = #{customerId}
+				),
+				t1.full_path ) and t1.organization_id = vde.organization_id
+		) 
+        AND ror.customer_id= #{customerId}  
+    </select>
+</mapper>

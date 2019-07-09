@@ -1,0 +1,111 @@
+
+.changeTime {
+	text-align:center;
+	font-size: 13px;
+    color: #999999;
+}
+.changeCardPanel{
+	margin-top: 12px;
+}   
+.changeCard{
+	margin-top:13px;
+	width:49%;
+	text-align: center;
+	padding: 0;
+	float: left;
+	height:30px;
+}
+.changeCardSplit{
+	position:absolute;
+	float: left;
+	width: 1px;
+	left:49%;
+	top:50px;
+	height:90px;
+	background-color: #d7d7d7;
+}
+.changeCard .title{
+	font-size: 14px;
+    color: #666666;
+}
+.changeCard span{
+	vertical-align:middle;
+}
+.changeCard img{
+	vertical-align:middle;
+	margin-left:6px;
+	width: 12px;
+	height:14px;
+}
+
+.changeCard label{
+/* 	margin-top:14px; */
+    margin-bottom: 0;
+	font-size: 30px;
+}
+.changeCard .changeHight,.changeCardPanel .changeCard .text-high{
+	color: #1089f5;
+}
+.changeCard .changeLow,.changeCardPanel .changeCard .text-low{
+	color: #FF0000;
+}
+.changeCard .text{
+	font-size: 14px;
+    color: #1E1E1E;
+    padding-top:15px;
+}
+
+.leftTitle{
+	text-align: left;
+	font-size: 11px;
+}
+
+.textArea{
+	padding-right: 0;
+	 padding-left: 5px;
+}
+#performanceDetailPanel{
+	width: 600px;
+	padding: 0;
+	margin: 0;
+	margin-left: -5px;
+}
+.customChartPanel{
+	width: 100%;
+/* 	max-width: 350px; */
+	height: 170px;
+}
+.customChart{
+	width: 100%;
+/* 	max-width: 350px; */
+	height: 170px;
+}
+
+.ui-jqgrid-hdiv .ui-jqgrid-htable {
+     border-top: 0px solid #d7d7d7;
+	    border-bottom: 0px solid #d7d7d7;
+}
+.ui-jqgrid .ui-jqgrid-labels {
+    background: #f3f5f7;
+    text-align: center;
+    border-bottom: 1px solid #d7d7d7; 
+}
+
+.jqgfirstrow{
+	display: none;
+}
+#jqg10{
+	border: 0px;
+	
+}
+/* #jqg10>td{ */
+/* 	border: 0px; */
+/* 	border-bottom: 1px solid #d7d7d7;  */
+/* } */
+
+.title .blue{
+	color: #1089F4;
+}
+.title .red{
+	color: #FF5B5A;
+}

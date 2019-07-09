@@ -1,0 +1,45 @@
+package net.chinahrd.modules.demo.job;
+
+import com.dangdang.ddframe.job.api.ShardingContext;
+import com.dangdang.ddframe.job.api.simple.SimpleJob;
+import lombok.extern.slf4j.Slf4j;
+import net.chinahrd.common.CurrentUser;
+import net.chinahrd.common.PageData;
+import net.chinahrd.common.elasticjob.annotation.ElasticJobConf;
+import net.chinahrd.platform.demo.request.DemoUserQueryReq;
+import net.chinahrd.platform.demo.response.DemoUserInfoRes;
+import net.chinahrd.platform.demo.service.DemoUserInfoService;
+import org.apache.dubbo.config.annotation.Reference;
+
+@Slf4j
+@ElasticJobConf(name = "JobTest")
+public class JobTest implements SimpleJob {
+
+
+    @Reference
+    private DemoUserInfoService userInfoService;
+
+    @Override
+    public void execute(ShardingContext arg0) {
+        log.debug("定时任务启动！");
+//        log.debug(arg0.getJobName());
+//        log.debug(arg0.getJobParameter());
+//        log.debug(arg0.getShardingParameter());
+//        log.debug(arg0.getTaskId());
+//        List<DemoUserInfoRes> userInfoRes = userInfoService.selectListByTask();
+//        System.out.print(userInfoRes.size());
+
+        DemoUserQueryReq dataReq = new DemoUserQueryReq();
+        dataReq.setPageNum(1);
+        dataReq.setPageSize(1);
+        dataReq.setUserName("rig");
+
+        CurrentUser currentUser = new CurrentUser();
+        currentUser.setTenantId("F54096CC86A9494DA345B74DD25AE5B0");
+        dataReq.setCurrentUser(currentUser);
+
+        PageData<DemoUserInfoRes> ret = userInfoService.selectByPage(dataReq);
+        System.out.println(ret.getList().get(0).getUserName());
+    }
+
+}

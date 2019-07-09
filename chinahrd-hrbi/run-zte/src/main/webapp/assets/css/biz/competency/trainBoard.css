@@ -1,0 +1,498 @@
+.train-board {
+    position: relative;
+    padding-left: 130px;
+    font-size: 14px;
+    color: #777777;
+}
+.ct-dissmiss .column{
+    padding: 2px!important;
+}
+
+#page-one{display: block;}
+#page-two{display: none;}
+#page-three{display: none;}
+.leftListSet,.LSLSetUp{
+    cursor: pointer;
+}
+.text-date{
+    margin-left: 5px;
+    color: #999;
+}
+.noData{margin-top: 50px; font-size: 12px; color: #999; text-align: center;}
+
+/*页面通用样式 begin*/
+.train-board .index-common-title{position: relative;width: 100%;height: 34px;}
+.train-board .index-common-title-left{position: absolute;top: 10px;left: 8px;background-color: #88b7e0;width: 2px;height: 15px;}
+.train-board .index-common-title-text{position: absolute;top: 6px;left: 20px;color: #444;}
+.train-board .index-common-title-center{position: absolute;left: 150px;top:-4px;}
+.train-board .index-common-title-center .title-center-text{display: inline-block;border:1px solid #e0e0e0;margin-right: 35px;}
+.train-board .index-common-title-center .title-center-text span:first-child{display: inline-block;color: #333;margin:0 12px;}
+.train-board .index-common-title-center .title-center-text span:nth-child(2){display: inline-block;background-color: #999;color: #fff;padding-left: 15px;font-size: 18px;}
+.train-board .index-common-title-center .title-center-text small{display: inline-block;background-color: #999;color: #fff;padding: 6px 10px 3px 5px;font-size: 12px;vertical-align: top;}
+
+.train-board .rightBody{
+    width: 100%;
+    background-color: #fff;
+    padding: 5px;
+}
+
+.train-board .top-div{
+    height: 160px;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+}
+.train-board .bottom-div{
+    width: 100%;
+    height: 385px;
+    border: 1px solid #e0e0e0;
+}
+.train-board .bottom-div >.chart-view .col-xs-12:nth-child(2){
+    height: 350px;
+}
+.train-board .bottom-div .bottom-div-first{
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+}
+.train-board .bottom-div .bottom-div-first span{
+    color: #999;
+    margin-left: 10px;
+}
+.train-board .bottom-div .bottom-div-first h5{
+    display: inline-block;
+}
+.train-board .bottom-div .bottom-div-right{
+    position: absolute;
+    right: 30px;
+    top: 10px;
+
+}
+.train-board .bottom-div .bottom-div-right>div{
+    display: inline-block;
+    background-color: rgb(242,242,242);
+    color: rgb(102,102,102);
+    padding: 4px 8px;
+    margin:0 -2px;
+    cursor: pointer;
+}
+.train-board .bottom-div .bottom-div-right>div.select{
+    background-color: rgb(211,211,211);
+    color: rgb(51,51,51);
+}
+.train-board .bottom-div .bottom-div-first a{
+    float: right;
+    text-decoration: none;
+    cursor: pointer;
+}
+.train-board .bottom-div .bottom-div-second{
+    color: #999;
+    margin-left: 10px;
+}
+/*页面通用样式 begin*/
+
+/*左边导航 begin*/
+.train-board .leftBody{
+    position: absolute;
+    width: 130px;
+    left: 0px;
+    top: 0px;
+}
+.train-board .leftListBigDiv{
+    position: relative;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-indent : 14px;
+    font-weight: bold;
+}
+.train-board .leftListSet{
+    background-image: url("../../../img/index/setUp.png");
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 12px;
+    top: 17px;
+}
+.train-board .leftListDiv{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+    text-indent : 14px;
+}
+.train-board .selectList{
+    background-color: #fff;
+    cursor: default;
+}
+/*左边导航 end*/
+
+.train-board .LSLSetUp{
+    background-image: url("../../../img/index/setUp.png");
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 11px;
+    top: 10px;
+}
+
+/*table chart 切换 的 top 通用样式 begin*/
+.train-board .bottom-title{
+    height: 30px;
+}
+.train-board .bottom-left{
+    top: 4px;
+}
+.train-board .bottom-text{
+    top: 0px;
+}
+.train-board .rightSetUpBtn{
+    position: absolute;
+    right: 0px;
+    top: 1px;
+    background-color: #fafafa;
+    cursor: pointer;
+}
+.train-board .rightSetUpBtnDiv{
+    position: relative;
+    float: left;
+    height: 30px;
+    width: 35px;
+    border: 1px solid #e0e0e0;
+}
+.train-board .rightSetUpRight{
+    margin-left: -1px;
+}
+.train-board .rightSetUpBtnSelect{
+    border-bottom: 0px;
+    cursor: default;
+    background-color: #fff;
+}
+.rightSetUpBtnTop{
+    display: none;
+}
+.rightSetUpBtnSelect .rightSetUpBtnTop{
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #009edd;
+}
+.rightSetUpLeftShowIcon{
+    display: none;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-show1.png");
+    width: 18px;
+    height: 11px;
+    left: 7px;
+    top: 10px;
+}
+.rightSetUpRightShowIcon{
+    display: none;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-show2.png");
+    width: 13px;
+    height: 11px;
+    left: 9px;
+    top: 9px;
+}
+.rightSetUpLeftHideIcon{
+    display: block;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-hide1.png");
+    width: 18px;
+    height: 11px;
+    left: 7px;
+    top: 10px;
+}
+.rightSetUpRightHideIcon{
+    display: block;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-hide2.png");
+    width: 13px;
+    height: 11px;
+    left: 9px;
+    top: 9px;
+}
+.rightSetUpBtnSelect .rightSetUpLeftShowIcon{display: block;}
+.rightSetUpBtnSelect .rightSetUpLeftHideIcon{display: none;}
+.rightSetUpBtnSelect .rightSetUpRightShowIcon{display: block;}
+.rightSetUpBtnSelect .rightSetUpRightHideIcon{display: none;}
+/*table chart 切换 的 top 通用样式 begin*/
+
+
+/*第一行的数据块 begin*/
+.train-board .accord-yj-float{width: 150px;height: 62px;margin: 14px auto 0;text-align: center;}
+.train-board .accord-yj-float-value {
+    font-size: 40px;
+    color: #666666;
+}
+.train-board .accord-yj-float-people {
+    position: absolute;
+    top: 92px;
+    color: #777777;
+    font-size: 12px;
+}
+.train-board .accord-bottom-float{
+    position: relative;
+    width: 150px;
+    height: 48px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 12px;
+    color: #777777;
+}
+.train-board .accord-bottom-float div{
+    margin-left: 2px;
+    margin-right: 2px;
+}
+.train-board .accord-bottom-float-text{
+    display: inline-block;
+}
+.train-board .accord-bottom-float-value{
+    display: inline-block;
+    font-size: 18px;
+}
+.train-board .accord-bottom-float-value-rise{
+    color: #d3521a;
+}
+.train-board .accord-bottom-float-value-drop{
+    color: #6fb12d;
+}
+.train-board .accord-bottom-float-people{
+    display: inline-block;
+}
+.train-board .accord-bottom-float-arrow{
+    width: 12px;
+    height: 15px;
+    display: inline-block;
+}
+.train-board .accord-bottom-float-arrow-rise{
+    background-image: url("../../../img/index/arrow1.png");
+}
+.train-board .accord-bottom-float-arrow-drop{
+    background-image: url("../../../img/index/arrow2.png");
+}
+/*第一行的数据块 end*/
+
+.train-board .table-view{
+    display: none;
+}
+.bottom-div-two > .row > div{
+    height: 385px;
+}
+.bottom-div-two > .row > div:nth-child(2){
+    border-left:1px solid #e0e0e0;
+}
+.bottom-div-two .row .bottom-div-first{
+    color: #333;
+}
+.bottom-div-three{
+    height: 960px !important;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.conditionBtn{
+    cursor: pointer;
+    position: absolute;
+    top: -48px;
+    left: 220px;
+    font-size: 12px;
+    width: 108px;
+    height: 48px;
+    line-height: 47px;
+    margin-left: 10px;
+    border: 1px solid #e0e0e0;
+    border-bottom: 0px;
+    z-index: 1;
+    background-color: #fff;
+    text-indent: 10px;
+}
+.conditionBtnListBody{
+    position: relative;
+    /*min-height: 276px;*/
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px !important;
+}
+
+/*筛选条件 begin*/
+.dis-search{width: 280px;font-size: 12px !important;}
+.dis-search-input{line-height:2 !important;font-size: 12px !important;float: left;width: 74%;height: 34px;margin-top: 1px;border: 1px solid #e0e0e0;font-size: 12px;padding-top: 4px;padding-left: 12px;}
+.dis-search-input-btn{cursor:pointer;font-size: 12px !important;float: left;width: 26%;background-color: #009edd;height: 36px;line-height:36px;border: 1px solid #e0e0e0;padding-left: 9px;margin-left: -1px;color: #fff;}
+.dis-search-tip{display: inline-block;color: #888;line-height: 2;padding: 6px 28px;}
+
+
+.condition-body-list{
+    width: 100%;
+    float: left;
+    margin-bottom: 14px;
+}
+.condition-body-list-title{
+    text-align: right;
+    width: 64px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+.condition-input-text{
+    width: 120px;
+    height: 24px;
+    line-height: 2;
+    padding-left: 4px;
+    margin-top: -2px;
+}
+.condition-text-one{
+    margin-left: 6px;
+    margin-right: 6px;
+}
+.condition-btn{
+    float: left;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 24px;
+    line-height: 24px;
+    /*color: #444444;*/
+    margin-right: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+.condition-btn-selected{
+    background-color: #009edd;
+    color: #fff;
+    cursor: default;
+}
+
+.condition-btn-too-icon{
+    position: absolute;
+    top: 8px;
+    right: 6px;
+    background-image: url("../../../img/index/y.png");
+    width: 7px;
+    height: 7px;
+}
+/*筛选条件 end*/
+
+/*弹出框 begin*/
+.ZBSetUp-drag-middle{
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    margin-top: 30px;
+}
+.BSetUp-col{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+.BSetUp-line{
+    width: 100%;
+    float: left;
+    margin-bottom: 30px;
+}
+.BSetUp-text-line{
+    color: #888888;
+    text-align: left;
+    margin-bottom: 8px;
+}
+.BSetUp-text-last-line{
+    margin-bottom: 30px;
+}
+.color-div{
+    width: 12px;
+    height: 12px;
+    margin-top: 6px;
+}
+.green-color-div{
+    background-color: #5ab700;
+}
+.orange-color-div{
+    background-color: #eda100;
+}
+.BSetUp-text-one{
+    margin-top: 3px;
+    margin-left: 6px;
+}
+.BSetUp-input{
+    width: 58px;
+    height: 24px;
+    padding-left: 8px !important;
+    margin-left: 8px;
+    font-size: 12px !important;
+}
+.BSetUp-text-two{
+    margin-top: 3px;
+    margin-left: 12px;
+}
+
+/*.drag-middle-C{*/
+    /*margin-top: 5px;*/
+/*}*/
+.BSetUp-line-two{
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+}
+.BSetUp-line-three{
+    border-bottom: 1px dashed #e8ecf0;
+}
+.CSetUp-text-one{
+    margin-top: 6px;
+}
+.CSetUp-select{
+    margin-top: 4px;
+    margin-left: 8px;
+    width: 132px;
+    height: 24px;
+}
+.CSetUp-text-two{
+    width: 100%;
+    text-align: left;
+    color: #888888;
+    padding-top: 8px;
+    padding-bottom: 20px;
+}
+.CSetUp-text-checkbox{
+    margin-top: 3px;
+    margin-right: 18px;
+    margin-left: 2px;
+    cursor: pointer;
+}
+/*弹出框 end*/
+
+/*media begin*/
+@media (max-width: 680px) {
+    .condition-body-list-title {width: 100%;text-align: left;}
+    .condition-bottom{padding-left: 0px;}
+    .condition-text-one{display: none;}
+    .condition-input-text-too{clear: both;margin-top: 6px;}
+
+    .conditionBtn{top: -65px;left: -11px;border-bottom: 1px solid #e0e0e0;}
+    .conditionBtnListBody{margin-top: 110px;}
+    .dis-search{top: -115px;}
+}
+
+/*media end*/
+
+#yearTrendChart,#subOrganContrastChart,#peopleCompareChart,#teacherChart{
+    height: 330px;
+}
+#coverageContrastChart,#trainTypeNumChart,#satisfactionChart{
+    height: 350px;
+}
+#trainProjectModal .modal-dialog{
+    width:750px;
+}
+#trainTypeTable{
+    width: 710px;
+}
+#trainProjectModal .modal-dialog>.modal-content>.modal-body{
+    min-height: 560px;
+}
+#trainProjectModal .tab-content{
+    padding:15px 1px;
+}
+#trainProjectModal .tab-content .col-xs-12{
+    padding: 0;
+}
+#trainTypeTable .ui-jqgrid tr.ui-row-ltr td:nth-child(2),#trainDeailTable .ui-jqgrid tr.ui-row-ltr td:nth-child(4){
+    text-overflow: ellipsis;
+}

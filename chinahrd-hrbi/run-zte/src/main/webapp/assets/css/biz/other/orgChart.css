@@ -1,0 +1,75 @@
+#organDiv {
+	position: relative;
+}
+
+#showDetail {
+	position: absolute;
+	border: 1px solid #1E7ABA;
+	background-color: white;
+	font-size: 14px;
+	z-index: 100;
+}
+#showDetail .normal {
+	font-weight: 500;
+}
+#showDetail .overstaff {
+	font-weight: 500;
+	color: #FF0000;
+}
+/**
+  Ô¤¾¯
+*/
+#showDetail .warning {  
+	font-weight: 500;
+	color: #BF9000;
+}
+.center-text {
+	text-align: center;
+	margin-right: auto;
+	margin-left: auto;
+	display: block;
+}
+
+#showDetail > div {
+	margin-top: 5px;
+	margin-left: 5px;
+}
+#organArea {
+	position: relative;
+}
+.hidden {
+	display: none;
+}
+
+#placeHolder {
+	height: 200px;
+	width: 200px;
+	position: absolute;
+}
+
+.over-title {
+	color: white;
+	background: red;
+}
+.warn-title {
+	color: white;
+	background: #BF9000;
+}
+.warn-color {
+	color: #BF9000;
+}
+.over-color {
+	color: red;
+}
+
+#showUnResultMsg {
+	text-align: center;
+	width: 900px;
+	font-size: 20px;
+	font-weight: bold;
+	margin-top: 100px;
+}
+#organArea{
+	margin-top: 5px;
+	height:50px;
+}

@@ -1,0 +1,32 @@
+import { message } from 'antd';
+import {
+  getData
+} from '../services/TenantService';
+
+export default {
+  namespace: 'tenantModels',
+  state: {
+    data: null,
+  },
+
+  effects: {
+    *getDataMap({ payload }, { call, put }) {
+      const response = yield call(getData, payload);
+      yield put({
+        type: 'GET_DATA_MAP',
+        payload: response,
+      });
+    }
+  },
+
+  reducers: {
+    'GET_DATA_MAP'(state, action) {
+      console.log(state)
+      console.log(action)
+      return {
+        ...state,
+        data: action.payload,
+      }
+    }
+  }
+}

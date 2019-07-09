@@ -1,0 +1,17 @@
+net\chinahrd\modules\rbac\response\ModuleInfoRes.class
+net\chinahrd\modules\rbac\entity\UserInfo.class
+net\chinahrd\modules\rbac\entity\ModuleInfo.class
+net\chinahrd\modules\rbac\service\ModuleInfoService.class
+net\chinahrd\modules\rbac\response\UserInfoRes.class
+net\chinahrd\modules\demo\response\EmpInfoRes.class
+net\chinahrd\platform\demo\service\DemoUserInfoService.class
+net\chinahrd\modules\rbac\service\RoleInfoService.class
+net\chinahrd\modules\rbac\response\RoleInfoRes.class
+net\chinahrd\modules\rbac\entity\RoleInfo.class
+net\chinahrd\platform\demo\entity\DemoUserInfo.class
+net\chinahrd\modules\demo\service\EmpInfoService.class
+net\chinahrd\modules\demo\request\EmpQueryReq.class
+net\chinahrd\platform\demo\request\DemoUserQueryReq.class
+net\chinahrd\platform\demo\response\DemoUserInfoRes.class
+net\chinahrd\modules\demo\entity\EmpInfo.class
+net\chinahrd\modules\rbac\service\UserInfoService.class

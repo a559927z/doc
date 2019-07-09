@@ -1,0 +1,131 @@
+export default [{
+		path: '/user',
+		component: '../layouts/UserLayout',
+		routes: [
+			{ path: '/user/login', component: '/Login/Login.jsx' },
+		],
+	},
+	// app
+	{
+		path: '/',
+		component: '../layouts/BasicLayout',
+		Routes: ['src/pages/Authorized'],
+		authority: ['admin'],
+		routes: [
+			{ path: '/', redirect: '/homepage' },
+			{
+				name: 'homepage',
+				path: '/homepage',
+				icon: 'home',
+				component: './Homepage/Homepage',
+			},
+			{
+				name: 'contactMgr',
+				path: '/contactMgr',
+				icon: 'contacts',
+				component: './Contact/ContactMgr',
+				hideChildrenInMenu: true,
+			},
+			{
+				name: 'contact',
+				path: '/contact',
+				icon: 'contacts',
+				hideInMenu: true,
+				hideChildrenInMenu: true,
+				routes: [{
+						name: 'contactDetail',
+						path: 'contactDetail',
+						hideInMenu: true,
+						component: './Contact/ContactDetail',
+					},
+					{
+						name: 'contactEdit',
+						path: 'contactEdit',
+						hideInMenu: true,
+						component: './Contact/ContactEdit',
+					},
+				],
+			},
+			{
+				name: 'connectionsMgr',
+				path: '/connectionsMgr',
+				icon: 'fork',
+				component: './Connections/List',
+				hideChildrenInMenu: true,
+			},
+			{
+				name: 'connectionsMgr.add',
+				path: '/connectionsMgr/add',
+        component: './Connections/Add',
+        hideInMenu: true,
+			}, {
+				name: 'connectionsMgr.graph',
+				path: '/connectionsMgr/graph',
+        component: './Connections/Graph',
+        hideInMenu: true,
+      },
+			{
+				name: 'contactRecordMgr',
+				path: '/contactRecordMgr',
+				icon: 'schedule',
+				component: './ContactRecord/RecordList',
+				hideChildrenInMenu: true,
+			},
+			{
+				name: 'contactRecord',
+				path: '/contactRecord',
+				hideInMenu: true,
+				hideChildrenInMenu: true,
+				routes: [{
+					name: 'edit',
+					path: '/contactRecord/edit',
+					component: './ContactRecord/Edit',
+				}, {
+					name: 'calendar',
+					path: '/contactRecord/Calendar',
+					component: './ContactRecord/Calendar',
+				}],
+			},
+			{
+				name: 'tag',
+				path: '/tagManage',
+				icon: 'tag',
+				component: './TagManage/Tag',
+			},
+			{
+				name: 'account',
+				path: '/account',
+				icon: 'heart',
+				hideChildrenInMenu: true,
+				hideInMenu: true,
+				routes: [{
+					name: 'modifyPwd',
+					path: 'modifyPwd',
+					component: './Account/AccountInfo',
+				}],
+			},
+      {
+				name: 'tenantMgr',
+				path: '/tenantMgr',
+				icon: 'team',
+				component: './TenantManage/List',
+				hideChildrenInMenu: true,
+      },
+      {
+				name: 'dataManage',
+				path: '/dataManage',
+				icon: 'database',
+				component: './DataManage/List',
+				hideChildrenInMenu: true,
+			},
+			{
+				name: 'logMgr',
+				path: '/logMgr',
+				icon: 'fork',
+				component: './LogManage/List',
+				hideChildrenInMenu: true,
+			},
+		],
+	},
+
+];

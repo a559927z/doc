@@ -1,0 +1,1300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1736c6ff-11ca-457f-a275-28c9f3b0e767" name="Default Changelist" comment="" />
+    <ignored path="$PROJECT_DIR$/freeway-generator/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-facade/freeway-business-facade/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-support/target/" />
+    <ignored path="$PROJECT_DIR$/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-platform-admin/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-support/freeway-dubbo-support/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-facade/freeway-base-facade/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-facade/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-business-web/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-facade/freeway-platform-facade/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-business-service/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-common/target/" />
+    <ignored path="$PROJECT_DIR$/freeway-support/freeway-web-support/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="1154110923">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="4" />
+          <entry key="project.open.time.18" value="1" />
+          <entry key="project.open.time.22" value="1" />
+          <entry key="project.open.time.5" value="1" />
+          <entry key="project.open.time.6" value="1" />
+          <entry key="project.opened" value="4" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="java" value="6" />
+          <entry key="jpg" value="1" />
+          <entry key="sql" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="Image" value="1" />
+          <entry key="JAVA" value="6" />
+          <entry key="SQL" value="1" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/freeway-business-service/src/main/java/net/chinahrd/ServiceApplication.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="418">
+              <caret line="33" column="1" selection-start-line="33" selection-start-column="1" selection-end-line="33" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/freeway-facade/freeway-base-facade/src/main/java/net/chinahrd/common/BaseEntity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="627">
+              <caret line="33" column="27" lean-forward="true" selection-start-line="33" selection-start-column="27" selection-end-line="33" selection-end-column="27" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/freeway-facade/freeway-base-facade/src/main/java/net/chinahrd/common/BusinessEntity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="190">
+              <caret line="10" column="39" selection-start-line="10" selection-start-column="39" selection-end-line="10" selection-end-column="39" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/freeway-business-service/src/main/java/net/chinahrd/deployment/CacheTenantManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="323">
+              <caret line="27" column="7" selection-start-line="27" selection-start-column="7" selection-end-line="27" selection-end-column="7" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/freeway-business-web/src/main/java/net/chinahrd/config/SwaggerConfig.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="304">
+              <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/freeway-business-web/src/main/java/net/chinahrd/WebApplication.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="171">
+              <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$APPLICATION_HOME_DIR$/plugins/maven/lib/maven3" />
+        <option name="userSettingsFile" value="D:\MyXFiles\mvn-settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="freeway-business-web" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="freeway-business-web" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Plugins" type="7aea1407:MavenProjectsStructure$PluginsNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="freeway-parent" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="freeway-parent" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Lifecycle" type="58874e2:MavenProjectsStructure$LifecycleNode" />
+        </path>
+      </expand>
+      <select />
+    </treeState>
+  </component>
+  <component name="MavenRunner">
+    <option name="skipTests" value="true" />
+  </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths>
+      <path value="$PROJECT_DIR$/freeway-html/freeway-platform-html/functions/package.json" />
+      <path value="$PROJECT_DIR$/freeway-html/freeway-platform-html/package.json" />
+    </packageJsonPaths>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="405" />
+    <option name="y" value="60" />
+    <option name="width" value="1750" />
+    <option name="height" value="1250" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="doc" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="doc" type="462c0819:PsiDirectoryNode" />
+              <item name="db" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="doc" type="462c0819:PsiDirectoryNode" />
+              <item name="db" type="462c0819:PsiDirectoryNode" />
+              <item name="1.0.0" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="doc" type="462c0819:PsiDirectoryNode" />
+              <item name="db" type="462c0819:PsiDirectoryNode" />
+              <item name="1.0.0" type="462c0819:PsiDirectoryNode" />
+              <item name="platform" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="doc" type="462c0819:PsiDirectoryNode" />
+              <item name="images" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-service" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-service" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-service" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-service" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-service" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="chinahrd" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-service" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="chinahrd" type="462c0819:PsiDirectoryNode" />
+              <item name="deployment" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-web" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-web" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-web" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-web" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-web" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="chinahrd" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-business-web" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="chinahrd" type="462c0819:PsiDirectoryNode" />
+              <item name="config" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-support" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="freeway-parent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="freeway-parent" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-support" type="462c0819:PsiDirectoryNode" />
+              <item name="freeway-dubbo-support" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1553138984370" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../git" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RestoreUpdateTree" date="Moments ago" ActionInfo="_Update">
+    <UpdatedFiles>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Updated from server" />
+        <option name="myStatusName" value="Changed on server" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="CHANGED_ON_SERVER" />
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Updated" />
+          <option name="myStatusName" value="Changed" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="UPDATED" />
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-support\freeway-web-support\src\main\java\net\chinahrd\common\log\LogAspect.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-base-facade\src\main\java\net\chinahrd\common\SysLog.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-base-facade\src\main\java\net\chinahrd\response\RbacRoleRes.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-base-facade\pom.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\demo\service\UserInfoService.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\response\TenantInfoRes.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\service\TenantInfoService.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\service\DatasourceInfoService.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\request\TenantQueryReq.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\request\DatasourceQueryReq.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\request\ParamInfoReq.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\entity\DatasourceInfo.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\entity\ParamInfo.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\doc\db\1.0.0\platform\001_ddl_create_log_table.sql</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\pom.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\WebApplication.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\config\SwaggerConfig.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\modules\demo\web\EmpInfoController.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\modules\demo\job\JobTest.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\resources\application-dev.properties</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-generator\src\main\java\net\chinahrd\generator\PlatformGenerator.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\ServiceApplication.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\config\BusinessDataSource.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\config\PlatformDataSource.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\test\java\net\chinahrd\service\DemoTest.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\rbac\dao\UserInfoDAO.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\rbac\filter\AdminAuthcFilter.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\demo\service\impl\UserInfoServiceImpl.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\demo\dao\DemoUserInfoDAO.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\demo\dao\DemoUserInfoDAO.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\demo\job\PlatformJobTest.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\service.impl\TenantInfoServiceImpl.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\service.impl\DatasourceInfoServiceImpl.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\dao\TenantInfoDAO.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\dao\TenantInfoDAO.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\web\TenantInfoController.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\web\DatasourceInfoController.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\web\ParamInfoController.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\resources\application-dev.properties</PATH>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Created" />
+          <option name="myStatusName" value="Created" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="CREATED" />
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-base-facade\src\main\java\net\chinahrd\response\RbacResourceRes.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\request</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\entity</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\entity\ResourceInfo.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\entity\UserInfo.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\entity\RoleInfo.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\response</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\response\UserInfoRes.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\response\RoleInfoRes.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\response\ResourceInfoRes.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\service</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\service\ResourceInfoService.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\service\UserInfoService.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\platform\rbac\service\RoleInfoService.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\demo\request</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\demo\request\UserQueryReq.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\demo\response</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\demo\response\UserInfoRes.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\service\LogInfoService.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\request\LogInfoQueryReq.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\request\TenantInfoReq.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\request\ParamQueryReq.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade\src\main\java\net\chinahrd\modules\pub\entity\LogInfo.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock\notices.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock\rule.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock\geographic.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock\api.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock\geographic</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock\geographic\province.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock\geographic\city.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock\user.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock\profile.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\mock\chart.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\.editorconfig</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\pom.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\jest-puppeteer.config.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\deploy</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\deploy\assembly.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\yarn.lock</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\.prettierrc</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\.stylelintrc.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\tests</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\tests\run-tests.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\package.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\config</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\config\plugin.config.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\config\router.config.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\config\config.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\appveyor.yml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\functions</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\functions\matchMock.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\functions\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\functions\package.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\jsconfig.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\.eslintrc.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\public</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\public\favicon.png</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\public\icons</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\public\icons\icon-64x64.png</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\public\icons\icon-128x128.png</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\public\icons\icon-192x192.png</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\public\icons\icon-44x44.png</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\.prettierignore</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\.eslintignore</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\netlify.toml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\jest.config.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\tsconfig.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\tslint.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\scripts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\scripts\generateMock.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\e2e</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\e2e\topMenu.e2e.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\e2e\baseLayout.e2e.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\e2e\home.e2e.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\e2e\login.e2e.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\e2e\userLayout.e2e.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\global.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\manifest.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Authorized.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ContactRecord</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ContactRecord\components</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ContactRecord\components\Tabcontainer.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ContactRecord\components\RecordDetailModal.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ContactRecord\components\recordDetail.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ContactRecord\components\RecordForm.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ContactRecord\Edit.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ContactRecord\Calendar.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ContactRecord\RecordList.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ContactRecord\record.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\LogManage</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\LogManage\components</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\LogManage\components\LogInfo.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\LogManage\components\LogInfo.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\LogManage\List.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\LogManage\list.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\ContactDetail.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\ContactEdit.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\ContactMgr.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\components</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\components\AccountForm.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\components\contactForm.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\components\ResumeForm.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\components\BaseInfoForm.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\components\ContactMapForm.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\components\FlexItem.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\components\EducationForm.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\components\TagForm.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Contact\ContactMgr.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Account</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Account\AccountInfo.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ParamerConfig</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ParamerConfig\components</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ParamerConfig\components\ParamsInfo.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ParamerConfig\components\ParamsInfo.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ParamerConfig\Add.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ParamerConfig\List.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\ParamerConfig\list.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\DBManage</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\DBManage\Add.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\DBManage\Add.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\DBManage\List.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\DBManage\list.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\DBManage\components</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\DBManage\components\ConnectionAdd.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\DBManage\components\ConnectionAdd.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Exception</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Exception\TriggerException.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Exception\500.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Exception\403.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Exception\404.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Exception\style.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\document.ejs</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections\Add.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections\List.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections\list.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections\Graph.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections\components</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections\components\ConnectionAdd.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections\components\ConnectionAdd.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections\components\ConnectionInfo.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections\components\ConnectionInfo.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Connections\graph.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TenantManage</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TenantManage\List.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TenantManage\list.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TenantManage\components</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TenantManage\components\ConnectionInfo.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TenantManage\components\ConnectionInfo.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TagManage</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TagManage\components</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TagManage\components\NodeInfo.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TagManage\Tag.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\TagManage\Tag.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Homepage</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Homepage\components</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Homepage\components\ImportModal.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Homepage\components\ImportModal.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Homepage\Homepage.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Homepage\Homepage.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\.umi</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\.umi\DvaContainer.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\.umi\polyfills.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\.umi\initDva.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\.umi\router.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\.umi\initHistory.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\.umi\LocaleWrapper.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\.umi\umi.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Login</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Login\Login.jsx</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\pages\Login\Login.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\defaultSettings.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\layouts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\layouts\UserLayout.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\layouts\Footer.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\layouts\BasicLayout.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\layouts\Header.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\layouts\BlankLayout.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\layouts\UserLayout.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\layouts\Header.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\layouts\MenuContext.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\utils</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\utils\authority.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\utils\request.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\utils\utils.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\utils\Yuan.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\utils\Authorized.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\utils\utils.test.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\utils\utils.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\utils\authority.test.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\assets</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\assets\tianshi-white.png</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\assets\tianshi.png</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\assets\logo.png</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\assets\noData.png</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\locales</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\locales\zh-CN.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\locales\zh-CN</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\locales\zh-CN\exception.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\locales\zh-CN\menu.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\locales\zh-CN\globalHeader.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\locales\en-US</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\locales\en-US\globalHeader.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\locales\en-US\exception.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\locales\en-US\menu.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\service-worker.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\global.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\ConnectionModels.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\menu.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\ContactMgrModels.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\LogModels.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\ParamsModels.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\DataBaseModels.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\DemoModels.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\login.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\HomepageModels.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\TenantModels.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\setting.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\ContactRecordModels.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\user.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\models\TagModels.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services\ParamsService.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services\DataBaseService.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services\DemoService.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services\api.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services\TenantService.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services\ContactRecordService.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services\ContactService.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services\TagService.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services\user.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\services\ConnectionService.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\HeaderSearch</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\HeaderSearch\index.en-US.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\HeaderSearch\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\HeaderSearch\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\HeaderSearch\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\HeaderSearch\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\HeaderSearch\demo\basic.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\HeaderSearch\index.zh-CN.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\CheckPermissions.test.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\AuthorizedRoute.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\CheckPermissions.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\demo\basic.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\demo\AuthorizedFunction.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\demo\secured.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\demo\AuthorizedArray.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\Secured.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\renderAuthorize.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\index.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\AuthorizedRoute.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\Authorized.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\PromiseRender.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Authorized\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Result</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Result\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Result\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Result\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Result\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Result\demo\error.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Result\demo\structure.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Result\demo\classic.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Result\index.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalFooter</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalFooter\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalFooter\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalFooter\demo\basic.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalFooter\index.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalFooter\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalFooter\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\demo\basic.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\demo\vertical.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\index.zh-CN.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\responsive.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\Description.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\DescriptionList.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\index.en-US.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\Description.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\DescriptionList\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\CountDown</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\CountDown\index.en-US.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\CountDown\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\CountDown\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\CountDown\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\CountDown\demo\simple.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\CountDown\index.zh-CN.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TopNavHeader</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TopNavHeader\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TopNavHeader\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\FooterToolbar</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\FooterToolbar\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\FooterToolbar\demo\basic.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\FooterToolbar\index.zh-CN.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\FooterToolbar\index.en-US.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\FooterToolbar\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\FooterToolbar\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\FooterToolbar\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\SelectLang</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\SelectLang\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\SelectLang\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Connections</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Ellipsis</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Ellipsis\index.en-US.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Ellipsis\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Ellipsis\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Ellipsis\index.test.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Ellipsis\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Ellipsis\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Ellipsis\demo\line.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Ellipsis\demo\number.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Ellipsis\index.zh-CN.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\index.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\breadcrumb.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\index.test.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\breadcrumb.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\demo\image.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\demo\simple.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\demo\standard.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeader\demo\structure.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeaderWrapper</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeaderWrapper\GridContent.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeaderWrapper\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeaderWrapper\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageHeaderWrapper\GridContent.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\EditableItem</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\EditableItem\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\EditableItem\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\index.en-US.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\NoticeList.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\demo\popover.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\demo\basic.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\index.zh-CN.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\NoticeIconTab.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NoticeIcon\NoticeList.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\SiderMenu</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\SiderMenu\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\SiderMenu\SiderMenu.test.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\SiderMenu\SiderMenu.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\SiderMenu\SiderMenuUtils.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\SiderMenu\BaseMenu.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\SiderMenu\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception\demo\500.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception\demo\403.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception\demo\404.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception\index.zh-CN.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception\index.en-US.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Exception\typeConfig.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\_utils</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\_utils\pathTools.test.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\_utils\pathTools.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\EditableLinkGroup</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\EditableLinkGroup\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\EditableLinkGroup\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NumberInfo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NumberInfo\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NumberInfo\demo\basic.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NumberInfo\index.zh-CN.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NumberInfo\index.en-US.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NumberInfo\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NumberInfo\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\NumberInfo\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\index.en-US.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\Tab.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\LoginItem.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\LoginItem.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\demo\basic.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\index.zh-CN.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\LoginSubmit.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\loginContext.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\map.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Login\LoginTab.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\StandardTable</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\StandardTable\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\StandardTable\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalHeader</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalHeader\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalHeader\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\GlobalHeader\RightContent.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\AvatarList</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\AvatarList\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\AvatarList\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\AvatarList\AvatarItem.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\AvatarList\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\AvatarList\demo\simple.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\AvatarList\index.zh-CN.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\AvatarList\index.en-US.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\AvatarList\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\ArticleListContent</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\ArticleListContent\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\ArticleListContent\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageLoading</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\PageLoading\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TagSelect</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TagSelect\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TagSelect\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TagSelect\demo\controlled.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TagSelect\demo\simple.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TagSelect\demo\expandable.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TagSelect\index.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TagSelect\TagSelectOption.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TagSelect\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\TagSelect\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\StandardFormRow</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\StandardFormRow\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\StandardFormRow\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Trend</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Trend\index.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Trend\demo</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Trend\demo\basic.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Trend\demo\reverse.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Trend\index.md</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Trend\index.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\components\Trend\index.d.ts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\src\global.less</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-platform-html\firebase.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\freeway-business-html</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\doc\db\1.0.0\platform\003_ddl_create_rbac_table.sql</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\platform\rbac</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\platform\rbac\web</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\platform\rbac\web\LoginController.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\platform\rbac\service</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\platform\rbac\service\impl</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\platform\rbac\service\impl\RealmSecurityServiceImpl.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\platform\rbac\filter</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\platform\rbac\filter\UserAuthcFilter.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\modules\pub</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\modules\pub\service</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\modules\pub\service\impl</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\modules\pub\service\impl\BusinessSysLogService.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\service</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\service\impl</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\service\impl\ResourceInfoServiceImpl.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\service\impl\UserSecurityServiceImpl.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\service\impl\UserInfoServiceImpl.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\service\impl\RoleInfoServiceImpl.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\dao</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\dao\ResourceInfoDAO.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\dao\ResourceInfoDAO.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\dao\UserInfoDAO.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\dao\UserInfoDAO.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\dao\RoleInfoDAO.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\platform\rbac\dao\RoleInfoDAO.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\test\java\net\chinahrd\service\AdminDemoTest.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\service.impl\AdminSysLogService.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\service.impl\LogInfoServiceImpl.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\dao\LogInfoDAO.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\dao\LogInfoDAO.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\modules\pub\web\LogInfoController.java</PATH>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Deleted" />
+          <option name="myStatusName" value="Deleted" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="true" />
+          <option name="myId" value="REMOVED_FROM_REPOSITORY" />
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-base-facade\src\main\java\net\chinahrd\response\RbacModuleRes.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade\src\main\java\net\chinahrd\modules\rbac</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\yarn.lock</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\.prettierrc</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\.stylelintrc.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\tests</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\package.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\config</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\appveyor.yml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\functions</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\jsconfig.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\.eslintrc.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\public</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\.prettierignore</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\.eslintignore</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\netlify.toml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\jest.config.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\tsconfig.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\tslint.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\scripts</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\src</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\firebase.json</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\mock</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\.editorconfig</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\pom.xml</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\jest-puppeteer.config.js</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-html\deploy</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-web\src\main\java\net\chinahrd\modules\rbac</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\modules\rbac</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-business-service\src\main\java\net\chinahrd\config\PageHelperConfig.java</PATH>
+          <PATH vcs="svn" revision="116">D:\MyXFiles\svn\freeway-parent\freeway-platform-admin\src\main\java\net\chinahrd\config\PageHelperConfig.java</PATH>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Restored" />
+          <option name="myStatusName" value="Will be restored" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="RESTORED" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Modified" />
+        <option name="myStatusName" value="Modified" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MODIFIED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Skipped" />
+        <option name="myStatusName" value="Skipped" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SKIPPED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with conflicts" />
+        <option name="myStatusName" value="Will be merged with conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_CONFLICTS" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with tree conflicts" />
+        <option name="myStatusName" value="Merged with tree conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with property conflicts" />
+        <option name="myStatusName" value="Will be merged with property conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged" />
+        <option name="myStatusName" value="Will be merged" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Not in repository" />
+        <option name="myStatusName" value="Not in repository" />
+        <option name="mySupportsDeletion" value="true" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="UNKNOWN" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally added" />
+        <option name="myStatusName" value="Locally added" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_ADDED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally removed" />
+        <option name="myStatusName" value="Locally removed" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_REMOVED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Switched" />
+        <option name="myStatusName" value="Switched" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SWITCHED" />
+      </FILE-GROUP>
+    </UpdatedFiles>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.ServiceApplication">
+    <configuration name="AdminApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="freeway-platform-admin" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="net.chinahrd.AdminApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="freeway-business-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="net.chinahrd.ServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="WebApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="freeway-business-web" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="net.chinahrd.WebApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Spring Boot.ServiceApplication" />
+      <item itemvalue="Spring Boot.WebApplication" />
+      <item itemvalue="Spring Boot.AdminApplication" />
+    </list>
+  </component>
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\Administrator\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="SvnFileUrlMappingImpl">
+    <option name="myMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-business-service" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-business-service" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-business-web" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-business-web" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-common" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-common" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-facade" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-facade" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-base-facade" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-base-facade" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-business-facade" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-facade\freeway-platform-facade" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-generator" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-generator" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-platform-admin" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-platform-admin" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-support" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-support" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-support\freeway-dubbo-support" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-support\freeway-dubbo-support" />
+        </SvnCopyRootSimple>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-support\freeway-web-support" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent\freeway-support\freeway-web-support" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+    <option name="myMoreRealMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\MyXFiles\svn\freeway-parent" />
+          <option name="myCopyRoot" value="D:\MyXFiles\svn\freeway-parent" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1736c6ff-11ca-457f-a275-28c9f3b0e767" name="Default Changelist" comment="" />
+      <created>1553136868024</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1553136868024</updated>
+      <workItem from="1553136871644" duration="1383000" />
+      <workItem from="1553138703448" duration="290000" />
+      <workItem from="1553156873812" duration="3031000" />
+      <workItem from="1553326852218" duration="288000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="4992000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-7" y="-7" width="2062" height="1126" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17165668" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Favorites" order="5" side_tool="true" />
+      <window_info id="Capture Tool" order="6" />
+      <window_info id="Web" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32955715" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32955715" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39958805" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Spring" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Java Enterprise" order="10" />
+      <window_info anchor="bottom" id="Database Changes" order="11" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="12" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Messages" order="13" weight="0.32955715" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Capture Analysis" order="4" />
+      <window_info anchor="right" id="Maven Projects" order="5" visible="true" weight="0.32984033" />
+      <window_info anchor="right" id="Database" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="8" />
+      <window_info anchor="right" id="Bean Validation" order="9" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/doc/db/1.0.0/platform/001_ddl_create_pub_table.sql" />
+    <entry file="file://$PROJECT_DIR$/doc/images/freeway.jpg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/freeway-business-service/src/main/java/net/chinahrd/ServiceApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="33" column="1" selection-start-line="33" selection-start-column="1" selection-end-line="33" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/freeway-facade/freeway-base-facade/src/main/java/net/chinahrd/common/BusinessEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="10" column="39" selection-start-line="10" selection-start-column="39" selection-end-line="10" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/freeway-business-service/src/main/java/net/chinahrd/deployment/CacheTenantManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="27" column="7" selection-start-line="27" selection-start-column="7" selection-end-line="27" selection-end-column="7" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/freeway-business-web/src/main/java/net/chinahrd/config/SwaggerConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/freeway-business-web/src/main/java/net/chinahrd/WebApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/freeway-facade/freeway-base-facade/src/main/java/net/chinahrd/common/BaseEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="627">
+          <caret line="33" column="27" lean-forward="true" selection-start-line="33" selection-start-column="27" selection-end-line="33" selection-end-column="27" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.talentSearch.mvc.app.dao.MobileTalentSearchDao">
+
+	<select id="queryTalentSearch" resultType="net.chinahrd.entity.dto.app.common.EmpDto">
+		SELECT
+		vde.emp_id AS empId,
+		vde.img_path AS imgPath,
+		vde.user_name_ch AS userName,
+		vde.tel_phone AS phone,
+		vde.email 
+		FROM v_dim_emp vde
+		WHERE vde.customer_id = #{customerId} 
+		AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		AND vde.organization_id IN
+		<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+			#{id}
+		</foreach>
+		
+		LIMIT #{rowBounds.offset}, #{rowBounds.limit}
+	</select>
+
+	<select id="queryTalentSearchCount" resultType="int">
+		SELECT COUNT(vde.emp_id) 
+		FROM v_dim_emp vde
+		WHERE vde.customer_id = #{customerId}
+		AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		AND vde.organization_id IN
+		<foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+			#{id}
+		</foreach>
+	</select>
+
+
+
+</mapper>

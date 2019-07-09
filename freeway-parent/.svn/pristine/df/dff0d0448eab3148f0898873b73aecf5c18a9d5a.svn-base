@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.modules.demo.dao.EmpInfoDAO">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="net.chinahrd.modules.demo.entity.EmpInfo">
+        <id column="emp_id" property="empId" />
+        <result column="emp_name" property="empName" />
+        <result column="create_by" property="createBy" />
+        <result column="create_date" property="createDate" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_date" property="updateDate" />
+        <result column="tenant_id" property="tenantId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        tenant_id,
+        emp_id, emp_name
+    </sql>
+
+    <select id="listEmpInfo" parameterType="java.util.Map" resultType="net.chinahrd.modules.demo.response.EmpInfoRes">
+    select
+    emp_id,emp_name
+    from demo_emp_info t
+    where 1 = 1
+    <if test="empName != null and empName != ''">
+        and t.emp_name like CONCAT('%', #{empName}, '%')
+    </if>
+    <if test="tenantId != null and tenantId != ''">
+        and t.tenant_id = #{tenantId}
+    </if>
+    </select>
+
+</mapper>

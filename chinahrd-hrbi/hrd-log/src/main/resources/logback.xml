@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<property name="CONSOLE_LOG_DEV" value="%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-5level %logger{36} - %msg%n" />
+	<property name="CONSOLE_LOG_PRO" value="%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-4relative [%thread] |-%-5level %logger{35} - %msg%n" />
+	<property name="LOG_PATH" value="/home/logs/hrd-log_%d{yyyy-MM-dd}.log" />
+
+	<!--格式化输出：%d:表示日期    %thread:表示线程名     %-5level:级别从左显示5个字符宽度  %msg:日志消息    %n:是换行符-->
+	<property name="CONSOLE_LOG_PATTERN"
+			  value="%red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger) - %msg%n" />
+
+	<appender name="dev" class="ch.qos.logback.core.ConsoleAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+
+	<appender name="product" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${CONSOLE_LOG_PRO}</pattern>
+			<pattern></pattern>
+		</encoder>
+	</appender>
+
+	<!-- TRACE < DEBUG < INFO < WARN < ERROR, ALL/OFF -->
+	<logger name="net.chinahrd" level="debug" addtivity="false"/>
+	<logger name="net.chinahrd.eis.dal.MySqlPaginationPlugin" level="debug" addtivity="false" />
+	<logger name="org.springframework.web" level="INFO" />
+
+	<root level="DEBUG">
+		<appender-ref ref="product" />
+		<appender-ref ref="dev" />
+	</root>
+</configuration>

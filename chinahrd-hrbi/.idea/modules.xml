@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/base/base.iml" filepath="$PROJECT_DIR$/base/base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/chinahrd-hrbi.iml" filepath="$PROJECT_DIR$/.idea/chinahrd-hrbi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hrbi.iml" filepath="$PROJECT_DIR$/hrbi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hrd-util/hrd-util.iml" filepath="$PROJECT_DIR$/hrd-util/hrd-util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hrd-weka/hrd-weka.iml" filepath="$PROJECT_DIR$/hrd-weka/hrd-weka.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jar/jar.iml" filepath="$PROJECT_DIR$/jar/jar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/run/run.iml" filepath="$PROJECT_DIR$/run/run.iml" />
+      <module fileurl="file://$PROJECT_DIR$/run-vue/run-vue.iml" filepath="$PROJECT_DIR$/run-vue/run-vue.iml" />
+      <module fileurl="file://$PROJECT_DIR$/run-zrw/run-zrw.iml" filepath="$PROJECT_DIR$/run-zrw/run-zrw.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-accordDismiss/tr-accordDismiss.iml" filepath="$PROJECT_DIR$/tr-accordDismiss/tr-accordDismiss.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-benefit/tr-benefit.iml" filepath="$PROJECT_DIR$/tr-benefit/tr-benefit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-clientImg/tr-clientImg.iml" filepath="$PROJECT_DIR$/tr-clientImg/tr-clientImg.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-dismissRisk/tr-dismissRisk.iml" filepath="$PROJECT_DIR$/tr-dismissRisk/tr-dismissRisk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-empAttendance-zrw/tr-empAttendance-zrw.iml" filepath="$PROJECT_DIR$/tr-empAttendance-zrw/tr-empAttendance-zrw.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-empSatisfaction/tr-empSatisfaction.iml" filepath="$PROJECT_DIR$/tr-empSatisfaction/tr-empSatisfaction.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-employeePerformance/tr-employeePerformance.iml" filepath="$PROJECT_DIR$/tr-employeePerformance/tr-employeePerformance.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-homePage/tr-homePage.iml" filepath="$PROJECT_DIR$/tr-homePage/tr-homePage.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-humanInventory/tr-humanInventory.iml" filepath="$PROJECT_DIR$/tr-humanInventory/tr-humanInventory.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-humanInventory-zrw/tr-humanInventory-zrw.iml" filepath="$PROJECT_DIR$/tr-humanInventory-zrw/tr-humanInventory-zrw.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-keyTalent/tr-keyTalent.iml" filepath="$PROJECT_DIR$/tr-keyTalent/tr-keyTalent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-laborEfficiency/tr-laborEfficiency.iml" filepath="$PROJECT_DIR$/tr-laborEfficiency/tr-laborEfficiency.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-manpowerCost/tr-manpowerCost.iml" filepath="$PROJECT_DIR$/tr-manpowerCost/tr-manpowerCost.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-monthReport/tr-monthReport.iml" filepath="$PROJECT_DIR$/tr-monthReport/tr-monthReport.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-organizationalStructure/tr-organizationalStructure.iml" filepath="$PROJECT_DIR$/tr-organizationalStructure/tr-organizationalStructure.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-positionCompetency/tr-positionCompetency.iml" filepath="$PROJECT_DIR$/tr-positionCompetency/tr-positionCompetency.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-promotionBoard/tr-promotionBoard.iml" filepath="$PROJECT_DIR$/tr-promotionBoard/tr-promotionBoard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-recruitBoard/tr-recruitBoard.iml" filepath="$PROJECT_DIR$/tr-recruitBoard/tr-recruitBoard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-salaryBoard/tr-salaryBoard.iml" filepath="$PROJECT_DIR$/tr-salaryBoard/tr-salaryBoard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-salesBoard/tr-salesBoard.iml" filepath="$PROJECT_DIR$/tr-salesBoard/tr-salesBoard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-sequenceCount/tr-sequenceCount.iml" filepath="$PROJECT_DIR$/tr-sequenceCount/tr-sequenceCount.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-talentContrast/tr-talentContrast.iml" filepath="$PROJECT_DIR$/tr-talentContrast/tr-talentContrast.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-talentMaps/tr-talentMaps.iml" filepath="$PROJECT_DIR$/tr-talentMaps/tr-talentMaps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-talentProfile/tr-talentProfile.iml" filepath="$PROJECT_DIR$/tr-talentProfile/tr-talentProfile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-talentProfitLoss/tr-talentProfitLoss.iml" filepath="$PROJECT_DIR$/tr-talentProfitLoss/tr-talentProfitLoss.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-talentSearch/tr-talentSearch.iml" filepath="$PROJECT_DIR$/tr-talentSearch/tr-talentSearch.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-talentStructure/tr-talentStructure.iml" filepath="$PROJECT_DIR$/tr-talentStructure/tr-talentStructure.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-teamImg/tr-teamImg.iml" filepath="$PROJECT_DIR$/tr-teamImg/tr-teamImg.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr-trainBoard/tr-trainBoard.iml" filepath="$PROJECT_DIR$/tr-trainBoard/tr-trainBoard.iml" />
+    </modules>
+  </component>
+</project>

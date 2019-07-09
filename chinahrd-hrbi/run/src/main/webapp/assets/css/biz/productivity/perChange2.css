@@ -1,0 +1,386 @@
+.per {
+    position: relative;
+    padding-left: 120px;
+}
+
+#page-one {
+    display: block;
+}
+
+#page-two {
+    display: none;
+}
+
+.per .bottom-left {
+    left: 0px;
+}
+
+.per .bottom-div2 {
+    padding-top: 12px;
+    height: 370px;
+}
+
+.per .condition-input-text {
+    border-color: #a4a4a4;
+    width: 46px;
+    height: 24px;
+    padding-left: 6px;
+    margin-top: 2px;
+    margin-left: 4px;
+}
+
+.per .condition-text-one {
+    margin-left: 6px;
+    margin-right: 3px;
+    margin-top: 4px;
+}
+
+/*椤甸潰閫氱敤鏍峰紡 end*/
+
+/*tab 鍒囨崲 鏍峰紡 end*/
+/*澶氬嚭鏉ョ殑select begin*/
+.per .per-select {
+    cursor: pointer;
+    font-size: 12px;
+    position: absolute;
+    right: 0px;
+    width: 130px;
+    height: 26px;
+}
+
+/*澶氬嚭鏉ョ殑select end*/
+
+.SetUpBody .leftBarArea {
+    height: 350px;
+}
+
+.SetUpBody .noPaddingLeft {
+    padding-left: 0px;
+}
+
+.SetUpBody .preStarBarChar {
+	margin-top: 20px;
+    height: 280px;
+}
+
+.SetUpBody .preDisTextArea {
+    width: 100%;
+    height: 40px;
+    text-align: center;
+}
+
+.SetUpBody .right-instructions {
+    position: absolute;
+    width: 11px;
+    height: 315px;
+    margin: 15px auto;
+}
+
+.SetUpBody .right-instructions .right-line {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    border-left: 1px solid #e0e0e0;
+    z-index: 1;
+}
+
+.SetUpBody .right-instructions .right-arrow {
+    position: absolute;
+    top: 145px;
+    width: 11px;
+    height: 25px;
+    background: #ffffff url("../../../img/base/right-icon.png") no-repeat;
+    z-index: 1;
+}
+
+.SetUpBody .rightPieArea {
+    height: 320px;
+    /* line-height: 260px; */
+}
+
+.chartArea {
+    height: 260px;
+    padding-left: 25%;
+    padding-right: 30%;
+}
+
+.textArea {
+    padding-top: 15px;
+    padding-left: 13%;
+    color: #999999;
+}
+
+#preChange, #preUnusual {
+    margin-top: 60px;
+    height: 220px;
+}
+
+/*绛涢�夋潯浠� begin*/
+.per .per-select2 {
+    cursor: pointer;
+    font-size: 12px;
+    width: 130px;
+    height: 26px;
+    margin-top: -4px;
+}
+
+.conditionBtnListBody {
+    position: relative;
+    /* min-height: 276px; */
+    margin: -20px 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px !important;
+}
+
+.bottom-div-three {
+    height: 550px !important;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.conditionBtn {
+    cursor: pointer;
+    position: absolute;
+    top: -48px;
+    left: 220px;
+    font-size: 12px;
+    width: 108px;
+    height: 48px;
+    line-height: 47px;
+    margin-left: 10px;
+    border: 1px solid #e0e0e0;
+    border-bottom: 0px;
+    z-index: 1;
+    background-color: #fff;
+    text-indent: 10px;
+}
+
+.condition-icon {
+    background-image: url("../../../img/index/x.png");
+    width: 7px;
+    height: 7px;
+    float: right;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+.dis-search {
+    width: 280px;
+    font-size: 12px !important;
+    margin-left: 5px;
+}
+
+.dis-search-input {
+    line-height: 2 !important;
+    font-size: 12px !important;
+    float: left;
+    width: 68%;
+    height: 34px;
+    margin-top: 1px;
+    border: 1px solid #e0e0e0;
+    font-size: 12px;
+    padding-top: 4px;
+    padding-left: 12px;
+}
+
+.dis-search-input-btn {
+    cursor: pointer;
+    font-size: 12px !important;
+    float: left;
+    width: 26%;
+    background-color: #009edd;
+    height: 36px;
+    line-height: 36px;
+    border: 1px solid #e0e0e0;
+    padding-left: 9px;
+    margin-left: -1px;
+    color: #fff;
+}
+
+.condition-body-list {
+    width: 100%;
+    float: left;
+    margin-bottom: 14px;
+}
+
+.condition-body-list-title {
+    text-align: right;
+    width: 64px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+.condition-btn {
+    float: left;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 24px;
+    line-height: 24px;
+    /*color: #444444;*/
+    margin-right: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+
+.condition-btn-selected {
+    background-color: #009edd;
+    color: #fff;
+    cursor: default;
+}
+
+.condition-bottom {
+    float: left;
+    width: 100%;
+    margin-top: 0px;
+    margin-bottom: 8px;
+    padding-left: 72px;
+}
+
+.condition-icon {
+    background-image: url("../../../img/index/x.png");
+    width: 7px;
+    height: 7px;
+    float: right;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+.condition-btn-one {
+    cursor: pointer;
+    font-size: 12px;
+    width: 58px;
+    height: 24px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    line-height: 22px;
+    color: #666666;
+    background-color: #fff;
+    margin-left: 20px;
+}
+
+.condition-btn-two {
+    cursor: pointer;
+    font-size: 12px;
+    width: 58px;
+    height: 24px;
+    text-align: center;
+    line-height: 22px;
+    color: #fff;
+    background-color: #009edd;
+}
+
+.condition-btn-too-icon {
+    position: absolute;
+    top: 8px;
+    right: 6px;
+    background-image: url("../../../img/index/y.png");
+    width: 7px;
+    height: 7px;
+}
+
+/*绛涢�夋潯浠� end*/
+
+/*涓诲姩娴佸け鐜囨寚鏍囪缃� 寮瑰嚭妗� begin*/
+.BSetUp-line-two {
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+}
+
+.BSetUp-line-three {
+    border-bottom: 1px dashed #e8ecf0;
+}
+
+.CSetUp-text-one {
+    margin-top: 6px;
+}
+
+.CSetUp-select {
+    border-color: #a4a4a4;
+    margin-top: 4px;
+    margin-left: 8px;
+    width: 132px;
+    height: 24px;
+}
+
+.CSetUp-text-two {
+    width: 100%;
+    text-align: left;
+    color: #888888;
+    padding-top: 8px;
+    padding-bottom: 20px;
+}
+
+/*涓诲姩娴佸け鐜囨寚鏍囪缃� 寮瑰嚭妗� end*/
+
+.ct-18 {
+    width: 18%;
+}
+
+.ct-28 {
+    width: 28%;
+}
+
+.showview {
+    cursor: pointer;
+}
+
+.showview:hover {
+    background-color: #fafafa;
+}
+
+.popup-modal .modal-title-small {
+    font-size: 13px;
+    color: #999;
+}
+
+#rightPieChart .loadingmessage {
+    margin-top: 45px;
+}
+
+.mainArea .loadingmessage {
+    margin-top: 80px;
+}
+
+@media (max-width: 860px) {
+    .ct-18 {
+        width: 100%;
+    }
+
+    .ct-28 {
+        width: 100%;
+    }
+}
+
+@media (max-width: 680px) {
+    .condition-body-list-title {
+        width: 100%;
+        text-align: left;
+    }
+
+    .condition-bottom {
+        padding-left: 0px;
+    }
+
+    .condition-input-text-too {
+        clear: both;
+        margin-top: 6px;
+    }
+
+    .conditionBtn {
+        top: -65px;
+        left: -11px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .conditionBtnListBody {
+        margin-top: 110px;
+    }
+
+    .dis-search {
+        top: -115px;
+    }
+}

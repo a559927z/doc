@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.eis.permission.dao.ModuleSynchDatabase">
+
+	<resultMap id="menuResult" type="net.chinahrd.core.menu.model.MenuEntity">
+		<id property="functionId" column="function_id" />
+		<result property="customerId" column="customer_id"/>
+		<result property="functionKey" column="function_key"/>
+		<result property="functionName" column="function_name"/>
+		<result property="functionParentId" column="function_parent_id"/>
+		<result property="note" column="note"/>
+		<result property="url" column="url"/>
+		<result property="isMenu" column="is_menu"/>
+		<result property="fullPath" column="full_path"/>
+		<result property="quotaOrFun" column="quota_or_fun"/>
+		<result property="createUserId" column="create_user_id"/>
+		<result property="modifyUserId" column="modify_user_id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="modifyTime" column="modify_time"/>
+		
+		<collection property="blocks"
+			ofType="net.chinahrd.core.menu.model.BlockEntity" resultMap="blockResult" />
+	</resultMap>
+
+	<resultMap id="blockResult" type="net.chinahrd.core.menu.model.BlockEntity">
+		<id property="functionItemId" column="function_item_id" />
+		<result property="customerId" column="customer_id"/>
+		<result property="functionId" column="function_id"/>
+		<result property="itemCode" column="item_code"/>
+		<result property="note" column="note"/>
+		<result property="createUserId" column="create_user_id"/>
+		<result property="modifyUserId" column="modify_user_id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="modifyTime" column="modify_time"/>
+				
+	</resultMap>
+	
+	
+
+
+    <select id="queryModule" resultType="net.chinahrd.core.module.model.ModuleModel">
+	SELECT module_id moduleId,
+			code,
+			name,
+			version,
+			staus
+	FROM sys_module
+    </select>
+
+<insert id="insertModule" parameterType="net.chinahrd.core.module.model.ModuleModel" >
+      INSERT INTO sys_module (
+        module_id,
+        code,
+        name,
+        version,
+        staus
+      )
+      VALUES (
+        #{dto.moduleId},
+        #{dto.code},
+        #{dto.name},
+        #{dto.version},
+        #{dto.staus}
+      )
+    </insert>
+
+ 
+  
+
+</mapper>

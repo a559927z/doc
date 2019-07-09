@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="驱动力">
+		<menu code="RenCaiPouXiang" name="人才剖像" url="talentProfile/toTalentProfileView" icon="" mobile="false" relies="">
+			
+		</menu>
+	</menus>

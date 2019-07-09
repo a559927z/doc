@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd"
+	default-lazy-init="true">
+	
+	<!-- 自定义Realm继承自AuthorizingRealm -->
+	<bean id="eisAuthorizingRealm" class="net.chinahrd.eis.permission.support.ShiroAuthorizingRealm">
+		<property name="cacheManager" ref="shiroMemCache" />
+	</bean>
+	<!-- shiro的配置权限管理器 -->  
+	<bean id="shiroMemCache" class="org.apache.shiro.cache.MemoryConstrainedCacheManager" />
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="eisAuthorizingRealm" />
+		<property name="cacheManager" ref="shiroMemCache" />
+	</bean>
+	
+	<!-- 自定义filter继承自FormAuthenticationFilter -->  
+	<bean id="shiroAuthenticationFilter" class="net.chinahrd.eis.permission.support.ShiroAuthenticationFilter" />
+	
+	<!-- 配置shiro的过滤器工厂类，id- shiroFilter要和我们在web.xml中配置的过滤器一致 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<!-- 调用我们配置的权限管理器 -->
+		<property name="securityManager" ref="securityManager" />
+		<!-- 配置我们的登录请求地址 -->
+		<property name="loginUrl" value="/login" />
+		<!-- 配置我们在登录页登录成功后的跳转地址，如果你访问的是非/login地址，则跳到您访问的地址 -->
+		<property name="successUrl" value="/" />
+		<!-- 如果您请求的资源不再您的权限范围，则跳转到/403请求地址 -->
+		<property name="unauthorizedUrl" value="/login" />
+		<property name="filters">
+			<map>
+				<entry key="authc" value-ref="shiroAuthenticationFilter" />
+			</map>
+		</property>
+		<!-- 权限配置 -->
+		<!-- anon 表示匿名访问（不需要认证与授权），
+			authc 表示需要认证，
+			perms[SECURITY_ACCOUNT_VIEW] 表示用户需要提供值为“SECURITY_ACCOUNT_VIEW”Permission信息。
+			由此可见，连接地址配置为 authc 或 perms[XXX] 表示为受保护资源。 -->
+		<property name="filterChainDefinitions">
+			<value>
+				<!-- anon表示此地址不需要任何权限即可访问 -->
+			    /login = authc
+			    /logout = logout
+			    /forgetPassword/** = anon
+			    /user/updatePasswd.do = anon
+				/assets/** = anon
+				/mobile/** = anon
+				/license/** = anon
+				/monthReport/display = anon
+				/demo/display = anon
+				<!--所有的请求(除去配置的静态资源请求或请求地址为anon的请求)都要通过登录验证,如果未登录则跳到/login-->
+				/** = user
+			</value>
+		</property>
+	</bean>
+
+	<!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+	
+	<!-- AOP式方法级权限检查  -->
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">
+		<property name="proxyTargetClass" value="true" />
+	</bean>
+	
+	<bean
+		class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager" />
+	</bean>
+
+</beans>

@@ -1,0 +1,10 @@
+package net.chinahrd.modules.pub.request;
+
+import net.chinahrd.request.BaseRequest;
+
+/**
+ * Created by huocaoxi on 2019/3/21.
+ */
+public class ParamInfoReq extends BaseRequest {
+
+}

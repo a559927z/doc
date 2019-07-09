@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.empAttendance.module.MonthTableDao">
+
+	<!-- 更新考勤月表 -->
+    <!--
+        hrd-db/procedure/劳动力效能(LaborEfficiency)_1.0.sql
+        行： 301
+    -->
+	<select id="callEmpAttendMonth" statementType="CALLABLE" resultType="net.chinahrd.entity.dto.ProcessErrorDto">
+		call pro_fetch_emp_attendance_month(#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+			#{p_user_id, mode=IN, jdbcType=VARCHAR},
+			#{p_emp_id, mode=IN, jdbcType=VARCHAR},
+			#{p_days, mode=IN, jdbcType=INTEGER}
+			);
+    </select>
+ 
+
+</mapper>

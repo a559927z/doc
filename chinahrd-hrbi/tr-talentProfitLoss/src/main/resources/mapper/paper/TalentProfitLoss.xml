@@ -1,0 +1,1884 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.talentProfitLoss.mvc.pc.dao.TalentProfitLossDao">
+	<cache-ref namespace="net.chinahrd.ehcache.normal" />
+	<!-- resultMap -->
+	<resultMap type="net.chinahrd.entity.dto.pc.talentProfitLoss.TalentProfitLossDto" id="baseMap">
+			<result column="flag" property="flag"/>
+		<result column="sum_name" property="sumName"/>
+		<result column="userName" property="userName"/>
+		<result column="sex" property="sex"/>
+		<result column="organName" property="organName"/>
+		<result column="degree" property="degree"/>
+		<result column="major" property="major"/>
+		<result column="position_name" property="positionName"/>
+		<result column="ability_lv_name" property="abilityLvName"/>
+		<result column="change_type_name" property="changeTypeName"/>
+		<result column="change_date" property="changeDate"/>
+		<result column="conNum" property="conNum"/>
+		<result column="curt_name" property="curtName"/>
+		<result column="sequence_name" property="sequenceName"/>
+		<result column="ability_name" property="abilityName"/>
+		<result column="age" property="age"/>
+		<result column="population_id" property="populationId"/>
+		<result column="population_name" property="populationName"/>
+		<result column="province_id" property="provinceId"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="show_index" property="showIndex"/>
+		<result column="city_name" property="cityName"/>
+		<result column="max_date" property="maxDate"/>
+		<result column="min_date" property="minDate"/>
+		<result column="rank_name" property="rankName"/>
+	</resultMap>
+	<!-- 查询包含子集的组织机构id -->
+	<sql id="queryOrganIdAll">
+		(
+		SELECT
+			o.organization_id
+		FROM
+			dim_organization o
+		WHERE
+			LOCATE(
+				(
+					SELECT
+						o1.full_path
+					FROM
+						dim_organization o1
+					WHERE
+						o1.organization_id = #{organId}
+					AND o1.customer_id = #{customerId}
+				),
+				o.full_path
+			)
+		AND o.customer_id = #{customerId}
+		)
+	</sql>
+	<!-- 查询包含子集的月组织机构id -->
+	<sql id="queryOrganIdAllByMonth">
+		(
+		SELECT
+			o.organization_id
+		FROM
+			history_dim_organization_month o
+		WHERE
+			LOCATE(
+				(
+					SELECT
+						o1.full_path
+					FROM
+						history_dim_organization_month o1
+					WHERE
+						o1.organization_id = #{organId}
+					AND o1.customer_id = #{customerId}
+					AND o1.`year_month` = o.`year_month`
+				),
+				o.full_path
+			)
+		AND o.customer_id = #{customerId}
+		AND o.`year_month` = j.`year_month`
+		)
+	</sql>
+	<!-- 异动类型遍历流入List -->
+	<sql id="inflowListForeachWithT">
+		<if test="inflowList != null">
+			<foreach collection="inflowList" item="item" open="AND t.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+	<!-- 异动类型遍历流出List -->
+	<sql id="outflowListForeachWithT">
+		<if test="outflowList != null">
+			<foreach collection="outflowList" item="item" open="AND t.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+	<!-- 异动类型遍历list -->
+	<sql id="changeTypeForeachWithT">
+		<if test="list != null">
+			<foreach collection="list" item="item" open="AND t.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+	<!-- 本月/本年人才损益值 该查询语句不再使用-->
+	<select id="queryTalentProfitLossVal" resultMap="baseMap" useCache="true">
+		SELECT
+			a.flag,
+			(a.conNum - b.conNum) conNum
+		FROM
+			(
+				SELECT
+					'year' flag,
+					count(x.emp_id) conNum
+				FROM
+					(
+						SELECT
+							j.emp_id
+						FROM
+							organization_change j
+						INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+						AND j.change_type_id = t.change_type_id
+						WHERE  
+							j.customer_id = #{customerId}
+						<include refid = "inflowListForeachWithT" ></include >
+						AND YEAR (j.change_date) = #{year}
+						AND j.organization_id = #{organId}
+						GROUP BY
+							j.emp_id
+					) x
+			) a
+		LEFT JOIN (
+			SELECT
+				'year' flag,
+				count(x.emp_id) conNum
+			FROM
+				(
+					SELECT
+						j.emp_id
+					FROM
+						organization_change j
+					INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+					AND j.change_type_id = t.change_type_id
+					WHERE  
+						j.customer_id = #{customerId}
+					<include refid = "outflowListForeachWithT" ></include >
+					AND YEAR (j.change_date) = #{year}
+					AND j.organization_id = #{organId}
+					GROUP BY
+						j.emp_id
+				) x
+		) b ON a.flag = b.flag
+		UNION
+			SELECT
+				c.flag,
+				(c.conNum - d.conNum) conNum
+			FROM
+				(
+					SELECT
+						'month' flag,
+						count(x.emp_id) conNum
+					FROM
+						(
+							SELECT
+								j.emp_id
+							FROM
+								organization_change j
+							INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+							AND j.change_type_id = t.change_type_id
+							WHERE  
+								j.customer_id = #{customerId}
+							<include refid = "inflowListForeachWithT" ></include >
+							AND YEAR (j.change_date) = #{year}
+							AND MONTH (j.change_date) = #{month}
+							AND j.organization_id = #{organId}
+							GROUP BY
+								j.emp_id
+						) x
+				) c
+			LEFT JOIN (
+				SELECT
+					'month' flag,
+					count(x.emp_id) conNum
+				FROM
+				(
+					SELECT
+						j.emp_id
+					FROM
+						organization_change j
+					INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+					AND j.change_type_id = t.change_type_id
+					WHERE  
+						j.customer_id = #{customerId}
+					<include refid = "outflowListForeachWithT" ></include >
+					AND YEAR (j.change_date) = #{year}
+					AND MONTH (j.change_date) = #{month}
+					AND j.organization_id = #{organId}
+					GROUP BY
+						j.emp_id
+				) x
+			) d ON c.flag = d.flag
+	</select>
+	<!-- 本月/本年流入统计 -->
+	<select id="queryTalentInflowVal" resultMap="baseMap" useCache="true">
+		SELECT
+			'month' flag,
+			GROUP_CONCAT(
+				j.user_name_ch
+				ORDER BY
+					j.change_date DESC,
+					CONVERT (j.user_name_ch USING GBK)
+				SEPARATOR '、'
+			) sum_name,
+			COUNT(j.emp_id) conNum
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		WHERE 
+			j.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+		<if test="endYearMonth != null and endYearMonth != ''">
+			AND j.`year_month` = #{endYearMonth}
+		</if>
+		AND j.organization_id = #{organId}
+		UNION
+		SELECT
+			'year' flag,
+			GROUP_CONCAT(
+				j.user_name_ch
+				ORDER BY
+					j.change_date DESC,
+					CONVERT (j.user_name_ch USING GBK)
+				SEPARATOR '、'
+			) sum_name,
+			COUNT(j.emp_id) conNum
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		WHERE 
+			j.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+		<if test="befYearMonth != null and befYearMonth != ''">
+			AND j.`year_month` <![CDATA[>=]]> #{befYearMonth}
+		</if>
+		<if test="endYearMonth != null and endYearMonth != ''">
+			AND j.`year_month` <![CDATA[<=]]> #{endYearMonth}
+		</if>
+		AND j.organization_id = #{organId}
+	</select>
+	<!-- 本月/本年流出统计 -->
+	<select id="queryTalentOutflowVal" resultMap="baseMap" useCache="true">
+		SELECT
+			'month' flag,
+			GROUP_CONCAT(
+				j.user_name_ch
+				ORDER BY
+					j.change_date DESC,
+					CONVERT (j.user_name_ch USING GBK)
+				SEPARATOR '、'
+			) sum_name,
+			COUNT(j.emp_id) conNum
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		WHERE 
+			j.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+		<if test="endYearMonth != null and endYearMonth != ''">
+			AND j.`year_month` = #{endYearMonth}
+		</if>
+		AND j.organization_id_ed = #{organId}
+		UNION
+		SELECT
+			'year' flag,
+			GROUP_CONCAT(
+				j.user_name_ch
+				ORDER BY
+					j.change_date DESC,
+					CONVERT (j.user_name_ch USING GBK)
+				SEPARATOR '、'
+			) sum_name,
+			COUNT(j.emp_id) conNum
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		WHERE 
+			j.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+		<if test="befYearMonth != null and befYearMonth != ''">
+			AND j.`year_month` <![CDATA[>=]]> #{befYearMonth}
+		</if>
+		<if test="endYearMonth != null and endYearMonth != ''">
+			AND j.`year_month` <![CDATA[<=]]> #{endYearMonth}
+		</if>
+		AND j.organization_id_ed = #{organId}
+	</select>
+	<!-- 流入统计弹窗明细-按钮组 -->
+	<select id="queryInflowDetailBtns" resultMap="baseMap" useCache="true">
+		SELECT
+			t.change_type_id,
+			t.curt_name,
+			t.change_type_name
+		FROM
+			dim_change_type t
+		WHERE  
+			t.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+	</select>
+	<!-- 流出统计弹窗明细-按钮组 -->
+	<select id="queryOutflowDetailBtns" resultMap="baseMap" useCache="true">
+		SELECT
+			t.change_type_id,
+			t.curt_name,
+			t.change_type_name
+		FROM
+			dim_change_type t
+		WHERE  
+			t.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+	</select>
+	<!-- 流入统计弹窗明细-总数 -->
+	<select id="queryTalentInflowDetailCount" resultType="Integer" useCache="true">
+		SELECT
+			COUNT(j.emp_id) conNum
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		WHERE
+			j.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+		<if test = "month != null and month != ''" >
+			AND j.`year_month` = #{endYearMonth}
+		</if>
+		<if test = "month == null or month == ''" >
+			<if test="befYearMonth != null and befYearMonth != ''">
+				AND j.`year_month` <![CDATA[>=]]> #{befYearMonth}
+			</if>
+			<if test="endYearMonth != null and endYearMonth != ''">
+				AND j.`year_month` <![CDATA[<=]]> #{endYearMonth}
+			</if>
+		</if>
+		AND j.organization_id = #{organId}
+	</select>
+	<!-- 流入统计弹窗明细 -->
+	<select id="queryTalentInflowDetail" resultMap="baseMap" useCache="true">
+		SELECT
+			j.user_name_ch userName,
+			vemp.sex,
+			j.organization_name organName,
+			e.degree,
+			j.position_name,
+			e.rank_name,
+			t.change_type_name,
+			j.change_date change_date
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		LEFT JOIN v_dim_emp vemp ON j.emp_id = vemp.emp_id
+		WHERE  
+			j.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+		<if test = "month != null and month != ''" >
+			AND j.`year_month` = #{endYearMonth}
+		</if>
+		<if test = "month == null or month == ''" >
+			<if test="befYearMonth != null and befYearMonth != ''">
+				AND j.`year_month` <![CDATA[>=]]> #{befYearMonth}
+			</if>
+			<if test="endYearMonth != null and endYearMonth != ''">
+				AND j.`year_month` <![CDATA[<=]]> #{endYearMonth}
+			</if>
+		</if>
+		AND j.organization_id = #{organId}
+		ORDER BY
+			j.change_date DESC,
+			CONVERT (j.user_name_ch USING GBK)
+		LIMIT #{start}, #{rows}
+	</select>
+	<!-- 流出统计弹窗明细-总数 -->
+	<select id="queryTalentOutflowDetailCount" resultType="Integer" useCache="true">
+		SELECT
+			COUNT(j.emp_id) conNum
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		WHERE
+			j.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+		<if test = "month != null and month != ''" >
+			AND j.`year_month` = #{endYearMonth}
+		</if>
+		<if test = "month == null or month == ''" >
+			<if test="befYearMonth != null and befYearMonth != ''">
+				AND j.`year_month` <![CDATA[>=]]> #{befYearMonth}
+			</if>
+			<if test="endYearMonth != null and endYearMonth != ''">
+				AND j.`year_month` <![CDATA[<=]]> #{endYearMonth}
+			</if>
+		</if>
+		AND j.organization_id_ed = #{organId}
+	</select>
+	<!-- 流出统计弹窗明细 -->
+	<select id="queryTalentOutflowDetail" resultMap="baseMap" useCache="true">
+		SELECT
+			j.user_name_ch userName,
+			vemp.sex,
+			j.organization_name organName,
+			e.degree,
+			j.position_name,
+			e.rank_name,
+			t.change_type_name,
+			j.change_date change_date
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		LEFT JOIN v_dim_emp vemp ON j.emp_id = vemp.emp_id
+		WHERE  
+			j.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+		<if test = "month != null and month != ''" >
+			AND j.`year_month` = #{endYearMonth}
+		</if>
+		<if test = "month == null or month == ''" >
+			<if test="befYearMonth != null and befYearMonth != ''">
+				AND j.`year_month` <![CDATA[>=]]> #{befYearMonth}
+			</if>
+			<if test="endYearMonth != null and endYearMonth != ''">
+				AND j.`year_month` <![CDATA[<=]]> #{endYearMonth}
+			</if>
+		</if>
+		AND j.organization_id_ed = #{organId}
+		ORDER BY
+			j.change_date DESC,
+			CONVERT (j.user_name_ch USING GBK)
+		LIMIT #{start}, #{rows}
+	</select>
+	<!-- 异动天最大最小时间 -->
+	<sql id="minDateMaxDate">
+		<if test="minDate != null and minDate != ''">
+			AND DATE_FORMAT(j.change_date, '%Y%m') <![CDATA[>=]]> #{minDate}
+		</if>
+		<if test="maxDate != null and maxDate != ''">
+			AND DATE_FORMAT(j.change_date, '%Y%m') <![CDATA[<=]]> #{maxDate}
+		</if>
+	</sql>
+	<!-- 异动月最小最大时间 -->
+	<sql id="minMaxYearMonth">
+		<if test="minDate != null and minDate != ''">
+			AND j.`year_month` <![CDATA[>=]]> #{minDate}
+		</if>
+		<if test="maxDate != null and maxDate != ''">
+			AND j.`year_month` <![CDATA[<=]]> #{maxDate}
+		</if>
+	</sql>
+	<!-- 关联人群获取empId -->
+	<sql id="getEmpIdByPerson">
+		AND j.emp_id IN (
+			SELECT DISTINCT
+				prm.emp_id
+			FROM
+				population_relation_month prm
+			WHERE
+				prm.customer_id = #{customerId}
+			<foreach collection="list" item="item" open="AND prm.population_id IN (" separator="," close=")">
+				#{item}
+			</foreach>
+			AND prm.`year_month` = j.`year_month`
+		)
+	</sql>
+	<!-- 关联人群获取empId -->
+	<sql id="getEmpIdByPersonWithChildType">
+		AND j.emp_id IN (
+			SELECT DISTINCT
+				prm.emp_id
+			FROM
+				population_relation_month prm
+			WHERE
+				prm.customer_id = #{customerId}
+			<foreach collection="childType" item="item" open="AND prm.population_id IN (" separator="," close=")">
+				#{item}
+			</foreach>
+			AND prm.`year_month` = j.`year_month`
+		)
+	</sql>
+	<!-- 人才损益-时间人群 -->
+	<select id="queryTimecrowd" resultMap="baseMap" useCache="true">
+		SELECT
+			MAX(j.change_date) max_date,
+			MIN(j.change_date) min_date
+		FROM
+			organization_change j
+	</select>
+	<!-- 人才损益-人员分布-地图 -->
+	<select id="queryPopulationMap" resultMap="baseMap" useCache="true">
+		SELECT
+			p.province_id,
+			p.province_name,
+			IFNULL(SUM(a.conNum), 0) conNum
+		FROM
+			(
+				SELECT
+					dem.customer_id,
+					dem.work_place_id,
+					COUNT(dem.emp_id) conNum
+				FROM
+					dim_emp_month dem
+				WHERE
+					dem.customer_id = #{customerId}
+				AND dem.organization_id IN (
+					SELECT
+						o.organization_id
+					FROM
+						history_dim_organization_month o
+					WHERE
+						LOCATE(
+							(
+								SELECT
+									o1.full_path
+								FROM
+									history_dim_organization_month o1
+								WHERE
+									o1.organization_id = #{organId}
+								AND o1.customer_id = #{customerId}
+								<if test="date == null or date == ''">
+									AND	o1.`year_month` = (
+											SELECT
+												MAX(ep.`year_month`)
+											FROM
+												dim_emp_month ep
+										)
+								</if>
+								<if test="date != null and date != ''">
+									AND o1.`year_month` = #{date}
+								</if>
+							),
+							o.full_path
+						)
+					AND o.customer_id = #{customerId}
+					<if test="date == null or date == ''">
+						AND	o.`year_month` = (
+								SELECT
+									MAX(ep.`year_month`)
+								FROM
+									dim_emp_month ep
+							)
+					</if>
+					<if test="date != null and date != ''">
+						AND o.`year_month` = #{date}
+					</if>
+				)
+				AND dem.run_off_date IS NULL
+				<if test="date == null or date == ''">
+					AND	dem.`year_month` = (
+						SELECT
+							MAX(ep.`year_month`)
+						FROM
+							dim_emp_month ep
+					)
+				</if>
+				<if test="date != null and date != ''">
+					AND dem.`year_month` = #{date}
+				</if>
+				GROUP BY
+					dem.work_place_id,
+					dem.customer_id
+			) a
+		RIGHT JOIN dim_city c ON a.customer_id = c.customer_id
+		AND a.work_place_id = c.city_id
+		LEFT JOIN dim_province p ON c.customer_id = p.customer_id
+		AND c.province_id = p.province_id
+		GROUP BY
+			p.province_id
+		ORDER BY
+			p.show_index
+	</select>
+	<!-- 人才损益-人员分布-地图-人群 -->
+	<select id="queryPopulationMapWithPerson" resultMap="baseMap" useCache="true">
+		SELECT
+			p.province_id,
+			p.province_name,
+			IFNULL(SUM(a.conNum), 0) conNum
+		FROM
+			(
+				SELECT
+					dem.customer_id,
+					dem.work_place_id,
+					COUNT(dem.emp_id) conNum
+				FROM
+					dim_emp_month dem
+				WHERE
+					dem.customer_id = #{customerId}
+				<if test="list != null and list != ''">
+					AND dem.emp_id IN (
+						SELECT DISTINCT
+							prm.emp_id
+						FROM
+							population_relation_month prm
+						WHERE
+							prm.customer_id = #{customerId}
+						<foreach collection="list" item="item" open="AND prm.population_id IN (" separator="," close=")">
+							#{item}
+						</foreach>
+						AND prm.`year_month` = dem.`year_month`
+					)
+				</if>
+				AND dem.organization_id IN (
+					SELECT
+						o.organization_id
+					FROM
+						history_dim_organization_month o
+					WHERE
+						LOCATE(
+							(
+								SELECT
+									o1.full_path
+								FROM
+									history_dim_organization_month o1
+								WHERE
+									o1.organization_id = #{organId}
+								AND o1.customer_id = #{customerId}
+								<if test="date == null or date == ''">
+									AND	o1.`year_month` = (
+											SELECT
+												MAX(ep.`year_month`)
+											FROM
+												dim_emp_month ep
+										)
+								</if>
+								<if test="date != null and date != ''">
+									AND o1.`year_month` = #{date}
+								</if>
+							),
+							o.full_path
+						)
+					AND o.customer_id = #{customerId}
+					<if test="date == null or date == ''">
+						AND	o.`year_month` = (
+								SELECT
+									MAX(ep.`year_month`)
+								FROM
+									dim_emp_month ep
+							)
+					</if>
+					<if test="date != null and date != ''">
+						AND o.`year_month` = #{date}
+					</if>
+				)
+				AND dem.run_off_date IS NULL
+				<if test="date == null or date == ''">
+					AND	dem.`year_month` = (
+						SELECT
+							MAX(ep.`year_month`)
+						FROM
+							dim_emp_month ep
+					)
+				</if>
+				<if test="date != null and date != ''">
+					AND dem.`year_month` = #{date}
+				</if>
+				GROUP BY
+					dem.work_place_id,
+					dem.customer_id
+			) a
+		RIGHT JOIN dim_city c ON a.customer_id = c.customer_id
+		AND a.work_place_id = c.city_id
+		LEFT JOIN dim_province p ON c.customer_id = p.customer_id
+		AND c.province_id = p.province_id
+		GROUP BY
+			p.province_id
+		ORDER BY
+			p.show_index
+	</select>
+	<!-- 人才损益-人员分布-饼图 -->
+	<select id="queryPopulationPie" resultMap="baseMap" useCache="true">
+		SELECT
+			IFNULL(p.province_name, '其他') province_name,
+			IFNULL(SUM(a.conNum), 0) conNum,
+			IFNULL(p.show_index, 99) show_index
+		FROM
+			(
+				SELECT
+					dem.customer_id,
+					dem.work_place_id,
+					COUNT(dem.emp_id) conNum
+				FROM
+					dim_emp_month dem
+				WHERE
+					dem.customer_id = #{customerId}
+				AND dem.organization_id IN (
+					SELECT
+						o.organization_id
+					FROM
+						history_dim_organization_month o
+					WHERE
+						LOCATE(
+							(
+								SELECT
+									o1.full_path
+								FROM
+									history_dim_organization_month o1
+								WHERE
+									o1.organization_id = #{organId}
+								AND o1.customer_id = #{customerId}
+								<if test="date == null or date == ''">
+									AND	o1.`year_month` = (
+											SELECT
+												MAX(ep.`year_month`)
+											FROM
+												dim_emp_month ep
+										)
+								</if>
+								<if test="date != null and date != ''">
+									AND o1.`year_month` = #{date}
+								</if>
+							),
+							o.full_path
+						)
+					AND o.customer_id = #{customerId}
+					<if test="date == null or date == ''">
+						AND	o.`year_month` = (
+								SELECT
+									MAX(ep.`year_month`)
+								FROM
+									dim_emp_month ep
+							)
+					</if>
+					<if test="date != null and date != ''">
+						AND o.`year_month` = #{date}
+					</if>
+				)
+				AND dem.run_off_date IS NULL
+				<if test="date == null or date == ''">
+					AND	dem.`year_month` = (
+						SELECT
+							MAX(ep.`year_month`)
+						FROM
+							dim_emp_month ep
+					)
+				</if>
+				<if test="date != null and date != ''">
+					AND dem.`year_month` = #{date}
+				</if>
+				GROUP BY
+					dem.work_place_id,
+					dem.customer_id
+			) a
+		LEFT JOIN dim_city c ON a.customer_id = c.customer_id
+		AND a.work_place_id = c.city_id
+		LEFT JOIN dim_province p ON c.customer_id = p.customer_id
+		AND c.province_id = p.province_id
+		GROUP BY
+			p.province_id
+		ORDER BY
+			conNum DESC
+	</select>
+	<!-- 人才损益-人员分布-饼图-人群 -->
+	<select id="queryPopulationPieWithPerson" resultMap="baseMap" useCache="true">
+		SELECT
+			IFNULL(p.province_name, '其他') province_name,
+			IFNULL(SUM(a.conNum), 0) conNum,
+			IFNULL(p.show_index, 99) show_index
+		FROM
+			(
+				SELECT
+					dem.customer_id,
+					dem.work_place_id,
+					COUNT(dem.emp_id) conNum
+				FROM
+					dim_emp_month dem
+				WHERE
+					dem.customer_id = #{customerId}
+				<if test="list != null and list != ''">
+					AND dem.emp_id IN (
+						SELECT DISTINCT
+							prm.emp_id
+						FROM
+							population_relation_month prm
+						WHERE
+							prm.customer_id = #{customerId}
+						<foreach collection="list" item="item" open="AND prm.population_id IN (" separator="," close=")">
+							#{item}
+						</foreach>
+						AND prm.`year_month` = dem.`year_month`
+					)
+				</if>
+				AND dem.organization_id IN (
+					SELECT
+						o.organization_id
+					FROM
+						history_dim_organization_month o
+					WHERE
+						LOCATE(
+							(
+								SELECT
+									o1.full_path
+								FROM
+									history_dim_organization_month o1
+								WHERE
+									o1.organization_id = #{organId}
+								AND o1.customer_id = #{customerId}
+								<if test="date == null or date == ''">
+									AND	o1.`year_month` = (
+											SELECT
+												MAX(ep.`year_month`)
+											FROM
+												dim_emp_month ep
+										)
+								</if>
+								<if test="date != null and date != ''">
+									AND o1.`year_month` = #{date}
+								</if>
+							),
+							o.full_path
+						)
+					AND o.customer_id = #{customerId}
+					<if test="date == null or date == ''">
+						AND	o.`year_month` = (
+								SELECT
+									MAX(ep.`year_month`)
+								FROM
+									dim_emp_month ep
+							)
+					</if>
+					<if test="date != null and date != ''">
+						AND o.`year_month` = #{date}
+					</if>
+				)
+				AND dem.run_off_date IS NULL
+				<if test="date == null or date == ''">
+					AND	dem.`year_month` = (
+						SELECT
+							MAX(ep.`year_month`)
+						FROM
+							dim_emp_month ep
+					)
+				</if>
+				<if test="date != null and date != ''">
+					AND dem.`year_month` = #{date}
+				</if>
+				GROUP BY
+					dem.work_place_id,
+					dem.customer_id
+			) a
+		LEFT JOIN dim_city c ON a.customer_id = c.customer_id
+		AND a.work_place_id = c.city_id
+		LEFT JOIN dim_province p ON c.customer_id = p.customer_id
+		AND c.province_id = p.province_id
+		GROUP BY
+			p.province_id
+		ORDER BY
+			conNum DESC
+	</select>
+	<!-- 人才损益-人员分布-饼图 -->
+	<select id="queryPopulationPieByProvince" resultMap="baseMap" useCache="true">
+		SELECT
+			c.city_id,
+			c.city_name,
+			a.conNum
+		FROM
+			(
+				SELECT
+					dem.customer_id,
+					dem.work_place_id,
+					COUNT(dem.emp_id) conNum
+				FROM
+					dim_emp_month dem
+				WHERE
+					dem.customer_id = #{customerId}
+				AND dem.organization_id IN (
+					SELECT
+						o.organization_id
+					FROM
+						history_dim_organization_month o
+					WHERE
+						LOCATE(
+							(
+								SELECT
+									o1.full_path
+								FROM
+									history_dim_organization_month o1
+								WHERE
+									o1.organization_id = #{organId}
+								AND o1.customer_id = #{customerId}
+								<if test="date == null or date == ''">
+									AND	o1.`year_month` = (
+											SELECT
+												MAX(ep.`year_month`)
+											FROM
+												dim_emp_month ep
+										)
+								</if>
+								<if test="date != null and date != ''">
+									AND o1.`year_month` = #{date}
+								</if>
+							),
+							o.full_path
+						)
+					AND o.customer_id = #{customerId}
+					<if test="date == null or date == ''">
+						AND	o.`year_month` = (
+								SELECT
+									MAX(ep.`year_month`)
+								FROM
+									dim_emp_month ep
+							)
+					</if>
+					<if test="date != null and date != ''">
+						AND o.`year_month` = #{date}
+					</if>
+				)
+				AND dem.run_off_date IS NULL
+				<if test="date == null or date == ''">
+					AND	dem.`year_month` = (
+						SELECT
+							MAX(ep.`year_month`)
+						FROM
+							dim_emp_month ep
+					)
+				</if>
+				<if test="date != null and date != ''">
+					AND dem.`year_month` = #{date}
+				</if>
+				GROUP BY
+					dem.work_place_id,
+					dem.customer_id
+			) a
+		INNER JOIN dim_city c ON a.customer_id = c.customer_id
+		AND a.work_place_id = c.city_id
+		INNER JOIN dim_province p ON c.customer_id = p.customer_id
+		AND c.province_id = p.province_id
+		AND p.province_id = #{provinceId}
+		GROUP BY
+			c.city_id
+	</select>
+	<!-- 人才损益-人员分布-饼图-人群 -->
+	<select id="queryPopulationPieByProvinceWithPerson" resultMap="baseMap" useCache="true">
+		SELECT
+			c.city_id,
+			c.city_name,
+			a.conNum
+		FROM
+			(
+				SELECT
+					dem.customer_id,
+					dem.work_place_id,
+					COUNT(dem.emp_id) conNum
+				FROM
+					dim_emp_month dem
+				WHERE
+					dem.customer_id = #{customerId}
+				<if test="list != null and list != ''">
+					AND dem.emp_id IN (
+						SELECT DISTINCT
+							prm.emp_id
+						FROM
+							population_relation_month prm
+						WHERE
+							prm.customer_id = #{customerId}
+						<foreach collection="list" item="item" open="AND prm.population_id IN (" separator="," close=")">
+							#{item}
+						</foreach>
+						AND prm.`year_month` = dem.`year_month`
+					)
+				</if>
+				AND dem.organization_id IN (
+					SELECT
+						o.organization_id
+					FROM
+						history_dim_organization_month o
+					WHERE
+						LOCATE(
+							(
+								SELECT
+									o1.full_path
+								FROM
+									history_dim_organization_month o1
+								WHERE
+									o1.organization_id = #{organId}
+								AND o1.customer_id = #{customerId}
+								<if test="date == null or date == ''">
+									AND	o1.`year_month` = (
+											SELECT
+												MAX(ep.`year_month`)
+											FROM
+												dim_emp_month ep
+										)
+								</if>
+								<if test="date != null and date != ''">
+									AND o1.`year_month` = #{date}
+								</if>
+							),
+							o.full_path
+						)
+					AND o.customer_id = #{customerId}
+					<if test="date == null or date == ''">
+						AND	o.`year_month` = (
+								SELECT
+									MAX(ep.`year_month`)
+								FROM
+									dim_emp_month ep
+							)
+					</if>
+					<if test="date != null and date != ''">
+						AND o.`year_month` = #{date}
+					</if>
+				)
+				AND dem.run_off_date IS NULL
+				<if test="date == null or date == ''">
+					AND	dem.`year_month` = (
+						SELECT
+							MAX(ep.`year_month`)
+						FROM
+							dim_emp_month ep
+					)
+				</if>
+				<if test="date != null and date != ''">
+					AND dem.`year_month` = #{date}
+				</if>
+				GROUP BY
+					dem.work_place_id,
+					dem.customer_id
+			) a
+		INNER JOIN dim_city c ON a.customer_id = c.customer_id
+		AND a.work_place_id = c.city_id
+		INNER JOIN dim_province p ON c.customer_id = p.customer_id
+		AND c.province_id = p.province_id
+		AND p.province_id = #{provinceId}
+		GROUP BY
+			c.city_id
+	</select>
+	<!-- 人才损益环比 -->
+	<select id="queryTalentProfitLossRingData" resultMap="baseMap" useCache="true">
+		SELECT
+			CONCAT(SUBSTR(x.change_date,1,4),'.',SUBSTR(x.change_date,5,2)) change_date,
+			x.conNum
+		FROM
+			(
+				SELECT
+					a.change_date,
+					IFNULL(a.con, 0) - IFNULL(b.con, 0) conNum
+				FROM
+					(
+						SELECT
+							j.`year_month` change_date,
+							COUNT(j.emp_id) con
+						FROM
+							organization_change j
+						INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+						AND j.change_type_id = t.change_type_id
+						<include refid="inflowListForeachWithT"></include>
+						WHERE
+							j.customer_id = #{customerId}
+						AND j.organization_id = #{organId}
+						<include refid="minMaxYearMonth"></include>
+						GROUP BY j.`year_month`
+					) a
+				LEFT JOIN (
+					SELECT
+						j.`year_month` change_date,
+						COUNT(j.emp_id) con
+					FROM
+						organization_change j
+					INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+					AND j.change_type_id = t.change_type_id
+					<include refid="outflowListForeachWithT"></include>
+					WHERE
+						j.customer_id = #{customerId}
+					AND j.organization_id_ed = #{organId}
+					<include refid="minMaxYearMonth"></include>
+					GROUP BY j.`year_month`
+				) b ON a.change_date = b.change_date
+				UNION
+					SELECT
+						d.change_date,
+						IFNULL(c.con, 0) - IFNULL(d.con, 0) conNum
+					FROM
+						(
+							SELECT
+								j.`year_month` change_date,
+								COUNT(j.emp_id) con
+							FROM
+								organization_change j
+							INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+							AND j.change_type_id = t.change_type_id
+							<include refid="inflowListForeachWithT"></include>
+							WHERE
+								j.customer_id = #{customerId}
+							AND j.organization_id = #{organId}
+							<include refid="minMaxYearMonth"></include>
+							GROUP BY j.`year_month`
+						) c
+					RIGHT JOIN (
+						SELECT
+							j.`year_month` change_date,
+							COUNT(j.emp_id) con
+						FROM
+							organization_change j
+						INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+						AND j.change_type_id = t.change_type_id
+						<include refid="outflowListForeachWithT"></include>
+						WHERE
+							j.customer_id = #{customerId}
+						AND j.organization_id_ed = #{organId}
+						<include refid="minMaxYearMonth"></include>
+						GROUP BY j.`year_month`
+					) d ON c.change_date = d.change_date
+			) x
+		ORDER BY
+			x.change_date
+	</select>
+	<!-- 人才损益环比-人群切片 -->
+	<select id="queryTalentProfitLossRingDataWithPerson" resultMap="baseMap" useCache="true">
+		SELECT
+			CONCAT(SUBSTR(w.change_date,1,4),'.',SUBSTR(w.change_date,5,2)) change_date,
+			w.conNum
+		FROM
+			(
+				SELECT
+					a.change_date,
+					IFNULL(a.conNum, 0) - IFNULL(b.conNum, 0) conNum
+				FROM
+					(
+						SELECT
+							j.`year_month` change_date,
+							COUNT(j.emp_id) conNum
+						FROM
+							organization_change j
+						INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+						AND j.change_type_id = t.change_type_id
+						<include refid="inflowListForeachWithT"></include>
+						WHERE
+							j.customer_id = #{customerId}
+						<include refid="getEmpIdByPerson"></include>
+						AND j.organization_id = #{organId}
+						<include refid="minMaxYearMonth"></include>
+						GROUP BY
+							j.`year_month`
+					) a
+				LEFT JOIN (
+					SELECT
+						j.`year_month` change_date,
+						COUNT(j.emp_id) conNum
+					FROM
+						organization_change j
+					INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+					AND j.change_type_id = t.change_type_id
+					<include refid="outflowListForeachWithT"></include>
+					WHERE
+						j.customer_id = #{customerId}
+					<include refid="getEmpIdByPerson"></include>
+					AND j.organization_id_ed = #{organId}
+					<include refid="minMaxYearMonth"></include>
+					GROUP BY
+						j.`year_month`
+				) b ON a.change_date = b.change_date
+				UNION
+					SELECT
+						d.change_date,
+						IFNULL(c.conNum, 0) - IFNULL(d.conNum, 0) conNum
+					FROM
+						(
+							SELECT
+								j.`year_month` change_date,
+								COUNT(j.emp_id) conNum
+							FROM
+								organization_change j
+							INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+							AND j.change_type_id = t.change_type_id
+							<include refid="inflowListForeachWithT"></include>
+							WHERE
+								j.customer_id = #{customerId}
+							<include refid="getEmpIdByPerson"></include>
+							AND j.organization_id = #{organId}
+							<include refid="minMaxYearMonth"></include>
+							GROUP BY
+								j.`year_month`
+						) c
+					RIGHT JOIN (
+						SELECT
+							j.`year_month` change_date,
+							COUNT(j.emp_id) conNum
+						FROM
+							organization_change j
+						INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+						AND j.change_type_id = t.change_type_id
+						<include refid="outflowListForeachWithT"></include>
+						WHERE
+							j.customer_id = #{customerId}
+						<include refid="getEmpIdByPerson"></include>
+						AND j.organization_id_ed = #{organId}
+						<include refid="minMaxYearMonth"></include>
+						GROUP BY
+							j.`year_month`
+					) d ON c.change_date = d.change_date
+			) w
+		ORDER BY
+			w.change_date
+	</select>
+	<!-- 人才损益同比 -->
+	<select id="queryTalentProfitLossSameData" resultMap="baseMap" useCache="true">
+		SELECT
+			CONCAT(SUBSTR(x.change_date,1,4),'.',SUBSTR(x.change_date,5,2)) change_date,
+			x.conNum
+		FROM
+			(
+				SELECT
+					a.change_date,
+					IFNULL(a.con, 0) - IFNULL(b.con, 0) conNum
+				FROM
+					(
+						SELECT
+							j.`year_month` change_date,
+							COUNT(j.emp_id) con
+						FROM
+							organization_change j
+						INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+						AND j.change_type_id = t.change_type_id
+						<include refid="inflowListForeachWithT"></include>
+						WHERE
+							j.customer_id = #{customerId}
+						AND j.organization_id = #{organId}
+						<include refid="minMaxYearMonth"></include>
+						GROUP BY j.`year_month`
+					) a
+				LEFT JOIN (
+					SELECT
+						j.`year_month` change_date,
+						COUNT(j.emp_id) con
+					FROM
+						organization_change j
+					INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+					AND j.change_type_id = t.change_type_id
+					<include refid="outflowListForeachWithT"></include>
+					WHERE
+						j.customer_id = #{customerId}
+					AND j.organization_id_ed = #{organId}
+					<include refid="minMaxYearMonth"></include>
+					GROUP BY j.`year_month`
+				) b ON a.change_date = b.change_date
+				UNION
+					SELECT
+						d.change_date,
+						IFNULL(c.con, 0) - IFNULL(d.con, 0) conNum
+					FROM
+						(
+							SELECT
+								j.`year_month` change_date,
+								COUNT(j.emp_id) con
+							FROM
+								organization_change j
+							INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+							AND j.change_type_id = t.change_type_id
+							<include refid="inflowListForeachWithT"></include>
+							WHERE
+								j.customer_id = #{customerId}
+							AND j.organization_id = #{organId}
+							<include refid="minMaxYearMonth"></include>
+							GROUP BY j.`year_month`
+						) c
+					RIGHT JOIN (
+						SELECT
+							j.`year_month` change_date,
+							COUNT(j.emp_id) con
+						FROM
+							organization_change j
+						INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+						AND j.change_type_id = t.change_type_id
+						<include refid="outflowListForeachWithT"></include>
+						WHERE
+							j.customer_id = #{customerId}
+						AND j.organization_id_ed = #{organId}
+						<include refid="minMaxYearMonth"></include>
+						GROUP BY j.`year_month`
+					) d ON c.change_date = d.change_date
+			) x
+		ORDER BY
+			x.change_date
+	</select>
+	<!-- 异动统计专业公共sql部分 -->
+	<sql id="queryOrganIdForJC">
+		INNER JOIN (
+			SELECT
+				o.organization_id,
+				o.`year_month`
+			FROM
+				history_dim_organization_month o
+			WHERE
+				LOCATE(
+					(
+						SELECT
+							o1.full_path
+						FROM
+							history_dim_organization_month o1
+						WHERE
+							o1.organization_id = #{organId}
+						AND o1.customer_id = #{customerId}
+						AND o1.`year_month` = o.`year_month`
+					),
+					o.full_path
+				)
+			AND o.customer_id = #{customerId}
+			<if test="maxDate != null and maxDate != ''">
+				AND o.`year_month` <![CDATA[<=]]> #{maxDate}
+			</if>
+			<if test="minDate != null and minDate != ''">
+				AND o.`year_month` <![CDATA[>=]]> #{minDate}
+			</if>
+			GROUP BY
+				o.organization_id,
+				o.`year_month`
+		) a ON a.organization_id = j.organization_id
+		AND a.`year_month` = j.`year_month`
+	</sql>
+	<!-- 异动统计人群类型 -->
+	<select id="queryChangePopulation" resultMap="baseMap" useCache="true">
+		SELECT
+			t.population_id,
+			t.population_name
+		FROM
+			dim_population t
+		WHERE
+			t.customer_id = #{customerId}
+		ORDER BY
+			CAST(t.population_key AS SIGNED)
+	</select>
+	<!-- 异动统计饼图表格 -->
+	<select id="queryInflowOutflowChangeTypeCount" resultType="Integer" useCache="true">
+		SELECT
+			count(j.emp_id) conNum
+		FROM
+			organization_change j force index (ind_Ch_Date_Uch)
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		WHERE 
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+		<if test="newInList != null and newInList != ''">
+			<foreach collection="newInList" item="item" open="AND t.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+			AND j.organization_id = #{organId}
+		</if>
+		<if test="newOutList != null and newOutList != ''">
+			<foreach collection="newOutList" item="item" open="AND t.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+			AND j.organization_id_ed = #{organId}
+		</if>
+	</select>
+	<!-- 异动统计饼图表格-job_change -->
+	<select id="queryInflowOutflowChangeTypeCountByJc" resultType="Integer" useCache="true">
+		SELECT
+			COUNT(j.emp_id) conNum
+		FROM
+			job_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		<if test="noFlowList != null and noFlowList != ''">
+			<foreach collection="noFlowList" item="item" open="AND t.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<include refid="queryOrganIdForJC"></include>
+		WHERE
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+	</select>
+	<!-- 异动统计饼图表格 -->
+	<select id="queryInflowOutflowChangeType" resultMap="baseMap" useCache="true">
+		SELECT
+			t.curt_name,
+			t.change_type_name,
+			IFNULL(a.conNum, 0) conNum
+		FROM
+			dim_change_type t
+		LEFT JOIN (
+			SELECT
+				t.curt_name,
+				t.change_type_name,
+				count(j.emp_id) conNum
+			FROM
+				organization_change j force index (ind_Ch_Date_Uch)
+			INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+			AND j.change_type_id = t.change_type_id
+			<if test="newInList != null and newInList != ''">
+				<foreach collection="newInList" item="item" open="AND t.curt_name IN(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			WHERE 
+				j.customer_id = #{customerId}
+			<if test="childType != null and childType != ''">
+				<include refid="getEmpIdByPersonWithChildType"></include>
+			</if>
+			<include refid="minMaxYearMonth"></include>
+			AND j.organization_id = #{organId}
+			GROUP BY
+				t.curt_name
+			UNION
+				SELECT
+					t.curt_name,
+					t.change_type_name,
+					count(j.emp_id) conNum
+				FROM
+					organization_change j force index (ind_Ch_Date_Uch)
+				INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+				AND j.change_type_id = t.change_type_id
+				<if test="newOutList != null and newOutList != ''">
+					<foreach collection="newOutList" item="item" open="AND t.curt_name IN(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>
+				WHERE 
+					j.customer_id = #{customerId}
+				<if test="childType != null and childType != ''">
+					<include refid="getEmpIdByPersonWithChildType"></include>
+				</if>
+				<include refid="minMaxYearMonth"></include>
+				AND j.organization_id_ed = #{organId}
+				GROUP BY
+					t.curt_name
+		) a ON t.curt_name = a.curt_name
+		WHERE 1=1 
+			<include refid="changeTypeForeachWithT"></include>
+		ORDER BY
+			<!-- t.curt_name -->
+			a.conNum DESC
+	</select>
+	<!-- 异动统计饼图表格-job_change -->
+	<select id="queryInflowOutflowChangeTypeByJc" resultMap="baseMap" useCache="true">
+		SELECT
+			t.curt_name,
+			t.change_type_name,
+			count(j.emp_id) conNum
+		FROM
+			job_change j 
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		<if test="noFlowList != null and noFlowList != ''">
+			<foreach collection="noFlowList" item="item" open="AND t.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<include refid="queryOrganIdForJC"></include>
+		WHERE 
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+		GROUP BY
+			t.curt_name
+	</select>
+	<!-- 异动统计-序列分布 -->
+	<select id="querySequenceBarCount" resultType="Integer" useCache="true">
+		SELECT
+			count(j.emp_id) conNum
+		FROM
+			organization_change j force index (ind_Ch_Date_Uch)
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		<if test="changeType != null and changeType != ''">
+			AND t.curt_name = #{changeType}
+		</if>
+		WHERE 
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+		<if test="newInList != null and newInList != ''">
+			AND j.organization_id = #{organId}
+		</if>
+		<if test="newOutList != null and newOutList != ''">
+			AND j.organization_id_ed = #{organId}
+		</if>
+	</select>
+	<!-- 异动统计-序列分布 -->
+	<select id="querySequenceBar" resultMap="baseMap" useCache="true">
+		SELECT
+			se.sequence_name,
+			IFNULL(a.conNum, 0) conNum
+		FROM
+			dim_sequence se
+		LEFT JOIN (
+			SELECT
+				s.sequence_id,
+				s.sequence_name,
+				count(j.emp_id) conNum
+			FROM
+				organization_change j force index (ind_Ch_Date_Uch)
+			INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+			AND j.change_type_id = t.change_type_id
+			<if test="changeType != null and changeType != ''">
+				AND t.curt_name = #{changeType}
+			</if>
+			INNER JOIN dim_sequence s ON j.customer_id = s.customer_id
+			AND j.sequence_id = s.sequence_id
+			WHERE 
+				j.customer_id = #{customerId}
+			<if test="childType != null and childType != ''">
+				<include refid="getEmpIdByPersonWithChildType"></include>
+			</if>
+			<include refid="minMaxYearMonth"></include>
+			<if test="newInList != null and newInList != ''">
+				AND j.organization_id = #{organId}
+			</if>
+			<if test="newOutList != null and newOutList != ''">
+				AND j.organization_id_ed = #{organId}
+			</if>
+			GROUP BY
+				s.sequence_id
+		) a ON se.sequence_id = a.sequence_id
+		WHERE
+			se.customer_id = #{customerId}
+		ORDER BY
+			se.show_index
+	</select>
+	<!-- 异动统计-序列分布-job_change -->
+	<select id="querySequenceBarCountByJc" resultType="Integer" useCache="true">
+		SELECT
+			count(j.emp_id) conNum
+		FROM
+			job_change j 
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		<if test="changeType != null and changeType != ''">
+			AND t.curt_name = #{changeType}
+		</if>
+		<include refid="queryOrganIdForJC"></include>
+		WHERE 
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+	</select>
+	<!-- 异动统计-序列分布-job_change -->
+	<select id="querySequenceBarByJc" resultMap="baseMap" useCache="true">
+		SELECT
+			se.sequence_name,
+			IFNULL(a.conNum, 0) conNum
+		FROM
+			dim_sequence se
+		LEFT JOIN (
+			SELECT
+				s.sequence_id,
+				s.sequence_name,
+				count(j.emp_id) conNum
+			FROM
+				job_change j
+			INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+			AND j.change_type_id = t.change_type_id
+			<if test="changeType != null and changeType != ''">
+				AND t.curt_name = #{changeType}
+			</if>
+			INNER JOIN dim_sequence s ON j.customer_id = s.customer_id
+			AND j.sequence_id = s.sequence_id
+			<include refid="queryOrganIdForJC"></include>
+			WHERE 
+				j.customer_id = #{customerId}
+			<if test="childType != null and childType != ''">
+				<include refid="getEmpIdByPersonWithChildType"></include>
+			</if>
+			<include refid="minMaxYearMonth"></include>
+			GROUP BY
+				s.sequence_id
+		) a ON se.sequence_id = a.sequence_id
+		WHERE
+			se.customer_id = #{customerId}
+		ORDER BY
+			se.show_index
+	</select>
+	<!-- 异动统计-职级分布 -->
+	<select id="queryAbilityBarCount" resultType="Integer" useCache="true">
+		SELECT
+			count(j.emp_id) conNum
+		FROM
+			organization_change j force index (ind_Ch_Date_Uch)
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		<if test="changeType != null and changeType != ''">
+			AND t.curt_name = #{changeType}
+		</if>
+		WHERE 
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+		<if test="newInList != null and newInList != ''">
+			AND j.organization_id = #{organId}
+		</if>
+		<if test="newOutList != null and newOutList != ''">
+			AND j.organization_id_ed = #{organId}
+		</if>
+	</select>
+	<!-- 异动统计-职级分布 -->
+	<select id="queryAbilityBar" resultMap="baseMap" useCache="true">
+		SELECT
+			al.curt_name,
+			SUM(IFNULL(a.conNum, 0)) conNum
+		FROM
+			dim_ability al
+		LEFT JOIN (
+			SELECT
+				l.ability_id,
+				l.curt_name,
+				count(j.emp_id) conNum
+			FROM
+				organization_change j force index (ind_Ch_Date_Uch)
+			INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+			AND j.change_type_id = t.change_type_id
+			<if test="changeType != null and changeType != ''">
+				AND t.curt_name = #{changeType}
+			</if>
+			INNER JOIN dim_ability l ON j.customer_id = l.customer_id
+			AND j.ability_id = l.ability_id
+			WHERE 
+				j.customer_id = #{customerId}
+			<if test="childType != null and childType != ''">
+				<include refid="getEmpIdByPersonWithChildType"></include>
+			</if>
+			<include refid="minMaxYearMonth"></include>
+			<if test="newInList != null and newInList != ''">
+				AND j.organization_id = #{organId}
+			</if>
+			<if test="newOutList != null and newOutList != ''">
+				AND j.organization_id_ed = #{organId}
+			</if>
+			GROUP BY
+				j.ability_id
+		) a ON al.ability_id = a.ability_id
+		WHERE
+			al.customer_id = #{customerId}
+		GROUP BY al.curt_name
+		ORDER BY
+			al.curt_name
+	</select>
+	<!-- 异动统计-职级分布-job_change -->
+	<select id="queryAbilityBarCountByJc" resultType="Integer" useCache="true">
+		SELECT
+			count(j.emp_id) conNum
+		FROM
+			job_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		<if test="changeType != null and changeType != ''">
+			AND t.curt_name = #{changeType}
+		</if>
+		<include refid="queryOrganIdForJC"></include>
+		WHERE 
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+	</select>
+	<!-- 异动统计-职级分布-job_change -->
+	<select id="queryAbilityBarByJc" resultMap="baseMap" useCache="true">
+		SELECT
+			al.curt_name,
+			SUM(IFNULL(a.conNum, 0)) conNum
+		FROM
+			dim_ability al
+		LEFT JOIN (
+			SELECT
+				l.ability_id,
+				l.curt_name,
+				count(j.emp_id) conNum
+			FROM
+				job_change j
+			INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+			AND j.change_type_id = t.change_type_id
+			<if test="changeType != null and changeType != ''">
+				AND t.curt_name = #{changeType}
+			</if>
+			INNER JOIN dim_ability l ON j.customer_id = l.customer_id
+			AND j.ability_id = l.ability_id
+			<include refid="queryOrganIdForJC"></include>
+			WHERE 
+				j.customer_id = #{customerId}
+			<if test="childType != null and childType != ''">
+				<include refid="getEmpIdByPersonWithChildType"></include>
+			</if>
+			<include refid="minMaxYearMonth"></include>
+			GROUP BY
+				j.ability_id
+		) a ON al.ability_id = a.ability_id
+		WHERE
+			al.customer_id = #{customerId}
+		GROUP BY al.curt_name
+		ORDER BY
+			al.curt_name
+	</select>
+	<!-- 异动统计-入职名单 -->
+	<select id="queryEntryListDatasCount" resultType="Integer" useCache="true">
+		SELECT
+			count(j.emp_id) conNum
+		FROM
+			organization_change j force index (ind_Ch_Date_Uch)
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		<if test="changeType != null and changeType != ''">
+			AND t.curt_name = #{changeType}
+		</if>
+		LEFT JOIN emp_edu edu
+		ON edu.emp_id = j.emp_id
+		AND edu.customer_id = j.customer_id
+		AND edu.is_last_major = 1
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		INNER JOIN v_dim_emp vemp
+		ON vemp.customer_id = j.customer_id
+		AND vemp.emp_id = j.emp_id
+		WHERE 
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+		<if test="newInList != null and newInList != ''">
+			AND j.organization_id = #{organId}
+		</if>
+		<if test="newOutList != null and newOutList != ''">
+			AND j.organization_id_ed = #{organId}
+		</if>
+	</select>
+	<!-- 异动统计-入职名单 -->
+	<select id="queryEntryListDatas" resultMap="baseMap" useCache="true">
+		SELECT
+			j.user_name_ch userName,
+			vemp.sex,
+			vemp.age,
+			e.degree,
+			edu.major,
+			j.organization_name organName,
+			j.position_name,
+			DATE_FORMAT(j.change_date,'%Y-%m-%d') change_date
+		FROM
+			organization_change j force index (ind_Ch_Date_Uch)
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		<if test="changeType != null and changeType != ''">
+			AND t.curt_name = #{changeType}
+		</if>
+		LEFT JOIN emp_edu edu
+		ON edu.emp_id = j.emp_id
+		AND edu.customer_id = j.customer_id
+		AND edu.is_last_major = 1
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		INNER JOIN v_dim_emp vemp
+		ON vemp.customer_id = j.customer_id
+		AND vemp.emp_id = j.emp_id
+		WHERE 
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+		<if test="newInList != null and newInList != ''">
+			AND j.organization_id = #{organId}
+		</if>
+		<if test="newOutList != null and newOutList != ''">
+			AND j.organization_id_ed = #{organId}
+		</if>
+		ORDER BY
+			j.change_date DESC,
+			CONVERT (j.user_name_ch USING GBK)
+		LIMIT #{start}, #{rows}
+	</select>
+	<!-- 异动统计-入职名单-job_change -->
+	<select id="queryEntryListDatasCountByJc" resultType="Integer" useCache="true">
+		SELECT
+			COUNT(j.emp_id) conNum
+		FROM
+			job_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		<if test="changeType != null and changeType != ''">
+			AND t.curt_name = #{changeType}
+		</if>
+		LEFT JOIN emp_edu edu
+		ON edu.emp_id = j.emp_id
+		AND edu.customer_id = j.customer_id
+		AND edu.is_last_major = 1
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		INNER JOIN v_dim_emp vemp
+		ON vemp.customer_id = j.customer_id
+		AND vemp.emp_id = j.emp_id
+		<include refid="queryOrganIdForJC"></include>
+		WHERE 
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+	</select>
+	<!-- 异动统计-入职名单-job_change -->
+	<select id="queryEntryListDatasByJc" resultMap="baseMap" useCache="true">
+		SELECT
+			j.user_name_ch userName,
+			vemp.sex,
+			vemp.age,
+			e.degree,
+			edu.major,
+			j.organization_name organName,
+			j.position_name,
+			DATE_FORMAT(j.change_date,'%Y-%m-%d') change_date
+		FROM
+			job_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		<if test="changeType != null and changeType != ''">
+			AND t.curt_name = #{changeType}
+		</if>
+		LEFT JOIN emp_edu edu
+		ON edu.emp_id = j.emp_id
+		AND edu.customer_id = j.customer_id
+		AND edu.is_last_major = 1
+		INNER JOIN dim_emp_month e ON j.customer_id = e.customer_id
+		AND j.emp_id = e.emp_id
+		AND j.`year_month` = e.`year_month`
+		INNER JOIN v_dim_emp vemp
+		ON vemp.customer_id = j.customer_id
+		AND vemp.emp_id = j.emp_id
+		<include refid="queryOrganIdForJC"></include>
+		WHERE 
+			j.customer_id = #{customerId}
+		<if test="childType != null and childType != ''">
+			<include refid="getEmpIdByPersonWithChildType"></include>
+		</if>
+		<include refid="minMaxYearMonth"></include>
+		ORDER BY
+			j.change_date DESC,
+			CONVERT (j.user_name_ch USING GBK)
+		LIMIT #{start}, #{rows}
+	</select>
+
+</mapper>

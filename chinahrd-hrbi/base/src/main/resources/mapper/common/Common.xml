@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.common.CommonDao">
+	<cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+	<!-- 获取人群集合 -->
+	<select id="queryPopulations" resultType="net.chinahrd.entity.dto.KVItemDto" useCache="true">
+	SELECT
+		dp.population_id AS k,
+		dp.population_name AS v
+	FROM dim_population dp
+	WHERE dp.customer_id = #{customerId}
+	ORDER BY CAST(dp.population_key AS SIGNED)
+	</select>
+
+
+	<!-- 获取人才类型 -->
+	<select id="queryTalentType" resultType="itemDto" useCache="true">
+		select tt.key_talent_type_id as id , tt.key_talent_type_name as name  
+		from dim_key_talent_type tt where tt.customer_id = #{value}
+    </select>
+
+	<!-- 获取所有序列 -->
+	<select id="querySequence" resultType="itemDto" useCache="true">
+ 		select t.id,t.name,
+				group_concat(t.ability) as bindData 
+				from(
+				    select distinct t.sequence_id as id ,
+						   t.sequence_name as name ,
+			       		   j.ability_id as ability   
+						   from dim_sequence t 
+			               left join  job_relation j 
+			               on t.sequence_id=j.sequence_id and t.customer_id=j.customer_id 
+			               where t.customer_id = #{value}
+			               order by t.show_index
+			    )t 
+ 		group by t.id ,t.name ; 
+	</select>
+	<!-- 获取所有子序列 -->
+	<select id="querySequenceSub" resultType="itemDto" useCache="true">
+ 		select t.id,t.name,t.bindObj,
+				group_concat(t.ability) as bindData 
+				from(
+				    select distinct t.sequence_sub_id as id ,
+						   t.sequence_sub_name as name ,
+			       		   j.ability_id as ability,
+								t.sequence_id as bindObj,
+								t.show_index
+						   from dim_sequence_sub t 
+			               left join  job_relation j 
+			               on t.sequence_sub_id=j.sequence_sub_id and t.customer_id=j.customer_id 
+			        	where t.customer_id = #{value}
+			    )t 
+ 		group by t.id ,t.name,t.bindObj 
+ 		order by t.show_index ; 
+	</select>
+
+	<!-- 获取所有层级 -->
+	<select id="queryAbility" resultType="itemDto" useCache="true">
+		select
+			t.ability_id as id ,
+			t.ability_name as name
+		from dim_ability t
+		where t.customer_id = #{value}
+		ORDER BY type ASC,show_index ASC
+	</select>
+	<!-- 获取职业层级 -->
+	<select id="queryAbilityHashMap" resultType="java.util.HashMap" useCache="true">
+		SELECT 
+		  t.`ability_id` AS abilityId,
+		  t.`customer_id` AS customerId,
+		  t.`ability_key` AS abilityKey,
+		  t.`ability_name` AS abilityName,
+		  t.`curt_name` AS curtName,
+		  t.`type` ,
+		  t.`show_index` AS showIndex
+		  
+		FROM
+		  dim_ability t
+		WHERE t.type = 0 AND t.customer_id = #{value}
+		ORDER BY t.type ASC,t.show_index ASC
+	</select>
+	<!-- 职级hashmap -->
+	<select id="queryAbilityLvHashMap" resultType="java.util.HashMap" useCache="true">
+		SELECT 
+		  t.`ability_lv_id` AS abilityLvId,
+		  t.`customer_id` AS customerId,
+		  t.`ability_lv_key` AS abilityLvKey,
+  		  t.`ability_lv_name` AS abilityLvName,
+		  t.`curt_name` AS curtName,
+		  t.`show_index` AS showIndex
+		FROM
+		  dim_ability_lv t
+	</select>
+
+	<!-- 获取所有职级大类（能力层级） -->
+	<select id="queryAbilityType" resultType="itemDto" useCache="true">
+	SELECT
+		t.curt_name as id,
+		CONCAT(t.curt_name,'级') as name
+	FROM dim_ability t
+	WHERE t.customer_id = #{value}
+	GROUP BY t.curt_name
+	ORDER BY t.curt_name
+	</select>
+
+	<select id="queryPositions" resultType="net.chinahrd.entity.dto.KVItemDto" useCache="true">
+	SELECT
+		dp.position_id AS k,
+		dp.position_name AS v
+	FROM dim_position dp
+	WHERE dp.customer_id = #{customerId}
+	<if test="positionName != null and positionName != ''">
+	AND dp.position_name LIKE CONCAT('%',#{positionName},'%')
+	</if>
+	ORDER BY convert(dp.position_name using GBK)
+	</select>
+
+	<!-- 获取所有职衔 -->
+	<select id="queryJobTitle" resultType="itemDto" useCache="true">
+		SELECT DISTINCT
+			CONCAT(
+				a.ability_id,
+				a.job_title_id
+			) AS id,
+			b.job_title_name AS NAME,
+			a.ability_id AS bindObj,
+			b.job_title_id as bindData
+		FROM
+			job_relation a
+		INNER JOIN dim_job_title b ON a.job_title_id = b.job_title_id and a.customer_id=b.customer_id
+		where a.customer_id = #{value}
+		ORDER BY
+		b.show_index
+	</select>
+
+	<!-- 获取所有绩效时间 -->
+	<select id="queryPerformanceDate" resultType="itemDto" useCache="true">
+		SELECT DISTINCT
+			a.`year_month` as name
+		FROM
+			performance_change a
+		where a.customer_id = #{value}
+		order by a.`year_month` desc
+	</select>
+
+	<!-- 获取所有绩效 -->
+	<select id="queryPerformance" resultType="itemDto" useCache="true">
+		select
+			t.performance_id as bindObj,
+			t.performance_key as id ,
+			t.performance_name as name
+		from dim_performance t
+		where t.customer_id = #{value}
+	</select>
+
+	<!-- 获取所有学历 -->
+	<select id="queryEdu" resultType="itemDto" useCache="true">
+		SELECT
+			sys_code_item_id as bindObj,
+			sys_code_item_name as name
+		FROM
+			sys_code_item t
+		WHERE
+		t.customer_id=#{value} and t.code_group_id = 'degree'
+		ORDER BY
+	show_index
+	</select>
+
+    <select id="findDataSartTime" resultType="java.util.Date" useCache="true">
+    	SELECT effect_date from dim_emp WHERE customer_id = #{value} ORDER BY effect_date ASC LIMIT 1;
+    </select>
+
+    <select id="findEmpBaseInfo" resultType="empDto" useCache="true">
+    	select e.emp_id as empId,
+    	e.user_name_ch as userNameCh,
+    	e.sequence_name as sequenceName,
+    	e.img_path as imgPath,
+    	dr.risk_date as riskDate,
+    	dr.risk_flag as riskFlag,
+    	dr.note as note,
+    	a.ability_name as abilityName,
+    	e.`position_name`,
+    	e.`organization_name`
+    	from v_dim_emp e
+    	LEFT JOIN
+    	(select distinct emp_id,customer_id,risk_flag,risk_date,note
+    	    from dimission_risk
+			where customer_id=#{customerId}
+				and emp_id=#{empId}
+				and is_last=1
+<!-- 				and risk_date=(select max(risk_date) risk_date  -->
+<!-- 					    	    from dimission_risk  -->
+<!-- 								where customer_id=#{customerId}  -->
+<!-- 									and emp_id=#{empId}  -->
+<!-- 						    ) -->
+	    ) dr
+    	on e.customer_id=dr.customer_id and e.emp_id=dr.emp_id
+    	left join dim_ability a
+    	on e.ability_id = a.ability_id
+    	where e.emp_id = #{empId}
+    	and e.customer_id = #{customerId}
+    	limit 0,1
+    </select>
+
+	<select id="existEmp" resultType="int">
+		SELECT count(1) from v_dim_emp t 
+		<where>
+			1=1
+			<if test="empId != null and empId != '' and empId != 'null'">
+				AND t.emp_id &lt;&gt; #{empId}
+			</if>
+			<if test="empKey != null and empKey != '' and empKey != 'null'">
+				AND t.emp_key = #{empKey}
+			</if>
+			<if test="userName != null and userName != '' and userName != 'null'">
+				AND t.user_name = #{userName}
+			</if>
+		</where>
+	
+	</select>
+
+	<select id="findEmpAllCount" resultType="int" useCache="true">
+	SELECT
+		COUNT(vde.emp_id)
+	FROM v_dim_emp vde
+	WHERE  vde.customer_id = #{customerId}
+	<if test="keyName!= null">
+	AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+	</if>
+	<if test="organPermitIds != null and organPermitIds.size() > 0">
+	AND vde.organization_id IN
+		 <foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+			 #{id}
+		 </foreach>
+	</if>
+	<if test="reqOrgId!= null">
+		AND vde.organization_id in (
+				SELECT t0.organization_id FROM dim_organization t0
+				WHERE locate(
+					(SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{reqOrgId} AND t.customer_id = #{customerId}
+					), t0.full_path
+				)AND t0.customer_id = #{customerId}
+			)
+	</if>
+	</select>
+
+	<select id="findEmpAll" resultType="empDto" useCache="true">
+	SELECT
+		vde.emp_id AS empId,
+		vde.emp_key AS empKey,
+		vde.user_name_ch AS empName,
+		CONCAT(vde.emp_key,'(',vde.user_name_ch,')') AS userNameCh,
+		vde.organization_id AS organizationId,
+		vde.organization_name AS organizationName,
+		vde.position_name AS positionName,
+		vde.sequence_name AS sequenceName,
+		da.ability_name AS abilityName,
+		dp.performance_name AS performanceName
+	FROM v_dim_emp vde
+	LEFT JOIN dim_ability da ON da.ability_id = vde.ability_id AND da.customer_id = vde.customer_id
+	LEFT JOIN dim_performance dp ON dp.performance_id = vde.performance_id AND dp.customer_id = vde.customer_id
+	WHERE vde.customer_id = #{customerId}
+	<if test="keyName!= null">
+	AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+	</if>
+	<if test="organPermitIds != null and organPermitIds.size() > 0">
+	AND vde.organization_id IN
+		 <foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+			 #{id}
+		 </foreach>
+	</if>
+	<if test="reqOrgId!= null">
+		AND vde.organization_id in (
+				SELECT t0.organization_id FROM dim_organization t0
+				WHERE locate(
+					(SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{reqOrgId} AND t.customer_id = #{customerId}
+					), t0.full_path
+				)AND t0.customer_id = #{customerId}
+			)
+	</if>
+	<if test="sidx != ''">
+	ORDER BY #{sidx} #{sord}
+	</if>
+	LIMIT #{offset}, #{limit}
+	</select>
+
+    <update id="updateRiskState" >
+    UPDATE  dimission_risk  SET is_last=0 WHERE customer_id=#{customerId} AND emp_id=#{empId} 
+    </update>
+     <insert id="addRisk" parameterType="net.chinahrd.entity.dto.pc.common.RiskDto">
+    INSERT INTO dimission_risk (
+      dimission_risk_id,
+      customer_id,
+      emp_id,
+      note,
+      risk_date,
+      risk_flag,
+      is_last
+    )
+    VALUES (
+      #{dto.id},
+      #{dto.customerId},
+      #{dto.empId},
+      #{dto.note},
+      #{dto.riskDate},
+      #{dto.riskFlag},
+      #{dto.last}
+    )
+    </insert>
+
+    <insert id="addRiskItem" parameterType="net.chinahrd.entity.dto.pc.common.RiskItemDto">
+      INSERT INTO dimission_risk_item (
+        dimission_risk_item_id,
+        customer_id,
+        dimission_risk_id,
+        separation_risk_id,
+        risk_flag
+      )
+      VALUES
+        <foreach collection="list" item="dto" separator=",">
+     (
+        #{dto.id},
+        #{dto.customerId},
+        #{dto.dimissionId},
+        #{dto.riskId},
+        #{dto.riskFlag}
+      )
+      </foreach>
+    </insert>
+
+	<!--新的一年日表维度-->
+	<insert id="insertDays" parameterType="net.chinahrd.utils.holiday.DaysDto">
+		INSERT INTO days (
+			days,
+			is_work_flag,
+			is_holiday,
+			is_vacation
+		) 
+		  VALUES
+        <foreach collection="list" item="dto" separator=",">
+     	(
+        #{dto.days},
+        #{dto.isWorkFlag},
+        #{dto.isHoliday},
+        #{dto.isVacation}
+	    )
+      </foreach>
+    </insert>
+	<insert id="insertTheoryAttendance" parameterType="net.chinahrd.entity.dto.pc.laborEfficiency.TheoryAttendanceDto">
+		INSERT INTO theory_attendance (
+			theory_attendance_id,
+			customer_id,
+			hour_count,
+			days,
+			year_months,
+			year
+		) 
+		  VALUES
+        <foreach collection="list" item="dto" separator=",">
+     	(
+        #{dto.id},
+        #{dto.customerId},
+        #{dto.hourCount},
+        #{dto.days},
+        #{dto.yearMonths},
+        #{dto.year}
+	    )
+      </foreach>
+    </insert>
+
+	<insert id="insertLog" parameterType="java.util.Map">
+		INSERT INTO log (
+			log_id, customer_id, user_id,
+			module, text,
+			use_time,
+			start_time, end_time,
+			is_error,
+			show_index,
+			`year_month`)
+		VALUES (
+			#{logId},#{customerId},#{userId},
+			#{module},#{text},#{useTime},
+			#{startTime},#{endTime},#{isError},
+			#{showIndex},#{yearMonth}
+			)
+	</insert>
+    
+    <select id="checkDaysTable" parameterType="java.util.Map" resultType="java.lang.Integer" >
+    	SELECT count(1) FROM days t WHERE t.days BETWEEN  #{beginTime} AND #{endTime}
+    </select>
+
+	<!-- 更新指定法定假期（带薪假期） -->
+    <update id="updateVacationDays"  parameterType="java.util.List">  
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+	       UPDATE `days`   
+	       <set>  
+				is_vacation=${item.isVacation}
+	       </set>  
+	       where days = ${item.days}  
+		</foreach>  
+    </update> 
+	<!-- 查找本月总法定假期（带薪假期） -->
+    <select id="findVacationDays" parameterType="java.util.Map" resultType="java.lang.Integer" >
+    	SELECT IFNULL(SUM(is_vacation),0) FROM `days` 
+    	WHERE is_vacation = 1 AND days BETWEEN #{beginTime} AND #{endTime}
+    </select>
+</mapper>

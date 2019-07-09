@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.admin.EmpProjectRelationDao">
+
+    <resultMap id="projectMap" type="net.chinahrd.entity.dto.pc.admin.ProjectRelationDto">
+        <id property="projectRelationId" column="project_relation_id" jdbcType="VARCHAR"/>
+        <result property="projectId" column="project_id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="projectParentId" column="project_parent_id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="fullPath" column="full_path"/>
+        <result property="hasChildren" column="has_chilren"/>
+        <result property="halfCheck" column="half_check"/>
+    </resultMap>
+
+	<resultMap id="typeMap" type="net.chinahrd.entity.dto.pc.admin.ProjectTypeDto">
+        <result property="type" column="type"/>
+        <result property="typeName" column="type_name"/>
+    </resultMap>
+
+    <!-- 查出superAdmin的ID -->
+    <select id="findSuperAdminIdByUserKey" resultType="java.lang.String">
+        SELECT user_id from dim_user where user_key = #{userKey}
+    </select>
+     
+    <!-- 登录人所有数据权限 -->
+    <select id="queryProjectPermit" resultMap="projectMap">
+          SELECT DISTINCT
+		p.project_id,
+		p.project_name,
+		p.project_parent_id,
+		p.full_path AS fullPath,
+		p.full_path AS fullPath,
+		0 as half_check
+		FROM project p 
+		 <if test="customerId != null">
+         WHERE p.customer_id = #{customerId}
+        </if>
+    </select>
+
+
+    <!-- superAdmin所有项目权  -->  
+    <select id="queryProjectPermitBySuperAdmin" resultMap="projectMap">
+        SELECT DISTINCT
+       	p.project_id,
+		p.project_name,
+		p.project_parent_id,
+	    p.has_chilren,
+		p.full_path AS fullPath,
+		0 as half_check
+        FROM
+        project p
+        <if test="customerId != null">
+         WHERE p.customer_id = #{customerId}
+        </if>
+    </select>
+
+    <!-- user2Project -->
+    <!-- isProjectPermit==true 用户下所有项目权限 -->
+    <!-- isProjectPermit==false 用户下所有带状态项目,用作项目树配置半勾情况 -->
+    <select id="queryEmpProject" resultMap="projectMap">
+        SELECT DISTINCT
+		p.project_id,
+		p.project_name,
+		p.project_parent_id,
+		p.full_path AS fullPath,
+		pr.half_check AS halfCheck,
+		pr.type
+		FROM
+			emp_project_relation pr
+		INNER JOIN project p ON p.project_id = pr.project_id
+		AND p.customer_id = pr.customer_id
+		WHERE
+         pr.emp_id =#{empId} and pr.customer_id = #{customerId}
+        <if test="isOrganPermit == true">
+            and pr.half_check = 0
+        </if>
+    </select>
+
+    <!-- 删除用户下所有项目权限 -->
+    <delete id="deleteEmpProject" parameterType="string">
+		DELETE FROM emp_project_relation WHERE emp_id = #{empId} and customer_id = #{customerId}
+    </delete>
+    
+
+    <!-- 用户配置项目 -->
+    <insert id="addEmpProject" parameterType="net.chinahrd.entity.dto.pc.admin.ProjectRelationDto">
+        INSERT INTO emp_project_relation
+        (
+        project_relation_id,
+        customer_id,
+        emp_id,
+        project_id,
+        half_check,
+        type,
+        create_user_id,
+        create_date
+        )
+        VALUES
+        <foreach collection="dtos" item="dto" separator=",">
+            (
+            #{dto.projectRelationId},
+            #{dto.customerId},
+            #{dto.empId},
+            #{dto.projectId},
+            #{dto.halfCheck},
+            #{dto.type},
+            #{dto.createUserId},
+            #{dto.createDate}
+            )
+        </foreach>
+    </insert>
+
+   <!-- 查询类型 -->
+    <select id="queryProType" resultMap="typeMap">
+	SELECT 
+	type as type,type_name as typeName
+	FROM project_relation_type 
+	</select>
+	
+		<!-- 通过员工查出项目下的所有员工 -->
+    <select id="queryEmpInfosByEmpid" resultType="String">
+       select emp_id from (SELECT *,if(@a=emp_id,@rn:=@rn+1,@rn:=1) rn,@a:=emp_id FROM emp_project_relation epr
+		WHERE
+	   project_id IN (
+		SELECT
+			project_id
+		FROM
+			emp_project_relation a,(select @a:=null,@rn:=0) b
+		WHERE
+			emp_id = #{empId}
+		AND type != 2
+	) order by emp_id,create_date desc) a where rn=1
+    </select>
+</mapper>

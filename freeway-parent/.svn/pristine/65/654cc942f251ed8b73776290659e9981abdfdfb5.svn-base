@@ -1,0 +1,51 @@
+package net.chinahrd.modules.pub.response;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * <p>
+ * 租户返回信息
+ * </p>
+ *
+ * @author zoujiaxi
+ * @since 2019-03-20
+ */
+@Data
+@ApiModel(value="租户返回信息",description="")
+public class TenantInfoRes implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@ApiModelProperty(name="租户id",example="bright")
+	private String tenantId;
+
+	@ApiModelProperty(name="租户名称",example="bright")
+	private String tenantName;
+
+	@ApiModelProperty(name="租户状态",example="bright")
+	private String tenantState;
+
+	@ApiModelProperty(name="租户地址",example="bright")
+	private String tenantAddress;
+
+	@ApiModelProperty(name="联系人",example="bright")
+	private String contact;
+
+	@ApiModelProperty(name="联系人电话",example="bright")
+	private String contactTel;
+
+	@ApiModelProperty(name="联系人邮箱",example="bright")
+	private String contactEmail;
+
+	@ApiModelProperty(name="数据源id",example="bright")
+	private String datasourceId;
+
+	@ApiModelProperty(name="数据源名称",example="bright")
+	private String datasourceName;
+
+	@ApiModelProperty(name="数据库类型",example="mysql")
+	private String dbType;
+}

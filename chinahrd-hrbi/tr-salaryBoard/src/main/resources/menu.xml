@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="驱动力">
+		<menu code="SalaryBoard" name="薪酬看板" url="salaryBoard/toSalaryBoardView" icon="" mobile="false">
+			<block code="XinChouZL" >薪酬总览</block>
+			<block code="GongZiFX" >工资分析</block>
+			<block code="FuLiFX" >福利分析</block>
+			<block code="ChiGuFX" >持股分析</block>
+		</menu>
+	</menus>

@@ -1,0 +1,73 @@
+.ui-jqgrid-hdiv .ui-jqgrid-htable{
+    border-top: none;
+}
+.ui-jqgrid .ui-jqgrid-labels {
+    background: #FFFFFF none;
+}
+.ui-jqgrid .ui-jqgrid-labels  .ui-jqgrid-sortable{
+    color: #555;
+}
+.talent-detail-header{
+    padding: 20px 30px;
+}
+.talent-detail-header .talent-detail-photo img{
+    display: block;
+    width: 160px;
+    height: 160px;
+    margin: auto;
+}
+.talent-detail-header .panel{
+    margin-bottom: 0;
+}
+.talent-detail-header .panel .row .col-sm-5 .col-xs-12{
+    margin: 2px 0;
+}
+.talent-detail-header .panel .row .col-sm-5 .col-xs-12:first-child label,.talent-detail-header .panel .row .col-xs-12 .col-xs-12:first-child label{
+    font-weight: bold;
+    font-size: 18px;
+    text-align: left;
+    width: 99%;
+}
+.talent-detail-header .panel .row .col-sm-5 .col-xs-12 label,.talent-detail-header .panel .row .col-xs-12 .col-xs-12 label{
+    width: 56px;
+    text-align: right;
+    margin-right: 15px;
+}
+.talent-detail-header .panel .row .col-sm-5 .col-xs-12 span,.talent-detail-header .panel .row .col-xs-12 .col-xs-12 span{
+    text-align: left;
+}
+
+#myScrollspy .panel-heading > .panel-title {
+    font-weight: bold;
+}
+.page-main-header .col-sm-4 > .col-xs-12 label:first-child,.page-main-header .col-xs-12 > .col-xs-12 label:first-child{
+    width: 28%;
+    margin: 4px 0;
+    text-align: right;
+    line-height: 22px;
+}
+.page-main-header .col-sm-4 > .col-xs-12 label:last-child,.page-main-header .col-xs-12 > .col-xs-12 label:last-child{
+    margin: 4px 3%;
+    width: 66%;
+    text-align: left;
+    line-height: 22px;
+}
+.panel-main-header .row .page-main-title{
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 32px;
+    border-bottom: 1px solid #E4E4E4;
+}
+.panel-main-header .panel .panel-title a.accordion-toggle:hover{
+    text-decoration: none;
+}
+.panel-main-header .panel .panel-title .bigger-110{
+    display: inline-block;
+    width: 11px;
+}
+
+#otherEvaluation > .col-xs-7{
+    margin-top: 15px;
+}

@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.empAttendance.mvc.pc.dao.EmpAttendanceDao">
+	<cache-ref namespace="net.chinahrd.ehcache.normal" />
+	<!-- 查询员工信息 -->
+	<select id="queryEmpInfo" resultType="net.chinahrd.entity.dtozrw.pc.empAttendance.EmpAttendanceDto" useCache="false">
+		SELECT
+			emp_id empId,
+			user_name_ch userName,
+			organization_id organId,
+			organization_name organName,
+			position_name positionName,
+			work_place workPlace,
+			YEAR(entry_date) entryYear,
+			MONTH(entry_date) entryMonth,
+			DAY(entry_date) entryDay,
+			entry_date entryDate,
+			TO_DAYS(NOW()) - TO_DAYS(entry_date) incumbencyTime,
+			sex
+		FROM
+			v_dim_emp
+		WHERE
+			customer_id = #{customerId}
+		AND emp_id = #{empId}
+	</select>
+	<!-- 查询可用假期数据 -->
+	<select id="queryEmpVacationInfo" resultType="net.chinahrd.entity.dtozrw.pc.empAttendance.EmpAttendanceDto" useCache="false">
+		SELECT
+			emp_id empId,
+			user_name_ch userName,
+			annual annual,
+			can_leave total
+		FROM
+			emp_vacation
+		WHERE
+			customer_id = 1
+		AND emp_id = #{empId}
+		ORDER BY refresh DESC
+		LIMIT 1
+	</select>
+	<!-- 查询月应出勤天数 -->
+	<select id="queryAttendanceTheory" resultType="String" useCache="false">
+		SELECT
+			days
+		FROM
+			`days`
+		WHERE
+			is_work_flag = 1
+		<if test="yearMonth != null">
+		AND DATE_FORMAT(`days`, '%Y%m') = #{yearMonth}
+		</if>
+		<if test="begin != null">
+		AND days >= #{begin}
+		</if>
+		<if test="end != null">
+		AND days &lt;= #{end}
+		</if>
+		ORDER BY days
+	</select>
+	<!-- 统计考勤记录 -->
+	<select id="queryAttendanceRecord" resultType="net.chinahrd.entity.dtozrw.pc.empAttendance.EmpAttendanceDto" useCache="false">
+		SELECT
+			emp_id empId,
+			IFNULL(clock_in_am, clock_in_pm) clockInAm,
+			IFNULL(clock_out_pm, clock_out_am) clockOutPm,
+			opt_in adjustBegin,
+			opt_out adjustEnd,
+			cal_hour calHour,
+			checkwork_type_id typeId,
+			days entryDay,
+			`year_month` yearMonth,
+			opt_reason reason
+		FROM
+			emp_attendance ea
+		WHERE
+			ea.customer_id = #{customerId}
+		<if test="yearMonth != null">
+		AND ea.`year_month` = #{yearMonth}
+		</if>
+		AND ea.emp_id = #{empId}
+	</select>
+	<!-- 查询考勤记录 -->
+	<select id="queryAttendanceByEmpId" resultType="net.chinahrd.entity.dtozrw.pc.empAttendance.EmpAttendanceDto" useCache="false">
+		SELECT
+			ea.emp_attendance_id id,
+			ea.emp_id empId,
+			ea.user_name_ch userName,
+			DATE_FORMAT(IFNULL(ea.opt_in, ea.clock_in_am), '%H:%i') clockInAm,
+			DATE_FORMAT(ea.clock_out_am, '%H:%i') clockOutAm,
+			DATE_FORMAT(ea.clock_in_pm, '%H:%i') clockInPm,
+			DATE_FORMAT(IFNULL(ea.opt_out, ea.clock_out_pm), '%H:%i') clockOutPm,
+			ea.days entryDay,
+			cal_hour calHour,
+			ea.checkwork_type_id typeId
+		FROM emp_attendance ea 
+		WHERE ea.customer_id = #{customerId}
+		AND ea.emp_id = #{empId}
+		<if test="day != null">
+		AND ea.days = #{day}
+		</if>
+	</select>
+	<!-- 查询打卡记录 -->
+	<select id="queryAttendanceFromCard" resultType="net.chinahrd.entity.dtozrw.pc.empAttendance.EmpAttendanceDto" useCache="false">
+		SELECT
+			ea.emp_attendance_id id,
+			ea.emp_id empId,
+			ea.user_name_ch userName,
+			DATE_FORMAT(IFNULL(ea.clock_in_am, ea.clock_in_pm), '%H:%i') clockInAm,
+			DATE_FORMAT(IFNULL(ea.clock_out_pm, ea.clock_out_am), '%H:%i') clockOutPm,
+			DATE_FORMAT(ea.opt_in, '%H:%i') adjustBegin,
+			DATE_FORMAT(ea.opt_out, '%H:%i') adjustEnd,
+			ea.days entryDay,
+			ea.checkwork_type_id typeId,
+			ea.cal_hour calHour,
+			ea.opt_reason reason,
+			ea.note note
+		FROM emp_attendance ea 
+		WHERE ea.customer_id = #{customerId}
+		AND ea.emp_id = #{empId}
+		<if test="day != null">
+		AND ea.days = #{day}
+		</if>
+		<if test="yearMonth != null">
+		AND ea.`year_month` = #{yearMonth}
+		</if>
+	</select>
+	<!-- 异常类型 -->
+	<select id="querySoureItem" resultType="net.chinahrd.entity.dtozrw.pc.empAttendance.EmpAttendanceDto" useCache="true">
+		SELECT
+			sys_code_item_key typeId,
+			sys_code_item_name typeName
+		FROM
+			sys_code_item
+		WHERE
+			code_group_id = 'opt_reason'
+		ORDER BY show_index
+	</select>
+	<!-- 考勤类型 -->
+	<select id="queryCheckType" resultType="net.chinahrd.entity.dtozrw.pc.empAttendance.EmpAttendanceDto" useCache="false">
+		SELECT
+			checkwork_type_id typeId,
+			checkwork_type_name typeName
+		FROM
+			dim_checkwork_type
+		ORDER BY
+			show_index
+	</select>
+	<!-- 更新考勤信息 -->
+	<update id="updateEmpAttendance" parameterType="java.util.Map">
+		UPDATE emp_attendance
+		SET opt_in = #{in}, 
+			opt_out = #{out}, 
+			opt_reason = #{reason}, 
+			checkwork_type_id = #{typeId}, 
+			cal_hour = #{calHour},
+			note = #{note}, 
+			refresh = #{time}
+		WHERE
+			emp_id = #{empId}
+		AND days = #{day}
+	</update>
+	<!-- 添加考勤信息 -->
+	<insert id="addEmpAttendance" parameterType="java.util.Map">
+		INSERT INTO `emp_attendance` (
+			`emp_attendance_id`,
+			`customer_id`,
+			`emp_key`,
+			`emp_id`,
+			`user_name_ch`,
+			`opt_in`,
+			`opt_out`,
+			`opt_reason`,
+			`organization_id`,
+			`checkwork_type_id`,
+			`cal_hour`,
+			`note`,
+			`days`,
+			`year_month`,
+			`refresh`
+		)
+		VALUES
+		(
+			#{id},
+			#{customerId},
+			#{empKey},
+			#{empId},
+			#{userName},
+			#{in},
+			#{out},
+			#{reason},
+			#{organId},
+			#{typeId},
+			#{calHour},
+			#{note},
+			#{day},
+			#{yearMonth},
+			#{time}
+		)
+	</insert>
+	<!-- 生成劳动力效能数据 -->
+    <!-- <select id="callProLaoDongLiXiaoNeng" parameterMap="paramMap" statementType="CALLABLE" >
+           CALL pro_exec_LaoDongLiXiaoNeng_zrw(?,?,?,?,?,?,?,?)
+    </select>
+	<parameterMap type="java.util.Map" id="paramMap">
+		<parameter property="p_customer_id" mode="IN" jdbcType="VARCHAR" />
+		<parameter property="p_user_id" mode="IN" jdbcType="VARCHAR" />
+		<parameter property="p_emp_attendance_id" mode="IN" jdbcType="VARCHAR" />
+		<parameter property="p_days" mode="IN" jdbcType="VARCHAR" />
+		<parameter property="p_emp_id" mode="IN" jdbcType="VARCHAR" />
+		<parameter property="p_checkwork_type_id" mode="IN" jdbcType="VARCHAR" />
+		<parameter property="p_hour" mode="IN" jdbcType="VARCHAR" />
+		<parameter property="p_subCount" mode="IN" jdbcType="INTEGER" />
+	</parameterMap> -->
+	
+    
+    <insert id="insertDebug" parameterType="java.lang.String">
+		INSERT INTO `debug` (content, create_time)
+		VALUES
+		(
+			#{content},now()
+		)
+	</insert>
+    
+	<select id="checkEmpInOrgan" resultType="int">
+	SELECT COUNT(vde.emp_id)
+	FROM v_dim_emp vde
+	WHERE vde.customer_id = #{customerId}
+	AND vde.work_place LIKE CONCAT('%',#{workPlaceName},'%')
+	AND vde.emp_id = #{empId}
+	<if test="organIds != null and organIds.size() > 0">
+	AND vde.organization_id IN 
+	<foreach collection="organIds" item="id" open="(" close=")" separator=",">
+		'${id}'
+	</foreach>
+ 	</if>
+
+	</select>
+	
+	<!-- 新增日考勤信息 -->
+	<insert id="insertEmpAttendanceDay" parameterType="java.util.Map">
+		INSERT INTO emp_attendance_day (
+			emp_attendance_day_id,
+			customer_id,
+			emp_key,
+			emp_id,
+			user_name_ch,
+			hour_count,
+			theory_hour_count,
+			organization_id,
+			checkwork_type_id,
+			days,
+			year_months
+		)
+		VALUES (
+			#{id},
+			#{customerId},
+			#{empKey},
+			#{empId},
+			#{userName},
+			#{hourCount},
+			#{theoryHour},
+			#{organId},
+			#{checkworkTypeId},
+			#{day},
+			#{yearMonth}
+		)
+	</insert>
+	<!-- 删除日考勤信息 -->
+	<delete id="deleteEmpAttendanceDay" parameterType="java.util.Map">
+		DELETE FROM emp_attendance_day WHERE customer_id=#{p_customer_id} AND emp_id=#{p_emp_id} AND days=#{p_day}
+	</delete>
+	
+	<!-- 新增日加班信息 -->
+	<insert id="insertEmpOvertimeDay" parameterType="java.util.Map">
+		INSERT INTO emp_overtime_day (
+			emp_overtime_day_id,
+			customer_id,
+			emp_key,
+			emp_id,
+			user_name_ch,
+			hour_count,
+			organization_id,
+			checkwork_type_id,
+			days,
+			year_months
+		)
+		VALUES (
+			#{id},
+			#{customerId},
+			#{empKey},
+			#{empId},
+			#{userName},
+			#{hourCount},
+			#{organId},
+			#{checkworkTypeId},
+			#{day},
+			#{yearMonth}
+		)
+	</insert>
+	<!-- 删除日加班信息 -->
+	<delete id="deleteEmpOvertimeDay" parameterType="java.util.Map">
+		DELETE FROM emp_overtime_day WHERE customer_id=#{p_customer_id} AND emp_id=#{p_emp_id} AND days=#{p_day}
+	</delete>
+	<!-- 新增其它考勤信息 -->
+	<insert id="insertEmpOtherDay" parameterType="java.util.Map">
+		INSERT INTO emp_other_day (
+			emp_other_day_id,
+			customer_id,
+			emp_key,
+			emp_id,
+			user_name_ch,
+			hour_count,
+			organization_id,
+			checkwork_type_id,
+			days,
+			year_months
+		)
+		VALUES (
+			#{id},
+			#{customerId},
+			#{empKey},
+			#{empId},
+			#{userName},
+			#{hourCount},
+			#{organId},
+			#{checkworkTypeId},
+			#{day},
+			#{yearMonth}
+		)
+	</insert>
+	<!-- 删除其它考勤信息 -->
+	<delete id="deleteEmpOtherDay" parameterType="java.util.Map">
+		DELETE FROM emp_other_day WHERE customer_id=#{p_customer_id} AND emp_id=#{p_emp_id} AND days=#{p_day}
+	</delete>
+	
+	<select id="findEmpVacation" resultType="java.util.Map" useCache="false">
+		SELECT
+			annual,
+			can_leave,
+			history_hour
+		FROM
+			emp_vacation t
+		WHERE
+			t.customer_id = #{p_customer_id}
+		AND t.emp_id = #{p_emp_id}
+	</select>
+	<update id="updateEmpVacation">
+		UPDATE emp_vacation t
+		SET t.can_leave = #{can_leave},
+			t.history_hour = #{history_hour}
+		WHERE
+			t.customer_id = #{p_customer_id}
+		AND t.emp_id = #{p_emp_id}
+	</update>
+	<update id="updateEmpAnnulVacation">
+		UPDATE emp_vacation t
+		SET
+			t.annual = #{annul}
+		WHERE
+			t.customer_id = #{p_customer_id}
+		AND t.emp_id = #{p_emp_id}
+	</update>
+	<update id="updateEmpLeaveVacation">
+		UPDATE emp_vacation t
+		SET
+			t.can_leave = #{can_leave}
+		WHERE
+			t.customer_id = #{p_customer_id}
+		AND t.emp_id = #{p_emp_id}
+	</update>
+	
+	
+	<!-- 历史假期 -->
+	<select id="queryEmpOtherDay" resultType="net.chinahrd.entity.dtozrw.pc.empAttendance.EmpAttendanceDto" >
+		SELECT
+			t1.checkwork_type_name typeName, t.hour_count hourCount, t.user_name_ch userName, t.days days
+		FROM
+			emp_other_day t INNER JOIN dim_checkwork_type t1 on t.checkwork_type_id=t1.checkwork_type_id
+		WHERE t.year_months BETWEEN #{startYm} and #{endYm} AND t.emp_id = #{empId} AND t.customer_id = #{customerId}
+		ORDER BY t.days DESC
+	</select>
+	
+	<select id="queryEmpOtherDayYear" resultType="java.lang.String" >
+		SELECT
+			 DISTINCT Year(t.days)
+		FROM
+			emp_other_day t 
+		WHERE t.emp_id = #{empId} AND t.customer_id = #{customerId} 
+		ORDER BY t.days DESC
+	</select>
+	
+</mapper>

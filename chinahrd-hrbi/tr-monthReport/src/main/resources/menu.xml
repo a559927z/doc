@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="综合功能">
+		<menu code="YueBao" name="月报" url="monthReport/toMonthReportView" icon="" mobile="false" relies="">
+			<!--<layouts>-->
+				<!--<layout code="xxxx" name="查看模块"  relies="">-->
+					<!--<plug-in code="xxxx" name="查看模块"/>-->
+				<!--</layout>-->
+			<!--</layouts>-->
+		</menu>
+	</menus>

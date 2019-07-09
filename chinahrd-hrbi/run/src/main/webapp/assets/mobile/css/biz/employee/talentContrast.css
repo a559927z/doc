@@ -1,0 +1,338 @@
+@CHARSET "UTF-8";
+/* .vs-cartype{ */
+
+.top-div-btn-add{
+    width: 45px;
+    height: 45px;
+    margin-top:13px;
+    font-size: 50px;
+}
+.scrollImg{
+/* 	 width: 20px; */
+/*     height: 20px; */
+    font-size: 20px;
+    margin-top: -1px;
+}
+.vs-cartype .fixedTop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 99;
+}
+.contrast .top-ct-circle{
+    position: relative;
+    height: 45px;
+    width: 45px;
+    margin: auto;
+    border: 2px solid #e1e1e1;
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer;
+}
+.contrast .top-ct-circle:hover{
+    position: relative;
+    height: 45px;
+    width: 45px;
+    margin: auto;
+    background-color:gray;
+    border: 2px solid #e1e1e1;
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer;
+}
+.contrast .img-circle{
+    border-radius: 50%;
+}
+.contrast .top-div-name{
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 6px;
+    color: #777777;
+}
+
+
+.previewChart{
+	width:115px;
+	height:90px;
+}
+.previewTr{
+	height:90px;
+}
+.cont .slide .diff{
+	background-color: #EAF7E8;
+}
+#jobChangeChart,#perChart{
+	height:400px;
+	width:200px;
+}
+.cont .slide .high {
+    color: #ff0000;
+}
+.hide{
+	display: none;
+}
+
+
+
+.scroll-heard ,.scroll-heard .box,.scroll-heard .tit,
+.scroll-heard div >.slide ,.scroll-heard div,
+.scroll-heard .added,
+.scroll-heard table,.scroll-heard tr,
+.scroll-heard .box .cont .slide table tr td,
+.scroll-heard h1{
+	line-height:50px;
+	height: 50px;
+	padding-top: 0;
+	padding-bottom: 0;
+	text-align: center;
+}
+
+
+.modal-open {
+	overflow: hidden
+}
+
+.modal {
+	display: none;
+	overflow: hidden;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1050;
+	-webkit-overflow-scrolling: touch;
+	outline: 0
+}
+
+.modal.fade .modal-dialog {
+	-webkit-transform: translate(0, -25%);
+	-ms-transform: translate(0, -25%);
+	-o-transform: translate(0, -25%);
+	transform: translate(0, -25%);
+	-webkit-transition: -webkit-transform 0.3s ease-out;
+	-o-transition: -o-transform 0.3s ease-out;
+	transition: transform 0.3s ease-out
+}
+
+.modal.in .modal-dialog {
+	-webkit-transform: translate(0, 0);
+	-ms-transform: translate(0, 0);
+	-o-transform: translate(0, 0);
+	transform: translate(0, 0)
+}
+
+.modal-open .modal {
+	overflow-x: hidden;
+	overflow-y: auto
+}
+
+.modal-dialog {
+	position: relative;
+	width: auto;
+	margin: 10px
+}
+
+.modal-content {
+	position: relative;
+	background-color: #fff;
+	border: 1px solid #999;
+	border: 1px solid rgba(0,0,0,0.2);
+	border-radius: 6px;
+	-webkit-box-shadow: 0 3px 9px rgba(0,0,0,0.5);
+	box-shadow: 0 3px 9px rgba(0,0,0,0.5);
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+	outline: 0
+}
+
+.modal-backdrop {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1040;
+	background-color: #000
+}
+
+.modal-backdrop.fade {
+	opacity: 0;
+	filter: alpha(opacity=0)
+}
+
+.modal-backdrop.in {
+	opacity: .5;
+	filter: alpha(opacity=50)
+}
+
+.modal-header {
+	padding: 15px;
+	border-bottom: 1px solid #e5e5e5;
+	min-height: 16.42857143px
+}
+
+.modal-header .close {
+	margin-top: -2px
+}
+
+.modal-title {
+	margin: 0;
+	line-height: 1.42857143
+}
+
+.modal-body {
+	position: relative;
+	padding: 15px
+}
+
+.modal-footer {
+	padding: 15px;
+	text-align: right;
+	border-top: 1px solid #e5e5e5
+}
+
+.modal-footer .btn+.btn {
+	margin-left: 5px;
+	margin-bottom: 0
+}
+
+.modal-footer .btn-group .btn+.btn {
+	margin-left: -1px
+}
+
+.modal-footer .btn-block+.btn-block {
+	margin-left: 0
+}
+
+.modal-scrollbar-measure {
+	position: absolute;
+	top: -9999px;
+	width: 50px;
+	height: 50px;
+	overflow: scroll
+}
+.close {
+    float: right;
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: .2;
+    filter: alpha(opacity=20);
+}
+button.close {
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+
+.form-control {
+    display: block;
+    width: 93%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+
+.borderless{
+	max-height: 268px;
+}
+.memo-list{
+    width: 100%;
+    display: table;
+    position: relative;
+    padding:0;
+    padding-left: 2px;
+    padding-bottom: 10px;
+    vertical-align: middle;
+        color: #666666;
+}
+.ct-circle-header{
+    position: relative;
+    float:left;
+    height: 55px;
+    width: 55px;
+    vertical-align:middle;
+    border-radius: 50%;
+}
+
+.add_col{
+/* 	margin-left: auto; */
+/* 	margin-right: auto; */
+float:right;
+	width: 66px;
+    height: 26px;
+    line-height:26px;
+	background-image: url("../../../img/tjdb.png");
+}
+ .memo-list-name-value:FIRST-CHILD{
+	 text-align:left;
+    float: left;
+    white-space:nowrap;
+    width:100%; 
+    overflow:hidden; 
+    text-overflow:ellipsis;
+    font-size: 15px;
+    font-weight: 700;
+    color: rgb(67, 67, 67);
+}
+ .memo-list-name-value{
+	 text-align:left;
+    float: left;
+    white-space:nowrap;
+    width:100%; 
+    overflow:hidden; 
+    text-overflow:ellipsis;
+    font-size: 12px;
+    color: #666666;
+    max-width: 200px;
+}
+
+
+.memo-col-img{
+	max-width: 55px;
+	width: 55px;
+	padding-left: 1px;
+	top:5px;
+	vertical-align: bottom;
+	position: absolute;
+}
+.memo-col-content{
+	margin-left: 60px;
+	padding-left: 1px;
+	line-height: 30px;
+	height:55px;
+}
+
+.memo-list-detail{
+	width:100%;
+    border-radius: 2px;
+    padding-top: 6px;
+    padding-left: 1px;
+    padding-bottom: 6px;
+    font-size: 12px;
+    overflow: hidden;
+    text-align: left;
+    word-wrap: break-word;
+}

@@ -1,0 +1,14 @@
+import { stringify } from 'qs';
+import request from '../utils/request';
+
+// 通过标签类型查询标签列表
+// export async function getTagByType(params) {
+// 	return request(`/data/contact/tag/getTagByType?${stringify(params)}`);
+// }
+
+export async function getData(params) {
+  return request('/pub/datasource/selectByPage', {
+    method: 'POST',
+    body: params
+  });
+}

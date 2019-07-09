@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="生产力">
+		<menu code="ZhaoPinKanBan" name="招聘看板" url="recruitBoard/toRecruitBoardView" icon="" mobile="false" relies="">
+			<!--<layouts>-->
+				<!--<layout code="xxxx" name="查看模块"  relies="">-->
+					<!--<plug-in code="xxxx" name="查看模块"/>-->
+				<!--</layout>-->
+			<!--</layouts>-->
+		</menu>
+	</menus>

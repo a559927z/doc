@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus name="系统管理">
+		<menu code="YongHuGuanLi" name="用户管理" url="user/list" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+			<block code="xxxx" >查看模块</block>
+			<block code="xxxx" >查看模块</block>
+		</menu>
+		<menu code="JueSeGuanLi" name="角色管理" url="role/list" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+		</menu>
+		<menu code="GongNengGuanLi" name="功能管理" url="function/list" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+		</menu>
+		<menu code="ZuZhiGuanLi" name="组织管理" url="organ/list" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+			<block code="xxxx" >查看模块</block>
+		</menu>
+		<menu code="ShuJuDaoRu" name="数据导入" url="importData/home" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+		</menu>
+		<menu code="XiTongSheZhi" name="系统选项设置" url="config/toConfigView" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+		</menu>
+		<menu code="customize" name="自定义界面配置" url="customize/toCustomizeView" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+		</menu>
+		<menu code="YuanGongGuanLi" name="员工管理" url="emp/list" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+		</menu>
+	</menus>

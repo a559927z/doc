@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus name="生产力">
+		<menu code="XiangMuRenLiPanDian" name="项目人力盘点" url="humanInventory/toHumanInventoryView" icon="" mobile="false">
+			
+		</menu>
+	</menus>

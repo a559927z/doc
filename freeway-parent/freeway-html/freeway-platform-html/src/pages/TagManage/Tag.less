@@ -1,0 +1,32 @@
+@import '~antd/lib/style/themes/default.less';
+
+.exportBtn {
+  margin-left: 10px;
+  color: @primary-color;
+  border-color: @primary-color;
+}
+
+.name {
+  display: flex;
+  > span {
+    margin-right: 20px;
+  }
+  .operation {
+    display: none;
+    span {
+      display: inline-block;
+      width: 36px;
+      text-align: center;
+      cursor: pointer;
+    }
+  }
+  &:hover {
+    .operation {
+      display: block;
+    }
+  }
+}
+.treeWrap {
+  background: #fff;
+  padding: 20px;
+}

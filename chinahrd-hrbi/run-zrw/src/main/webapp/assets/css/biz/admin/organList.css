@@ -1,0 +1,28 @@
+.main-container {
+	width: 97%;
+}
+
+.main-container {
+	position: static;
+	padding: 0px;
+}
+.row {
+	margin-left: 0px;
+}
+.organList-warp {
+	min-height: 200px;
+/* 		border: 1px solid #c6c6c6; */
+}
+.panel .panel-body{
+	background-color: #F7F7F7;
+}
+.panel .panel-body .row{
+	margin-bottom: 20px;
+}
+.panel .panel-body .checkbox-inline{
+	padding-left: 0;
+	margin-left: 20px;
+}
+.panel .panel-body .checkbox-inline>label{
+	cursor: pointer;
+}

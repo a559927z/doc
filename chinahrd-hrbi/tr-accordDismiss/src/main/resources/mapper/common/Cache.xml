@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.accordDismiss.module.CacheDao">
+	
+	
+	<!-- 查询已有记录的上一个季度最后一天 -->
+	<select id="queryQuarterLastDay" resultType="java.lang.String">
+<!-- 这里不使用更新时间。因为更新时间字段不准的 -->
+<!-- 		SELECT MAX(mec.refresh) FROM monthly_emp_count mec WHERE mec.customer_id  = #{customerId} -->
+	<!-- 这里使用离职表最大离职时间。数据限定在2015-12-18内的人 -->
+		select Max(run_off_date) from run_off_record WHERE customer_id  = #{customerId} and run_off_date &lt;= '2015-12-18' 	</select>
+</mapper>

@@ -1,0 +1,680 @@
+.row{margin-left:0px; margin-right:0px;}
+.talentmaps-publish {
+    position: relative;
+}
+.ct-dissmiss .column{
+    padding: 2px!important;
+}
+.talentmaps-publish .rightBody{
+    width: 100%;
+    background-color: #ecf0f1;
+    padding: 20px;
+}
+.talentmaps-publish .top-div{
+    height: 160px;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+}
+.talentmaps-publish .bottom-div{
+    width: 100%;
+    height: 880px;
+    _height: 880px;
+    min-height: 880px;
+    border: 1px solid #e0e0e0;
+}
+.talentmaps-publish .bottom-div >.chart-view .col-xs-12:nth-child(2){
+    /* height: 350px; */
+}
+.talentmaps-publish .bottom-div .bottom-div-first{
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+}
+.talentmaps-publish .bottom-div .bottom-div-first span{
+    color: #999;
+    margin-left: 10px;
+}
+.talentmaps-publish .bottom-div .bottom-div-right{
+    position: absolute;
+    right: 30px;
+    top: 10px;
+    z-index: 999;
+}
+.talentmaps-publish .bottom-div .bottom-div-right>div{
+    display: inline-block;
+    background-color: rgb(242,242,242);
+    color: rgb(102,102,102);
+    padding: 4px 8px;
+    margin:0 -2px;
+    cursor: pointer;
+}
+.talentmaps-publish .bottom-div .bottom-div-right>div.select{
+    background-color: rgb(211,211,211);
+    color: rgb(51,51,51);
+}
+.talentmaps-publish .bottom-div .bottom-div-first a{
+    float: right;
+    text-decoration: none;
+    cursor: pointer;
+}
+.talentmaps-publish .bottom-div .bottom-div-second{
+    color: #999;
+    margin-left: 10px;
+}
+/*table chart 鍒囨崲 鐨� top 閫氱敤鏍峰紡 begin*/
+.table-grid{
+	margin-top: 20px;
+	margin-left: 10px;
+	pa
+}
+.talentmaps-publish .rightSetUpBtn{
+	position: relative;
+    background-color: #fafafa;
+    cursor: pointer;
+}
+.tab-content{
+	border: 0;
+}
+.talentmaps-publish .rightSetUpBtnDiv{
+    position: relative;
+    float: left;
+    height: 30px;
+    width: 127px;
+    border: 1px solid #e0e0e0;
+    text-align:center;
+}
+.talentmaps-publish .rightSetUpRight{
+    margin-left: -1px;
+}
+.talentmaps-publish .rightSetUpBtnSelect{
+    border-bottom: 0px;
+    cursor: default;
+    background-color: #fff;
+}
+.rightSetUpBtnTop{
+    display: none;
+}
+.rightSetUpBtnSelect .rightSetUpBtnTop{
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #009edd;
+}
+.rightSetUpBtnDiv .text{
+	font-size: 13px;
+    margin-top: 4px;
+}
+.rightSetUpBtnSelect .text{
+	font-weight:bold;
+    margin-top: 2px !important;
+}
+/*table chart 鍒囨崲 鐨� top 閫氱敤鏍峰紡 end*/
+.left{
+	float: left;
+}
+.rightSetUpTitle a:link {
+	text-decoration: none;
+}
+.rightSetUpTitle a:visited {
+	text-decoration: none;
+}
+.rightSetUpTitle a:hover {
+	text-decoration: none;
+	color: #009edd;
+}
+.rightSetUpTitle a:active {
+	text-decoration: none;
+}
+/* 姝ラ鏍峰紡 begin */
+.step-container {
+    margin: 0;
+    padding: 0;
+    width: 40%;
+}
+.step-container li {
+    display: inline-block;
+    float: left;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    width: 33%;
+    height: 28px;
+    line-height: 28px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #ccc;
+    color: #000000;
+}
+.step-container li.step-past {
+    background-color: #cccccc;
+    width: 34%;
+}
+.step-container li.step-current {
+    background-color: #80ff80;
+}
+.step-container li.step-next {
+    background-color: #cccccc;
+}
+.arrow {
+    position: absolute;
+    right: -8.5px;
+    height: 28px;
+    background-color: #ffffff;
+    z-index: 2;
+}
+.arrow span {
+    display: inline-block;
+    border-left: 14px solid transparent;
+    border-top: 14px solid transparent;
+    border-bottom: 14px solid transparent;
+}
+.arrow-next {
+    margin-left: -14px;
+}
+.arrow-last {
+    margin-left: -14px;
+}
+.arrow-past .arrow-pre {
+    border-left: 14px solid #cccccc;
+}
+.arrow-past .arrow-next {
+    border-top: 15px solid #80ff80;
+    border-bottom: 14px solid #80ff80;
+}
+.arrow-current .arrow-pre {
+    border-left: 14px solid #80ff80;
+}
+.arrow-current .arrow-next {
+    border-top: 15px solid #cccccc;
+    border-bottom: 14px solid #cccccc;
+}
+.arrow-step-next .arrow-pre {
+	border-left: 14px solid #cccccc;
+}
+.arrow-step-next .arrow-next {
+	border-top: 15px solid #cccccc;
+    border-bottom: 14px solid #cccccc;
+}
+/* 姝ラ鏍峰紡 end */
+.display-none{
+	display: none;
+}
+.searchText{
+	width: 200px; 
+	height: 30px; 
+	float: left;
+}
+.searchBtn{
+	border: 1px solid #0d80a6;
+	background-color: #0099cc;
+	text-align: center;
+	color: #fff;
+	width: 80px;
+	height: 30px;
+	line-height: 30px;
+	cursor: pointer;
+	float: left;
+}
+#talentPublish1{
+	margin-top: 10px;
+}
+.content-tab thead tr{
+	display: block;
+}
+.content-tab .table-thead-tr th{
+	text-align: center;
+	font-size: 13px;
+}
+.content-tab tbody{
+	border: 1px solid #e0e0e0;
+	height: 155px;
+	overflow: auto;
+	display: block;
+}
+.content-tab tbody tr{
+	height: 30px;
+	width: 100%;
+}
+.content-tab tbody tr td{
+	text-align: center;
+	vertical-align: middle;
+	font-size: 12px;
+}
+.content-tab tbody tr td select{
+	height: 25px;
+}
+.next-step-btn{
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	background-color: #0099cc;
+	border: 1px solid #e0e0e0;
+	text-align: center;
+	font-size: 14px;
+	color: #ffffff;
+	cursor: pointer;
+}
+.next-step-btn-ing{
+	width: 250px;
+	height: 40px;
+	line-height: 40px;
+	background-color: #e0e0e0;
+	text-align: center;
+	font-size: 14px;
+	color: #ffffff;
+}
+.text-blod{
+	font-weight: bold;
+	margin-top: 20px;
+}
+.span-bold{
+	font-weight: bold;
+	font-size: 13px;
+}
+.span-text{
+	font-size: 13px;
+}
+.hr-line{
+	margin: 0 0 10px 0;
+	height: 1px;
+	border: none;
+	border-top: 1px solid #e0e0e0;
+}
+.content-body .previous-step{
+	margin-left: 20px;
+	height: 40px;
+	line-height: 40px;
+}
+.nav-div{
+	border-bottom: 3px solid #e0e0e0; 
+	height: 30px; 
+	margin-top: 10px;
+}
+.nav-div-text{
+	width: 120px;
+	height: 30px; 
+	cursor: pointer;
+	text-align: center;
+	float: left;
+}
+.nav-div-text:hover{
+	color: #009edd;
+}
+.nav-text-selected{
+	border-bottom: 4px solid #009edd;
+	color: #000000;
+}
+.bottom-div-prompt{
+	width: 100%;
+	height: 28px;
+	line-height: 20px;
+	margin-top: 10px;
+	font-size: 12px;
+}
+.u-img{
+	width: 16%;
+	height: 16px;
+	background: url("../../../img/talentmaps/point.png") no-repeat;
+	float: left;
+	position: relative;
+    left: 35%;
+}
+.prompt-text{
+	position: relative;
+	left: 21%;
+}
+.u-img2{
+	margin: 7px;
+	background: url("../../../img/talentmaps/point.png") no-repeat;
+	float: left;
+	position: relative;
+    left: 40%;
+    top: -5px;
+}
+.u-img2:after{
+	content: '请填写调整说明并发布地图';
+	position: relative;
+    top: -1px;
+    left: 25px;
+}
+.next-tdstyle{
+	width: 200px;
+}
+.next-tdstyle1{
+	width: 300px;
+}
+.next-tdstyle2{
+	width: 415px;
+}
+.emp-img{
+	background-image: url("../../../img/base/u483.png");
+	width: 60px;
+	height: 60px;
+	float: left;
+	border-radius: 30px;
+}
+.emp-text{
+	text-align: left; 
+	height: 60px; 
+	line-height: 30px; 
+	margin-left: 10px;
+	float: left;
+}
+.text-div{
+	text-align: center;
+	width: 100%;
+	font-size: 13px;
+	position: relative;
+    top: 20px;
+}
+.fullScreen {
+    margin-right: -20px;
+}
+.icon-fullscreen2{
+	background: url("../../../img/talentmaps/full-screen2.png") no-repeat;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	color: #555;
+	float: right;
+}
+#mapPreviewModal .modal-dialog{
+    width: 1070px;
+}
+#mapPreviewModal .modal-dialog>.modal-content>.modal-body{
+    min-height: 550px;
+}
+.fullScreenBodyHead{
+	background-color: #000;
+}
+.fullScreenBodyHead .fullScreenBodyTitle{
+	display: inline-block;
+	font-weight: bold;
+	color: #F5F5F5;
+	margin: 10px 5px;
+	padding-left: 12px;
+}
+.fullScreenBodyHead .close{
+	float: right;
+	margin: 8px 18px;
+	color: #fff;
+	opacity: 0.8;
+	font-size: 20px;
+}
+.fullScreenBodyHead .close:hover{
+	opacity: 0.5;
+}
+.content-body .publish-div{
+	border: 1px solid #8080ff; 
+	width: 100%; 
+	_height: 80px; 
+	min-height: 80px; 
+	line-height: 30px; 
+	margin-top: 10px; 
+	padding: 10px 14px;
+}
+.preview-img{
+	background: url("../../../img/talentmaps/preview.png") no-repeat;
+	width: 21px;
+	height: 14px;
+	float: left;
+    position: relative;
+    top: 8px;
+}
+.commit-btn{
+	position: relative;
+	left: 35%;
+	margin-top: 30px;
+}
+.commit-step-btn{
+	width: 300px;
+	height: 40px;
+	line-height: 40px;
+	background-color: #0099cc;
+	border: 1px solid #e0e0e0;
+	text-align: center;
+	font-size: 14px;
+	color: #ffffff;
+	cursor: pointer;
+}
+.subtitle-text{
+	color: #999999;
+}
+.norecords { 
+	border-width: 2px !important; 
+	font-weight: bold; 
+	left: 40%; 
+	margin: 5px; 
+	padding: 6px; 
+	position: absolute; 
+	text-align: center; 
+	font-size: 20px;
+	color: yellowgreen;
+	width: auto; 
+	z-index: 102; 
+}
+#talentPublishPager_right{
+	display: none;
+}
+#publishing{
+	display: none;
+}
+.text_overflow{
+	width: 180px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.rightTitle{
+	height: 34px;
+	margin-left: -15px;
+}
+.bottom-div-step{
+	height: 80px;
+	background-color: #fff;
+}
+.step-container {
+    padding: 20px;
+    width: 100%;
+    font-size: 14px;
+}
+.step-container .step-current {
+	width: 33%;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	color: #fff;
+    background-color: #0099cc;
+    border: 1px solid #e0e0e0;
+    position: relative;
+}
+.step-container .step-current:before {  
+    content: '';
+    width: 0;
+    height: 0;
+    border: 20px solid transparent;
+    border-left-color: #0099cc;
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    margin-top: -20px;
+    z-index: 1;
+}
+.step-container .step-normal {
+	width: 33%;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	color: #666;
+    border: 1px solid #e0e0e0;
+    position: relative;
+}
+.step-container .step-normal:before {  
+    content: '';
+    width: 0;
+    height: 0;
+    border: 20px solid transparent;
+    border-left-color: #e0e0e0;
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    margin-top: -20px;
+}
+.step-container .step-normal:after {  
+    content: '';
+    width: 0;
+    height: 0;
+    border: 19px solid transparent;
+    border-left-color: #fff;
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    margin-top: -18px;
+}
+.step-container .step-first {
+	width: 33%;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	color: #666;
+    border: 1px solid #e0e0e0;
+    position: relative;
+}
+.step-container .step-first:before {  
+    content: '';
+    width: 0;
+    height: 0;
+    border: 20px solid transparent;
+    border-left-color: #fff;
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    margin-top: -20px;
+	z-index: 1;
+}
+.step-container .step-last {
+	width: 34%;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	color: #666;
+    border: 1px solid #e0e0e0;
+}
+.step-blue-1{
+	background: url("../../../img/talentmaps/step-blue-1.png") no-repeat;
+	float: left;
+	position: relative;
+	top: 9px;
+	left: 38%
+}
+.step-blue-1:after{
+	content: '调整地图位置';
+	position: relative;
+    left: 36px;
+    top: -9px;
+}
+.step-blue-2{
+	background: url("../../../img/talentmaps/step-blue-2.png") no-repeat;
+	float: left;
+	position: relative;
+	top: 9px;
+	left: 38%
+}
+.step-blue-2:after{
+	content: '填写调整说明';
+	position: relative;
+    left: 36px;
+    top: -9px;
+}
+.step-blue-3{
+	background: url("../../../img/talentmaps/step-blue-3.png") no-repeat;
+	float: left;
+	position: relative;
+	top: 9px;
+	left: 45%
+}
+.step-blue-3:after{
+	content: '完成';
+	position: relative;
+    left: 36px;
+    top: -9px;
+}
+.step-achieve{
+	background: url("../../../img/talentmaps/step-achieve.png") no-repeat;
+	float: left;
+	position: relative;
+	top: 9px;
+	left: 38%
+}
+.step-achieve:after{
+	content: '调整地图位置';
+	position: relative;
+    left: 36px;
+    top: -9px;
+}
+.step-white-2{
+	background: url("../../../img/talentmaps/step-white-2.png") no-repeat;
+	float: left;
+	position: relative;
+	top: 9px;
+	left: 38%
+}
+.step-white-2:after{
+	content: '填写调整说明';
+	position: relative;
+    left: 36px;
+    top: -9px;
+}
+.step-white-3{
+	background: url("../../../img/talentmaps/step-white-3.png") no-repeat;
+	float: left;
+	position: relative;
+	top: 9px;
+	left: 45%
+}
+.step-white-3:after{
+	content: '完成';
+	position: relative;
+    left: 36px;
+    top: -9px;
+}
+.bottom-div-body{
+	background-color: #fff;
+	width: 100%;
+	min-height: 691px;
+	padding: 20px;
+}
+.col-boder{
+	border: 1px solid #e0e0e0;
+	min-height: 510px;
+}
+@media (min-width: 768px){
+	.col-sm-15{
+		width: 48%;
+		position: relative;
+	    min-height: 1px;
+	    float: left;
+	    padding-right: 20px;
+	    padding-bottom: 20px;
+	}
+}
+.margin-left20{
+	margin-left: 20px;
+}
+.margin-left10{
+	margin-left: 10px;
+}
+.padding{
+	padding: 0 20px;
+}
+#talentPerformanceAbilityPager_left{
+	width: 20%;
+}
+#talentPerformanceAbilityPager_right{
+	display: none;
+}
+.bottom-title{
+	position: relative;
+    top: -10px;
+    left: -10px;
+}

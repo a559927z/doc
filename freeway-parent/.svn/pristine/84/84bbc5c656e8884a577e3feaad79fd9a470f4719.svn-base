@@ -1,0 +1,21 @@
+package net.chinahrd.modules.pub.dao;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import net.chinahrd.modules.pub.entity.TenantInfo;
+import net.chinahrd.modules.pub.response.TenantInfoRes;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * <p>
+ * 租户管理 Mapper 接口
+ * </p>
+ *
+ * @author zoujiaxi
+ * @since 2019-03-19
+ */
+public interface TenantInfoDAO extends BaseMapper<TenantInfo> {
+
+    List<TenantInfoRes> listTenantInfo(Map<String, Object> paramMap);
+}

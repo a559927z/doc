@@ -1,0 +1,52 @@
+.profile-header {
+    margin-top: 100px;
+}
+
+.profile-header .row:first-child {
+    text-align: center;
+}
+
+.profile-header .profile-title {
+    font-size: 36px;
+    font-weight: bolder;
+    letter-spacing: 10px;
+}
+
+.profile-header .input-group input {
+    border-color: #33B000;
+    height: 40px;
+}
+
+.profile-header .input-group button.btn-search {
+    background-color: #33B000 !important;
+    width: 95px;
+    height: 40px;
+    border: 1px solid #33B000;
+}
+
+.hint {
+    display: block;
+    color: #888;
+    line-height: 32px;
+}
+
+@media only screen and (max-width: 767px) {
+    .profile-header {
+        margin-top: 50px;
+    }
+    .profile-header .input-group button.btn-search{
+        width: 70px;
+    }
+}
+.emp_col{
+    margin-left: 10px;
+}
+.panel .input-group input {
+    border-color: #D7D7D7;
+}
+.panel .input-group button.btn-search {
+    background-color: #FBFBFB;
+    width: 80px;
+    height: 34px;
+    border: 1px solid #D7D7D7;
+}

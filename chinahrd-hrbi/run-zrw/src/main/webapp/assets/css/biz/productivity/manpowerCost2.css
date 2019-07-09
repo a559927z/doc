@@ -1,0 +1,693 @@
+.manpowercost-board {
+    position: relative;
+    padding-left: 0px;
+    font-size: 14px;
+    color: #666666;
+}
+.ct-dissmiss .column{
+    padding: 2px!important;
+}
+
+#page-one{display: block;}
+#page-two{display: none;}
+#page-three{display: none;}
+#page-four{display: none;}
+.leftListSet,.LSLSetUp{
+    cursor: pointer;
+}
+
+/*页面通用样式 begin*/
+.manpowercost-board .index-common-title{position: relative;width: 100%;height: 34px;}
+.manpowercost-board .index-common-title-left{position: absolute;top: 10px;left: 8px;background-color: #88b7e0;width: 2px;height: 15px;}
+.manpowercost-board .index-common-title-text{position: absolute;top: 6px;left: 15px;color: #444;}
+.manpowercost-board .index-common-title-text span{color: #999;}
+.manpowercost-board .index-common-title-center{position: absolute;left: 150px;top:-4px;}
+.manpowercost-board .index-common-title-center .title-center-text{display: inline-block;border:1px solid #e0e0e0;margin-right: 35px;}
+.manpowercost-board .index-common-title-center .title-center-text span:first-child{display: inline-block;color: #333;margin:0 5px;}
+.manpowercost-board .index-common-title-center .title-center-text span:nth-child(2){display: inline-block;background-color: #999;color: #fff;padding-left: 15px;font-size: 18px;}
+.manpowercost-board .index-common-title-center .title-center-text small{display: inline-block;background-color: #999;color: #fff;padding: 6px 10px 3px 5px;font-size: 12px;vertical-align: top;}
+.manpowercost-board .index-common-title-right{  float: right; margin: 6px 2px 0px 0px;  position: relative; background-color: #fff; padding: 0px 2px;}
+.manpowercost-board .index-common-title-right span{padding: 1px 1px; font-size:12px; border-radius: 2px; cursor:pointer;  background: #efefef; border: 1px solid #ccc;}
+.manpowercost-board .index-common-title-right span i{font-style:normal;}
+.manpowercost-board .index-common-title-right span.select{ background: #009EDD; color: #fff; cursor:default;   border: 1px solid #009EDD;}
+
+.manpowercost-board .rightBody{
+    width: 100%;
+    background-color: #fff;
+    padding: 5px;
+}
+
+.manpowercost-board .top-div{
+    height: 160px;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+}
+.manpowercost-board .bottom-div{
+    width: 100%;
+    height: 385px;
+    border: 1px solid #e0e0e0;
+}
+.manpowercost-board .bottom-div >.chart-view .col-xs-12:nth-child(2){
+    height: 350px;
+}
+.manpowercost-board .bottom-div .bottom-div-first{
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+}
+.manpowercost-board .bottom-div .bottom-div-first span{
+    color: #999;
+    margin-left: 10px;
+}
+.manpowercost-board .bottom-div .bottom-div-right{
+    position: absolute;
+    right: 30px;
+    top: 10px;
+    z-index: 999;
+}
+.manpowercost-board .bottom-div .bottom-div-right>div{
+    display: inline-block;
+    background-color: rgb(242,242,242);
+    color: rgb(102,102,102);
+    padding: 4px 8px;
+    margin:0 -2px;
+    cursor: pointer;
+}
+.manpowercost-board .bottom-div .bottom-div-right>div.select{
+    background-color: rgb(211,211,211);
+    color: rgb(51,51,51);
+}
+.manpowercost-board .bottom-div .bottom-div-first a{
+    float: right;
+    text-decoration: none;
+    cursor: pointer;
+}
+.manpowercost-board .bottom-div .bottom-div-second{
+    color: #999;
+    margin-left: 10px;
+}
+/*页面通用样式 begin*/
+
+/*左边导航 begin*/
+.manpowercost-board .leftBody{
+    position: fixed;
+    width: 130px;
+    left: 0px;
+    top: 0px;
+}
+.manpowercost-board .leftListBigDiv{
+    position: relative;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-indent : 14px;
+    font-weight: bold;
+}
+.manpowercost-board .leftListSet{
+    background-image: url("../../../img/index/setUp.png");
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 12px;
+    top: 17px;
+}
+.manpowercost-board .leftListDiv{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+    text-indent : 14px;
+}
+.manpowercost-board .selectList{
+    background-color: #fff;
+    cursor: default;
+}
+/*左边导航 end*/
+
+.manpowercost-board .LSLSetUp{
+    background-image: url("../../../img/index/setUp.png");
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 11px;
+    top: 10px;
+}
+
+/*table chart 切换 的 top 通用样式 begin*/
+.manpowercost-board .bottom-title{
+    height: 30px;
+}
+.manpowercost-board .bottom-left{
+    top: 4px;
+}
+.manpowercost-board .bottom-text{
+    top: 0px;
+}
+.manpowercost-board .bottom-text span{
+    color:#999;
+}
+.manpowercost-board .rightSetUpBtn{
+    position: absolute;
+    right: 0px;
+    top: 1px;
+    background-color: #fafafa;
+    cursor: pointer;
+}
+.manpowercost-board .rightSetUpBtnDiv{
+    position: relative;
+    float: left;
+    height: 30px;
+    width: 80px;
+    border: 1px solid #e0e0e0;
+    text-align:center;
+}
+.manpowercost-board .rightSetUpRight{
+    margin-left: -1px;
+}
+.manpowercost-board .rightSetUpBtnSelect{
+    border-bottom: 0px;
+    cursor: default;
+    background-color: #fff;
+}
+.rightSetUpBtnTop{
+    display: none;
+}
+.rightSetUpBtnSelect .rightSetUpBtnTop{
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #009edd;
+}
+.manpowercost-board .rightSetUpBtnDiv .text{
+    margin-top: 4px;
+}
+.rightSetUpBtnSelect .text{
+    margin-top: 2px !important;
+}
+
+.rightSetUpLeftShowIcon{
+    display: none;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-show1.png");
+    width: 18px;
+    height: 11px;
+    left: 7px;
+    top: 10px;
+}
+.rightSetUpRightShowIcon{
+    display: none;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-show2.png");
+    width: 13px;
+    height: 11px;
+    left: 9px;
+    top: 9px;
+}
+.rightSetUpLeftHideIcon{
+    display: block;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-hide1.png");
+    width: 18px;
+    height: 11px;
+    left: 7px;
+    top: 10px;
+}
+.rightSetUpRightHideIcon{
+    display: block;
+    position: absolute;
+    background-image: url("../../../img/index/right-btn-hide2.png");
+    width: 13px;
+    height: 11px;
+    left: 9px;
+    top: 9px;
+}
+.rightSetUpBtnSelect .rightSetUpLeftShowIcon{display: block;}
+.rightSetUpBtnSelect .rightSetUpLeftHideIcon{display: none;}
+.rightSetUpBtnSelect .rightSetUpRightShowIcon{display: block;}
+.rightSetUpBtnSelect .rightSetUpRightHideIcon{display: none;}
+/*table chart 切换 的 top 通用样式 begin*/
+
+
+/*第一行的数据块 begin*/
+.manpowercost-board .accord-yj-float{position: relative; height: 62px;margin: 0 auto;margin-top: 14px;font-size: 40px; text-align: left; padding: 6px 18px 0px 18px;}
+.manpowercost-board .accord-yj-float-value {
+    font-size: 40px;
+    color: #666666;
+    text-align: left;
+}
+.manpowercost-board .accord-yj-float-people {
+    color: #777777;
+    font-size: 12px;
+}
+.manpowercost-board .accord-bottom-float{
+    position: relative; height: 48px;margin: 0 auto;margin-top: 0px;
+    font-size: 12px;
+    color: #777777;
+    text-align: right;padding-right: 12px;
+}
+.manpowercost-board .accord-bottom-float div{
+    margin-left: 2px;
+    margin-right: 2px;
+}
+.manpowercost-board .accord-bottom-float-text{
+    display: inline-block;
+}
+.manpowercost-board .accord-bottom-float .rate{
+    font-size: 14px;
+}
+.manpowercost-board .accord-bottom-float-people{
+    display: inline-block;
+}
+.manpowercost-board .accord-bottom-float-arrow{
+    width: 12px;
+    height: 15px;
+    display: inline-block;
+}
+.manpowercost-board .accord-bottom-float-arrow-rise{
+    background-image: url("../../../img/index/arrow1.png");
+}
+.manpowercost-board .accord-bottom-float-arrow-drop{
+    background-image: url("../../../img/index/arrow2.png");
+}
+/*第一行的数据块 end*/
+
+.manpowercost-board .table-view{
+    display: none;
+}
+.bottom-div-two > .row > div{
+    height: 385px;
+}
+.bottom-div-two > .row > div:nth-child(2){
+    border-left:1px solid #e0e0e0;
+}
+.bottom-div-two .row .bottom-div-first{
+    color: #333;
+}
+.bottom-div-four{
+    height: 520px !important;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.conditionBtn{
+    cursor: pointer;
+    position: absolute;
+    top: -48px;
+    left: 220px;
+    font-size: 12px;
+    width: 108px;
+    height: 48px;
+    line-height: 47px;
+    margin-left: 10px;
+    border: 1px solid #e0e0e0;
+    border-bottom: 0px;
+    z-index: 1;
+    background-color: #fff;
+    text-indent: 10px;
+}
+.conditionBtnListBody{
+    position: relative;
+    /*min-height: 276px;*/
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px !important;
+}
+
+/*筛选条件 begin*/
+.dis-search{width: 280px;font-size: 12px !important;}
+.dis-search .dis-search-input{line-height:2 !important;font-size: 12px !important;float: left;width: 74%;height: 34px;margin-top: 1px;border: 1px solid #e0e0e0;font-size: 12px;padding-top: 4px;padding-left: 12px;}
+.dis-search .dis-search-input-btn{cursor:pointer;font-size: 12px !important;float: left;width: 26%;background-color: #009edd;height: 36px;line-height:36px;border: 1px solid #e0e0e0;padding-left: 9px;margin-left: -1px;color: #fff;}
+.dis-search-tip{display: inline-block;color: #888;line-height: 2;padding: 6px 28px;}
+
+.dis-insure-search{width: 500px; font-size: 12px !important;margin-left: 10px;}
+.dis-insure-search .dis-search-input{line-height:2 !important;font-size: 12px !important;float: left;width: 35%;height: 34px;margin-top: 1px;border: 1px solid #e0e0e0;font-size: 12px;padding-top: 4px;padding-left: 12px;}
+.dis-insure-search .dis-search-select{line-height:2 !important;float: left; width: 30%;vertical-align: middle;margin:3px 30px 0; }
+.dis-insure-search .dis-search-input-btn{cursor:pointer;font-size: 12px !important;float: right;width: 15%;background-color: #009edd;height: 36px;line-height:36px;border: 1px solid #e0e0e0;margin-right: 5px;color: #fff;text-align: center;}
+
+
+.condition-body-list{
+    width: 100%;
+    float: left;
+    margin-bottom: 14px;
+}
+.condition-body-list-title{
+    text-align: right;
+    width: 64px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+.condition-input-text{
+    width: 120px;
+    height: 24px;
+    line-height: 2;
+    padding-left: 4px;
+    margin-top: -2px;
+}
+.condition-text-one{
+    margin-left: 6px;
+    margin-right: 6px;
+}
+.condition-btn{
+    float: left;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 24px;
+    line-height: 24px;
+    /*color: #444444;*/
+    margin-right: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+.condition-btn-selected{
+    background-color: #009edd;
+    color: #fff;
+    cursor: default;
+}
+
+.condition-btn-too-icon{
+    position: absolute;
+    top: 8px;
+    right: 6px;
+    background-image: url("../../../img/index/y.png");
+    width: 7px;
+    height: 7px;
+}
+/*筛选条件 end*/
+
+/*弹出框 begin*/
+.ZBSetUp-drag-middle{
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    margin-top: 30px;
+}
+.BSetUp-col{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+.BSetUp-line{
+    width: 100%;
+    float: left;
+    margin-bottom: 30px;
+}
+.BSetUp-text-line{
+    color: #888888;
+    text-align: left;
+    margin-bottom: 8px;
+}
+.BSetUp-text-last-line{
+    margin-bottom: 30px;
+}
+.color-div{
+    width: 12px;
+    height: 12px;
+    margin-top: 6px;
+}
+.green-color-div{
+    background-color: #5ab700;
+}
+.orange-color-div{
+    background-color: #eda100;
+}
+.BSetUp-text-one{
+    margin-top: 3px;
+    margin-left: 6px;
+}
+.BSetUp-input{
+    width: 58px;
+    height: 24px;
+    padding-left: 8px !important;
+    margin-left: 8px;
+    font-size: 12px !important;
+}
+.BSetUp-text-two{
+    margin-top: 3px;
+    margin-left: 12px;
+}
+
+/*.drag-middle-C{*/
+/*margin-top: 5px;*/
+/*}*/
+.BSetUp-line-two{
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+}
+.BSetUp-line-three{
+    border-bottom: 1px dashed #e8ecf0;
+}
+.CSetUp-text-one{
+    margin-top: 6px;
+}
+.CSetUp-select{
+    margin-top: 4px;
+    margin-left: 8px;
+    width: 132px;
+    height: 24px;
+}
+.CSetUp-text-two{
+    width: 100%;
+    text-align: left;
+    color: #888888;
+    padding-top: 8px;
+    padding-bottom: 20px;
+}
+.CSetUp-text-checkbox{
+    margin-top: 3px;
+    margin-right: 18px;
+    margin-left: 2px;
+    cursor: pointer;
+}
+.CSetUp-text-checkbox-text{
+    margin-left: 4px;
+}
+.CSetUp-text-checkbox-input{
+    /*margin-top: 4px !important;*/
+    /*margin-bottom: 4px !important;*/
+}
+/*弹出框 end*/
+
+/*media begin*/
+@media (max-width: 680px) {
+    .condition-body-list-title {width: 100%;text-align: left;}
+    .condition-bottom{padding-left: 0px;}
+    .condition-text-one{display: none;}
+    .condition-input-text-too{clear: both;margin-top: 6px;}
+
+    .conditionBtn{top: -65px;left: -11px;border-bottom: 1px solid #e0e0e0;}
+    .conditionBtnListBody{margin-top: 110px;}
+    .dis-search{top: -115px;}
+}
+@media (max-width: 768px) {
+    .manpowercost-board .bottom-div-two{height:770px !important;}
+}
+/*大于768px并且小于992px*/
+@media (min-width: 768px) and (max-width: 992px) {
+    .manpowercost-board .accord-yj-float{font-size:28px;}
+}
+
+.widget-toolbar {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.widget-toolbar span {
+    padding: 1px;
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 4px;
+}
+.position-relative{
+    margin-top:15px;
+}
+.widget-toolbar .blue {
+    background-color: #3d6ba7;
+}
+
+.currentMonth {
+    font-size: 28px;
+    color: #5E5E5E;
+    margin: 25px 0 0 8px;
+}
+
+.average {
+    font-size: 18px;
+    color: #5E5E5E;
+}
+
+.warn-icon {
+    margin:10px 0px 0px 0px;
+    height: 65px;
+    width:65px;
+    background: url(../../../img/base/icon-warn.png) no-repeat;
+    background-size:96% auto;
+    background-position: center;
+}
+
+.smile-face {
+    margin:0px 0px 0px 0px;
+    height: 85px;
+    width:85px;
+    background: url(../../../img/base/smile-face.png) no-repeat;
+    background-size:96% auto;
+    background-position: center;
+}
+
+.arrow-higher {
+    width:30px;
+    height: 20px;
+    background: url(../../../img/base/arrow-higher.jpg) no-repeat;
+    background-size:50% auto;
+    background-position: left;
+    float:right;
+    margin-top:5px;
+}
+
+.arrow-lower {
+    width:30px;
+    height: 20px;
+    background: url(../../../img/base/arrow-lower.jpg) no-repeat;
+    background-size:50% auto;
+    background-position: left;
+    float:right;
+    margin-top:5px;
+}
+
+.lastMonth {
+    display: inline-block;
+    width: 100%;
+    text-align: right;
+    font-weight: 700;
+    /*     color: #1C84C6; */
+    margin-right: 2px;
+}
+.lastMonthBlue {
+    color: #1C84C6;
+}
+.lastMonthRed {
+    color: #ff6600;
+}
+.lastLabel {
+    display: inline-block;
+    width: 100%;
+    text-align: right;
+    font-size: 11px;
+}
+
+.row {
+    margin-left: 0px;
+    margin-right:0px;
+}
+
+.tab-content{
+    min-height: 350px;
+}
+
+.widget-toolbar a {
+    font-size: 12px;
+    text-decoration: underline;
+}
+
+.widget-toolbar .green {
+    background-color: #009EDD;
+    padding: 3px 1px;
+
+}
+.widget-toolbar .white {
+    background-color: #FFF;
+    padding: 3px 1px;
+    border: solid 1px #CCCCCC;
+    color: #333 !important;
+
+}
+.pointer{
+    cursor: pointer;
+}
+
+.rowContentHeight{
+    height: 318px;
+}
+
+.trendByMonth-bar{
+    height : 350px;
+}
+.manpowerTrend-line{
+    height : 350px;
+}
+#averageCompare{
+    width:170px;
+    font-size: 15px;
+}
+
+.costratenodata{height:112px;padding-top:50px; color:#ccc; font-family: '宋体'; text-align: center;}
+
+.topborderradius{
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.bottomborderradius{
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+i{font-style:normal;}
+.fontsize14{
+    font-size:14px;
+}
+.color555{color:#555;}
+.color999{color:#999;}
+
+.height91{
+    height:91px !important;
+}
+.height350{
+    height:350px !important;
+}
+
+.border0{
+    border:0px;
+}
+.margintop0{
+    margin-top:0px;
+}
+.margintop10{
+    margin-top:10px;
+}
+.margintop20{
+    margin-top:20px;
+}
+.margintop30{
+    margin-top:30px;
+}
+.margintop60{
+    margin-top:60px;
+}
+.marginbottom20{
+    margin-bottom:20px;
+}
+
+.padding10{
+    padding:10px;
+}
+.paddingtop0{
+    padding-top:0px;
+}
+.paddingbottom0{
+    padding-bottom:0px;
+}
+
+.minheight112{
+    min-height:112px;
+}
+
+.nodata{text-align: center; color:#ccc; margin-top:45px; font-family: '宋体';}
+
+.tooltip{width:180px !important;}
+
+/*人力成本执行率*/
+.barlineObject{padding-top: 54px;padding-left: 40px;width: 100%;padding-right: 40px;}
+.barline{position:relative;width:60%;background:#cdcdcd;height:20px;border-radius:4px;}
+.barline #percent{float:left;background-image:url("../../../img/base/black_bg.png");width:55px;height:30px;line-height:25px;text-align:center;margin-left:-30px;margin-top:-38px;display:inline-block;color:#ffffff;font-size:16px;}
+.barline #line{float:left;height:20px;overflow:hidden;background:#009EDD;border-radius:4px;}
+.barLineValue{position: absolute;width:100%;left:105%;}

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!-- 彩色日志 -->
+	<!-- 彩色日志依赖的渲染类 -->
+	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+	<conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+	<!-- 彩色日志格式 -->
+	<!--<property name="CONSOLE_LOG_PATTERN"-->
+	<!--value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(-&#45;&#45;){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}" />-->
+
+	<!-- 彩色内部色彩 -->
+	<property name="CONSOLE_LOG_PATTERN"
+			  value="%boldGreen(%date{yyyy-MM-dd HH:mm:ss}) | %highlight(%-5level) | %boldYellow(%thread) | %boldMagenta(%logger) : %cyan(%msg%n)"/>
+	<property name="CONSOLE_LOG_DEV" value="%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-5level %logger{36} - %msg%n" />
+	<property name="CONSOLE_LOG_PRO" value="%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-4relative [%thread] |-%-5level %logger{35} - %msg%n" />
+
+	<property name="LOG_PATH" value="/home/logs/run-zrw%d{yyyy-MM-dd}.log" />
+
+	<!-- Console 输出设置 -->
+	<appender name="dev" class="ch.qos.logback.core.ConsoleAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+		<!--<encoder>-->
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<charset>utf8</charset>
+		</encoder>
+	</appender>
+
+
+	<appender name="product" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${CONSOLE_LOG_PRO}</pattern>
+			<pattern></pattern>
+		</encoder>
+	</appender>
+
+	<!-- TRACE < DEBUG < INFO < WARN < ERROR, ALL/OFF -->
+	<logger name="net.chinahrd" level="DEBUG" addtivity="false"/>
+	<logger name="net.chinahrd.eis.dal.MySqlPaginationPlugin" level="DEBUG" addtivity="false" />
+	<logger name="org.springframework.web" level="INFO" />
+	<logger name="org.quartz" level="ERROR" />
+
+	<root level="INFO">
+		<appender-ref ref="product" />
+		<appender-ref ref="dev" />
+		<!--<appender-ref ref="STDOUT" />-->
+	</root>
+</configuration>

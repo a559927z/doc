@@ -1,0 +1,205 @@
+/**
+ * 	 ------------- 整体布局 ------------------- */
+/* 整体 */
+.u-map {
+    position: relative;
+}
+
+/* 表格 */
+.u-map .u-map-table {
+}
+
+/* 画布 */
+.u-map .u-map-canvas {
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* 点 */
+.u-map .u-point-group-wrapper, .u-map .u-point-wrapper, .u-map .u-remain-point-wrapper {
+    display: inline-block;
+    position: relative;
+    z-index: 100;
+    cursor: pointer;
+}
+
+.u-map .u-point-wrapper {
+    margin: 2px 1px auto 1px;
+    width: 38px;
+    height: 31px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.u-map .u-remain-point-wrapper {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    border-radius: 20px;
+    background-color: #F0F0F0;
+    border: 1px solid #2f9ff2;
+}
+
+.u-map .u-remain-point-wrapper .u-point-label {
+    font-size: 13px;
+    text-align: center;
+    padding: 0;
+}
+
+/** ------------- 整体布局 ------------------- */
+
+.u-map .u-map-table table, .u-map .u-map-table td {
+    border-collapse: collapse;
+    vertical-align: middle;
+    text-align: right;
+}
+
+/** */
+.u-map .u-map-table .u-map-grid {
+    border: 1px solid rgba(204, 204, 204, 0.5);
+    text-align: center;
+    height: 70px;
+}
+
+.u-map .u-map-table .u-map-table-label {
+    font-size: 13px;
+    font-weight: bold;
+    height: 40px;
+    text-align: center;
+}
+
+.u-map .u-map-table .u-map-right-label {
+    color: #666;
+    width: 30px;
+    font-size: 12px;
+    text-align: left;
+    padding-left: 20px;
+}
+
+.u-map .u-map-table .u-map-right-label .u-map-right-block {
+    margin: 3px 0;
+}
+
+.u-map .u-map-table .u-map-right-label .u-map-right-block i {
+    margin-right: 5px;
+}
+
+.u-map .u-map-left_label {
+    width: 35px;
+    padding-left: 5px;
+    padding-right: 15px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/** 左侧类别样式  */
+.u-map .u-map-left_type {
+    border-bottom: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+    font-weight: bolder;
+    width: 35px;
+}
+
+/** 下侧人数样式  */
+.u-map .u-map-table .u-map-table_num {
+    color: #666;
+    font-size: 12px;
+    height: 12px;
+    text-align: center;
+}
+
+.u-map .u-map-table .u-map-table_num .u-map-bottom-block {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.u-map .u-map-table .u-map-table_num .u-map-bottom-block i {
+    margin-right: 1px;
+}
+
+/** 角坐标轴名称样式 */
+.u-map .u-map-table .u-map-yaxis-title {
+    height: 45px;
+    font-weight: bold;
+    padding-right: 20px;
+    width: 130px;
+}
+
+.u-map .u-map-table .u-map-xaxis-title {
+    width: 80px;
+    font-weight: bold;
+    padding-right: 0;
+}
+
+/** 点样式
+------------------------------------------*/
+.u-map .u-point {
+    color: #0777F1;
+    font-size: 13px;
+    width: 100%;
+}
+
+/* 汇总点 样式 */
+.u-map .u-point-group {
+    position: relative;
+    background-color: #fff;
+    border: 2px solid #0777F1;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    padding: 0 4px 0 9px;
+    left: -10px;
+    top: -3px;
+    z-index: 1;
+}
+
+.u-map .icon-group {
+    position: relative;
+    font-size: 16px;
+    z-index: 2;
+}
+
+/** 点 中文字样式 */
+.u-map .u-point-label {
+    display: inline-block;
+    width: 100%;
+    font-size: 10px;
+    color: #444;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-top: 2px;
+}
+
+/** 隐藏文字 */
+.u-map-hideText .u-point-label {
+    display: none;
+    text-align: center;
+}
+
+.u-map-hideText .u-map-table .u-map-yaxis-title {
+    height: 45px;
+    width: 85px;
+}
+
+.u-map-hideText .u-map-table .u-map-xaxis-title {
+    width: 65px;
+}
+
+.u-map-hideText .u-map-table .u-map-grid {
+    height: 50px;
+}
+
+.u-map-hideText .u-point-wrapper {
+    width: 20px;
+    height: 20px;
+}
+
+.u-map-hideGrids .u-map-table .u-map-grid {
+    border: none;
+}

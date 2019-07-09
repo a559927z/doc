@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.weka.dao.SalesDataDao">
+	<!-- 查询员工销售数据 -->
+	<select id="queryEmpSalesData" resultType="java.util.HashMap">
+		select
+		RIGHT(t.year_month,2) AS MONTH, sales_money_pre3,sales_money_pre2,sales_money_pre1,sales_money_month
+		from weka_sales_emp_month t
+		where t.emp_id = #{empId}
+		  and t.sales_money_pre3 is not null
+		order by
+		t.year_month
+	</select>
+</mapper>

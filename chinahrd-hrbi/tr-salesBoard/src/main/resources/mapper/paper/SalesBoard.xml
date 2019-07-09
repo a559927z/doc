@@ -1,0 +1,2377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.salesBoard.mvc.pc.dao.SalesBoardDao">
+	<cache-ref namespace="net.chinahrd.ehcache.normal" />
+	<resultMap type="net.chinahrd.entity.dto.pc.salesBoard.SalesBoardDto" id="baseChartMap">
+		<result column="empId" property="empId"/>
+		<result column="organName" property="organName"/>
+		<result column="userName" property="userName"/>
+		<result column="conNum" property="conNum"/>
+		<result column="date" property="date"/>
+		<result column="target" property="target"/>
+		<result column="sales" property="sales"/>
+		<result column="standardRate" property="standardRate"/>
+		<result column="ratio" property="ratio"/>
+		<result column="basis" property="basis"/>
+		<result column="teamId" property="teamId"/>
+		<result column="teamName" property="teamName"/>
+		<result column="payment" property="payment"/>
+		<result column="returnAmount" property="returnAmount"/>
+		<result column="sumNum" property="sumNum"/>
+		<result column="befSumNum" property="befSumNum"/>
+		<result column="percentNum" property="percentNum"/>
+		<result column="changeType" property="changeType"/>
+		<result column="changeInfo" property="changeInfo"/>
+		<result column="region" property="region"/>
+		<result column="yellowRange" property="yellowRange"/>
+		<result column="redRange" property="redRange"/>
+		<result column="abilityNumberId" property="abilityNumberId"/>
+		<result column="abilityNumberName" property="abilityNumberName"/>
+		<result column="configVal" property="configVal"/>
+		<result column="showIndex" property="showIndex"/>
+		<result column="numberNum" property="numberNum"/>
+		<result column="moneyNum" property="moneyNum"/>
+		<result column="profitNum" property="profitNum"/>
+		<result column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="compareVal" property="compareVal"/>
+	</resultMap>
+	<!-- 获取销售产品 -->
+	<select id="querySalesProducts" resultType="net.chinahrd.entity.dto.KVItemDto" useCache="true">
+		SELECT
+			sp.product_id k,
+			sp.product_name v
+		FROM
+			dim_sales_product sp
+		WHERE
+			sp.customer_id = #{customerId}
+	</select>
+	<!-- 通过缓存获取该架构的所有子孙组织机构ID -->
+	<sql id="queryFullOrganIdByContext">
+		<if test="subOrganIdList != null and subOrganIdList.size != 0">
+			AND se.organization_id in
+			<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+			'${oId}'
+			</foreach>
+		</if>
+	</sql>
+	<!-- 通过缓存获取该架构的所有子孙组织机构ID -->
+	<sql id="queryFullChildOrganIdByContext">
+		<if test="subOrganIdList != null and subOrganIdList.size != 0">
+			AND som.organization_id in
+			<foreach item="cId" collection="subOrganIdList" open="(" separator="," close=")">
+			'${cId}'
+			</foreach>
+		</if>
+	</sql>
+	<!-- 查询预警设置信息 -->
+	<select id="queryWarningInfo" resultType="net.chinahrd.entity.dto.pc.salesBoard.SalesConfigDto" useCache="true">
+		SELECT
+			sc.emp_id empId,
+			sc.region,
+			sc.yellow_range yellowRange,
+			sc.red_range redRange,
+			sc.note
+		FROM
+			sales_config sc
+		WHERE 
+			sc.customer_id = #{customerId}
+		AND sc.emp_id = #{empId}
+	</select>
+	<!-- 添加预警设置信息 -->
+	<insert id="addWarningInfo" parameterType="net.chinahrd.entity.dto.pc.salesBoard.SalesConfigDto">
+		INSERT INTO sales_config VALUES(#{empId},#{customerId},#{region},#{yellowRange},#{redRange},#{note})
+	</insert>
+	<!-- 修改预警设置信息 -->
+	<update id="updateWarningInfo" parameterType="net.chinahrd.entity.dto.pc.salesBoard.SalesConfigDto">
+		UPDATE sales_config SET 
+		customer_id = #{customerId}
+		<if test="empId != null and empId != ''">
+		,emp_id = #{empId}
+		</if>
+		<if test="region != null and region != ''">
+		,region = #{region}
+		</if>
+		<if test="yellowRange != null and yellowRange != ''">
+		,yellow_range = #{yellowRange}
+		</if>
+		<if test="redRange != null and redRange != ''">
+		,red_range = #{redRange}
+		</if>
+		<if test="note != null and note != ''">
+		,note = #{note}
+		</if>
+		 WHERE region = #{region} AND emp_id = #{empId}
+	</update>
+	<!-- 删除预警设置信息 -->
+	<delete id="deleteWarningInfo">
+		DELETE FROM sales_config WHERE emp_id = #{empId} AND customer_id = #{customerId}
+	</delete>
+	<!-- 获取时间 -->
+	<select id="queryTimes" resultMap="baseChartMap" useCache="true">
+		SELECT
+			som.`year_month` date
+		FROM
+			sales_org_month som
+		WHERE
+			som.customer_id = #{customerId}
+		GROUP BY
+			som.`year_month`
+	</select>
+	<!-- 当月销售额及比较 -->
+	<select id="getCurMonthSalesVal" resultMap="baseChartMap" useCache="true">
+		SELECT
+			a.sumNum sumNum,
+			b.sumNum befSumNum,
+			(
+				a.sumNum - b.sumNum
+			) / b.sumNum percentNum
+		FROM
+			(
+				SELECT
+					'f' flag,
+					som.`year_month` date,
+					IFNULL(SUM(som.sales_money_month), 0) sumNum
+				FROM
+					sales_org_month som
+				WHERE
+					som.customer_id = #{customerId}
+				<include refid="queryFullChildOrganIdByContext"></include>
+				AND som.`year_month` = #{curDate}
+			) a
+		LEFT JOIN (
+			SELECT
+				'f' flag,
+				som.`year_month` date,
+				IFNULL(SUM(som.sales_money_month), 0) sumNum
+			FROM
+				sales_org_month som
+			WHERE
+				som.customer_id = #{customerId}
+			<include refid="queryFullChildOrganIdByContext"></include>
+			AND som.`year_month` = #{befDate}
+		) b ON a.flag = b.flag
+	</select>
+	<!-- 当月销售异常组织-red -->
+	<select id="getCurMonthSalesExctOrganByRed" resultMap="baseChartMap" useCache="true">
+		SELECT
+			tol.organId,
+			tol.organName,
+			tol.sumNum,
+			tol.percentNum
+		FROM (
+			SELECT
+				x.organId,
+				don.organization_name organName,
+				x.sumNum,
+				x.percentNum
+			FROM
+				dim_organization don
+			INNER JOIN (
+				SELECT
+					#{organId} organId,
+					a.sumNum,
+					(a.sumNum - b.sumNum) / b.sumNum percentNum
+				FROM
+					(
+						SELECT
+							'f' flag,
+							IFNULL(
+								SUM(som.sales_money_month),
+								0
+							) sumNum
+						FROM
+							sales_org_month som
+						WHERE
+							som.customer_id = #{customerId}
+						<include refid="queryFullChildOrganIdByContext"></include>
+						AND som.`year_month` = #{curDate}
+					) a
+				LEFT JOIN (
+					SELECT
+						'f' flag,
+						IFNULL(
+							SUM(som.sales_money_month),
+							0
+						) sumNum
+					FROM
+						sales_org_month som
+					WHERE
+						som.customer_id = #{customerId}
+					<include refid="queryFullChildOrganIdByContext"></include>
+					AND som.`year_month` = #{befDate}
+				) b ON a.flag = b.flag
+			) x ON don.organization_id = x.organId
+		) tol
+		WHERE
+			tol.percentNum <![CDATA[<]]> #{red}
+		ORDER BY tol.percentNum DESC
+	</select>
+	<!-- 当月销售异常组织-yellow -->
+	<select id="getCurMonthSalesExctOrganByYellow" resultMap="baseChartMap" useCache="true">
+		SELECT
+			tol.organId,
+			tol.organName,
+			tol.sumNum,
+			tol.percentNum
+		FROM (
+			SELECT
+				x.organId,
+				don.organization_name organName,
+				x.sumNum,
+				x.percentNum
+			FROM
+				dim_organization don
+			INNER JOIN (
+				SELECT
+					#{organId} organId,
+					a.sumNum,
+					(a.sumNum - b.sumNum) / b.sumNum percentNum
+				FROM
+					(
+						SELECT
+							'f' flag,
+							IFNULL(
+								SUM(som.sales_money_month),
+								0
+							) sumNum
+						FROM
+							sales_org_month som
+						WHERE
+							som.customer_id = #{customerId}
+						<include refid="queryFullChildOrganIdByContext"></include>
+						AND som.`year_month` = #{curDate}
+					) a
+				LEFT JOIN (
+					SELECT
+						'f' flag,
+						IFNULL(
+							SUM(som.sales_money_month),
+							0
+						) sumNum
+					FROM
+						sales_org_month som
+					WHERE
+						som.customer_id = #{customerId}
+					<include refid="queryFullChildOrganIdByContext"></include>
+					AND som.`year_month` = #{befDate}
+				) b ON a.flag = b.flag
+			) x ON don.organization_id = x.organId
+		) tol
+		WHERE
+			tol.percentNum <![CDATA[>=]]> #{minYel}
+		AND tol.percentNum <![CDATA[<=]]> #{maxYel}
+		ORDER BY tol.percentNum DESC
+	</select>
+	<!-- 人员流失异常 -->
+	<select id="getCurMonthPersonFlow" resultMap="baseChartMap" useCache="true">
+<!-- 		SELECT -->
+<!-- 			( -->
+<!-- 				mec.act_count_sum + mec.un_act_count_sum -->
+<!-- 			) / mec.month_count_sum sumNum -->
+<!-- 		FROM -->
+<!-- 			monthly_emp_count mec -->
+<!-- 		WHERE -->
+<!-- 			mec.customer_id = #{customerId} -->
+<!-- 		AND mec.organization_id = #{organId} -->
+<!-- 		AND mec.`year_month` = #{date} -->
+		SELECT
+			(rot.act_count_sum +  rot.un_act_count_sum) / hecm.month_count_sum sumNum
+		FROM
+			run_off_total rot
+		INNER JOIN history_emp_count_month hecm on rot.`year_month` = hecm.`year_month` AND hecm.organization_id = rot.organization_id AND rot.customer_id = hecm.customer_id AND hecm.type = 1
+		WHERE 
+			rot.customer_id = #{customerId}
+		AND rot.organization_id = #{organId}
+		AND rot.`year_month` = #{date}
+	</select>
+	<!-- 业务能力考核 -->
+	<select id="getCurMonthAbilityCheck" resultMap="baseChartMap" useCache="true">
+		SELECT
+			IFNULL(pass / conNum, 0) percentNum
+		FROM
+			(
+				SELECT
+					COUNT(sa.emp_id) conNum,
+					SUM(
+						CASE
+						WHEN sa.`status` = 0 THEN
+							1
+						ELSE
+							0
+						END
+					) noPass,
+					SUM(
+						CASE
+						WHEN sa.`status` = 1 THEN
+							1
+						ELSE
+							0
+						END
+					) pass
+				FROM
+					sales_ability sa
+				INNER JOIN sales_emp se ON sa.customer_id = se.customer_id
+				AND sa.emp_id = se.emp_id
+				<include refid="queryFullOrganIdByContext"></include>
+				WHERE
+					sa.customer_id = #{customerId}
+				AND sa.check_date = (
+					SELECT
+						MAX(sab.check_date)
+					FROM
+						sales_ability sab
+				)
+			) a
+	</select>
+	<!-- 今日销售量/今日销售额/今日利润 -->
+	<select id="queryTodaySalesInfo" resultMap="baseChartMap" useCache="true">
+		SELECT
+			IFNULL(SUM(sd.product_number), 0) numberNum,
+			IFNULL(SUM(sd.sales_money) / 10000, 0) moneyNum,
+			IFNULL(SUM(sd.sales_profit) / 10000, 0) profitNum
+		FROM
+			sales_detail sd
+		INNER JOIN sales_order so ON sd.customer_id = so.customer_id
+		AND sd.sales_order_id = so.sales_order_id
+		AND so.sales_date = #{date}
+		INNER JOIN sales_emp se ON so.customer_id = se.customer_id
+		AND so.emp_id = se.emp_id
+		<include refid="queryFullOrganIdByContext"></include>
+		WHERE
+			sd.customer_id = #{customerId}
+	</select>
+	<!-- 查询年销售额 -->
+	<select id="querySalesAndTarget" resultMap="baseChartMap" useCache="true">
+		SELECT t.yearMonth,
+			t.sales,
+			t.target,
+			ROUND(IF(t.target = 0, 0, (t.sales / t.target) * 100), 2) standardRate
+		FROM
+		(
+			SELECT o.`year_month` yearMonth,
+				<if test="salesType == 0">
+					SUM(IFNULL(o.sales_money_month, 0)) sales,
+					SUM(IFNULL(t.sales_target, 0)) target
+				</if>
+				<if test="salesType == 1">
+					SUM(IFNULL(o.sales_number_month, 0)) sales,
+					SUM(IFNULL(t.sales_number, 0)) target
+				</if>
+				<if test="salesType == 2">
+					SUM(IFNULL(o.sales_profit_month, 0)) sales,
+					SUM(IFNULL(t.sales_profit, 0)) target
+				</if>
+			FROM sales_org_prod_month o
+			LEFT JOIN sales_org_target t ON t.`year_month` = o.`year_month` 
+			AND t.customer_id = o.customer_id
+			AND t.organization_id = o.organization_id
+			WHERE o.customer_id = #{customerId}
+			AND o.`year_month` >= #{beginTime}
+			AND o.`year_month` &lt;= #{endTime}
+			AND EXISTS(
+				SELECT 1
+				FROM history_dim_organization_month h
+				WHERE h.customer_id = #{customerId}
+				AND h.`year_month` = o.`year_month`
+				AND h.organization_id = o.organization_id
+				AND LOCATE(
+					(
+						SELECT d.full_path
+						FROM history_dim_organization_month d
+						WHERE d.customer_id = #{customerId}
+						AND d.organization_id = #{organId}
+						AND d.`year_month` = h.`year_month`
+					), h.full_path
+				)
+			)
+			GROUP BY o.`year_month`
+		) t
+		ORDER BY t.yearMonth
+	</select>
+	<!-- 查询年销售额-产品 -->
+	<select id="querySalesByProduct" resultMap="baseChartMap" useCache="true">
+		SELECT tt.yearMonth,
+			tt.target,
+			tt.sales,
+			ROUND(IF(tt.target = 0, 0, (tt.sales / tt.target) * 100), 2) standardRate
+		FROM(
+		SELECT
+			op.`year_month` yearMonth,
+			<if test="salesType == 0">
+			SUM(IFNULL(op.sales_money_month, 0)) sales,
+			</if>
+			<if test="salesType == 1">
+			SUM(IFNULL(op.sales_number_month, 0)) sales,
+			</if>
+			<if test="salesType == 2">
+			SUM(IFNULL(op.sales_profit_month, 0)) sales,
+			</if>
+			SUM(IFNULL(t.sales_target, 0)) target
+		FROM
+			sales_org_prod_month op
+		LEFT JOIN sales_org_target t ON t.`year_month` = op.`year_month`
+		AND t.customer_id = op.customer_id
+		AND t.organization_id = op.organization_id
+		WHERE
+			op.customer_id = #{customerId}
+		<if test="productId != null and productId != ''"></if>
+		AND op.product_id = #{productId}
+		AND op.`year_month` >= #{beginTime}
+		AND op.`year_month` &lt;= #{endTime}
+		AND EXISTS (
+			SELECT 1
+			FROM history_dim_organization_month h
+			WHERE h.customer_id = #{customerId}
+			AND h.`year_month` = op.`year_month`
+			AND h.organization_id = op.organization_id
+			AND LOCATE(
+				(
+					SELECT d.full_path
+					FROM dim_organization d
+					WHERE d.customer_id = #{customerId}
+					AND d.organization_id = #{organId}
+				), h.full_path
+			)
+		)
+		GROUP BY
+			op.`year_month`
+		) tt
+		ORDER BY 
+			tt.yearMonth
+	</select>
+	<!-- 查询团队销售额 - 总数 -->
+	<select id="queryTeamSalesAndTargetCount" resultType="int" useCache="true">
+		SELECT count(ta.teamId)
+		FROM(
+			SELECT tt.team_id teamId,
+				st.team_name teamName,
+				st.emp_id empId,
+				dd.conNum sales,
+				tt.sales_target target,
+				tt.payment payment,
+				tt.return_amount returnAmount,
+				dd.standardRate
+			FROM sales_team_target tt
+			INNER JOIN dim_sales_team st ON tt.team_id = st.team_id
+			AND tt.customer_id = st.customer_id
+			INNER JOIN sales_team_rank str ON str.customer_id = st.customer_id
+			AND str.team_id = st.team_id
+			AND str.organization_id = #{organId}
+			AND str.`year_month` = tt.`year_month`
+			INNER JOIN(
+				SELECT
+					curTab.team_id,
+					curTab.conNum / 10000 conNum,
+					IFNULL(
+						(
+							curTab.conNum - befTab.conNum
+						) * 100 / befTab.conNum,
+						0
+					) standardRate
+				FROM
+					(
+						SELECT
+							dst.team_id,
+							SUM(sem.sales_money_month) conNum
+						FROM
+							sales_emp se
+						INNER JOIN sales_emp_month sem ON se.customer_id = sem.customer_id
+						AND se.emp_id = sem.emp_id
+						AND sem.`year_month` = #{yearMonth}
+						INNER JOIN dim_sales_team dst ON se.customer_id = dst.customer_id
+						AND se.team_id = dst.team_id
+						<if test="subOrganIdList != null and subOrganIdList.size != 0">
+							AND dst.organization_id in
+							<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+							'${oId}'
+							</foreach>
+						</if>
+						WHERE
+							se.customer_id = #{customerId}
+						GROUP BY
+							dst.team_id
+					) curTab
+				LEFT JOIN (
+					SELECT
+						dst.team_id,
+						SUM(sem.sales_money_month) conNum
+					FROM
+						sales_emp se
+					INNER JOIN sales_emp_month sem ON se.customer_id = sem.customer_id
+					AND se.emp_id = sem.emp_id
+					AND sem.`year_month` = #{befYearMonth}
+					INNER JOIN dim_sales_team dst ON se.customer_id = dst.customer_id
+					AND se.team_id = dst.team_id
+					<if test="subOrganIdList != null and subOrganIdList.size != 0">
+						AND dst.organization_id in
+						<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+						'${oId}'
+						</foreach>
+					</if>
+					WHERE
+						se.customer_id = #{customerId}
+					GROUP BY
+						dst.team_id
+				) befTab ON curTab.team_id = befTab.team_id
+			) dd ON dd.team_id = tt.team_id
+			WHERE tt.customer_id = #{customerId}
+			AND tt.`year_month` = #{yearMonth}
+		) ta
+		WHERE 1=1
+		<if test="teamStandardRate != null and teamStandardRate == 1">
+		AND (ta.sales * 100 / ta.target) <![CDATA[>=]]> 100
+		</if>
+		<if test="teamStandardRate != null and teamStandardRate == 2">
+		AND (ta.sales * 100 / ta.target) <![CDATA[<]]> 100
+		</if>
+		<if test="beginSales != null">
+		AND ta.sales <![CDATA[>=]]> #{beginSales}
+		</if>
+		<if test="endSales != null">
+		AND ta.sales <![CDATA[<=]]> #{endSales}
+		</if>
+		<if test="beginReturnAmount != null">
+		AND ta.returnAmount <![CDATA[>=]]> #{beginReturnAmount}
+		</if>
+		<if test="endReturnAmount != null">
+		AND ta.returnAmount <![CDATA[<=]]> #{endReturnAmount}
+		</if>
+	</select>
+	<!-- 查询团队销售额-列表 -->
+	<select id="queryTeamSalesAndTarget" resultMap="baseChartMap" useCache="true">
+		SELECT ta.teamId,
+			ta.teamName,
+			ta.empId,
+			ta.name,
+			ta.sales,
+			ta.target,
+			ta.payment,
+			ta.returnAmount,
+			ta.standardRate
+		FROM(
+			SELECT tt.team_id teamId,
+				st.team_name teamName,
+				st.emp_id empId,
+				st.emp_names name,
+				dd.conNum sales,
+				tt.sales_target target,
+				tt.payment payment,
+				tt.return_amount returnAmount,
+				dd.standardRate,
+				str.team_rank
+			FROM sales_team_target tt
+			INNER JOIN dim_sales_team st ON tt.team_id = st.team_id
+			AND tt.customer_id = st.customer_id
+			INNER JOIN sales_team_rank str ON str.customer_id = st.customer_id
+			AND str.team_id = st.team_id
+			AND str.organization_id = #{organId}
+			AND str.`year_month` = tt.`year_month`
+			INNER JOIN(
+				SELECT
+					curTab.team_id,
+					curTab.conNum / 10000 conNum,
+					(
+						curTab.conNum - befTab.conNum
+					) * 100 / befTab.conNum standardRate
+				FROM
+					(
+						SELECT
+							dst.team_id,
+							SUM(sem.sales_money_month) conNum
+						FROM
+							sales_emp se
+						INNER JOIN sales_emp_month sem ON se.customer_id = sem.customer_id
+						AND se.emp_id = sem.emp_id
+						AND sem.`year_month` = #{yearMonth}
+						INNER JOIN dim_sales_team dst ON se.customer_id = dst.customer_id
+						AND se.team_id = dst.team_id
+						<if test="subOrganIdList != null and subOrganIdList.size != 0">
+							AND dst.organization_id in
+							<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+							'${oId}'
+							</foreach>
+						</if>
+						WHERE
+							se.customer_id = #{customerId}
+						GROUP BY
+							dst.team_id
+					) curTab
+				LEFT JOIN (
+					SELECT
+						dst.team_id,
+						SUM(sem.sales_money_month) conNum
+					FROM
+						sales_emp se
+					INNER JOIN sales_emp_month sem ON se.customer_id = sem.customer_id
+					AND se.emp_id = sem.emp_id
+					AND sem.`year_month` = #{befYearMonth}
+					INNER JOIN dim_sales_team dst ON se.customer_id = dst.customer_id
+					AND se.team_id = dst.team_id
+					<if test="subOrganIdList != null and subOrganIdList.size != 0">
+						AND dst.organization_id in
+						<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+						'${oId}'
+						</foreach>
+					</if>
+					WHERE
+						se.customer_id = #{customerId}
+					GROUP BY
+						dst.team_id
+				) befTab ON curTab.team_id = befTab.team_id
+			) dd ON dd.team_id = tt.team_id
+			WHERE tt.customer_id = #{customerId}
+			AND tt.`year_month` = #{yearMonth}
+		) ta
+		WHERE 1=1
+		<if test="teamStandardRate != null and teamStandardRate == 1">
+		AND (ta.sales * 100 / ta.target) <![CDATA[>=]]> 100
+		</if>
+		<if test="teamStandardRate != null and teamStandardRate == 2">
+		AND (ta.sales * 100 / ta.target) <![CDATA[<]]> 100
+		</if>
+		<if test="beginSales != null">
+		AND ta.sales <![CDATA[>=]]> #{beginSales}
+		</if>
+		<if test="endSales != null">
+		AND ta.sales <![CDATA[<=]]> #{endSales}
+		</if>
+		<if test="beginReturnAmount != null">
+		AND ta.returnAmount <![CDATA[>=]]> #{beginReturnAmount}
+		</if>
+		<if test="endReturnAmount != null">
+		AND ta.returnAmount <![CDATA[<=]]> #{endReturnAmount}
+		</if>
+		ORDER BY ta.team_rank
+		LIMIT #{offset}, #{limit}
+	</select>
+	<!-- 查询个人销售额和达标率 -->
+	<select id="queryPersonSalesAndTargetCount" resultType="int" useCache="true">
+		SELECT
+			COUNT(DISTINCT tt.empId) conNum
+		FROM
+			(
+				SELECT
+					s.emp_id empId,
+					st.sales_target / 10000 target,
+					s.sales_money_month / 10000 sales,
+					s.sales_money_month / st.sales_target * 100 standardRate,
+					st.payment / 10000 payment,
+					st.return_amount / 10000 returnAmount,
+					se.user_name_ch userName,
+					dst.team_name teamName,
+					r.emp_rank rank
+				FROM
+					sales_emp_month s
+				INNER JOIN sales_emp_rank r ON s.emp_id = r.emp_id
+				AND s.`year_month` = r.`year_month`
+				AND r.organization_id = #{organId}
+				INNER JOIN sales_emp se ON se.customer_id = s.customer_id
+				AND se.emp_id = s.emp_id
+				INNER JOIN sales_emp_target st ON se.customer_id = st.cusomer_id
+				AND se.emp_id = st.emp_id
+				AND st.`year_month` = s.`year_month`
+				LEFT JOIN dim_sales_team dst ON se.customer_id = dst.customer_id
+				AND se.team_id = dst.team_id
+				WHERE
+					s.customer_id = #{customerId}
+				<if test="keyName != null and keyName != ''">
+					AND (dst.team_name LIKE CONCAT('%', #{keyName}, '%') OR se.user_name_ch LIKE CONCAT('%', #{keyName}, '%'))
+				</if>
+				AND s.`year_month` = #{yearMonth}
+			) tt
+		WHERE 1=1
+		<if test="personStandard != null and personStandard == 1">
+			AND tt.standardRate <![CDATA[>=]]> 100
+		</if>
+		<if test="personStandard != null and personStandard == 2">
+			AND tt.standardRate &lt; 100
+		</if>
+		<if test="beginPersonSales != null">
+			AND tt.sales <![CDATA[>=]]> #{beginPersonSales}
+		</if>
+		<if test="endPersonSales != null">
+			AND tt.sales &lt;= #{endPersonSales}
+		</if>
+		<if test="beginPersonAmount != null">
+			AND tt.returnAmount <![CDATA[>=]]> #{beginPersonAmount}
+		</if>
+		<if test="endPersonAmount != null">
+			AND tt.returnAmount &lt;= #{endPersonAmount}
+		</if>
+	</select>
+	<select id="queryPersonSalesAndTarget" resultMap="baseChartMap" useCache="true">
+		SELECT tt.empId,
+			tt.target,
+			tt.sales,
+			tt.standardRate,
+			tt.payment,
+			tt.returnAmount,
+			tt.userName,
+			tt.teamName,
+			tt.rank,
+			(
+				tt.sales - sem.sales_money_month / 10000
+			) * 100 / (sem.sales_money_month / 10000) compareVal
+		FROM (
+			SELECT s.emp_id empId,
+				st.sales_target / 10000 target,
+				s.sales_money_month / 10000 sales,
+				s.sales_money_month / st.sales_target * 100 standardRate,
+				st.payment / 10000 payment,
+				st.return_amount / 10000 returnAmount,
+				se.user_name_ch userName,
+				dst.team_name teamName,
+				r.emp_rank rank,
+				s.customer_id
+			FROM sales_emp_month s
+			INNER JOIN sales_emp_rank r ON s.emp_id = r.emp_id
+			AND s.`year_month` = r.`year_month`
+			AND r.organization_id = #{organId}
+			INNER JOIN sales_emp se ON se.customer_id = s.customer_id
+			AND se.emp_id = s.emp_id
+			INNER JOIN sales_emp_target st ON se.customer_id = st.cusomer_id
+			AND se.emp_id = st.emp_id
+			AND st.`year_month` = s.`year_month`
+			LEFT JOIN dim_sales_team dst ON se.customer_id = dst.customer_id
+			AND se.team_id = dst.team_id
+			WHERE s.customer_id = #{customerId}
+			<if test="keyName != null and keyName != ''">
+				AND (dst.team_name LIKE CONCAT('%', #{keyName}, '%') OR se.user_name_ch LIKE CONCAT('%', #{keyName}, '%'))
+			</if>
+			AND s.`year_month` = #{yearMonth}
+		) tt
+		LEFT JOIN sales_emp_month sem ON sem.customer_id = tt.customer_id
+		AND sem.`year_month` = #{beforeYearMonth}
+		AND sem.emp_id = tt.empId
+		WHERE 1=1
+		<if test="personStandard != null and personStandard == 1">
+		AND tt.standardRate <![CDATA[>=]]> 100
+		</if>
+		<if test="personStandard != null and personStandard == 2">
+		AND tt.standardRate &lt; 100
+		</if>
+		<if test="beginPersonSales != null">
+		AND tt.sales <![CDATA[>=]]> #{beginPersonSales}
+		</if>
+		<if test="endPersonSales != null">
+		AND tt.sales &lt;= #{endPersonSales}
+		</if>
+		<if test="beginPersonAmount != null">
+		AND tt.returnAmount <![CDATA[>=]]> #{beginPersonAmount}
+		</if>
+		<if test="endPersonAmount != null">
+		AND tt.returnAmount &lt;= #{endPersonAmount}
+		</if>
+		ORDER BY tt.rank, CONVERT (tt.userName USING GBK)
+		LIMIT #{offset}, #{limit}
+	</select>
+	<!-- 今日销售量/今日销售额/今日利润-地图显示数据 -->
+	<select id="queryProvinceInfo" resultMap="baseChartMap" useCache="true">
+		SELECT dp.province_id id, dp.province_name name
+		FROM dim_province dp
+		WHERE dp.customer_id = #{customerId}
+	</select>
+	<!-- 今日销售量/今日销售额/今日利润-地图显示数据 -->
+	<select id="querySalesMapByProvince" resultMap="baseChartMap" useCache="true">
+		SELECT 
+			dp.province_id id,
+			dp.province_name name,
+			SUM(sod.sales_money_day) moneyNum 
+		FROM dim_province dp
+		INNER JOIN dim_city dc ON dc.customer_id = dp.customer_id
+		AND dc.province_id = dp.province_id
+		STRAIGHT_JOIN  dim_organization dio force index(ind_cId_dim_organization)
+		ON dio.customer_id = dc.customer_id AND dio.city_id = dc.city_id
+		INNER JOIN sales_org_day sod ON sod.customer_id = dio.customer_id
+		AND sod.organization_id = dio.organization_id
+		AND sod.sales_date = #{date}
+		WHERE dp.customer_id = #{customerId}
+		GROUP BY dp.province_id
+		ORDER BY moneyNum DESC
+	</select>
+	<!-- 今日销售量/今日销售额/今日利润-地图显示数据 -->
+	<select id="querySalesMapByCity" resultMap="baseChartMap" useCache="true">
+		SELECT 
+			dc.city_id id,
+			dc.city_name name,
+			SUM(sod.sales_money_day) moneyNum
+		FROM dim_province dp
+		INNER JOIN dim_city dc ON dc.customer_id = dp.customer_id
+		AND dc.province_id = dp.province_id
+		STRAIGHT_JOIN  dim_organization dio force index(ind_cId_dim_organization)
+		ON dio.customer_id = dc.customer_id AND dio.city_id = dc.city_id
+		INNER JOIN sales_org_day sod ON sod.customer_id = dio.customer_id
+		AND sod.organization_id = dio.organization_id
+		AND sod.sales_date = #{date}
+		WHERE dp.customer_id = #{customerId}
+		AND dp.province_id = #{provinceId}
+		GROUP BY dc.city_id
+		ORDER BY moneyNum DESC
+	</select>
+	<!-- 查询下一级组织 -->
+	<select id="queryNextOrganInfo" resultMap="baseChartMap" useCache="true">
+		SELECT
+			o.organization_id organId,
+			o.organization_name organName
+		FROM
+			dim_organization o
+		WHERE
+			o.customer_id = #{customerId}
+		AND o.organization_parent_id = #{organId}
+	</select>
+	<!-- 组织销售统计 -->
+	<select id="queryOrganSalesStatistics" resultMap="baseChartMap" useCache="true">
+		SELECT
+			IFNULL(SUM(som.sales_money_month), 0) sumNum
+		FROM
+			sales_org_month som
+		WHERE
+			som.customer_id = #{customerId}
+		<include refid="queryFullChildOrganIdByContext"></include>
+		AND som.`year_month` = #{date}
+	</select>
+	<!-- 团队排行榜-团队 -->
+	<select id="queryOrganSalesStatisticsWithTeam" resultMap="baseChartMap" useCache="true">
+		SELECT
+			dst.team_id id,
+			dst.team_name name,
+			SUM(sem.sales_money_month) / 10000 sumNum
+		FROM
+			sales_emp_month sem
+		INNER JOIN sales_emp se ON sem.customer_id = se.customer_id
+		AND sem.emp_id = se.emp_id
+		INNER JOIN dim_sales_team dst ON se.customer_id = dst.customer_id
+		AND se.team_id = dst.team_id
+		WHERE
+			sem.customer_id = #{customerId}
+		AND dst.organization_id = #{organId}
+		AND sem.`year_month` = #{date}
+		GROUP BY
+			dst.team_id
+		ORDER BY
+			sumNum DESC
+	</select>
+	<!-- 团队排行榜-个人 -->
+	<select id="queryOrganSalesStatisticsWithEmp" resultMap="baseChartMap" useCache="true">
+		SELECT
+			se.emp_id id,
+			se.user_name_ch name,
+			sem.sales_money_month / 10000 sumNum
+		FROM
+			sales_emp se
+		INNER JOIN sales_emp_month sem ON se.customer_id = sem.customer_id
+		AND se.emp_id = sem.emp_id
+		WHERE
+			se.customer_id = #{customerId}
+		AND se.team_id = #{teamId}
+		AND sem.`year_month` = #{date}
+		ORDER BY
+			sem.sales_money_month DESC
+		LIMIT 5
+	</select>
+	<!-- 销售排名榜-总数 -->
+	<select id="querySalesRankingCount" resultType="java.lang.Integer" useCache="true">
+		SELECT
+			COUNT(ser.emp_id) conNum
+		FROM
+			sales_emp_rank ser
+		INNER JOIN sales_emp se ON ser.customer_id = se.customer_id
+		AND ser.emp_id = se.emp_id
+		INNER JOIN sales_emp_month sem ON ser.customer_id = sem.customer_id
+		AND ser.emp_id = sem.emp_id
+		AND ser.`year_month` = sem.`year_month`
+		WHERE
+			ser.customer_id = #{customerId}
+		AND ser.organization_id = #{organId}
+		AND ser.`year_month` = #{date}
+	</select>
+	<!-- 销售排名榜 -->
+	<select id="querySalesRanking" resultMap="baseChartMap" useCache="true">
+		SELECT
+			se.user_name_ch userName,
+			sem.sales_money_month / 10000 sumNum,
+			don.organization_name organName,
+			dst.team_name teamName
+		FROM
+			sales_emp_rank ser
+		INNER JOIN sales_emp se ON ser.customer_id = se.customer_id
+		AND ser.emp_id = se.emp_id
+		INNER JOIN dim_organization don ON se.customer_id = don.customer_id
+		AND se.organization_id = don.organization_id
+		LEFT JOIN dim_sales_team dst
+		ON se.customer_id = dst.customer_id
+		AND se.team_id = dst.team_id
+		INNER JOIN sales_emp_month sem ON ser.customer_id = sem.customer_id
+		AND ser.emp_id = sem.emp_id
+		AND ser.`year_month` = sem.`year_month`
+		WHERE
+			ser.customer_id = #{customerId}
+		AND ser.organization_id = #{organId}
+		AND ser.`year_month` = #{date}
+		ORDER BY
+			ser.emp_rank,
+			CONVERT (se.user_name_ch USING GBK)
+		LIMIT 0, 3
+	</select>
+	<select id="querySubOrganization" resultMap="baseChartMap" useCache="true">
+		SELECT
+			d.organization_id organId,
+			d.organization_name organName
+		FROM
+			dim_organization d
+		WHERE
+			d.customer_id = #{customerId}
+		AND (
+			d.organization_id = #{organId}
+			OR d.organization_parent_id = #{organId}
+			)
+		ORDER BY d.depth
+	</select>
+	<select id="queryTeamTime" resultMap="baseChartMap" useCache="true">
+		SELECT
+			DISTINCT t.`year_month` yearMonth
+		FROM
+			sales_team_target t
+		WHERE
+			t.customer_id = #{customerId}
+		ORDER BY t.`year_month` DESC
+	</select>
+	<!-- 查询能力趋势 -->
+	<select id="queryAbilityByEmpid" resultMap="baseChartMap" useCache="true">
+		SELECT
+			a.yearMonth, a.`name`, a.conNum
+		FROM
+			(
+				SELECT
+					ac.year_months yearMonth,
+					dan.ability_number_name `name`,
+					dan.show_index conNum
+				FROM
+					sales_emp se
+				INNER JOIN ability_change ac ON se.customer_id = ac.customer_id
+				AND se.emp_id = ac.emp_id
+				INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+				AND ac.ability_number_id = dan.ability_number_id
+				WHERE
+					se.customer_id = #{customerId}
+				AND se.emp_id = #{empId}
+				GROUP BY
+					ac.year_months DESC,
+					dan.ability_number_id
+				LIMIT 5
+			) a
+		ORDER BY a.yearMonth
+	</select>
+	<!-- 查询排名趋势 -->
+	<select id="queryRankByEmpid" resultMap="baseChartMap" useCache="true">
+		SELECT
+			a.yearMonth, a.`name`, a.conNum
+		FROM
+			(
+				SELECT
+					ser.`year_month` yearMonth,
+					sci.sys_code_item_name name,
+					sci.conNum
+				FROM
+					sales_emp se
+				INNER JOIN sales_emp_rank ser ON se.customer_id = ser.customer_id
+				AND se.emp_id = ser.emp_id
+				AND ser.organization_id = #{organId}
+				INNER JOIN (
+					SELECT
+						sci1.sys_code_item_id,
+						sci1.sys_code_item_name,
+						sci1.customer_id,
+						sci1.code_group_id,
+						@myIndex := @myIndex + 1 conNum
+					FROM
+						sys_code_item sci1,
+						(SELECT @myIndex := 0) b
+					WHERE
+						sci1.customer_id = 'b5c9410dc7e4422c8e0189c7f8056b5f'
+					AND sci1.code_group_id = 'sales_emp_rank'
+					ORDER BY
+						sci1.show_index DESC
+				) sci ON ser.customer_id = sci.customer_id
+				AND ser.proportion_id = sci.sys_code_item_id
+				WHERE
+					se.customer_id = #{customerId}
+				AND se.emp_id = #{empId}
+				GROUP BY
+					ser.`year_month` DESC,
+					sci.code_group_id 
+				LIMIT 5
+			) a
+		ORDER BY a.yearMonth
+	</select>
+	<!-- 查询能力趋势-XW -->
+	<select id="queryAbilityByEmpid-XW" resultMap="baseChartMap" useCache="true">
+		SELECT
+			c.year_months yearMonth,
+			a.show_index conNum
+		FROM
+			ability_change c
+		INNER JOIN dim_ability_number a ON a.ability_number_id = c.ability_number_id
+		AND a.customer_id = c.customer_id
+		WHERE
+			c.customer_id = #{customerId}
+		AND c.emp_id = #{empId}
+		GROUP BY
+			c.year_months
+		ORDER BY
+			c.year_months
+	</select>
+	<!-- 查询排名趋势-XW -->
+	<select id="queryRankByEmpid-XW" resultMap="baseChartMap" useCache="true">
+		SELECT
+			r.emp_rank rank,
+			r.`year_month` yearMonth
+		FROM
+			sales_emp_rank r
+		WHERE
+			r.customer_id = #{customerId}
+		AND r.emp_id = #{empId}
+		AND r.`year_month` >= #{time}
+		GROUP BY
+			r.`year_month`
+		ORDER BY
+			r.`year_month`
+	</select>
+	<!-- 组织销售额 -->
+	<select id="querySalesByOrgan" resultMap="baseChartMap" useCache="true">
+		SELECT
+			sod.sales_date date,
+			<if test="salesType == 0">
+			SUM(sod.sales_money_day) sales
+			</if>
+			<if test="salesType == 1">
+			SUM(sod.sales_number_day) sales
+			</if>
+			<if test="salesType == 2">
+			SUM(sod.sales_profit_day) sales
+			</if>
+		FROM
+			sales_org_day sod
+		WHERE sod.customer_id = #{customerId}
+		AND sod.organization_id IN (
+			SELECT 
+				d.organization_id
+			FROM history_dim_organization_month d
+			WHERE d.customer_id = #{customerId}
+			AND LOCATE(
+				(
+					SELECT o.full_path
+					FROM history_dim_organization_month o
+					WHERE o.customer_id = #{customerId}
+					AND o.organization_id = #{organId}
+					AND o.`year_month` = d.`year_month`
+				), d.full_path
+			)
+			AND d.`year_month` = DATE_FORMAT(sod.sales_date, '%Y%m')
+		)
+		AND sod.sales_date >= date_add(#{beginTime}, interval -11 month)
+		AND sod.sales_date &lt;= #{endTime}
+		GROUP BY sod.sales_date
+		ORDER BY sod.sales_date
+	</select>
+	<!-- 销售排名地图-团队PK -->
+	<select id="querySalesRankMapTeamPK" resultType="java.lang.Integer" useCache="true">
+		SELECT
+			COUNT(ser.emp_id) conNum
+		FROM
+			sales_emp_rank ser
+		INNER JOIN v_dim_emp vde ON ser.customer_id = vde.customer_id
+		AND ser.emp_id = vde.emp_id
+		<!-- AND vde.run_off_date IS NULL -->
+		INNER JOIN ability_change ac ON vde.customer_id = ac.customer_id
+		AND vde.emp_id = ac.emp_id
+		AND ac.year_months = (
+			SELECT
+				MAX(ac1.year_months)
+			FROM
+				ability_change ac1
+			WHERE
+				ac1.year_months <![CDATA[<=]]> #{yearMonth}
+		)
+		INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+		AND ac.ability_number_id = dan.ability_number_id
+		INNER JOIN sys_code_item sci ON ser.customer_id = sci.customer_id
+		AND ser.proportion_id = sci.sys_code_item_id
+		WHERE
+			ser.customer_id = #{customerId}
+		AND ser.rank_date = (
+			SELECT
+				MAX(ser1.rank_date)
+			FROM
+				sales_emp_rank ser1
+			WHERE
+				ser1.customer_id = #{customerId}
+			AND ser1.organization_id = #{organId}
+			AND ser1.`year_month` = #{yearMonth}
+		)
+		AND ser.organization_id = #{organId}
+		AND ser.`year_month` = #{yearMonth}
+	</select>
+	<!-- 查询能力 -->
+	<select id="queryAbilityInfo" resultMap="baseChartMap" useCache="true">
+		SELECT
+			dan.ability_number_id id,
+			dan.ability_number_name name,
+			dan.show_index showIndex
+		FROM
+			dim_ability_number dan
+		WHERE
+			dan.customer_id = #{customerId}
+		ORDER BY
+			dan.show_index
+	</select>
+	<!-- 销售排名地图-查询排名信息 -->
+	<select id="queryRankChartInfo" resultMap="baseChartMap" useCache="true">
+		SELECT
+			sci.sys_code_item_id id,
+			sci.sys_code_item_name name
+		FROM
+			sys_code_item sci
+		WHERE
+			sci.customer_id = #{customerId}
+		AND sci.code_group_id = 'sales_emp_rank'
+		ORDER BY
+			sci.show_index DESC
+	</select>
+	<!-- 销售排名地图-团队总览chart -->
+	<select id="queryTeamViewChart" resultType="net.chinahrd.entity.dto.pc.salesBoard.SalesMapsSimpleCountDto" useCache="true">
+		SELECT
+			sci.sys_code_item_id xLabelId,
+			sci.sys_code_item_name xLabel,
+			dan.ability_number_id yLabelId,
+			dan.ability_number_name yLabel,
+			COUNT(se.emp_id) countNum,
+			GROUP_CONCAT(
+				se.emp_id
+				ORDER BY
+					CONVERT (se.user_name_ch USING GBK)
+			) empIds,
+			GROUP_CONCAT(
+				se.user_name_ch
+				ORDER BY
+					CONVERT (se.user_name_ch USING GBK)
+			) empNames,
+			ser.organization_id organId
+		FROM
+			v_dim_emp se
+		INNER JOIN ability_change ac ON se.customer_id = ac.customer_id
+		AND se.emp_id = ac.emp_id
+		AND ac.year_months = (
+			SELECT
+				MAX(ac1.year_months)
+			FROM
+				ability_change ac1
+			WHERE
+				ac1.year_months <![CDATA[<=]]> #{date}
+		)
+		INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+		AND ac.ability_number_id = dan.ability_number_id
+		INNER JOIN sales_emp_rank ser ON se.customer_id = ser.customer_id
+		AND se.emp_id = ser.emp_id
+		AND ser.rank_date = (
+			SELECT
+				MAX(ser1.rank_date)
+			FROM
+				sales_emp_rank ser1
+			WHERE
+				ser1.`year_month` = #{date}
+			AND ser1.organization_id = #{organId}
+		)
+		AND ser.organization_id = #{organId}
+		INNER JOIN sys_code_item sci ON ser.customer_id = sci.customer_id
+		AND ser.proportion_id = sci.sys_code_item_id
+		WHERE
+			se.customer_id = #{customerId}
+ 		<include refid="queryFullOrganIdByContext"></include>
+ 		<!-- AND se.run_off_date IS NULL -->
+		GROUP BY
+			sci.sys_code_item_id,
+			dan.ability_number_id
+		ORDER BY
+			sci.show_index,
+			dan.show_index DESC
+	</select>
+	<!-- 销售排名地图-团队总览全屏chart -->
+	<select id="queryTeamViewFullChart" resultType="net.chinahrd.entity.dto.pc.salesBoard.SalesMapsPointDto" useCache="true">
+		SELECT
+			dan.ability_number_name yLabel,
+			sci.sys_code_item_name xLabel,
+			se.emp_id empId,
+			se.user_name_ch text,
+			ser.organization_id organId
+		FROM
+			v_dim_emp se
+		INNER JOIN ability_change ac ON se.customer_id = ac.customer_id
+		AND se.emp_id = ac.emp_id
+		AND ac.year_months = (
+			SELECT
+				MAX(ac1.year_months)
+			FROM
+				ability_change ac1
+			WHERE
+				ac1.year_months <![CDATA[<=]]> #{date}
+		)
+		INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+		AND ac.ability_number_id = dan.ability_number_id
+		INNER JOIN sales_emp_rank ser ON se.customer_id = ser.customer_id
+		AND se.emp_id = ser.emp_id
+		AND ser.rank_date = (
+			SELECT
+				MAX(ser1.rank_date)
+			FROM
+				sales_emp_rank ser1
+			WHERE
+				ser1.`year_month` = #{date}
+			AND ser1.organization_id = #{organId}
+		)
+		AND ser.organization_id = #{organId}
+		INNER JOIN sys_code_item sci ON ser.customer_id = sci.customer_id
+		AND ser.proportion_id = sci.sys_code_item_id
+		WHERE
+			se.customer_id = #{customerId}
+ 		<include refid="queryFullOrganIdByContext"></include>
+ 		<!-- AND se.run_off_date IS NULL -->
+ 		ORDER BY 
+ 			sci.show_index,
+			dan.show_index DESC,
+			CONVERT (se.user_name_ch USING GBK)
+ 		<if test="rows != null and rows != ''">
+			LIMIT 0, #{rows}
+ 		</if>
+	</select>
+	<!-- 销售排名地图-团队PKchart -->
+	<select id="queryTeamPKChart" resultType="net.chinahrd.entity.dto.pc.salesBoard.SalesMapsPointDto" useCache="true">
+		SELECT
+			se.emp_id empId,
+			<if test="team != null and team != ''">
+				#{team} AS team,
+			</if>
+			se.user_name_ch text,
+			sci.sys_code_item_name xLabel,
+			dan.ability_number_name yLabel,
+			ser.organization_id organId
+		FROM
+			v_dim_emp se
+		INNER JOIN ability_change ac ON se.customer_id = ac.customer_id
+		AND se.emp_id = ac.emp_id
+		AND ac.year_months = (
+			SELECT
+				MAX(ac1.year_months)
+			FROM
+				ability_change ac1
+			WHERE
+				ac1.year_months <![CDATA[<=]]> #{yearMonth}
+		)
+		INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+		AND ac.ability_number_id = dan.ability_number_id
+		INNER JOIN sales_emp_rank ser ON se.customer_id = ser.customer_id
+		AND se.emp_id = ser.emp_id
+		AND ser.rank_date = (
+			SELECT
+				MAX(ser1.rank_date)
+			FROM
+				sales_emp_rank ser1
+			WHERE
+				ser1.`year_month` = #{yearMonth}
+			AND ser1.organization_id = #{organId}
+		)
+		AND ser.organization_id = #{organId}
+		INNER JOIN sys_code_item sci ON ser.customer_id = sci.customer_id
+		AND ser.proportion_id = sci.sys_code_item_id
+		WHERE
+			se.customer_id = #{customerId}
+		<include refid="queryFullOrganIdByContext"></include>
+		<if test="performanceList != null and performanceList.size() > 0">
+            AND (
+            <foreach collection="performanceList" item="perf" open="(" close=")" separator="OR">
+                (se.performance_id = '${perf}')
+            </foreach>)
+        </if>
+        <if test="ageList != null and ageList.size() > 0">
+            AND
+            <foreach collection="ageList" item="i" open="(" close=")" separator="OR">
+                (se.age &gt;= '${i.min}'
+                <if test="i.max != null">
+                    AND se.age &lt; '${i.max}'
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="sexList != null and sexList.size() > 0">
+            AND
+            <foreach collection="sexList" item="s" open="(" close=")" separator="OR">
+                (se.sex = '${s}')
+            </foreach>
+        </if>
+        <if test="eduList != null and eduList.size() > 0">
+            AND se.degree_id IN
+            <foreach collection="eduList" item="e" open="(" close=")" separator=",">
+                '${e}'
+            </foreach>
+        </if>
+        <!-- AND se.run_off_date IS NULL -->
+		ORDER BY CONVERT(se.user_name_ch USING GBK)
+		<if test="rows != null and rows != ''">
+			LIMIT 0, #{rows}
+ 		</if>
+	</select>
+	<!-- 销售排名地图-团队PK获取员工点信息 -->
+	<select id="queryTeamEmpPoint-new" resultType="net.chinahrd.entity.dto.pc.salesBoard.SalesMapsSimpleCountDto" useCache="true">
+		SELECT
+			<if test="team != null and team != ''">
+				#{team} AS team,
+			</if>
+			sci.sys_code_item_id xLabelId,
+			sci.sys_code_item_name xLabel,
+			dan.ability_number_id yLabelId,
+			dan.ability_number_name yLabel,
+			COUNT(se.emp_id) countNum,
+			GROUP_CONCAT(
+				se.emp_id
+				ORDER BY
+					CONVERT (se.user_name_ch USING GBK)
+			) empIds,
+			GROUP_CONCAT(
+				se.user_name_ch
+				ORDER BY
+					CONVERT (se.user_name_ch USING GBK)
+			) empNames,
+			ser.organization_id organId
+		FROM
+			v_dim_emp se
+		INNER JOIN ability_change ac ON se.customer_id = ac.customer_id
+		AND se.emp_id = ac.emp_id
+		AND ac.year_months = (
+			SELECT
+				MAX(ac1.year_months)
+			FROM
+				ability_change ac1
+			WHERE
+				ac1.year_months <![CDATA[<=]]> #{yearMonth}
+		)
+		INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+		AND ac.ability_number_id = dan.ability_number_id
+		INNER JOIN sales_emp_rank ser ON se.customer_id = ser.customer_id
+		AND se.emp_id = ser.emp_id
+		AND ser.rank_date = (
+			SELECT
+				MAX(ser1.rank_date)
+			FROM
+				sales_emp_rank ser1
+			WHERE
+				ser1.`year_month` = #{yearMonth}
+			AND ser1.organization_id = #{organId}
+		)
+		AND ser.organization_id = #{organId}
+		INNER JOIN sys_code_item sci ON ser.customer_id = sci.customer_id
+		AND ser.proportion_id = sci.sys_code_item_id
+		WHERE
+			se.customer_id = #{customerId}
+		<include refid="queryFullOrganIdByContext"></include>
+		<if test="performanceList != null and performanceList.size() > 0">
+            AND (
+            <foreach collection="performanceList" item="perf" open="(" close=")" separator="OR">
+                (se.performance_id = '${perf}')
+            </foreach>)
+        </if>
+        <if test="ageList != null and ageList.size() > 0">
+            AND
+            <foreach collection="ageList" item="i" open="(" close=")" separator="OR">
+                (se.age &gt;= '${i.min}'
+                <if test="i.max != null">
+                    AND se.age &lt; '${i.max}'
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="sexList != null and sexList.size() > 0">
+            AND
+            <foreach collection="sexList" item="s" open="(" close=")" separator="OR">
+                (se.sex = '${s}')
+            </foreach>
+        </if>
+        <if test="eduList != null and eduList.size() > 0">
+            AND se.degree_id IN
+            <foreach collection="eduList" item="e" open="(" close=")" separator=",">
+                '${e}'
+            </foreach>
+        </if>
+        <!-- AND se.run_off_date IS NULL -->
+		GROUP BY
+			sci.sys_code_item_id,
+			dan.ability_number_id
+		ORDER BY
+			sci.show_index,
+			dan.show_index DESC
+	</select>
+	<!-- 销售排名地图-团队PK获取员工点信息 -->
+	<select id="queryTeamEmpPoint" resultType="net.chinahrd.entity.dto.pc.salesBoard.SalesMapsPointDto" useCache="true">
+		SELECT
+			se.emp_id empId,
+			<if test="team != null and team != ''">
+				#{team} AS team,
+			</if>
+			se.user_name_ch text,
+			sci.sys_code_item_id xLabelId,
+			sci.sys_code_item_name xLabel,
+			dan.ability_number_id yLabelId,
+			dan.ability_number_name yLabel,
+			ser.organization_id organId
+		FROM
+			v_dim_emp se
+		INNER JOIN ability_change ac ON se.customer_id = ac.customer_id
+		AND se.emp_id = ac.emp_id
+		AND ac.year_months = (
+			SELECT
+				MAX(ac1.year_months)
+			FROM
+				ability_change ac1
+			WHERE
+				ac1.year_months <![CDATA[<=]]> #{yearMonth}
+		)
+		INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+		AND ac.ability_number_id = dan.ability_number_id
+		INNER JOIN sales_emp_rank ser ON se.customer_id = ser.customer_id
+		AND se.emp_id = ser.emp_id
+		AND ser.rank_date = (
+			SELECT
+				MAX(ser1.rank_date)
+			FROM
+				sales_emp_rank ser1
+			WHERE
+				ser1.`year_month` = #{yearMonth}
+			AND ser1.organization_id = #{organId}
+		)
+		AND ser.organization_id = #{organId}
+		INNER JOIN sys_code_item sci ON ser.customer_id = sci.customer_id
+		AND ser.proportion_id = sci.sys_code_item_id
+		WHERE
+			se.customer_id = #{customerId}
+		<include refid="queryFullOrganIdByContext"></include>
+		<if test="performanceList != null and performanceList.size() > 0">
+            AND (
+            <foreach collection="performanceList" item="perf" open="(" close=")" separator="OR">
+                (se.performance_id = '${perf}')
+            </foreach>)
+        </if>
+        <if test="ageList != null and ageList.size() > 0">
+            AND
+            <foreach collection="ageList" item="i" open="(" close=")" separator="OR">
+                (se.age &gt;= '${i.min}'
+                <if test="i.max != null">
+                    AND se.age &lt; '${i.max}'
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="sexList != null and sexList.size() > 0">
+            AND
+            <foreach collection="sexList" item="s" open="(" close=")" separator="OR">
+                (se.sex = '${s}')
+            </foreach>
+        </if>
+        <if test="eduList != null and eduList.size() > 0">
+            AND se.degree_id IN
+            <foreach collection="eduList" item="e" open="(" close=")" separator=",">
+                '${e}'
+            </foreach>
+        </if>
+        <!-- AND se.run_off_date IS NULL -->
+		ORDER BY
+			CONVERT (se.user_name_ch USING GBK)
+	</select>
+	<!-- 销售排名地图-view列表 -->
+	<select id="queryMapsGridCount" resultType="java.lang.Integer" useCache="true">
+		SELECT
+			COUNT(se.emp_id) conNum
+		FROM
+			v_dim_emp se
+		INNER JOIN ability_change ac ON se.customer_id = ac.customer_id
+		AND se.emp_id = ac.emp_id
+		AND ac.year_months = (
+			SELECT
+				MAX(ac1.year_months)
+			FROM
+				ability_change ac1
+			WHERE
+				ac1.year_months <![CDATA[<=]]> #{yearMonth}
+		)
+		INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+		AND ac.ability_number_id = dan.ability_number_id
+		INNER JOIN sales_emp_rank ser ON se.customer_id = ser.customer_id
+		AND se.emp_id = ser.emp_id
+		AND ser.rank_date = (
+			SELECT
+				MAX(ser1.rank_date)
+			FROM
+				sales_emp_rank ser1
+			WHERE
+				ser1.`year_month` = #{yearMonth}
+			AND ser1.organization_id = #{organId}
+		)
+		AND ser.organization_id = #{organId}
+		INNER JOIN sys_code_item sci ON ser.customer_id = sci.customer_id
+		AND ser.proportion_id = sci.sys_code_item_id
+		WHERE
+			se.customer_id = #{customerId}
+		<!-- AND se.run_off_date IS NULL -->
+ 		<include refid="queryFullOrganIdByContext"></include>
+	</select>
+	<!-- 销售排名地图-view列表 -->
+	<select id="queryMapsGridCountByChart" resultType="java.lang.Integer" useCache="true">
+		SELECT
+			IFNULL(SUM(fir.conNum), 0) conNum
+		FROM
+			(
+				SELECT
+					CONCAT(
+						sci.sys_code_item_id,
+						dan.ability_number_id
+					) text,
+					COUNT(se.emp_id) conNum
+				FROM
+					v_dim_emp se
+				INNER JOIN ability_change ac ON se.customer_id = ac.customer_id
+				AND se.emp_id = ac.emp_id
+				AND ac.year_months = (
+					SELECT
+						MAX(ac1.year_months)
+					FROM
+						ability_change ac1
+					WHERE
+						ac1.year_months <![CDATA[<=]]> #{yearMonth}
+				)
+				INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+				AND ac.ability_number_id = dan.ability_number_id
+				INNER JOIN sales_emp_rank ser ON se.customer_id = ser.customer_id
+				AND se.emp_id = ser.emp_id
+				AND ser.rank_date = (
+					SELECT
+						MAX(ser1.rank_date)
+					FROM
+						sales_emp_rank ser1
+					WHERE
+						ser1.`year_month` = #{yearMonth}
+					AND ser1.organization_id = #{organId}
+				)
+				AND ser.organization_id = #{organId}
+				INNER JOIN sys_code_item sci ON ser.customer_id = sci.customer_id
+				AND ser.proportion_id = sci.sys_code_item_id
+				WHERE
+					se.customer_id = #{customerId}
+				<!-- AND se.run_off_date IS NULL -->
+		 		<include refid="queryFullOrganIdByContext"></include>
+				GROUP BY
+					dan.ability_number_id,
+					sci.sys_code_item_id
+			) fir
+		<where>
+			<if test="textList != null and textList.size() > 0">
+				<foreach collection="textList" item="it" open="(" close=")" separator="OR">
+					(fir.text = #{it})
+	            </foreach>
+			</if>
+		</where>
+	</select>
+	<!-- 销售排名地图-pk列表 -->
+	<select id="queryMapsPKGridCount" resultType="java.lang.Integer" useCache="true">
+		SELECT
+			COUNT(se.emp_id) conNum
+		FROM
+			sales_emp se
+		INNER JOIN v_dim_emp vde ON se.customer_id = vde.customer_id
+		AND se.emp_id = vde.emp_id
+		<!-- AND vde.run_off_date IS NULL -->
+		INNER JOIN sales_emp_rank ser ON se.customer_id = ser.customer_id
+		AND se.emp_id = ser.emp_id
+		AND ser.rank_date = (
+			SELECT
+				MAX(ser1.rank_date)
+			FROM
+				sales_emp_rank ser1
+			WHERE
+				ser1.`year_month` = #{yearMonth}
+			AND ser1.organization_id = #{organId}
+		)
+		AND ser.organization_id = #{organId}
+		WHERE
+			se.customer_id = #{customerId}
+		<include refid="queryFullOrganIdByContext"></include>
+		<if test="performanceList != null and performanceList.size() > 0">
+            AND (
+            <foreach collection="performanceList" item="perf" open="(" close=")" separator="OR">
+                (se.performance_id = '${perf}')
+            </foreach>)
+        </if>
+        <if test="ageList != null and ageList.size() > 0">
+            AND
+            <foreach collection="ageList" item="i" open="(" close=")" separator="OR">
+                (se.age &gt;= '${i.min}'
+                <if test="i.max != null">
+                    AND se.age &lt; '${i.max}'
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="sexList != null and sexList.size() > 0">
+            AND
+            <foreach collection="sexList" item="s" open="(" close=")" separator="OR">
+                (se.sex = '${s}')
+            </foreach>
+        </if>
+        <if test="eduList != null and eduList.size() > 0">
+            AND se.degree_id IN
+            <foreach collection="eduList" item="e" open="(" close=")" separator=",">
+                '${e}'
+            </foreach>
+        </if>
+	</select>
+	<!-- 销售排名地图-pk列表 -->
+	<select id="queryMapsPKGridCountByChart" resultType="java.lang.Integer" useCache="true">
+		SELECT
+			IFNULL(SUM(fir.conNum), 0) conNum
+		FROM
+			(
+				SELECT
+					CONCAT(
+						sci.sys_code_item_id,
+						dan.ability_number_id
+					) text,
+					COUNT(ser.emp_id) conNum
+				FROM
+					sales_emp_rank ser
+				INNER JOIN sys_code_item sci ON ser.customer_id = sci.customer_id
+				AND ser.proportion_id = sci.sys_code_item_id
+				INNER JOIN ability_change ac ON ser.customer_id = ac.customer_id
+				AND ser.emp_id = ac.emp_id
+				AND ac.year_months = (
+					SELECT
+						MAX(ac1.year_months)
+					FROM
+						ability_change ac1
+					WHERE
+						ac1.year_months <![CDATA[<=]]> #{yearMonth}
+				)
+				INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+				AND ac.ability_number_id = dan.ability_number_id
+				INNER JOIN sales_emp se ON se.customer_id = ser.customer_id
+				AND se.emp_id = ser.emp_id
+				<include refid="queryFullOrganIdByContext"></include>
+				<if test="performanceList != null and performanceList.size() > 0">
+		            AND (
+		            <foreach collection="performanceList" item="perf" open="(" close=")" separator="OR">
+		                (se.performance_id = '${perf}')
+		            </foreach>)
+		        </if>
+		        <if test="ageList != null and ageList.size() > 0">
+		            AND
+		            <foreach collection="ageList" item="i" open="(" close=")" separator="OR">
+		                (se.age &gt;= '${i.min}'
+		                <if test="i.max != null">
+		                    AND se.age &lt; '${i.max}'
+		                </if>
+		                )
+		            </foreach>
+		        </if>
+		        <if test="sexList != null and sexList.size() > 0">
+		            AND
+		            <foreach collection="sexList" item="s" open="(" close=")" separator="OR">
+		                (se.sex = '${s}')
+		            </foreach>
+		        </if>
+		        <if test="eduList != null and eduList.size() > 0">
+		            AND se.degree_id IN
+		            <foreach collection="eduList" item="e" open="(" close=")" separator=",">
+		                '${e}'
+		            </foreach>
+		        </if>
+		        INNER JOIN v_dim_emp vde ON se.customer_id = vde.customer_id
+				AND se.emp_id = vde.emp_id
+				<!-- AND vde.run_off_date IS NULL -->
+				WHERE
+					ser.customer_id = #{customerId}
+				AND ser.organization_id = #{organId}
+				AND ser.rank_date = (
+					SELECT
+						MAX(ser1.rank_date)
+					FROM
+						sales_emp_rank ser1
+					WHERE
+						ser1.`year_month` = #{yearMonth}
+					AND ser1.organization_id = #{organId}
+				)
+				GROUP BY
+					dan.ability_number_id,
+					sci.sys_code_item_id
+			) fir
+		<where>
+			<if test="textList != null and textList.size() > 0">
+				<foreach collection="textList" item="it" open="(" close=")" separator="OR">
+					(fir.text = #{it})
+	            </foreach>
+			</if>
+		</where>
+	</select>
+	<!-- 销售排名地图-获取配置表信息 -->
+	<select id="queryMapsConfigInfo" resultMap="baseChartMap" useCache="true">
+		SELECT
+			c.config_val configVal
+		FROM
+			config c
+		WHERE
+			c.customer_id = #{customerId}
+		AND c.config_key LIKE CONCAT(#{configKey}, '%')
+		ORDER BY
+			c.config_key
+	</select>
+	<!-- 销售排名地图-统计员工数量 -->
+	<select id="getTeamSettingEmpCount" resultType="java.lang.Integer" useCache="true">
+		SELECT
+			COUNT(ser.emp_id) conNum
+		FROM
+			sales_emp_rank ser
+		INNER JOIN v_dim_emp vde ON ser.customer_id = vde.customer_id
+		AND ser.emp_id = vde.emp_id
+		<!-- AND vde.run_off_date IS NULL -->
+		<if test="performanceList != null and performanceList.size() > 0">
+            AND (
+            <foreach collection="performanceList" item="perf" open="(" close=")" separator="OR">
+                (vde.performance_id = '${perf}')
+            </foreach>)
+        </if>
+        <if test="ageList != null and ageList.size() > 0">
+            AND
+            <foreach collection="ageList" item="i" open="(" close=")" separator="OR">
+                (vde.age &gt;= '${i.min}'
+                <if test="i.max != null">
+                    AND vde.age &lt; '${i.max}'
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="sexList != null and sexList.size() > 0">
+            AND
+            <foreach collection="sexList" item="s" open="(" close=")" separator="OR">
+                (vde.sex = '${s}')
+            </foreach>
+        </if>
+        <if test="eduList != null and eduList.size() > 0">
+            AND vde.degree_id IN
+            <foreach collection="eduList" item="e" open="(" close=")" separator=",">
+                '${e}'
+            </foreach>
+        </if>
+        INNER JOIN ability_change ac ON vde.customer_id = ac.customer_id
+		AND vde.emp_id = ac.emp_id
+		AND ac.year_months = (
+			SELECT
+				MAX(ac1.year_months)
+			FROM
+				ability_change ac1
+			WHERE
+				ac1.year_months <![CDATA[<=]]> #{yearMonth}
+		)
+		INNER JOIN dim_ability_number dan ON ac.customer_id = dan.customer_id
+		AND ac.ability_number_id = dan.ability_number_id
+		INNER JOIN sys_code_item sci ON ser.customer_id = sci.customer_id
+		AND ser.proportion_id = sci.sys_code_item_id
+		WHERE
+			ser.customer_id = #{customerId}
+		AND ser.rank_date = (
+			SELECT
+				MAX(ser1.rank_date)
+			FROM
+				sales_emp_rank ser1
+			WHERE
+				ser1.customer_id = #{customerId}
+			AND ser1.organization_id = #{organId}
+	        AND ser1.`year_month` = #{yearMonth}
+		)
+		AND ser.organization_id = #{organId}
+        AND ser.`year_month` = #{yearMonth}
+	</select>
+	<!-- 销售人员异动情况 -->
+	<select id="queryEmpChangeInfo" resultMap="baseChartMap" useCache="true">
+		SELECT
+			oc.change_date date,
+			oc.emp_id empId,
+			oc.user_name_ch userName,
+			dct.change_type_name changeInfo,
+			dct.curt_name changeType
+		FROM
+			(
+				SELECT
+					oc.emp_id,
+					MAX(oc.change_date) change_date
+				FROM
+					organization_change oc
+				WHERE
+					oc.customer_id = #{customerId}
+				AND (
+					oc.organization_id = #{organId}
+					OR (
+						oc.organization_id_ed = #{organId}
+						AND oc.organization_id IS NULL
+					)
+				)
+				<if test="beginTime != null and beginTime != ''">
+					AND oc.change_date <![CDATA[>=]]> #{beginTime}
+				</if>
+				<if test="endTime != null and endTime != ''">
+					AND oc.change_date <![CDATA[<=]]> #{endTime}
+				</if>
+				GROUP BY
+					oc.emp_id
+			) a
+		INNER JOIN organization_change oc ON a.emp_id = oc.emp_id
+		AND oc.customer_id = #{customerId}
+		AND (
+			oc.organization_id = #{organId}
+			OR (
+				oc.organization_id_ed = #{organId}
+				AND oc.organization_id IS NULL
+			)
+		)
+		AND oc.change_date = a.change_date
+		<if test="userName != null and userName != ''">
+			AND oc.user_name_ch LIKE CONCAT('%', #{userName}, '%')
+		</if>
+		INNER JOIN sales_emp se ON se.emp_id = oc.emp_id
+		AND se.customer_id = oc.customer_id
+		INNER JOIN dim_change_type dct ON oc.customer_id = dct.customer_id
+		AND oc.change_type_id = dct.change_type_id
+		<if test="putList != null and putList.size() > 0">
+			AND dct.curt_name IN 
+			<foreach collection="putList" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		ORDER BY
+			oc.change_date DESC,
+			CONVERT (oc.user_name_ch USING gbk)
+		LIMIT #{offset}, #{limit}
+	</select>
+	<select id="queryEmpChangeInfoCount" resultType="int" useCache="true">
+		SELECT
+			COUNT(oc.emp_id) conNum
+		FROM
+			(
+				SELECT
+					oc.emp_id,
+					MAX(oc.change_date) change_date
+				FROM
+					organization_change oc
+				WHERE
+					oc.customer_id = #{customerId}
+				AND (
+					oc.organization_id = #{organId}
+					OR (
+						oc.organization_id_ed = #{organId}
+						AND oc.organization_id IS NULL
+					)
+				)
+				<if test="beginTime != null and beginTime != ''">
+					AND oc.change_date <![CDATA[>=]]> #{beginTime}
+				</if>
+				<if test="endTime != null and endTime != ''">
+					AND oc.change_date <![CDATA[<=]]> #{endTime}
+				</if>
+				GROUP BY
+					oc.emp_id
+			) a
+		INNER JOIN organization_change oc ON a.emp_id = oc.emp_id
+		AND oc.customer_id = #{customerId}
+		AND (
+			oc.organization_id = #{organId}
+			OR (
+				oc.organization_id_ed = #{organId}
+				AND oc.organization_id IS NULL
+			)
+		)
+		AND oc.change_date = a.change_date
+		<if test="userName != null and userName != ''">
+			AND oc.user_name_ch LIKE CONCAT('%', #{userName}, '%')
+		</if>
+		INNER JOIN sales_emp se ON se.emp_id = oc.emp_id
+		AND se.customer_id = oc.customer_id
+		INNER JOIN dim_change_type dct ON oc.customer_id = dct.customer_id
+		AND oc.change_type_id = dct.change_type_id
+		<if test="putList != null and putList.size() > 0">
+			AND dct.curt_name IN 
+			<foreach collection="putList" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+	<!-- 员工对比 -->
+	<select id="querySalesByEmpid" resultMap="baseChartMap" useCache="true">
+		SELECT
+			hsd.emp_id empId,
+			hsd.sales_date date,
+			<if test="salesType == 0">
+				SUM(hsd.sales_money)/10000 sales
+			</if>
+			<if test="salesType == 1">
+				SUM(hsd.product_number) sales
+			</if>
+			<if test="salesType == 2">
+				SUM(hsd.sales_profit)/10000 sales
+			</if>
+		FROM
+			history_sales_detail hsd
+		WHERE
+			hsd.customer_id = #{customerId}
+		<if test="subOrganIdList != null and subOrganIdList.size != 0">
+			AND hsd.organization_id in
+			<foreach item="oId" collection="subOrganIdList" open="(" separator="," close=")">
+			'${oId}'
+			</foreach>
+		</if>
+		<if test="beginTime != null and beginTime != ''">
+			AND hsd.sales_date <![CDATA[>=]]> #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND hsd.sales_date <![CDATA[<=]]> #{endTime}
+		</if>
+		AND hsd.emp_id = #{empId}
+		GROUP BY
+			hsd.sales_date
+		ORDER BY
+			hsd.sales_date
+	</select>
+	<!-- 人员变动-销售额 -->
+	<select id="queryChangeByMonth" resultMap="baseChartMap" useCache="true">
+		SELECT
+			o.`year_month` yearMonth,
+			<if test="salesType == 0">
+			SUM(o.sales_money_month) sales
+			</if>
+			<if test="salesType == 1">
+			SUM(o.sales_number_month) sales
+			</if>
+			<if test="salesType == 2">
+			SUM(o.sales_profit_month) sales
+			</if>
+		FROM
+			sales_org_month o
+		INNER JOIN(
+			SELECT d.customer_id,
+				d.organization_id,
+				d.`year_month`
+			FROM history_dim_organization_month d
+			WHERE d.customer_id = #{customerId}
+			AND LOCATE(
+				(
+					SELECT don.full_path
+					FROM history_dim_organization_month don
+					WHERE don.customer_id = #{customerId}
+					AND don.organization_id = #{organId}
+					AND don.`year_month` = d.`year_month`
+				), d.full_path
+			)
+		) ee ON ee.organization_id = o.organization_id
+		AND ee.customer_id = o.customer_id
+		AND ee.`year_month` = o.`year_month`
+		WHERE o.customer_id = #{customerId}
+		AND o.`year_month` >= #{beginTime}
+		AND o.`year_month` &lt;= #{endTime}
+		GROUP BY o.`year_month`
+		ORDER BY o.`year_month`
+	</select>
+	<!-- 人员变动-获取异动人员数量 -->
+	<select id="queryPersonChangeCount" resultMap="baseChartMap" useCache="true">
+		SELECT
+			t.change_date changeDate,
+			t.yearMonth date,
+			t.sumNum conNum
+		FROM
+			(
+				(
+					SELECT
+						a.change_date,
+						CONCAT(a.yearMonth, a.`day`, 'i') yearMonth,
+						SUM(a.conNum) sumNum
+					FROM
+						(
+							SELECT
+								oc.change_date,
+							IF (DAY(oc.change_date) <![CDATA[<]]> 16, 0, 1) `day`,
+							DATE_FORMAT(oc.change_date, '%Y%m') yearMonth,
+							COUNT(oc.emp_id) conNum
+						FROM
+							organization_change oc
+						INNER JOIN sales_emp se ON se.customer_id = oc.customer_id
+						AND se.emp_id = oc.emp_id
+						INNER JOIN dim_change_type ct ON oc.change_type_id = ct.change_type_id
+						AND oc.customer_id = ct.customer_id
+						<if test="inputList != null and inputList.size() > 0">
+							AND ct.curt_name IN 
+							<foreach collection="inputList" item="item" separator="," open="(" close=")">
+								#{item}
+							</foreach>
+						</if>
+						WHERE
+							oc.customer_id = #{customerId}
+						AND oc.organization_id = #{organId}
+						AND oc.change_date <![CDATA[<=]]> #{day}
+						AND oc.`year_month` <![CDATA[>=]]> #{minYearMonth}
+						AND oc.`year_month` <![CDATA[<=]]> #{maxYearMonth}
+						GROUP BY
+							oc.change_date
+						) a
+					GROUP BY
+						a.yearMonth,
+						a.`day`
+				)
+				UNION
+					(
+						SELECT
+							a.change_date,
+							CONCAT(a.yearMonth, a.`day`, 'o') yearMonth,
+							SUM(a.conNum) sumNum
+						FROM
+							(
+								SELECT
+									oc.change_date,
+		
+								IF (DAY(oc.change_date) <![CDATA[<]]> 16, 0, 1) `day`,
+								DATE_FORMAT(oc.change_date, '%Y%m') yearMonth,
+								COUNT(oc.emp_id) conNum
+							FROM
+								organization_change oc
+							INNER JOIN sales_emp se ON se.customer_id = oc.customer_id
+							AND se.emp_id = oc.emp_id
+							INNER JOIN dim_change_type ct ON oc.change_type_id = ct.change_type_id
+							AND oc.customer_id = ct.customer_id
+							<if test="outputList != null and outputList.size() > 0">
+								AND ct.curt_name IN 
+								<foreach collection="outputList" item="item" separator="," open="(" close=")">
+									#{item}
+								</foreach>
+							</if>
+							WHERE
+								oc.customer_id = #{customerId}
+							AND (
+								oc.organization_id = #{organId}
+								OR (
+									oc.organization_id_ed = #{organId}
+									AND oc.organization_id IS NULL
+								)
+							)
+							AND oc.change_date <![CDATA[<=]]> #{day}
+							AND oc.`year_month` <![CDATA[>=]]> #{minYearMonth}
+							AND oc.`year_month` <![CDATA[<=]]> #{maxYearMonth}
+							GROUP BY
+								oc.change_date
+							) a
+						GROUP BY
+							a.yearMonth,
+							a.`day`
+					)
+			) t
+		ORDER BY
+			t.change_date,
+			t.yearMonth
+	</select>
+	<!-- 人员变动-异动情况 -->
+	<select id="queryChangeInfo" resultMap="baseChartMap" useCache="true">
+		SELECT
+			m.change_date changeDate,
+			n.sales sales,
+			m.typeName changeInfo	
+		FROM
+			(
+				SELECT
+					x.change_date,
+					concat(
+						IF(length(group_concat(
+							x.user_name_ch ORDER BY CONVERT(x.user_name_ch USING GBK) SEPARATOR '、'
+						))-length(replace(group_concat(
+							x.user_name_ch ORDER BY CONVERT(x.user_name_ch USING GBK) SEPARATOR '、'
+						),'、','')) > 4,substring_index(group_concat(
+							x.user_name_ch ORDER BY CONVERT(x.user_name_ch USING GBK) SEPARATOR '、'
+						),'、',5),
+						group_concat(x.user_name_ch ORDER BY CONVERT (x.user_name_ch USING GBK) SEPARATOR '、')),
+						IF(COUNT(x.emp_id) > 5,CONCAT('等',COUNT(x.emp_id),'人'),''),
+						x.change_type_name
+					) typeName
+				FROM
+					(
+						SELECT DISTINCT
+							a.emp_id,
+							a.change_date,
+							b.user_name_ch,
+							t.change_type_name
+						FROM organization_change a
+						INNER JOIN sales_emp b ON a.emp_id = b.emp_id
+						AND a.customer_id = b.customer_id
+						INNER JOIN dim_change_type t ON a.change_type_id = t.change_type_id
+						AND a.customer_id = t.customer_id
+						<if test="putList != null and putList.size() > 0">
+							AND t.curt_name IN 
+							<foreach collection="putList" item="item" separator="," open="(" close=")">
+								#{item}
+							</foreach>
+						</if>
+						WHERE a.customer_id = #{customerId}
+						<if test="inputOutput == 'input'">
+							AND a.organization_id = #{organId}
+						</if>
+						<if test="inputOutput == 'output'">
+							AND (
+								a.organization_id = #{organId}
+								OR (
+									a.organization_id_ed = #{organId}
+									AND a.organization_id IS NULL
+								)
+							)
+						</if>
+						AND CONCAT(date_format(a.change_date, '%Y%m'), IF (DAY(a.change_date) &lt; 16, 0, 1)) = #{time}
+						AND a.change_date <![CDATA[<=]]> #{maxTime}
+						ORDER BY a.change_date
+					) x
+				GROUP BY
+					x.change_date
+			) m
+		LEFT JOIN (
+			SELECT
+				s.sales_date,
+				<if test="salesType == 0">
+					ROUND(SUM(s.sales_money_day), 2) sales
+				</if>
+				<if test="salesType == 1">
+					ROUND(SUM(s.sales_number_day), 2) sales
+				</if>
+				<if test="salesType == 2">
+					ROUND(SUM(s.sales_profit_day), 2) sales
+				</if>
+			FROM
+				sales_org_day s
+			WHERE
+				s.customer_id = #{customerId}
+			AND s.organization_id IN (
+				SELECT
+					hdom.organization_id
+				FROM
+					history_dim_organization_month hdom
+				WHERE
+					hdom.customer_id = #{customerId}
+				AND LOCATE(
+					(
+						SELECT
+							don.full_path
+						FROM
+							history_dim_organization_month don
+						WHERE
+							don.customer_id = #{customerId}
+						AND don.organization_id = #{organId}
+						AND don.`year_month` = hdom.`year_month`
+					),
+					hdom.full_path
+				)
+				AND hdom.`year_month` = #{yearMonth}
+			)
+			AND CONCAT(date_format(s.sales_date, '%Y%m'), IF (DAY(s.sales_date) &lt; 16, 0, 1)) = #{time}
+			AND s.sales_date <![CDATA[<=]]> #{maxTime}
+			GROUP BY
+				s.sales_date
+		) n ON m.change_date = n.sales_date
+		GROUP BY
+			m.change_date
+		ORDER BY
+			m.change_date
+	</select>
+	<!-- 根据id，获取管理者及管理者下属销售人员销售总额、销售利润、回款总额 -->
+	<select id="querySalesMoneyAndProfitAndReturnAmount" resultMap="baseChartMap" useCache="true" >
+		SELECT a.moneyNum / 10000 moneyNum,a.profitNum / 10000 profitNum,a.returnAmount / 10000 returnAmount,
+				(a.moneyNum - b.moneyNum ) moneyPer,
+				(a.profitNum - b.profitNum) profitPer
+		FROM (
+			SELECT
+				'f' flag,
+				IFNULL(SUM(sem.sales_money_month), 0) moneyNum,
+				IFNULL(SUM(sem.sales_profit_month), 0) profitNum,
+				IFNULL(SUM(sem.return_amount), 0) returnAmount
+			FROM sales_emp_month sem
+			WHERE sem.customer_id = #{customerId}
+			AND (sem.emp_id = #{empId}
+				OR sem.emp_id IN (
+					SELECT tvde.emp_id
+					FROM v_dim_emp tvde
+					INNER JOIN sales_emp tse ON tvde.customer_id = tse.customer_id
+					AND tvde.emp_id = tse.emp_id
+					WHERE tvde.emp_hf_id = #{empId}
+					AND tvde.customer_id = #{customerId}
+					AND tvde.run_off_date IS NULL
+				) 
+			)
+			AND sem.`year_month` = #{curYearMonth}
+		) a LEFT JOIN(
+			SELECT 
+				'f' flag,
+				IFNULL(SUM(hsd.sales_money),0) moneyNum,
+				IFNULL(SUM(hsd.sales_profit),0) profitNum
+			FROM history_sales_detail hsd
+			WHERE hsd.customer_id = #{customerId}
+			AND (hsd.emp_id = #{empId}
+				OR hsd.emp_id IN (
+					SELECT tvde.emp_id
+					FROM v_dim_emp tvde
+					INNER JOIN sales_emp tse ON tvde.customer_id = tse.customer_id
+					AND tvde.emp_id = tse.emp_id
+					WHERE tvde.emp_hf_id = #{empId}
+					AND tvde.customer_id = #{customerId}
+					AND tvde.run_off_date IS NULL
+				)
+			)
+			AND hsd.sales_date <![CDATA[>=]]> #{berMinDay}
+			AND hsd.sales_date <![CDATA[<=]]> #{berMaxDay}
+		) b ON a.flag = b.flag
+	</select>
+	<!-- 根据id，获取销售客户购买总额、销售利润、回款总额 -->
+	<select id="queryClientSalesMoneyAndProfitAndReturnAmount" resultMap="baseChartMap" useCache="true" >
+		SELECT a.moneyNum / 10000 moneyNum, a.profitNum / 10000 profitNum, c.returnAmount / 10000 returnAmount,
+			(a.moneyNum - b.moneyNum) moneyPer, (a.profitNum - b.profitNum) profitPer
+		FROM
+			(
+				SELECT
+					'f' flag,
+					IFNULL(SUM(sd.sales_money), 0) moneyNum,
+					IFNULL(SUM(sd.sales_profit), 0) profitNum
+				FROM sales_order so
+				INNER JOIN sales_detail sd ON sd.customer_id = so.customer_id
+				AND sd.sales_order_id = so.sales_order_id
+				WHERE so.customer_id = #{customerId}
+				AND so.emp_id = #{empId}
+				AND so.client_id = #{clientId}
+				AND so.sales_date <![CDATA[>=]]> #{curMinDay}
+				AND so.sales_date <![CDATA[<=]]> #{curMaxDay}
+			) a
+		INNER JOIN (
+			SELECT
+				'f' flag,
+				IFNULL(SUM(sd.sales_money), 0) moneyNum,
+				IFNULL(SUM(sd.sales_profit), 0) profitNum
+			FROM sales_order so
+			INNER JOIN sales_detail sd ON sd.customer_id = so.customer_id
+			AND sd.sales_order_id = so.sales_order_id
+			WHERE so.customer_id = #{customerId}
+			AND so.emp_id = #{empId}
+			AND so.client_id = #{clientId}
+			AND so.sales_date <![CDATA[>=]]> #{befMinDay}
+			AND so.sales_date <![CDATA[<=]]> #{befMaxDay}
+		) b ON a.flag = b.flag
+		LEFT JOIN (
+			SELECT 'f' flag, IFNULL(SUM(cc.return_amount), 0) returnAmount
+			FROM client_credit cc
+			WHERE cc.customer_id = #{customerId}
+			AND cc.client_id = #{clientId}
+			AND cc.create_date <![CDATA[>=]]> #{curMinDay}
+			AND cc.create_date <![CDATA[<=]]> #{curMaxDay}
+		) c ON a.flag = c.flag
+	</select>
+	<!-- 根据id，获取管理者及管理者下属销售人员销售额 -->
+	<select id="querySalesMoney" resultMap="baseChartMap" useCache="true">
+		SELECT CONCAT(SUBSTR(a.`year_month`, 1, 4),'/',SUBSTR(a.`year_month`, 5, 2)) date, a.moneyNum
+		FROM
+			(
+				SELECT sem.`year_month`,
+					IFNULL(SUM(sem.sales_money_month), 0) / 10000 moneyNum
+				FROM sales_emp_month sem
+				WHERE sem.customer_id = #{customerId}
+				AND (sem.emp_id = #{empId}
+					OR sem.emp_id IN (
+						SELECT tvde.emp_id
+						FROM v_dim_emp tvde
+						INNER JOIN sales_emp tse ON tvde.customer_id = tse.customer_id
+						AND tvde.emp_id = tse.emp_id
+						WHERE tvde.emp_hf_id = #{empId}
+						AND tvde.customer_id = #{customerId}
+						AND tvde.run_off_date IS NULL
+					)
+				)
+				GROUP BY sem.`year_month`
+				ORDER BY sem.`year_month` DESC
+				<if test="row != null">
+					LIMIT #{row}
+				</if>
+			) a
+		ORDER BY a.`year_month`
+	</select>
+	<!-- 根据id，获取销售客户销售额 -->
+	<select id="queryClientSalesMoney" resultMap="baseChartMap" useCache="true">
+		SELECT a.date, a.moneyNum
+		FROM
+			(
+				SELECT
+					DATE_FORMAT(so.sales_date, '%Y/%m') date,
+					IFNULL(SUM(sd.sales_money), 0) / 10000 moneyNum
+				FROM sales_order so
+				INNER JOIN sales_detail sd ON sd.customer_id = so.customer_id
+				AND sd.sales_order_id = so.sales_order_id
+				WHERE so.customer_id = #{customerId}
+				AND so.emp_id = #{empId}
+				AND so.client_id = #{clientId}
+				GROUP BY DATE_FORMAT(so.sales_date, '%Y/%m')
+				ORDER BY date DESC
+				<if test="row != null">
+					LIMIT #{row}
+				</if>
+			) a
+		ORDER BY a.date
+	</select>
+	<!-- 根据id，获取管理者及管理者下属销售人员回款额 -->
+	<select id="querySalesReturnAmount" resultMap="baseChartMap" useCache="true">
+		SELECT CONCAT(SUBSTR(a.`year_month`, 1, 4),'/',SUBSTR(a.`year_month`, 5, 2)) date, a.returnAmount
+		FROM
+			(
+				SELECT sem.`year_month`,
+					IFNULL(SUM(sem.return_amount), 0) / 10000 returnAmount
+				FROM sales_emp_month sem
+				WHERE sem.customer_id = #{customerId}
+				AND (sem.emp_id = #{empId}
+					OR sem.emp_id IN (
+						SELECT tvde.emp_id
+						FROM v_dim_emp tvde
+						INNER JOIN sales_emp tse ON tvde.customer_id = tse.customer_id
+						AND tvde.emp_id = tse.emp_id
+						WHERE tvde.emp_hf_id = #{empId}
+						AND tvde.customer_id = #{customerId}
+						AND tvde.run_off_date IS NULL
+					)
+				)
+				GROUP BY sem.`year_month`
+				ORDER BY sem.`year_month` DESC
+				<if test="row != null">
+					LIMIT #{row}
+				</if>
+			) a
+		ORDER BY a.`year_month`
+	</select>
+	<!-- 根据id，获取销售客户回款额 -->
+	<select id="queryClientReturnAmount" resultMap="baseChartMap" useCache="true">
+		SELECT a.date, a.returnAmount
+		FROM
+			(
+				SELECT
+					DATE_FORMAT(cc.create_date, '%Y/%m') date,
+					IFNULL(SUM(cc.return_amount), 0) / 10000 returnAmount
+				FROM client_credit cc
+				WHERE cc.customer_id = #{customerId}
+				AND cc.client_id = #{clientId}
+				GROUP BY DATE_FORMAT(cc.create_date, '%Y/%m')
+				ORDER BY date DESC
+				<if test="row != null">
+					LIMIT #{row}
+				</if>
+			) a
+		ORDER BY a.date
+	</select>
+</mapper>

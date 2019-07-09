@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus name="生产力">
+		<menu code="XiaoShouKanBan" name="销售看板" url="salesBoard/toSalesBoardView" icon="" mobile="false">
+		</menu>
+	</menus>

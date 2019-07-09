@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus name="生产力">
+		<menu code="YongHuGuanLi" name="员工绩效" url="perChange/toPerChangeView" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+			<block code="xxxx" >查看模块</block>
+			<block code="xxxx" >查看模块</block>
+		</menu>
+	</menus>

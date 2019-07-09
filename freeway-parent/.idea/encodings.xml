@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-business-service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-business-web" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-common" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-facade" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-facade/freeway-base-facade" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-facade/freeway-business-facade" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-facade/freeway-platform-facade" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-generator" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-platform-admin" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-support" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-support/freeway-dubbo-support" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/freeway-support/freeway-web-support" charset="UTF-8" />
+  </component>
+</project>

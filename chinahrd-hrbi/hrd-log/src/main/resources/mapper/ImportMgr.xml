@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.dao.ImportMgrDao">
+
+	<!-- 更新带薪假 -->
+	<update id="updateVacation" parameterType="java.util.HashMap">
+		UPDATE days SET
+			is_work_flag = #{isWorkFlag},
+			is_holiday = #{isHoliday},
+			is_vacation = #{isVacation}
+		WHERE days = #{days}
+	</update>
+
+    <!-- 正常考勤表最大最小时间 -->
+    <select id="findMinMaxTime" resultType="java.util.HashMap">
+        SELECT
+            MIN(eam.`year_month`) minTime,
+            MAX(eam.`year_month`) maxTime
+        FROM
+          emp_attendance_month eam
+        WHERE
+          eam.customer_id = #{customerId}
+    </select>
+
+
+	<!-- days最大日期 -->
+	<select id="getMaxDay" resultType="java.util.HashMap">
+		select
+			min(days) minDay,
+			max(days) maxDay
+		FROM days
+	</select>
+
+    <!-- 本月日期情况 -->
+    <select id="queryDayList" resultType="net.chinahrd.utils.holiday.DaysDto">
+       SELECT
+        days AS days,
+        is_work_flag AS isWorkFlag,
+        is_holiday AS isHoliday,
+        is_vacation AS isVacation
+      FROM days t WHERE t.days BETWEEN #{startDate} AND #{endDate}
+      ORDER BY t.days
+    </select>
+
+
+    	<!-- customerId -->
+	<select id="attendanceMonthly" resultType="java.util.HashMap">
+		SELECT
+			ee.work_place_id,
+			ee.work_place,
+			ee.organization_Id,
+			ta.`days`,
+			ta.`hour_count`,
+			ad.*
+			FROM theory_attendance ta
+			RIGHT JOIN (
+				SELECT
+				t.`days`,
+				t.`emp_id`,
+				t.`user_name_ch`,
+				IF(t.clock_in_am IS NOT NULL
+					,IF(CAST(CONCAT(DATE_FORMAT(t.`clock_in_am`, '%H'),DATE_FORMAT(t.`clock_in_am`, '%i')) AS INTEGER) &gt;1000
+						,IF(t.cal_hour IS NOT NULL
+							,IF(CAST(CONCAT(DATE_FORMAT(t.opt_in, '%H'),DATE_FORMAT(t.opt_in, '%i')) AS INTEGER) &gt; 1000
+								,SUBSTRING(t.checkwork_type_id,34,33)
+								,SUBSTRING(t.checkwork_type_id, 1, 32))
+							,'迟到')
+						,'√')
+					,IF(t.cal_hour IS NULL
+						,'缺勤'
+						,IF(t.opt_in IS NULL
+							,SUBSTRING(t.checkwork_type_id,34,33)
+							,IF(CAST(CONCAT(DATE_FORMAT(t.opt_in, '%H'),DATE_FORMAT(t.opt_in, '%i')) AS INTEGER) &gt; 1000,SUBSTRING(t.checkwork_type_id,34,33),SUBSTRING(t.checkwork_type_id, 1, 32)))
+					)
+				)
+				AS morning,
+				t.`clock_in_am` ,
+				t.`opt_in`,
+
+				IF(t.clock_out_pm IS NOT NULL
+					,IF(CAST(DATE_FORMAT(t.`clock_out_pm`, '%H') AS INTEGER) &lt; 18
+						,IF(t.cal_hour IS NULL
+							,'早退'
+							,IF(CAST(DATE_FORMAT(t.opt_out, '%H') AS INTEGER) &lt; 18
+								,SUBSTRING(t.checkwork_type_id, 34, 33)
+								,SUBSTRING(t.checkwork_type_id,1,32))
+							)
+						,'√'
+					)
+					,IF(t.cal_hour IS NULL
+						,'缺勤'
+						,IF(t.opt_out IS NULL
+							,SUBSTRING(t.checkwork_type_id, 34, 33)
+							,IF(CAST(DATE_FORMAT(t.opt_out, '%H') AS INTEGER) &lt; 18
+								,SUBSTRING(t.checkwork_type_id, 34, 33)
+								,SUBSTRING(t.checkwork_type_id,1,32)))
+					)
+				)
+				AS afteroon,
+				t.`clock_out_pm`,
+				t.`opt_out`,
+				t.checkwork_type_id,
+				t.cal_hour
+
+				FROM emp_attendance t
+				WHERE
+				t.`year_month` = #{yearMonth}
+				AND t.customer_id = #{coustomerId}
+				) ad ON (ta.`days` = ad.days)
+			LEFT JOIN
+				(SELECT e.user_name_ch,e.emp_id,e.work_place_id,e.work_place,e.organization_Id,e.customer_id FROM v_dim_emp e) ee ON (ad.emp_id = ee.emp_id AND ee.customer_id=#{coustomerId})
+
+			WHERE ta.`year_months` = #{yearMonth}
+			ORDER BY  ad.`emp_id`,ta.`days`
+	</select>
+
+    <!-- 获取当月应出勤表 -->
+    <select id="theoryAttendance" resultType="java.util.HashMap">
+        SELECT * FROM theory_attendance t WHERE t.`year_months`= #{yearMonth}
+    </select>
+
+    <!-- 获取到节假日的hashmap -->
+	<select id="queryCheckWorkTypeMap" resultType="java.util.HashMap" useCache="true">
+		SELECT * FROM dim_checkwork_type
+	</select>
+
+    <!-- 查找本月总法定假期（带薪假期） -->
+    <select id="findVacationDays" parameterType="java.util.Map" resultType="java.lang.Integer" >
+        SELECT IFNULL(SUM(is_vacation),0) FROM `days`
+        WHERE is_vacation = 1 AND days BETWEEN #{beginTime} AND #{endTime}
+    </select>
+
+
+</mapper>

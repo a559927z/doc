@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.common.ConfigDao">
+	
+	<!-- 配置表 -->
+	<select id="queryConfig" resultType="net.chinahrd.entity.dto.pc.common.ConfigDto"> 
+		select 
+			customer_id as customerId,
+			config_id AS configId,
+			config_key AS configKey,
+			config_val AS configVal,
+			function_id AS functionId,
+			note AS note
+		from config 
+		where config_key like concat(#{configKeyPrefix},'%')
+		<if test="customerId != null">
+            and customer_id = #{customerId}
+        </if>
+        order by customer_id
+	</select>
+
+	<!-- 修改系统配置 -->
+	 <update id="updateSysConfig">
+	    <foreach collection="list" item="dto" separator=";">
+		    UPDATE config
+		    SET config_val = #{dto.configVal}
+		    WHERE customer_id = #{customerId} AND config_key = #{dto.configKey}
+   		 </foreach>
+    </update>
+
+	<!-- 获取需要发送邮箱的员工邮件 -->
+	<select id="querySendToEmpList" resultType="java.lang.String"> 
+		select 
+			email
+		from v_dim_emp 
+		where run_off_date is null
+		<if test="customerId != null">
+            and customer_id = #{customerId}
+        </if>
+		<if test="organIds != null and organIds.size() > 0">
+			and organization_id in 
+			<foreach collection="organIds" item="orgId" separator="," open="(" close=")">
+            	#{orgId}
+        	</foreach>
+        </if>
+        AND email is not null
+		AND email != ""
+	</select>
+
+
+</mapper>

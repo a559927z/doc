@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.talentProfitLoss.mvc.app.dao.MobileTalentProfitLossDao">
+	<cache-ref namespace="net.chinahrd.ehcache.normal" />
+	<!-- resultMap -->
+	<resultMap type="net.chinahrd.entity.dto.app.talentProfitLoss.TalentProfitLossDto" id="baseMap">
+		<result column="flag" property="flag"/>
+		<result column="sum_name" property="sumName"/>
+		<result column="userName" property="userName"/>
+		<result column="sex" property="sex"/>
+		<result column="organName" property="organName"/>
+		<result column="degree" property="degree"/>
+		<result column="major" property="major"/>
+		<result column="position_name" property="positionName"/>
+		<result column="ability_lv_name" property="abilityLvName"/>
+		<result column="change_type_name" property="changeTypeName"/>
+		<result column="change_date" property="changeDate"/>
+		<result column="conNum" property="conNum"/>
+		<result column="curt_name" property="curtName"/>
+		<result column="sequence_name" property="sequenceName"/>
+		<result column="ability_name" property="abilityName"/>
+		<result column="age" property="age"/>
+		<result column="population_id" property="populationId"/>
+		<result column="population_name" property="populationName"/>
+		<result column="province_id" property="provinceId"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="show_index" property="showIndex"/>
+		<result column="city_name" property="cityName"/>
+		<result column="max_date" property="maxDate"/>
+		<result column="min_date" property="minDate"/>
+	</resultMap>
+	<!-- 查询包含子集的组织机构id -->
+	<sql id="queryOrganIdAll">
+		(
+		SELECT
+			o.organization_id
+		FROM
+			history_dim_organization_month o
+		WHERE
+			LOCATE(
+				(
+					SELECT
+						o1.full_path
+					FROM
+						history_dim_organization_month o1
+					WHERE
+						o1.organization_id = #{organId}
+					AND o1.customer_id = #{customerId}
+					AND o1.`year_month` = o.`year_month`
+				),
+				o.full_path
+			)
+		AND o.customer_id = #{customerId}
+		AND o.`year_month` = #{time}
+		)
+	</sql>
+	<select id="queryChangeConfig" resultType="net.chinahrd.entity.dto.app.talentProfitLoss.TalentProfitLossConfigDto" useCache="true">
+		(SELECT 
+		change_type_id as code,
+		change_type_name as name,
+		0 type
+		 FROM 
+		dim_change_type
+		WHERE curt_name IN
+		<foreach collection="inflowList" item="item" open="(" separator="," close=")">
+				#{item}
+		</foreach>
+		ORDER BY show_index)
+		UNION
+		(SELECT 
+		change_type_id as code,
+		change_type_name as name,
+		1 type
+		FROM
+		dim_change_type
+		WHERE curt_name IN
+		<foreach collection="outflowList" item="item" open="(" separator="," close=")">
+				#{item}
+		</foreach>
+		ORDER BY show_index)
+	</select>
+	
+	<!-- 异动类型遍历流入List -->
+	<sql id="inflowListForeachWithT">
+		<if test="inflowList != null">
+			<foreach collection="inflowList" item="item" open="AND t.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+	<!-- 异动类型遍历流出List -->
+	<sql id="outflowListForeachWithT">
+		<if test="outflowList != null">
+			<foreach collection="outflowList" item="item" open="AND t.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+	<!-- 异动类型遍历list -->
+	<sql id="changeTypeForeachWithT">
+		<if test="list != null">
+			<foreach collection="list" item="item" open="AND t.curt_name IN(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+	<!-- 本月/本年流入统计 -->
+	<select id="queryTalentInflowVal" resultType="Integer">
+		SELECT
+			COUNT(j.emp_id) conNum
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		INNER JOIN dim_emp_month e 
+		ON j.emp_id = e.emp_id
+		AND j.customer_id = e.customer_id
+<!-- 		AND DATE_FORMAT(j.change_date, '%Y%m') = e.year_month -->
+		AND j.`year_month` = e.`year_month`
+		WHERE 
+			j.customer_id = #{customerId}
+		<include refid="changeTypeForeachWithT"></include>
+		AND e.year_month = #{time}
+<!-- 		AND j.organization_id = #{organId} -->
+		AND j.organization_id=#{organId}
+	</select>
+	<!-- 本月/本年流出统计 -->
+	<select id="queryTalentOutflowVal" resultType="Integer">
+		SELECT
+			COUNT(1) conNum
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		INNER JOIN dim_emp_month e 
+		ON j.emp_id = e.emp_id
+		AND j.customer_id = e.customer_id
+<!-- 		AND DATE_FORMAT(j.change_date, '%Y%m') = e.year_month -->
+		AND j.`year_month` = e.`year_month`
+		WHERE e.year_month = #{time}
+		<include refid="changeTypeForeachWithT"></include>
+		AND j.customer_id = #{customerId}
+<!-- 		AND j.organization_id IN <include refid = "queryOrganIdAll" ></include > -->
+		AND j.organization_id_ed=#{organId}
+	</select>
+	
+	
+	<sql id="minDateMaxDate">
+		<if test="minDate != null and minDate != ''">
+			AND DATE_FORMAT(j.change_date, '%Y%m') <![CDATA[>=]]> #{minDate}
+		</if>
+		<if test="maxDate != null and maxDate != ''">
+			AND DATE_FORMAT(j.change_date, '%Y%m') <![CDATA[<=]]> #{maxDate}
+		</if>
+	</sql>
+	
+	<!-- 人才损益-人员分布-饼图 -->
+	<select id="queryPopulationPie" resultMap="baseMap" useCache="true">
+		SELECT t.province_name ,t.conNum,t.show_index FROM (SELECT
+			IFNULL(p.province_name, '其他') province_name,
+			count(1) conNum,
+			IFNULL(p.show_index, 99) show_index
+		FROM
+			dim_emp_month e
+		LEFT JOIN dim_city c ON e.customer_id = c.customer_id
+		AND e.work_place_id = c.city_id
+		LEFT JOIN dim_province p ON c.customer_id = p.customer_id
+		AND c.province_id = p.province_id
+		WHERE 
+	    e.year_month = #{time}
+		AND e.organization_id IN <include refid="queryOrganIdAll"></include>
+		AND e.customer_id = #{customerId} 
+		AND e.run_off_date IS NULL
+		GROUP BY
+			p.province_id
+		)t
+		ORDER BY
+			t.conNum desc
+	</select>
+
+	<!-- 人才损益同比 -->
+	<select id="queryTalentProfitLossSameData" resultMap="baseMap" useCache="true">
+		SELECT
+			x.change_date,
+			x.conNum
+		FROM
+			(
+				SELECT
+					a.change_date,
+					IFNULL(a.con, 0) - IFNULL(b.con, 0) conNum
+				FROM
+					(
+						SELECT
+							DATE_FORMAT(j.change_date, '%Y%m') change_date,
+							count(j.emp_id) con
+						FROM
+							organization_change j
+						INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+						AND j.change_type_id = t.change_type_id
+						WHERE 
+							j.customer_id = #{customerId}
+						<include refid="inflowListForeachWithT"></include>
+						<include refid="minDateMaxDate"></include>
+						AND j.organization_id = #{organId}
+						GROUP BY
+							DATE_FORMAT(j.change_date, '%Y%m')
+					) a
+				LEFT JOIN (
+					SELECT
+						DATE_FORMAT(j.change_date, '%Y%m') change_date,
+						count(j.emp_id) con
+					FROM
+						organization_change j
+					INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+					AND j.change_type_id = t.change_type_id
+					WHERE 
+						j.customer_id = #{customerId}
+					<include refid="outflowListForeachWithT"></include>
+					<include refid="minDateMaxDate"></include>
+					AND j.organization_id_ed = #{organId}
+					GROUP BY
+						DATE_FORMAT(j.change_date, '%Y%m')
+				) b ON a.change_date = b.change_date
+				UNION
+					SELECT
+						d.change_date,
+						IFNULL(c.con, 0) - IFNULL(d.con, 0) conNum
+					FROM
+						(
+							SELECT
+								DATE_FORMAT(j.change_date, '%Y%m') change_date,
+								count(j.emp_id) con
+							FROM
+								organization_change j
+							INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+							AND j.change_type_id = t.change_type_id
+							WHERE 
+								j.customer_id = #{customerId}
+							<include refid="inflowListForeachWithT"></include>
+							<include refid="minDateMaxDate"></include>
+							AND j.organization_id = #{organId}
+							GROUP BY
+								DATE_FORMAT(j.change_date, '%Y%m')
+						) c
+					RIGHT JOIN (
+						SELECT
+							DATE_FORMAT(j.change_date, '%Y%m') change_date,
+							count(j.emp_id) con
+						FROM
+							organization_change j
+						INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+						AND j.change_type_id = t.change_type_id
+						WHERE 
+							j.customer_id = #{customerId}
+						<include refid="outflowListForeachWithT"></include>
+						<include refid="minDateMaxDate"></include>
+						AND j.organization_id_ed = #{organId}
+						GROUP BY
+							DATE_FORMAT(j.change_date, '%Y%m')
+					) d ON c.change_date = d.change_date
+			) x
+		ORDER BY
+			x.change_date
+	</select>
+	
+	<!-- 异动统计饼图表格 -->
+	<select id="queryInflowOutflowChangeType" resultType="net.chinahrd.entity.dto.app.PieChartDto" useCache="true">
+		SELECT
+			t.change_type_name name,
+			IFNULL(a.conNum, 0) value
+		FROM
+			dim_change_type t
+		LEFT JOIN (
+			SELECT
+				t.curt_name,
+				t.change_type_name,
+				count(1) conNum
+			FROM
+				organization_change j force index (ind_Ch_Date_Uch)
+			LEFT JOIN dim_change_type t ON j.customer_id = t.customer_id
+			AND j.change_type_id = t.change_type_id
+			WHERE j.year_month =#{time}
+			AND	j.customer_id = #{customerId}
+			AND (j.organization_id  = #{organId} OR organization_id_ed = #{organId})
+			GROUP BY
+				t.curt_name
+		) a ON t.curt_name = a.curt_name
+		ORDER BY
+			t.curt_name
+	</select>
+	
+	<!-- 异动统计 -->
+	<select id="queryEntryListDatasCount" resultType="Integer" useCache="true">
+		SELECT
+			count(1) conNum
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		WHERE  j.year_month = #{time}
+		<if test="type != null">
+			AND t.change_type_id = #{type}
+		</if>
+		<if test="list != null">
+			AND t.curt_name IN 
+			<foreach collection="list" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		AND j.customer_id = #{customerId}
+<!-- 		AND j.organization_id IN <include refid="queryOrganIdAll"></include> -->
+		<if test="input != true">
+		AND j.organization_id_ed  = #{organId}
+		</if>
+		<if test="input == true">
+		AND j.organization_id  = #{organId}
+		</if>
+	</select>
+	<!-- 异动统计  DISTINCT -->
+	<select id="queryEntryListDatas" resultMap="baseMap" useCache="true">
+		SELECT
+			DISTINCT j.user_name_ch userName,
+			t.change_type_name ,
+			DATE_FORMAT(j.change_date,'%Y-%m-%d') change_date
+		FROM
+			organization_change j
+		INNER JOIN dim_change_type t ON j.customer_id = t.customer_id
+		AND j.change_type_id = t.change_type_id
+		WHERE j.year_month = #{time}
+		<if test="type != null">
+			AND t.change_type_id = #{type}
+		</if>
+		<if test="list != null">
+			AND t.curt_name IN 
+			<foreach collection="list" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		AND j.customer_id = #{customerId} 
+		<if test="input != true">
+		AND j.organization_id_ed  = #{organId}
+		</if>
+		<if test="input == true">
+		AND j.organization_id  = #{organId}
+		</if>
+<!-- 		ORDER BY j.change_date DESC -->
+		ORDER BY j.change_date DESC, convert(j.user_name_ch using GBK)
+		LIMIT #{start}, #{rows}
+	</select>
+	
+	<select id="queryChangeType" resultType="int">
+		SELECT curt_name FROM dim_change_type WHERE customer_id = #{customerId}
+	</select>
+	<select id="queryInflowOutflowChangeTypeByJc" resultType="net.chinahrd.entity.dto.app.PieChartDto">
+		SELECT
+			t.change_type_name name,
+			IFNULL(a.conNum, 0) value
+		FROM
+			dim_change_type t
+		LEFT JOIN (
+			SELECT
+				j.change_type_id,
+				count(1) conNum
+			FROM
+				job_change j 
+			WHERE j.year_month =#{time}
+			AND	j.customer_id = #{customerId}
+			AND j.organization_id IN <include refid = "queryOrganIdAll" ></include>
+			GROUP BY
+				j.change_type_id
+		) a ON t.change_type_id = a.change_type_id
+		WHERE t.curt_name IN 
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+				#{item}
+		</foreach>
+		ORDER BY
+			t.curt_name
+	</select>
+	
+</mapper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.eis.permission.dao.RbacAuthorizerDao">
+
+	<resultMap id="UserMap" type="net.chinahrd.eis.permission.model.RbacUser">
+		<id property="userId" column="user_id" />
+		<result property="empId" column="emp_id" />
+		<result property="username" column="user_name" />
+		<result property="userNameCh" column="user_name_ch" />
+		<result property="customerId" column="customer_id" />
+		<result property="userKey" column="user_key" />
+		<result property="password" column="password" />
+		<result property="note" column="note" />
+		<result property="sysDeploy" column="sys_deploy" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="modifyUserId" column="modify_user_id" />
+		<result property="createTime" column="create_time" />
+		<result property="modifyTime" column="modify_time" />
+	</resultMap>
+
+	<resultMap id="RbacRoleMap" type="net.chinahrd.eis.permission.model.RbacRole">
+		<id property="roleId" column="role_id" />
+		<result property="roleKey" column="role_key" />
+		<result property="roleName" column="role_name" />
+		<result property="customerId" column="customer_id" />
+		<result property="note" column="note" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="modifyUserId" column="modify_user_id" />
+		<result property="createTime" column="create_time" />
+		<result property="modifyTime" column="modify_time" />
+	</resultMap>
+
+	<resultMap id="RbacFunctionMap"
+		type="net.chinahrd.eis.permission.model.RbacFunction">
+		<id property="functionId" column="function_id" />
+		<result property="customerId" column="customer_id" />
+		<result property="functionParentId" column="function_parent_id" />
+		<result property="customerId" column="customer_id" />
+		<result property="url" column="url" />
+		<result property="showIndex" column="show_index" />
+		<result property="note" column="note" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="modifyUserId" column="modify_user_id" />
+		<result property="createTime" column="create_time" />
+		<result property="modifyTime" column="modify_time" />
+		<result property="fullPath" column="full_path" />
+		<result property="itemCodes" column="item_codes" />
+	</resultMap>
+
+	<select id="checkUserExist" parameterType="Map" resultMap="UserMap">
+		SELECT
+		du.user_id,
+		du.customer_id,
+		du.emp_id,
+		du.user_key,
+		du.user_name,
+		du.`password`,
+		du.user_name_ch,
+		du.note,
+		du.sys_deploy,
+		du.create_user_id,
+		du.modify_user_id,
+		du.create_time,
+		du.modify_time
+		FROM dim_user du
+		where du.customer_id = #{customerId,jdbcType=VARCHAR}
+		and du.is_lock = 0
+		<if test="userKey != null">
+			AND du.user_key = #{userKey,jdbcType=VARCHAR}
+		</if>
+		<if test="password != null">
+			AND du.`password` = #{password,jdbcType=VARCHAR}
+		</if>
+		<if test="email != null">
+			AND du.email = #{email,jdbcType=VARCHAR}
+		</if>
+		ORDER BY du.modify_time,du.create_time
+	</select>
+
+	<select id="findRoleList" resultMap="RbacRoleMap">
+		SELECT
+		dr.role_id,
+		dr.role_key,
+		dr.role_name,
+		dr.customer_id,
+		dr.note,
+		dr.create_user_id,
+		dr.modify_user_id,
+		dr.create_time,
+		dr.modify_time
+		FROM dim_role dr
+		LEFT JOIN user_role_relation urr ON urr.role_id = dr.role_id AND
+		dr.customer_id =urr.customer_id
+		where dr.customer_id = #{customerId}
+		<if test="userId != null">
+			AND urr.user_id = #{userId}
+		</if>
+		ORDER BY dr.modify_time,dr.create_time
+	</select>
+
+	<select id="findRbacPermissionByRole" resultMap="RbacFunctionMap">
+		SELECT
+		frr.item_codes,
+		df.function_id, df.function_name, df.function_key,
+		df.full_path
+		FROM function_role_relation frr
+		LEFT JOIN dim_function df ON df.function_id = frr.function_id AND
+		df.customer_id =frr.customer_id
+		where frr.customer_id = #{customerId}
+		<if test="roleIds != null and roleIds.size() > 0">
+			AND frr.role_id IN
+			<foreach collection="roleIds" item="roleId" open="(" close=")"
+				separator=",">
+				#{roleId}
+			</foreach>
+		</if>
+	</select>
+
+	<update id="initPassword" >
+		update dim_user set `password` = #{password} where customer_id = #{customerId} and user_key = #{userKey}
+	</update>
+
+</mapper>

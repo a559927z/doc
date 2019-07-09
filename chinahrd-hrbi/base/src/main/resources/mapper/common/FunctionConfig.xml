@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.common.FunctionConfigDao">
+
+    <select id="queryHomeConfig" resultType="net.chinahrd.entity.dto.pc.manage.HomeConfigDto">
+    SELECT
+        fc.function_config_id,
+        fc.customer_id,
+        fc.emp_id,
+        fc.function_id,
+        fc.card_code,
+        fc.is_view,
+        fc.show_index
+    FROM function_config fc
+    WHERE fc.function_id = #{functionId}
+    AND fc.emp_id = #{empId}
+    AND fc.customer_id = #{customerId}
+    ORDER BY fc.is_view DESC,fc.show_index
+    </select>
+
+    <insert id="insertUserHomeConfig">
+    INSERT INTO function_config (
+        function_config_id,
+        customer_id,
+        emp_id,
+        function_id,
+        card_code,
+        is_view,
+        show_index
+    )
+    VALUES
+    <foreach collection="dtos" item="dto" separator=",">
+    (
+      #{dto.functionConfigId},
+      #{dto.customerId},
+      #{dto.empId},
+      #{dto.functionId},
+      #{dto.cardCode},
+      #{dto.isView},
+      #{dto.showIndex}
+    )
+    </foreach>
+    </insert>
+    
+    <update id="updateUserHomeConfig" parameterType="list">
+    <foreach collection="dtos" item="dto" separator=";">
+    UPDATE function_config
+    SET is_view = #{dto.isView}, show_index = #{dto.showIndex}
+    WHERE function_config_id = #{dto.functionConfigId}
+    </foreach>
+    </update>
+</mapper>

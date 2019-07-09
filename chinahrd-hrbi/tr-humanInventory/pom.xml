@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.chinahrd</groupId>
+		<artifactId>hrbi</artifactId>
+		<version>1.0-RELEASE</version>
+	</parent>
+	<artifactId>tr-humanInventory</artifactId>
+	<name>humanInventory</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.chinahrd</groupId>
+			<artifactId>base</artifactId>
+			<version>${base.version}</version>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>javax.servlet</groupId> -->
+<!-- 			<artifactId>servlet-api</artifactId> -->
+<!-- 		</dependency> -->
+
+	</dependencies>
+	<version>1.0-RELEASE</version>
+	<groupId>net.chinahrd</groupId>
+</project>

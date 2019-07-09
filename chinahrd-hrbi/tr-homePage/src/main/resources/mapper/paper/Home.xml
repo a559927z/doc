@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.homepage.mvc.pc.dao.HomeDao">
+
+    <select id="findUpdateDate" resultType="date">
+    SELECT MAX(vde.refresh_date) FROM v_dim_emp vde
+    WHERE vde.customer_id = #{customerId}
+    </select>
+
+	<select id="queryTeamEmpCount" resultType="int">
+	SELECT Count(vde.emp_id) FROM v_dim_emp vde
+	WHERE vde.run_off_date IS NULL
+	AND vde.is_regular = 1
+	<if test="subOrganIdList.size != 0 ">
+		AND vde.organization_id in
+		<foreach item="organId" collection="subOrganIdList" open="(" separator="," close=")">
+		'${organId}'
+		</foreach>
+	</if>
+	AND vde.customer_id = #{customerId}
+	</select>
+
+	<!-- 管理者首页-团队成员  -->
+	<select id="queryTeamEmp" resultType="net.chinahrd.entity.dto.pc.manage.EmpBaseInfoDto">
+		SELECT
+			vde.emp_id AS empId,
+			vde.user_name_ch AS userNameCh,
+			vde.img_path AS imgPath,
+			vde.organization_name AS organizationName,
+			vde.position_name AS positionName,
+			vde.sequence_name AS sequenceName,
+			vde.sequence_sub_name AS sequenceSubName,
+			vde.ability_name AS abilityName,
+			vde.job_title_name AS jobTitleName,
+			vde.rank_name AS rankName
+		FROM v_dim_emp vde
+		WHERE vde.run_off_date IS NULL
+		AND vde.is_regular = 1
+		<if test="subOrganIdList != null and subOrganIdList.size != 0">
+			AND vde.organization_id in
+			<foreach item="organId" collection="subOrganIdList" open="(" separator="," close=")">
+			'${organId}'
+			</foreach>
+		</if>
+		AND vde.customer_id = #{customerId}
+		ORDER BY CONVERT(vde.user_name_ch USING GBK) ASC
+	</select>
+
+	<!-- 管理者首页-团队生日榜成员统计 -->
+	<select id="queryRemindEmpCount" resultType="int">
+	SELECT MAX(c.empNum) FROM(
+		select
+			MONTH(vde.birth_date) AS birthDate,
+			COUNT(vde.emp_id) as empNum
+		FROM v_dim_emp vde
+		WHERE vde.run_off_date IS NULL
+		AND vde.is_regular = 1
+		<if test="subOrganIdList.size != 0 ">
+			AND vde.organization_id in
+			<foreach item="organId" collection="subOrganIdList" open="(" separator="," close=")">
+				'${organId}'
+			</foreach>
+		</if>
+		AND vde.customer_id = #{customerId}
+		GROUP BY MONTH(vde.birth_date)
+	) c
+	</select>
+
+	<!-- 管理者首页-团队提醒-生日榜成员 -->
+    <select id="queryRemindEmp" resultType="net.chinahrd.entity.dto.pc.manage.RemindEmpDto">
+		SELECT
+			vde.emp_id AS empId,
+			vde.user_name_ch AS userNameCh,
+			vde.birth_date AS birthDate
+		FROM v_dim_emp vde
+		WHERE vde.run_off_date IS NULL
+		AND vde.is_regular = 1
+		AND vde.customer_id = #{customerId}
+		<if test="subOrganIdList.size != 0">
+			AND vde.organization_id in
+			<foreach item="organId" collection="subOrganIdList" open="(" separator="," close=")">
+				'${organId}'
+			</foreach>
+		</if>
+		AND #{end} &gt; (
+			SELECT COUNT(vde1.emp_id) FROM v_dim_emp vde1
+			WHERE vde1.run_off_date IS NULL
+			AND vde1.is_regular = 1
+			AND vde.customer_id = vde1.customer_id
+			<if test="subOrganIdList.size != 0">
+				AND vde1.organization_id in
+				<foreach item="organId" collection="subOrganIdList" open="(" separator="," close=")">
+					'${organId}'
+				</foreach>
+			</if>
+			AND Month(vde.birth_date) = Month(vde1.birth_date)
+			AND vde.emp_id &lt; vde1.emp_id
+		)
+		AND #{begin} &lt;= (
+			SELECT COUNT(vde1.emp_id) FROM v_dim_emp vde1
+			WHERE vde1.run_off_date IS NULL
+			AND vde1.is_regular = 1
+			AND vde.customer_id = vde1.customer_id
+			<if test="subOrganIdList.size != 0">
+				AND vde.organization_id in
+				<foreach item="organId" collection="subOrganIdList" open="(" separator="," close=")">
+					'${organId}'
+				</foreach>
+			</if>
+			AND Month(vde.birth_date) = Month(vde1.birth_date)
+			AND vde.emp_id &lt; vde1.emp_id
+		)
+		ORDER BY vde.birth_date,CONVERT(vde.user_name_ch USING GBK) ASC
+    </select>
+
+	<!-- 管理者首页-团队提醒-生日提醒  -->
+	<select id="queryBirthdayRemind" resultType="net.chinahrd.entity.dto.pc.manage.RemindEmpDto">
+	SELECT
+		vde.emp_id AS empId,
+		vde.user_name_ch AS userNameCh,
+		vde.img_path AS imgPath,
+		vde.birth_date AS birthDate
+	FROM v_dim_emp vde
+	WHERE vde.run_off_date IS NULL
+	AND vde.customer_id = #{customerId}
+	AND vde.is_regular = 1
+	<if test="subOrganIdList.size != 0 "> AND vde.organization_id in
+		<foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+	</if>
+	<if test="currTime != null">
+		AND MONTH(vde.birth_date) = MONTH(#{currTime})
+	</if>
+	ORDER BY DAY(vde.birth_date),CONVERT(vde.user_name_ch USING GBK) ASC
+	</select>
+
+	<!-- 管理者首页-团队提醒-入司周年提醒  -->
+	<select id="queryAnnualRemind" resultType="net.chinahrd.entity.dto.pc.manage.RemindEmpDto">
+		SELECT
+		vde.emp_id AS empId,
+		vde.user_name_ch AS userNameCh,
+		vde.img_path AS imgPath,
+		vde.entry_date AS entryDate
+		<if test="currTime != null">
+		,(Year(#{currTime}) - Year(vde.entry_date)) AS annualYear
+		</if>
+		FROM v_dim_emp vde
+		WHERE vde.run_off_date IS NULL
+		AND vde.customer_id = #{customerId}
+		AND vde.is_regular = 1
+		<if test="subOrganIdList.size != 0 "> AND vde.organization_id in
+			<foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		<if test="currTime != null">
+			AND MONTH(vde.entry_date) = MONTH(#{currTime})
+			<if test="annuals.size != 0">
+				AND (Year(#{currTime}) - Year(vde.entry_date)) IN
+				<foreach item="annual" collection="annuals" open="(" separator="," close=")"> #{annual} </foreach>
+			</if>
+		</if>
+		ORDER BY vde.entry_date,CONVERT(vde.user_name_ch USING GBK) ASC
+	</select>
+
+    <!-- 查询人才损益-编制信息和招聘信息 -->
+    <select id="findGainOfLossInfo" resultType="net.chinahrd.entity.dto.pc.manage.GainOfLossDto">
+    SELECT
+		ben.organization_id AS organId,
+		rp.publice_job_num AS publiceJobNum,
+		rp.resume_num AS resumeNum,
+		rp.accept_num AS acceptNum,
+		rp.offer_num AS offerNum,
+		ben.number AS compileNum,
+		hec.emp_count_sum AS workingNum
+	FROM budget_emp_number ben
+	-- 主岗并正职员工
+	LEFT JOIN history_emp_count hec on hec.customer_id = ben.customer_id
+				AND hec.organization_id = ben.organization_id
+				AND hec.`day` = #{day}
+				AND hec.type = 1
+	-- 招聘进程
+	LEFT JOIN recruitment_process rp ON rp.customer_id = ben.customer_id
+		AND rp.organization_id = ben.organization_id
+		
+	WHERE ben.customer_id = #{customerId}
+		AND ben.organization_id = #{organId}
+		AND ben.`year` = (SELECT MAX(tben.`year`) FROM budget_emp_number tben WHERE tben.customer_id = #{customerId})
+	GROUP BY ben.organization_id, rp.publice_job_num, rp.resume_num, rp.accept_num, rp.offer_num, ben.number
+    </select>
+
+	<!-- 查询人才损益员工信息 -入职和离职  -->
+    <select id="queryLossesEmp" resultType="net.chinahrd.entity.dto.pc.manage.LossesEmpDto">
+		SELECT
+			vde.emp_id AS empId,
+			vde.user_name_ch AS userNameCh,
+			vde.img_path AS imgPath,
+			jc.organization_name AS organizationName,
+			jc.position_name AS positionName,
+			jc.sequence_name AS sequenceName,
+			jc.sequence_sub_name AS sequenceSubName,
+			jc.ability_name AS abilityName,
+			jc.job_title_name AS jobTitleName,
+			jc.rank_name AS rankName,
+	        vde.performance_name AS performanceName,
+			dct.curt_name AS changeType,
+			jc.change_date AS changeDate
+	    FROM v_dim_emp vde
+	    INNER JOIN job_change jc ON vde.emp_id = jc.emp_id
+	                            AND vde.customer_id = jc.customer_id
+	                            AND (YEAR(#{now}) = YEAR(jc.change_date) AND QUARTER(#{now}) = QUARTER(jc.change_date))
+		LEFT JOIN dim_change_type dct ON jc.customer_id = dct.customer_id AND dct.change_type_id = jc.change_type_id
+	    WHERE vde.is_regular = 1
+	    AND dct.curt_name IN (3, 5, 9)
+	    AND vde.customer_id = #{customerId}
+	    AND vde.organization_id IN (
+			SELECT t1.organization_id FROM dim_organization t1
+			WHERE
+				locate(( SELECT t.full_path FROM dim_organization t WHERE t.organization_id =  #{organId} AND t.customer_id = #{customerId}), t1.full_path )
+			AND t1.customer_id = #{customerId}
+		)
+    </select>
+
+	<!-- 招聘进程  -->
+	<select id="queryRecruitmentProcess" resultType="net.chinahrd.entity.dto.pc.manage.GainOfLossDto">
+		SELECT
+			rp.publice_job_num,
+			rp.resume_num,
+			rp.accept_num,
+			rp.offer_num
+		FROM
+			recruitment_process rp
+		WHERE
+			organization_id = #{organId}
+		AND customer_id = #{customerId}
+	</select>
+
+	<!-- 查询人才损益员工信息 -调入和调出  -->
+	<select id="queryInAndOut" resultType="net.chinahrd.entity.dto.pc.manage.LossesEmpDto">
+		SELECT
+			vde.emp_id AS empId,
+			vde.user_name_ch AS userNameCh,
+			vde.img_path AS imgPath,
+			vde.performance_name AS performanceName,
+			
+			jIn.organization_id AS inOrganId,
+			jIn.organization_name AS inOrganName,
+			vde.position_name AS inPosName,
+			vde.sequence_name AS inSeqName,
+			vde.sequence_sub_name AS inSeqSubName,
+			vde.ability_name AS inAbName,
+			vde.job_title_name AS inJTName,
+			vde.rank_name AS inRName,
+			ctIn.curt_name AS inCType,
+			jIn.change_date AS inCDate,
+			
+			jOut.organization_id AS outOrganId,
+			jOut.organization_name AS outOrganName,
+			vde.position_name AS outPosName,
+			vde.sequence_name AS outSeqName,
+			vde.sequence_sub_name AS outSeqSubName,
+			vde.ability_name AS outAbName,
+			vde.job_title_name AS outJTName,
+			vde.rank_name AS outRName,
+			ctOut.curt_name AS outCType,
+			jOut.change_date AS outCDate
+		FROM v_dim_emp vde
+		INNER JOIN job_change jIn ON jIn.emp_id = vde.emp_id
+								AND jIn.customer_id = vde.customer_id
+		INNER JOIN dim_change_type ctIn ON jIn.customer_id = ctIn.customer_id
+									AND jIn.change_type_id = ctIn.change_type_id
+		INNER JOIN job_change jOut ON jIn.emp_id = jOut.emp_id
+						AND jIn.change_date = jOut.change_date
+						AND jIn.customer_id = jOut.customer_id
+		INNER JOIN dim_change_type ctOut ON jOut.customer_id = ctOut.customer_id
+									AND jOut.change_type_id = ctOut.change_type_id
+		WHERE jIn.customer_id = #{customerId}
+		AND ctIn.curt_name = 2
+		AND ctOut.curt_name = 4
+		AND (
+			YEAR (#{now}) = YEAR (jIn.change_date)
+			AND QUARTER (#{now}) = QUARTER (jIn.change_date)
+		)
+    </select>
+
+
+	<select id="queryTeamImgAbility" resultType="net.chinahrd.entity.dto.KVItemDto">	SELECT
+		da.ability_key AS k,
+		da.curt_name AS v
+	FROM dim_ability da
+	WHERE da.customer_id = #{customerId}
+	GROUP BY da.curt_name
+	ORDER BY da.show_index
+	</select>
+
+    <!-- 管理者首页-绩效目标-部门  -->
+    <select id="queryPerformance" resultType="net.chinahrd.entity.dto.pc.manage.PerformanceDto">
+     SELECT content,weight,progress FROM dept_per_exam_relation as a WHERE organization_id=#{organId} AND customer_id=#{customerId};
+    </select>
+
+    <!-- 管理者首页-绩效目标-下属 -->
+    <select id="queryPerformanceEmp" resultType="net.chinahrd.entity.dto.pc.manage.PerformanceEmpDto">
+    SELECT
+		vde.emp_id AS EmpId,
+		vde.user_name_ch AS NAME,
+		eper.content AS AssessParentName,
+		eper.sub_content AS AssessName,
+		eper.weight,
+		eper.progress,
+		eper.emp_idp AS IDP,
+		eper.idp AS IDPTotal
+		FROM
+		v_dim_emp vde
+		INNER JOIN (
+		SELECT
+		t1.organization_id
+		FROM
+		dim_organization t1
+		WHERE
+		locate(
+		(
+		SELECT
+		t.full_path
+		FROM
+		dim_organization t
+		WHERE
+		t.organization_id = #{organId}
+		AND t.customer_id = #{customerId}
+		),
+		t1.full_path
+		)
+		AND t1.customer_id = #{customerId}
+		) b ON vde.organization_id = b.organization_id
+		INNER JOIN emp_per_exam_relation eper ON vde.emp_id = eper.emp_id
+		AND vde.customer_id = eper.customer_id
+		WHERE
+		vde.customer_id = #{customerId}
+		AND vde.run_off_date IS NULL
+		ORDER BY CONVERT(vde.user_name_ch USING GBK) ASC
+    </select>
+
+     <!-- 员工近两周加班信息 -->
+    <select id="queryWorkOvertimeInfo" resultType="net.chinahrd.entity.dto.pc.emp.WorkOvertimeDto">
+	    SELECT emp_overtime_day_id AS id,
+		       customer_id AS customerId,
+		       organization_id AS organizationId,
+		       emp_id AS empId,
+		       emp_key AS empKey,
+		       hour_count AS hourCount,
+		       DATE_FORMAT(days,'%m月%d日') AS date from emp_overtime_day
+		   where  emp_id=#{empId}
+		   and customer_id=#{customerId}
+		   and  date BETWEEN DATE_ADD(#{curdate},INTERVAL -#{cycle} WEEK) AND #{curdate}
+<!-- 		   and  date>=DATE_SUB(NOW(), INTERVAL 14 DAY) -->
+		   ORDER BY date
+    </select>
+
+   <!-- 低绩效人未晋升人员-->
+    <select id="queryLowPerformanceEmp" resultType="net.chinahrd.entity.dto.pc.manage.WarnInfoDto">
+	SELECT
+		vde.emp_id as empId,
+        vde.user_name_ch as userNameCh,
+        vde.img_path as imgPath,
+        vde.position_name as positionName,
+        vde.sequence_name as sequenceName,
+        vde.sequence_sub_name as sequenceSubName,
+        vde.job_title_name as jobTitleName,
+        vde.rank_name as rankName,
+        vde.performance_name as performanceName,
+        SUM(
+          CASE WHEN t.year_month =#{startDate}
+          THEN CASE  WHEN t.rank_name=vde.rank_name THEN 1 ELSE 0 END
+          ELSE 0
+          END
+        ) total
+        FROM performance_change t
+        INNER JOIN (
+            SELECT t3.emp_id,t3.rank_name,
+                t3.user_name_ch,
+                t3.img_path,
+                t3.position_name,
+                t3.sequence_name,
+                t3.sequence_sub_name,
+                t3.job_title_name,
+                t3.ability_name,
+                t3.performance_name
+            FROM v_dim_emp t3
+            WHERE t3.run_off_date IS NULL
+            <if test="subOrganIdList.size != 0 ">
+                AND t3.organization_id in
+                <foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            AND t3.customer_id = #{customerId}
+        ) vde on t.emp_id =vde.emp_id
+        INNER JOIN(
+          SELECT per.performance_id,per.performance_key
+          FROM dim_performance per
+          WHERE per.customer_id = #{customerId}
+          AND  per.curt_name BETWEEN #{low} AND #{hight}
+        )o on t.performance_id=o.performance_id
+        WHERE  t.customer_id = #{customerId}
+        AND t.year_month BETWEEN #{startDate} AND #{endDate}
+        GROUP BY t.emp_id having count(t.emp_id) = #{reviewPerfman} and total = 1
+        ORDER BY o.performance_key DESC,CONVERT(vde.user_name_ch USING GBK)
+	</select>
+
+	<!-- 高绩效未晋升人员 -->
+	<select id="queryHighPerformanceEmp" resultType="net.chinahrd.entity.dto.pc.manage.WarnInfoDto">
+		SELECT
+			vde.emp_id as empId,
+			vde.user_name_ch as userNameCh,
+			vde.img_path as imgPath,
+			vde.position_name as positionName,
+			vde.sequence_name as sequenceName,
+			vde.sequence_sub_name as sequenceSubName,
+			vde.job_title_name as jobTitleName,
+			vde.rank_name as rankName,
+			vde.performance_name as performanceName,
+			SUM(CASE WHEN  t.year_month =#{startDate} THEN
+				CASE  WHEN  left(t.rank_name,2)=left(vde.rank_name,2) AND (right(vde.rank_name,3)+0)&lt;=(right(t.rank_name,3) +0)  THEN 1
+				ELSE 0 END
+			ELSE 0 END) as total
+		FROM performance_change t
+		INNER JOIN (
+			SELECT t3.emp_id,t3.rank_name,
+			   t3.user_name_ch,
+			   t3.img_path,
+			   t3.position_name,
+			   t3.sequence_name,
+			   t3.sequence_sub_name,
+			   t3.job_title_name,
+			   t3.ability_name,
+			   t3.performance_name
+			FROM v_dim_emp t3
+			WHERE t3.run_off_date IS NULL
+            <if test="subOrganIdList.size != 0 ">
+                AND t3.organization_id in
+                <foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            AND t3.customer_id = #{customerId}
+		) vde on  t.emp_id =vde.emp_id
+		INNER JOIN (
+			SELECT per.performance_id,per.performance_key
+			FROM dim_performance per
+			WHERE per.customer_id = #{customerId}
+			AND  per.curt_name BETWEEN #{low} AND #{hight}
+		) o ON t.performance_id=o.performance_id
+		WHERE  t.customer_id = #{customerId}
+		AND t.year_month BETWEEN #{startDate} AND #{endDate}
+		GROUP BY t.emp_id
+		HAVING count(t.emp_id)=#{reviewPerfman}  and total=1
+		ORDER BY o.performance_key DESC,CONVERT(vde.user_name_ch USING GBK)
+	</select>
+
+	<!-- 离职风险人员统计 -->
+	<select id="queryRunOffWarnCount" resultType="int">
+		SELECT COUNT(vde.emp_id)
+		FROM v_dim_emp vde
+		INNER JOIN dimission_risk dr ON dr.emp_id = vde.emp_id
+		where vde.run_off_date is null
+		<if test="subOrganIdList.size != 0 "> AND vde.organization_id in
+			<foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		and vde.customer_id = dr.customer_id
+		and vde.customer_id = #{customerId}
+		and (dr.risk_flag=1 OR dr.risk_flag = 2) and dr.is_last = 1
+		ORDER BY CONVERT(vde.user_name_ch USING GBK)
+	</select>
+
+	<!-- 离职风险人员-->
+	 <select id="queryRunOffWarnEmp" resultType="net.chinahrd.entity.dto.pc.manage.WarnInfoDto">
+		SELECT
+			vde.emp_id AS empId,
+			vde.user_name_ch AS userNameCh,
+            vde.img_path as imgPath,
+            dktt.key_talent_type_name as keyTalentTypeName
+		FROM v_dim_emp vde
+		INNER JOIN dimission_risk dr ON dr.emp_id = vde.emp_id
+	    LEFT JOIN key_talent kt ON vde.emp_id = kt.key_talent_id and vde.customer_id= kt.customer_id
+		LEFT JOIN dim_key_talent_type dktt ON dktt.key_talent_type_id = kt.key_talent_type_id and kt.customer_id= dktt.customer_id
+		where vde.run_off_date is null
+		<if test="subOrganIdList.size != 0 "> AND vde.organization_id in
+			<foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		and vde.customer_id = dr.customer_id
+		and vde.customer_id = #{customerId}
+		and (dr.risk_flag = 1 OR dr.risk_flag = 2) and dr.is_last = 1
+		ORDER BY dktt.key_talent_type_name,CONVERT(vde.user_name_ch USING GBK) ASC
+	</select>
+
+
+	<!-- 加班预警人员-->
+    <select id="queryOvertimeEmp" resultType="net.chinahrd.entity.dto.pc.manage.WarnInfoDto">
+    SELECT
+      vde.emp_id as empId,
+        dktt.key_talent_type_name as keyTalentTypeName,
+        vde.user_name_ch userNameCh,
+        vde.img_path as imgPath,
+        #{cycle} as week,
+        sum(hour_count) as totalHour,
+        (IFNULL(sum(hour_count),0) / #{availabilityDay} ) AS avHour
+    FROM emp_overtime_day t
+    INNER JOIN v_dim_emp vde on t.emp_id=vde.emp_id
+          AND vde.customer_id =t.customer_id
+    LEFT JOIN key_talent kt ON vde.emp_id = kt.key_talent_id and vde.customer_id= kt.customer_id
+    LEFT JOIN dim_key_talent_type dktt ON dktt.key_talent_type_id = kt.key_talent_type_id and kt.customer_id= dktt.customer_id
+    WHERE t.date BETWEEN DATE_ADD(#{curdate},INTERVAL - #{cycle} WEEK) AND #{curdate}
+    AND t.customer_id=#{customerId}
+    <if test="subOrganIdList.size != 0 ">
+        AND vde.organization_id in
+        <foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+    </if>
+    group by vde.emp_id ,vde.user_name_ch,vde.img_path
+    Having avHour>#{warnTime}
+    ORDER BY totalHour DESC,CONVERT(vde.user_name_ch USING GBK) ASC
+	</select>
+
+
+    <!-- 管理者首页-人才发展  -->
+     <select id="queryTalentDevel" resultType="net.chinahrd.entity.dto.pc.manage.TalentDevelEmpDto">
+		SELECT
+			t1.emp_id empId,
+			t2.module_type moduleType, t2.360_ability_name abilityName,
+			t2.standard_score standardScore, t2.gain_score gainScore, t2.score score
+		FROM
+			360_time t1
+		INNER JOIN
+				(SELECT t3.emp_id, t3.customer_id
+				FROM v_dim_emp t3
+				WHERE t3.customer_id = #{customerId}
+					<if test="subOrganIdList.size != 0 "> AND t3.organization_id in
+						<foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+					</if>
+<!-- 				AND t3.run_off_date IS NULL -->
+				) tt on tt.emp_id = t1.emp_id AND tt.customer_id = t1.customer_id
+		INNER JOIN 360_report t2 on t2.360_time_id = t1.360_time_id AND t2.customer_id = t1.customer_id and tt.emp_id = t2.emp_id
+		WHERE t1.`year` = #{year}
+		ORDER BY module_type
+	</select>
+   <select id="queryReportMaxYear" resultType="java.lang.Integer">
+    SELECT MAX(`year`) FROM 360_time WHERE customer_id = #{customerId}
+    
+    </select>
+      <!-- 管理者首页-人才发展-晋升数据  -->
+     <select id="queryTalentDevelPromotionData" resultType="net.chinahrd.entity.dto.pc.manage.TalentDevelEmpDto">
+		SELECT
+			tb.emp_id empId,
+			tb.emp_key empKey,
+			tmp.img_path imgPath,
+			tmp.user_name_ch userNameCh,
+			tb.organization_id organizationId,
+			tb.position_name positionName,
+			tb.sequence_name sequenceName,
+			tb.sequence_sub_name sequenceSubName,
+			tb.entry_rank_name entryRankName,
+			tb.entry_date entryDate,
+			tb.rank_name rankName,
+			tb.promote_date promoteDate,
+			tb.stay_time stayTime,
+			tb.pomote_num pomoteNum,
+			tb.rank_name_ed rankNameEd,
+			tb.stay_time_ed stayTimeEd,
+			tb.year_quarter yearQuarter
+		 FROM talent_development_promote tb
+		 INNER JOIN (
+		 		SELECT
+					t3.emp_id, t3.user_name_ch, t3.img_path
+				FROM v_dim_emp t3
+				WHERE  t3.customer_id = #{customerId}
+					<if test="subOrganIdList.size != 0 "> AND t3.organization_id in
+						<foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+					</if>
+<!-- 				AND t3.run_off_date IS NULL -->
+		 ) tmp on tmp.emp_id = tb.emp_id
+		WHERE tb.customer_id = #{customerId}
+		AND year_quarter = (SELECT Max(year_quarter) FROM talent_development_promote WHERE customer_id = #{customerId})
+	</select>
+
+
+      <!-- 管理者首页-人才发展-培训数据  -->
+     <select id="queryTalentDevelTrainData" resultType="net.chinahrd.entity.dto.pc.manage.TalentDevelEmpDto">
+		SELECT
+			tb.emp_id empId,
+			tb.emp_key empKey,
+			tmp.img_path imgPath,
+			tmp.user_name_ch userNameCh,
+			tb.organization_id organizationId,
+			tb.position_name positionName,
+			tb.sequence_name sequenceName,
+			tb.sequence_sub_name sequenceSubName,
+			tb.train_time trainTime,
+			tb.train_num trainNum,
+			tb.year_quarter yearQuarter
+		 FROM talent_development_train tb
+		 INNER JOIN (
+		 		SELECT
+					t3.emp_id, t3.user_name_ch, t3.img_path
+				FROM v_dim_emp t3
+				WHERE t3.run_off_date IS NULL
+					<if test="subOrganIdList.size != 0 "> AND t3.organization_id in
+						<foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+					</if>
+				AND t3.customer_id = #{customerId}
+		 ) tmp on tmp.emp_id = tb.emp_id
+		WHERE tb.customer_id = #{customerId}
+		AND year_quarter = (SELECT Max(year_quarter) FROM talent_development_promote WHERE customer_id = #{customerId})
+	</select>
+
+     <!-- 管理者首页-人才发展-360测评数据  -->
+     <select id="queryTalentDevelExamData" resultType="net.chinahrd.entity.dto.pc.manage.TalentDevelEmpDto">
+		SELECT
+			 tb.emp_id empId,
+			 tb.emp_key empKey,
+			 tmp.img_path imgPath,
+			 tmp.user_name_ch userNameCh,
+			 tb.organization_id organizationId,
+			 tb.position_name positionName,
+			 tb.sequence_name sequenceName,
+			 tb.sequence_sub_name sequenceSubName,
+			 tb.ability_match abilityMatch,
+			 tb.exam_date examDate,
+			 tb.`year` year
+		 FROM talent_development_exam tb
+		 INNER JOIN (
+		 		SELECT
+					t3.emp_id, t3.user_name_ch, t3.img_path
+				FROM v_dim_emp t3
+				WHERE t3.customer_id = #{customerId}
+					<if test="subOrganIdList.size != 0 "> AND t3.organization_id in
+						<foreach item="item" collection="subOrganIdList" open="(" separator="," close=")"> #{item} </foreach>
+					</if>
+<!-- 				AND t3.run_off_date IS NULL -->
+		 ) tmp on tmp.emp_id = tb.emp_id
+		 WHERE tb.customer_id = #{customerId}
+		 AND `year` = #{year}
+	</select>
+
+     <!-- 管理者首页-人才发展-360测评数据-项目  -->
+     <select id="queryTalentDevelExamItemData" resultType="net.chinahrd.entity.dto.pc.manage.TalentDevelEmpDto">
+		SELECT
+			t.360_ability_name abilityName,
+			t.standard_score,
+			t.gain_score
+		FROM
+			`360_report` t
+		INNER JOIN 360_time t1 on t.360_time_id = t1.360_time_id and t.customer_id = t1.customer_id
+		AND t1.`year` = #{yearInt}
+		WHERE t.emp_id = #{empId}
+		AND t.customer_id = #{customerId}
+	</select>
+
+
+</mapper>

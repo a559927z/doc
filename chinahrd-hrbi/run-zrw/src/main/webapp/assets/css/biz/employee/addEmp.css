@@ -1,0 +1,72 @@
+
+
+.okBtn{
+	cursor: pointer; 
+	width: 50px; 
+	height: 30px; 
+	line-height:30px; 
+	color: white; 
+	background-color: #1A9FF3; 
+	text-align: center; 
+	float: left;
+	border: 0 none;
+}
+.add-on{background-color: #EDA100; color: #FFFFFF;}
+.dis-search-input-btn{cursor:pointer;font-size: 14px !important;float: left;width: 80px;height: 35px;line-height:35px;border: 1px solid #e0e0e0;margin-left: 20px;text-align: center;border-radius: 5px;}
+.hight-footer{height: 50px;}
+.input-group{
+	width: 70%;
+	}
+.form-control{
+	height: 29px;
+}
+.base-info::after{
+	content: "基础信息：" !important;
+}
+.work-info::after{
+	content: "任职信息：" !important;
+}
+.base-info,.work-info{
+    background-color: #fff;
+    border-color: #ddd;
+    border-radius: 4px 4px 0 0;
+    border-width: 1px;
+    box-shadow: none;
+    margin-left: 0;
+    margin-right: 0;    
+    padding: 45px 15px 15px;
+    position: relative;
+}
+.base-info::after,.work-info::after {
+    color: #959595;
+    content: "Example";
+    font-size: 12px;
+    font-weight: 700;
+    left: 15px;
+    letter-spacing: 1px;
+    position: absolute;
+    text-transform: uppercase;
+    top: 15px;
+}
+.page-main-header .col-sm-4 > .col-xs-12 label:first-child, .page-main-header .col-xs-12 > .col-xs-12 label:first-child {
+    line-height: 22px;
+    margin: 4px 0;
+    text-align: right;
+    width: 28%;
+}
+label:first-child, .page-main-header .col-xs-12 > .col-xs-12 label:first-child {
+    line-height: 22px;
+    margin: 4px 0;
+    text-align: right;
+    width: 28%;
+}
+.page-content .normal-row {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.span-info-error{
+	color: #a94442;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+	font-weight: 700;
+}
+ 

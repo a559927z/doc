@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/hrd-util" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/hrd-weka" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jar" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/run" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/run-vue" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/run-zrw" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-accordDismiss" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-benefit" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-clientImg" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-dismissRisk" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-empAttendance-zrw" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-empSatisfaction" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-employeePerformance" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-homePage" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-humanInventory" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-humanInventory-zrw" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-keyTalent" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-laborEfficiency" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-manpowerCost" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-monthReport" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-organizationalStructure" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-positionCompetency" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-promotionBoard" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-recruitBoard" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-salaryBoard" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-salesBoard" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-sequenceCount" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-talentContrast" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-talentMaps" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-talentProfile" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-talentProfitLoss" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-talentSearch" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-talentStructure" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-teamImg" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tr-trainBoard" charset="UTF-8" />
+  </component>
+</project>

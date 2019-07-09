@@ -1,0 +1,312 @@
+.page-content {
+    width: 100%;
+    height: 100%;
+}
+
+.page-content a {
+    cursor: hand;
+}
+
+.col-xs-2 img {
+    margin-left: 30px;
+}
+
+.contentTitle span {
+    font-family: "微软雅黑 Bold", "微软雅黑";
+    text-align: left;
+    font-size: 14px;
+}
+
+.manualLabel {
+    margin-top: 20px;
+    background-color: #FFFFFF;
+    width: 100%;
+    height: auto;
+    clear: both;
+}
+
+.incentiveFactors {
+    margin-top: 20px;
+    background-color: #FFFFFF;
+    width: 100%;
+    font-size: 14px;
+    height: 180px;
+    clear: both;
+}
+
+.automaticLabel {
+    margin-top: 20px;
+    background-color: #FFFFFF;
+    width: 100%;
+}
+
+.labelText {
+    height: 25px;
+    padding: 10px;
+}
+
+.labelRight {
+    float: right;
+    margin-right: 20px;
+}
+
+.labelText span {
+    text-align: right;
+    font-size: 14px;
+}
+
+.labelContent {
+    margin: 20px;
+    width: 90%;
+}
+
+.head-pic {
+    height: 80px;
+    border: 2px solid #e7eaec;
+    cursor: pointer;
+}
+
+.excellentLabelContent {
+    float: left;
+    width: 50%;
+    padding-bottom: 8px;
+}
+
+.LabelContent .base-info .row:last-child div {
+    padding-bottom: 8px;
+}
+
+.col-xs-12 span {
+    margin-left: 5px;
+}
+
+#contentLabel span {
+    font-size: 14px;
+    background-color: #e7eaec;
+}
+
+.excellent {
+    width: 100%;
+    height: 30px;
+}
+
+.excellentNum {
+    float: left;
+    width: 60%;
+    height: 30px;
+    margin-left: 20px;
+}
+
+.excellentNum span:first-child {
+    font-size: 20px;
+    color: #00CC00;
+    margin-right: 10px;
+}
+
+.addExcellent {
+    width: 28%;
+    float: right;
+    height: 30px;
+}
+
+.inferioritylabelContent {
+    float: right;
+    width: 48%;
+    padding-bottom: 8px;
+}
+
+.inferiority {
+    width: 100%;
+    height: 30px;
+}
+
+.inferiorityNum {
+    float: left;
+    width: 60%;
+    height: 30px;
+    margin-left: 20px;
+}
+
+.inferiorityNum span:first-child {
+    font-size: 20px;
+    color: red;
+    margin-right: 10px;
+}
+
+.addInferiority {
+    width: 28%;
+    float: right;
+    height: 30px;
+}
+
+.addExcellent a {
+    color: #009999;
+}
+
+.hrAbout {
+    width: 1px;
+    height: 120px;
+    float: left;
+    background-color: #cccccc;
+}
+
+#myExcellentLabelContent {
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+#myExcellentLabelContent span {
+    margin-left: 5px;
+    margin-top: 2px;
+    background-color: #00CC00;
+    font-size: 14px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+#othersExcellentLabelContent {
+    margin-top: 5px;
+    margin-left: 15px;
+}
+
+#othersExcellentLabelContent span {
+    margin-left: 5px;
+    background-color: #e7eaec;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#myInferiorityLabelContent {
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+#myInferiorityLabelContent span {
+    margin-left: 5px;
+    background-color: red;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#othersInferiorityLableContent {
+    margin-top: 5px;
+    margin-left: 15px;
+}
+
+#othersInferiorityLableContent span {
+    margin-left: 5px;
+    background-color: #e7eaec;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#manualLabelDetailModal .modal-dialog {
+    width: 770px;
+}
+
+#manualLabelDetailModal .risk-detail-info, #manualLabelDetailModal .suggest-info {
+    border: 1px solid #e7eaec;
+    margin-left: 12px;
+    overflow: auto;
+}
+
+#manualLabelDetailModal .suggest-info {
+    line-height: 28px;
+}
+
+#manualLabelDetailModal .risk-detail-info > div, #manualLabelDetailModal .suggest-info > div {
+    margin-top: 8px;
+    height: 250px;
+    width: 330px;
+}
+
+#manualLabelDetailModal .base-info .row:last-child div {
+    padding-bottom: 8px;
+}
+
+.advantageLable {
+    font-size: 20px;
+    margin: 5px;
+    color: green;
+}
+
+.shortBoardLable {
+    font-size: 20px;
+    margin: 5px;
+    color: red;
+}
+
+#addLabelDetailModal .modal-dialog {
+    width: 410px;
+}
+
+#addLabelDetailModal .add-risk-detail-info > div {
+    margin-top: 8px;
+    height: 160px;
+    width: 340px;
+}
+
+.col-xs-6 {
+    width: 380px;
+}
+
+.col-xs-11 {
+    width: 350px;
+}
+
+.descriptionButton {
+    float: right;
+    margin-right: 10px;
+}
+
+#operationInformation {
+    float: right;
+}
+
+.incentiveFactors .Contentlabel {
+    height: 80px;
+}
+
+.trackingLog {
+    margin-top: 20px;
+    background-color: #FFFFFF;
+    width: 100%;
+}
+
+.trackingLog table {
+    width: 100%;
+}
+
+.trackingLog table td {
+    height: 30px;
+    font-size: 14px;
+}
+
+.operationLog {
+    background-color: #e7eaec;
+}
+
+#coreLabelDetailModal .modal-dialog {
+    width: 410px;
+}
+
+#checkboxCore {
+    margin-left: 15px;
+}
+
+#logLabelDetailModal .modal-dialog {
+    width: 410px;
+}
+
+.more {
+    float: right;
+}
+
+.hideMore {
+    display: none;
+}
+
+#smoreBtnMy, #sreduceBtnMy, #imoreBtnMy, #ireduceBtnMy {
+    margin-right: 15px;
+}
+

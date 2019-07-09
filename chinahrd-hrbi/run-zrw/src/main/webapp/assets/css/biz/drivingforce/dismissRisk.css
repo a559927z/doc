@@ -1,0 +1,133 @@
+body{height: 880px !important;}
+#dimissRiskTab .nav{
+	margin-top : 18px;
+}
+
+#talentTypeCheck{
+	margin-left : -2px;
+	padding-top: 4px;
+	padding-bottom : 4px;
+}
+
+.risk-bar{
+	height : 270px;
+}
+
+#reportLv{
+	height : 290px;
+	border-left : 1px solid #e7eaec;
+	border-right : 1px solid #e7eaec;
+}
+
+#reportLv .report-tree{
+	height: 260px;
+	overflow: auto;
+}
+
+.head-pic{
+	height : 60px;
+	border : 2px solid #e7eaec;
+	cursor : pointer;
+}
+
+.mark-talent-type{
+	position : absolute;
+	right : 2px;
+	top : 4px;
+	background-color : #DB3700;
+	color : #fff;
+	font-weight : bold;
+	width : 14px;
+	height : 14px;
+	line-height : 14px;
+	font-size : 12px;
+}
+
+#riskEmpDetail{
+	height : 240px;
+	overflow : auto;
+}
+
+#riskEmpDetail>div{
+	padding : 18px;
+}
+#riskEmpDetail .emp-name{
+	padding-top : 8px;
+}
+.current-organ-boby{
+	min-height: 320px;
+	margin-bottom: 50px;
+}
+.curr-organ-pie{
+	height: 260px;
+}
+#preDimissRiskTab .dimissRiskReviewTitle{
+	display: inline-block;
+	width: 99%;
+	color: #999;
+	text-align: center;
+	font-size: 12px;
+}
+#dimissRiskReviewPie{
+	height: 260px;
+}
+#dimissRiskReviewTable{
+	margin-bottom: 20px;
+}
+#subEmpTree li span.button.switch.level0 {
+	visibility:hidden;
+	width:1px;
+}
+#subEmpTree li ul.level0 {
+	padding:0 0 0 10px;
+	background:none;
+}
+
+#riskDetailModal{
+}
+#riskDetailModal .modal-dialog{
+	width : 750px;
+}
+#riskDetailModal .base-info{
+	height : 100px;
+}
+#riskDetailModal .base-info .head-pic{
+	height : 80px;
+}
+
+#riskDetailModal .risk-detail-info,#riskDetailModal .suggest-info{
+	border : 1px solid #e7eaec;
+	margin-left : 12px;
+	overflow: auto;
+}
+
+#riskDetailModal .suggest-info{
+	line-height : 28px;
+}
+#riskDetailModal .risk-detail-info>div,#riskDetailModal .suggest-info>div{
+	margin-top : 8px;
+	height : 250px;
+	width : 300px;
+}
+
+#riskDetailModal .base-info .row:last-child div{
+	padding-bottom : 8px;
+}
+#riskDetailModal .base-info .risk-flag{
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+#rigthArea{
+	display: none;
+	position:absolute;
+	height: 310px;
+	text-align: center;
+	line-height:310px;
+}
+
+.nowrap{
+	overflow: hidden;
+	white-space: nowrap;
+}

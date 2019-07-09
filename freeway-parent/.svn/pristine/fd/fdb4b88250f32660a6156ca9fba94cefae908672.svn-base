@@ -1,0 +1,27 @@
+package net.chinahrd.platform.rbac.response;
+
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author wzmo
+ * @since 2019-03-18
+ */
+@Data
+public class RoleInfoRes implements Serializable {
+
+    /**
+     * 用户Id
+     */
+    private String roleId;
+    /**
+     * 用户名称
+     */
+    private String roleName;
+
+}

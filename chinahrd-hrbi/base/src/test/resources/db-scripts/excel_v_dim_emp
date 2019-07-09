@@ -1,0 +1,67 @@
+1 as customer_id,
+REPLACE(UUID(), '-','') as emp_id,
+t.emp_key,
+t.user_name,
+t.user_name_ch,
+t1.emp_id as emp_hf_id,
+t1.emp_hf_key,
+null,-- report_relation,
+t.email,
+t.img_path,
+t.passtime_or_fulltime,
+t.contract,
+t.blood,
+(SELECT TIMESTAMPDIFF(DAY,t.birth_date,now())/30/12) as age,
+(SELECT TIMESTAMPDIFF(DAY,t.entry_date,now())/30/12) as company_age, -- 年
+null,-- is_key_talent,
+t.sex,
+t.nation,
+t2.code_item_id as degree_id,
+t.degree,
+t.native_place,
+t.country,
+t.birth_date,
+t.national_id,
+t.national_type,
+t.marry_status,
+t.patty_name,
+t3.position_id,
+t.position_name,
+t4.organization_id as organization_parent_id,
+t.organization_parent_name,
+t5.organization_id as organization_id,
+t5.organization_name,
+t6.sequence_id,
+t.sequence_name,
+t7.sequence_sub_id,
+t.sequence_sub_name,
+t8.performance_id,
+t.performance_name,
+null, -- ability_id
+t11.job_title_id,
+null, -- t19.ability_lv_id,
+null, -- ability_name
+t.job_title_name,
+null, -- t.ability_lv_name,
+null, -- rank_name
+null, -- population_id
+null, -- population_name
+null, -- area_id
+t.run_off_date,
+t.entry_date,
+t.tel_phone,
+t.qq,
+t.wx_code,
+t.address,
+t.contract_unit,
+t10.city_id as work_place_id,
+t.work_place,
+t.regular_date,
+null,-- apply_type
+null,-- channel_id
+null,-- speciality
+null,-- is_regular
+null,-- refresh_date
+null,-- c_id
+null,-- mark
+null-- v_dim_emp_id

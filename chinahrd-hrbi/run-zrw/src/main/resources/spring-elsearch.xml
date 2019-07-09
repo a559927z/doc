@@ -1,0 +1,50 @@
+<!-- <?xml version="1.0" encoding="UTF-8"?> -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:elasticsearch="http://www.springframework.org/schema/data/elasticsearch"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/data/elasticsearch http://www.springframework.org/schema/data/elasticsearch/spring-elasticsearch.xsd
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd"
+	default-lazy-init="true">
+	
+	<elasticsearch:repositories base-package="net.chinahrd.eis.search.repositories"/>
+	
+	<!-- <elasticsearch:transport-client id="client" cluster-nodes="172.16.9.50:9300" cluster-name="chinahrd" /> -->
+	<bean id="client"
+		class="org.springframework.data.elasticsearch.client.TransportClientFactoryBean">
+		<property name="clusterNodes" value="${clusterNodes}" />
+		<property name="clusterName" value="${clusterName}" />
+	</bean>
+
+	<bean name="elasticsearchTemplate"
+		class="org.springframework.data.elasticsearch.core.ElasticsearchTemplate">
+		<constructor-arg name="client" ref="client" />
+	</bean>
+	
+	<bean name="highlightMapper"
+		class="net.chinahrd.eis.search.service.impl.HighlightMapper">
+	</bean>
+	
+	<bean name="esQueryService"
+		class="net.chinahrd.eis.search.service.impl.EsQueryServiceImpl">
+	</bean>
+	
+	<bean id="indexEmpTask" class="net.chinahrd.eis.search.task.IndexEmpTask">
+		<property name="batchSize" value="${task.index.batchSize}" />
+		<property name="taskSwitch" value="${task.index.switch}" />
+	</bean>
+	<!-- 全文检索-索引人员 -->
+	<bean id="doIndexEmpTask"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="indexEmpTask" />
+		<property name="targetMethod" value="call" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
+	<!-- 全文检索人员索引 触发时间 -->
+	<bean id="indexEmpTaskTime" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="doIndexEmpTask" />
+		<!-- cron表达式 此处定义每天凌晨6-9点每半分钟触发一次-->
+		<property name="cronExpression" value="5/30 * 6-9 * * ?" />
+	</bean>
+</beans>  

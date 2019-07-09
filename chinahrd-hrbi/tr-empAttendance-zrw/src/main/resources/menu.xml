@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus name="驱动力">
+		<menu code="YuanGongKaoQin" name="员工考勤" url="empAttendance/toEmpAttendanceView" icon="" mobile="false">
+			
+		</menu>
+	</menus>

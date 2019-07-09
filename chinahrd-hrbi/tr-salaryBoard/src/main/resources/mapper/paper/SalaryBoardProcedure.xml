@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.salaryBoard.mvc.pc.dao.SalaryBoardProcedureDao">
+	<select id="hisEmpCount" resultType="java.util.Map">
+		SELECT 
+		  a.emp_count_sum,
+		  b.`organization_id`,
+		  b.`full_path` ,
+  		  a.`day`
+		FROM
+		  history_emp_count a 
+		  LEFT JOIN dim_organization b 
+		    ON a.`organization_id` = b.`organization_id` 
+		<where>
+			a.`day` = #{day} 
+			AND a.type = 1 <!-- 当天全职的人数 -->
+			AND b.`customer_id` = #{customerId} 
+		</where>
+	</select>
+	<select id="findCenterPayShould" resultType="String">
+		<if test="oddEven != null and oddEven != '' and oddEven == 'odd'">
+			SELECT
+				AES_DECRYPT(t2.pay_should, p_key2) / 10000 
+			FROM pay t2 
+			<where>
+			WHERE t2.customer_id = #{customerId}
+				AND t2.`year_month` = #{p_ym}
+				AND locate(#{fullPath}, t2.full_path)
+			</where>
+				ORDER BY t2.pay_should DESC
+			LIMIT #{limitStart}, 1
+		</if>
+		<if test="oddEven != null and oddEven != '' and oddEven == 'even'">
+			SELECT 
+			  AVG(ps) / 10000 
+			FROM
+			  (SELECT 
+			    REPLACE(UNHEX(t2.pay_should),"hrbi",'') ps 
+			  FROM
+			    pay t2 
+			  <where>
+			    t2.customer_id = #{customerId}
+			    AND t2.`year_month` = #{p_ym} 
+			    AND LOCATE(#{fullPath}, t2.full_path) 
+			  </where>
+			  ORDER BY t2.pay_should DESC 
+			  LIMIT ${limitStart}, 2) t3 
+		</if>
+	</select>
+	<update id="batchUpateQuanValuePayCollect" parameterType="java.util.Map">
+		<if test="list != null">
+			<foreach collection="list" separator=";" item="item">
+				Update pay_collect set quantile_value = #{item.centerPay}
+				Where organization_id = #{item.orgid} AND `year_month` = #{item.yearmonth} AND customer_id = #{item.customerid}
+			</foreach>
+		</if>
+	</update>
+	<!-- 写薪资年汇总表 -->
+	<insert id="callmakePayCollectYear" statementType="CALLABLE">
+		CALL pro_fetch_pay_collect_year (
+			#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+			#{p_user_id, mode=IN, jdbcType=VARCHAR},
+			#{p_ym, mode=IN, jdbcType=VARCHAR},
+			#{p_key2, mode=IN, jdbcType=VARCHAR}
+			)
+	</insert>
+<!-- 	 (并计算50分位值)  pro_fetch_pay_collect -->
+<!-- drop procedure if exists pro_fetch_pay_collect_year; -->
+<!-- CREATE PROCEDURE `pro_fetch_pay_collect_year`(IN p_customer_id VARCHAR(32), IN p_user_id VARCHAR(32),IN p_ym INTEGER, IN p_key2 VARCHAR(10)) -->
+<!-- BEGIN -->
+
+<!-- 	DECLARE customerId VARCHAR(32) DEFAULT p_customer_id; -->
+<!-- 	DECLARE optUserId VARCHAR(32) DEFAULT p_user_id; -->
+<!-- 	DECLARE startTime TIMESTAMP DEFAULT NOW(); -->
+
+<!-- 	DECLARE p_error INTEGER DEFAULT 0;  -->
+<!-- 	DECLARE p_message VARCHAR(10000) DEFAULT '【薪酬看板-薪酬汇总】'; -->
+
+<!-- 	 硬编码 -->
+<!-- 	DECLARE CURDATE DATE DEFAULT '2015-12-17';   CURDATE(); -->
+	
+<!-- 	DECLARE limitStart INT; -->
+<!-- 	DECLARE Y INT DEFAULT SUBSTR(p_ym FROM 1 FOR 4); -->
+<!-- 	DECLARE m INT DEFAULT SUBSTR(p_ym FROM 5 FOR 6); -->
+<!-- 	DECLARE sp, ss, sw, sb DOUBLE(10, 4); -->
+
+			
+<!-- 	 薪酬汇总表 -->
+<!-- 	LB_CURSOR_SUM:BEGIN -->
+<!-- 		DECLARE orgId VARCHAR(32); -->
+<!-- 		DECLARE fp VARCHAR(1000); -->
+<!-- 		DECLARE done INT DEFAULT 0; -->
+<!-- 		DECLARE s_cur1 CURSOR FOR -->
+<!-- 	SELECT  -->
+<!-- 		organization_id orgId, -->
+<!-- 		full_path fp -->
+<!-- 		FROM dim_organization WHERE customer_id = customerId; -->
+<!-- 		DECLARE EXIT HANDLER FOR SQLSTATE '02000' SET done = 1;				 -->
+<!-- 	DELETE FROM pay_collect WHERE `year_month` = p_ym; -->
+	
+<!-- 		OPEN s_cur1; -->
+<!-- 		FETCH s_cur1 INTO orgId, fp; -->
+
+<!-- 		WHILE1: WHILE done != 1 DO -->
+
+<!-- 	SELECT  -->
+<!-- 		IFNULL(SUM(sumPay),0) sp,  -->
+<!-- 		IFNULL(SUM(sumSalary),0) ss,  -->
+<!-- 		IFNULL(SUM(sumWelfare),0) sw,   -->
+<!-- 		IFNULL(SUM(sumBonus),0) sb -->
+<!-- 		INTO sp,  ss, sw, sb -->
+<!-- 		 SELECT sumPay, avgPay, sumSalary, sumWelfare, t2.full_path -->
+<!-- 		FROM dim_organization t2  -->
+<!-- 		LEFT JOIN  -->
+<!-- 		( -->
+<!-- 		 换为万完单位 -->
+<!-- 			SELECT  -->
+<!-- 			t.organization_id, -->
+<!-- 			SUM(REPLACE(UNHEX(t.pay_should), p_key2,'')) / 10000 AS sumPay,				  应发薪酬 -->
+<!-- 			SUM(REPLACE(UNHEX(t.salary_actual), p_key2,'')) / 10000 AS sumSalary,   应发工资 -->
+<!-- 			SUM(REPLACE(UNHEX(t.welfare_actual), p_key2,'')) / 10000 AS sumWelfare, -->
+<!-- 			SUM(REPLACE(UNHEX(t.bonus), p_key2,'')) / 10000 AS sumBonus, -->
+<!-- 			t1.full_path -->
+<!-- 			FROM pay t -->
+<!-- 			INNER JOIN dim_organization t1 ON t.organization_id = t1.organization_id -->
+<!-- 			WHERE  t.`year_month` = p_ym -->
+<!-- 			GROUP BY organization_id -->
+<!-- 		) t ON t.organization_id = t2.organization_id -->
+<!-- 		WHERE LOCATE(fp, t2.full_path); -->
+
+<!-- 		SET @mas = (SELECT month_avg_sum FROM history_emp_count_month t3  -->
+<!-- 				WHERE `year_month` = p_ym AND t3.organization_id = orgId AND t3.customer_id = customerId AND t3.type=1); -->
+				
+
+<!-- 		INSERT INTO pay_collect ( -->
+<!-- 			pay_collect_id,customer_id,organization_id, -->
+<!-- 			sum_pay, avg_pay, avg_emp_num, -->
+<!-- 			sum_salary, avg_salary, -->
+<!-- 			sum_welfare, avg_welfare, -->
+<!-- 			sum_bonus, quantile_value, `year_month`,refresh -->
+<!-- 			) VALUES( -->
+<!-- 		REPLACE(UUID(),'-',''), customerId, orgId,  -->
+<!-- 		sp, (sp / @mas), @mas,  -->
+<!-- 		ss, (ss / @mas), -->
+<!-- 		sw, (sw / @mas), -->
+<!-- 		sb, 0, p_ym, NOW()); -->
+<!-- 		FETCH s_cur1 INTO orgId, fp; -->
+<!-- 		END WHILE WHILE1; -->
+<!-- 		CLOSE s_cur1; -->
+<!-- 	END LB_CURSOR_SUM; -->
+<!-- END; -->
+</mapper>

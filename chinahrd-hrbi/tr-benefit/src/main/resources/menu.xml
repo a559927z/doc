@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="生产力">
+		<menu code="ZhuDongLiuShiLv" name="人均效益" url="perBenefit/toPerBenefitView" icon="" mobile="false" relies="RenliChenben,">
+			<fields>
+				<field code="dd" name="流失时间"/>
+			</fields>
+			<layouts>
+				<layout code="xxxx" name="查看模块"  relies="">
+					<plug-in code="xxxx" name="查看模块"/>
+				</layout>
+			</layouts>
+		</menu>
+	</menus>

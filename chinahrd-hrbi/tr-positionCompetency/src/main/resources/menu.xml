@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus name="胜任力">
+		<menu code="GangWeiShengRenDu" name="岗位胜任度" url="positionCompetency/toPositionCompetencyView" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+			<block code="xxxx" >查看模块</block>
+			<block code="xxxx" >查看模块</block>
+		</menu>
+	</menus>

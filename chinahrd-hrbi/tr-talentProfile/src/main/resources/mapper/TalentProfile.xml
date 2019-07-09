@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.talentProfile.mvc.pc.dao.TalentProfileDao">
+
+	<select id="queryJobChange" resultType="net.chinahrd.entity.dto.pc.JobChangeDto">
+		SELECT
+			jc.emp_job_change_id AS jobChangeId,
+			jc.emp_id AS empId,
+			jc.organization_name AS organName,
+			jc.position_name AS positionName,
+			jc.sequence_name AS sequenceName,
+			jc.sequence_sub_name AS subSequenceName,
+			jc.ability_name AS abilityName,
+			jc.ability_lv_name AS abilityLvName,
+			jc.rank_name AS rankName,
+			dct.change_type_name AS changeType,
+			jc.change_date AS changeDate
+		FROM job_change jc
+		LEFT JOIN dim_change_type dct ON jc.customer_id = dct.customer_id AND jc.change_type_id = dct.change_type_id
+		where jc.customer_id = #{customerId} 
+		and jc.emp_id in 
+		<foreach collection="empIds" item="id" separator="," open="(" close=")">
+           #{id}
+        </foreach>
+        <if test="changeType != null">
+        	and dct.curt_name = #{changeType}
+        </if>
+		ORDER BY jc.change_date DESC
+	</select>
+
+
+	<select id="queryPerfChange" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PerfChangeDto">
+		SELECT
+			pc.performance_change_id AS perfChangeId,
+			pc.emp_id AS empId,
+			pc.organization_parent_name AS organParentName,
+			pc.organization_name AS organName,
+			pc.position_name AS positionName,
+			dp.performance_key AS perfKey,
+			pc.performance_name AS perfName,
+<!-- 			pc.grade_name AS gradeName, -->
+<!-- 			pc.score AS score, -->
+			pc.`year_month` AS yearMonth,
+			CONCAT(LEFT(pc.`year_month`,4),'年',IF(CAST(RIGHT(pc.`year_month`,2) AS SIGNED) > 6 ,'下半年','上半年')) AS rankingYear,
+			CONCAT(LEFT(pc.`year_month`,4),'Q',QUARTER(str_to_date(pc.`year_month`,'%Y%m'))) AS rankingQuarter
+		FROM performance_change pc
+		LEFT JOIN dim_performance dp ON dp.customer_id = pc.customer_id AND dp.performance_id = pc.performance_id
+		where pc.customer_id = #{customerId}
+		and pc.emp_id in 
+		 <foreach collection="empIds" item="id" separator="," open="(" close=")">
+             #{id}
+         </foreach>
+		ORDER BY pc.`year_month` desc
+		limit #{empNumber}
+	</select>
+
+	<select id="query360Evaluation" resultType="net.chinahrd.entity.dto.pc.EvalReportDto">
+	SELECT
+		3t.360_time_id AS evalId,
+		3t.emp_id AS empId,
+		YEAR(3t.report_date) AS reportYear,
+		3t.path,
+		3r.360_ability_name AS abilityName,
+		3r.360_ability_lv_name AS abilityLvName,
+		3r.score
+	FROM 360_time 3t
+	INNER JOIN (
+		SELECT
+			t3t.360_time_id,
+			YEAR(t3t.report_date) AS report_year
+		FROM 360_time t3t
+		WHERE t3t.emp_id = #{empId}
+		AND t3t.customer_id = #{customerId}
+		AND t3t.type = 1
+		ORDER BY t3t.report_date
+		LIMIT 0,5
+	) AS 360tt ON 360tt.360_time_id = 3t.360_time_id AND 360tt.report_year = Year(3t.report_date)
+	LEFT JOIN 360_report 3r ON 3r.360_time_id = 3t.360_time_id AND 3r.customer_id = 3t.customer_id
+	WHERE 3t.emp_id = #{empId}
+	AND 3t.customer_id = #{customerId}
+	AND 3t.type = 1
+	ORDER BY reportYear
+	</select>
+	
+	<select id="query360Evaluation4Mobile" resultType="net.chinahrd.entity.dto.pc.EvalReport4MobileDto">
+	select 
+		t.emp_id as empId,
+		t2.360_ability_name as abilityName,
+		t2.360_ability_lv_name as abilityLvName,
+		GROUP_CONCAT(t.`year`,concat('#',(t2.score)*10000)) as yearScore
+	from 360_time t
+	left join 360_report t2 
+			on t.customer_id=t2.customer_id 
+			and t.emp_id=t2.emp_id 
+			and t.360_time_id=t2.360_time_id 
+	where t.type =1
+	 AND T.customer_id = #{customerId}
+	and t.emp_id=#{empId}
+	GROUP BY t.emp_id,t2.360_ability_name,t2.360_ability_lv_name
+	ORDER BY t.emp_id,t2.360_ability_name,t2.360_ability_lv_name desc 
+
+	</select>
+	
+	
+	<!-- 其他测评 最近五次记录 -->
+	<select id="queryOtherEvaluation" resultType="net.chinahrd.entity.dto.pc.OtherReportDto">
+	SELECT
+		3t.360_time_id AS otherReportId,
+		3t.emp_id AS empId,
+		3t.report_name AS reportName,
+		3t.report_date AS reportDate,
+		3t.path
+	FROM 360_time 3t
+	WHERE 3t.emp_id = #{empId}
+	AND 3t.customer_id = #{customerId}
+	AND 3t.type = 0
+	ORDER BY 3t.report_date DESC LIMIT 0,5
+	</select>
+	
+	<select id="findEmpDetail" resultType="net.chinahrd.entity.dto.pc.EmpDetailDto">
+	SELECT
+		vde.emp_id AS empId,
+		vde.emp_key AS empKey,
+		vde.user_name_ch AS userName,
+		vde.img_path AS imgPath,
+		vde.organization_name AS organName,
+		vde.position_name AS positionName,
+		tvde.user_name_ch AS empHfName,
+		vde.tel_phone AS telPhone,
+		vde.email,
+		vde.qq,
+		vde.wx_code AS wxCode,
+		vde.sex,
+		vde.birth_date AS birthDate,
+		vde.degree,
+		vde.marry_status AS marryStatus,
+		vde.native_place AS nativePlace,
+		vde.nation,
+		vde.patty_name AS pattyName,
+		vde.national_type AS nationalType,
+		vde.national_id AS nationalId,
+		vde.birth_place AS birthPlace,
+		vde.address,
+		tecp.emp_contact_person_name AS contactPersonName,
+		tecp.tel_phone AS contactTelPhone,
+		tecp.`call` AS contactCall,
+		vde.contract_unit AS contractUnit,
+		vde.work_place AS workPlace,
+		vde.passtime_or_fulltime AS passtimeOrFulltime,
+		vde.contract AS contract,
+		vde.sequence_name AS sequenceName,
+		vde.sequence_sub_name AS sequenceSubName,
+		vde.ability_name AS abilityName,
+		vde.rank_name AS rankName,
+		vde.job_title_name AS jobTitleName,
+		vde.entry_date AS entryDate,
+		vde.regular_date AS regularDate,
+		vde.run_off_date AS runOffDate,
+		vde.apply_type AS applyType,
+		dch.channel_name AS applyChannel,
+		vde.speciality
+	FROM v_dim_emp vde
+	INNER JOIN dim_channel dch on dch.channel_id = vde.channel_id AND dch.customer_id = #{customerId}
+	LEFT JOIN (
+		SELECT
+			ecp.emp_id,
+			ecp.emp_contact_person_name,
+			ecp.tel_phone,
+			ecp.`call`
+		FROM emp_contact_person ecp
+		WHERE ecp.emp_id = #{empId} AND ecp.customer_id = #{customerId}
+		ORDER BY ecp.is_urgent desc
+		LIMIT 0,1
+	) AS tecp ON vde.emp_id = tecp.emp_id
+	LEFT JOIN v_dim_emp tvde ON tvde.emp_id = vde.emp_hf_id AND vde.customer_id = tvde.customer_id
+	where vde.customer_id = #{customerId}  and vde.emp_id = #{empId}
+	LIMIT 0,1
+	</select>
+	
+	<!-- 员工奖惩信息  -->
+	<select id="queryBonusData" resultType="net.chinahrd.entity.dto.pc.emp.BonusPenaltyDto">
+		select bonus_penalty_name as bonusPenaltyName, 
+		type as typeName,grant_unit as grantUnit,
+		witness_name as witnessName ,
+		bonus_penalty_date as bonusPenaltyDate
+		from emp_bonus_penalty 
+		where emp_id = #{empId} and customer_id = #{customerId}
+		order by bonus_penalty_date desc 
+	</select>
+	
+	<!-- 员工培训经历  -->
+	<select id="queryTrainExp" resultType="net.chinahrd.entity.dto.pc.emp.TrainExperienceDto">
+		select 
+			course_name as trainName, finish_date as finishDate,status,
+			result,train_unit as trainUnit,gain_certificate as gainCertificate, lecturer_name as teacherName,note
+		from emp_train_experience where emp_id = #{empId} and customer_id = #{customerId} 
+		order by finish_date desc 
+	</select>
+	
+	<!-- 过往履历 -->
+	<select id="queryPastResume" resultType="net.chinahrd.entity.dto.pc.emp.EmpPastResumeDto">
+		select emp_id as empId ,work_unit as workUnit, department_name as departmentName, position_name as positionName, 
+		bonus_penalty_name as bonusPenaltyName, witness_name as witnessName, 
+		witness_contact_info as witnessContactInfo, change_reason as changeReason ,
+		entry_date as entryDate,run_off_date as runOffDate
+		from emp_past_resume where customer_id = #{customerId}
+		and emp_id in 
+		 <foreach collection="empIds" item="id" separator="," open="(" close=")">
+             #{id}
+         </foreach>
+         Order by entry_date desc
+	</select>
+	
+	<!-- 教育背景 -->
+	<select id="queryEduBg" resultType="net.chinahrd.entity.dto.pc.emp.EmpEduDto">
+		select start_date as startDate,end_date as endDate,school_name as schoolName, major , degree , academic_degree as academicDegree, develop_mode as developMode, bonus,note  
+		from emp_edu where emp_id = #{empId} and customer_id = #{customerId}
+	</select>
+	
+	<!-- 所获职称 -->
+	<select id="queryProfTitle" resultType="net.chinahrd.entity.dto.pc.emp.ProfTitleDto">
+		select gain_date as gainDate, emp_prof_title_name as profTitleName, 
+		prof_lv as profLv, award_unit as awardUnit, effect_date as effectDate
+		from emp_prof_title where emp_id = #{empId} and customer_id = #{customerId}
+	</select>
+	
+	<!-- 员工家庭关系 -->
+	<select id="queryFamilyData" resultType="net.chinahrd.entity.dto.pc.emp.EmpFamilyDto">
+		select emp_family_name as name, e.call , work_unit as workUnit, department_name as departmentName, 
+		position_name as positionName, tel_phone as telPhone, born_date as bornDate, note ,is_Child as isChild
+		from emp_family e where emp_id = #{empId} and customer_id = #{customerId}
+	</select>
+
+	<select id="queryContrastAll" resultType="net.chinahrd.entity.dto.pc.talentContrast.ContrastEmpDto">
+	SELECT
+		vde.emp_id AS empId,
+		vde.img_path AS imgPath,
+		vde.emp_key AS empKey,
+		vde.user_name_ch AS userName,
+		vde.organization_name AS organName,
+		vde.sex,
+		vde.age,
+		vde.marry_status AS marryStatus,
+		vde.degree,
+		vde.organization_parent_name AS organParentName,
+		vde.entry_date AS entryDate,
+		vde.sequence_name AS sequenceName,
+		vde.sequence_sub_name AS sequenceSubName,
+		vde.ability_name AS abilityName,
+		vde.rank_name AS rankName,
+		vde.position_name AS positionName
+	FROM v_dim_emp vde 
+	where vde.run_off_date is NULL 
+		<if test="customerId != null">
+		and	vde.customer_id = #{customerId}
+		</if>
+		<if test="keyName != null">
+		AND (vde.emp_key = #{keyName} OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="empIds != null and empIds.size != 0">
+		AND vde.emp_id IN
+			<foreach collection="empIds" item="empId" separator="," open="(" close=")" >
+				#{empId}
+			</foreach>
+		</if>
+	
+	</select>
+	
+	<select id="queryContrastCount" resultType="int">
+	SELECT
+		COUNT(vde.emp_id)
+	FROM v_dim_emp vde 
+		where vde.run_off_date is NULL 
+		<if test="customerId != null">
+			and vde.customer_id = #{customerId}
+		</if>
+		<if test="keyName != null">
+			AND (vde.emp_key = #{keyName} OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="empIds != null and empIds.size != 0">
+			AND vde.emp_id IN
+			<foreach collection="empIds" item="empId" separator="," open="(" close=")" >
+				#{empId}
+			</foreach>
+		</if>
+	</select>
+</mapper>

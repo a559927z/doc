@@ -1,0 +1,143 @@
+.column .widget-toolbar {
+    padding-left: 5px;
+     padding-right: 5px;
+}
+.column .widget-toolbar span {
+    padding: 1px;
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 4px;
+}
+.position-relative{
+	margin-top:15px;
+}
+.column .widget-toolbar .blue {
+    background-color: #3d6ba7;
+}
+
+.manpower .column{
+    margin: 0!important;
+}
+
+.manpower .currentMonth {
+    font-size: 28px;
+    color: #5E5E5E;
+    margin: 25px 0 0 8px;
+}
+
+.manpower .average {
+    font-size: 18px;
+    color: #5E5E5E;
+}
+
+.warn-icon {
+	margin:10px 0px 0px 0px;
+    height: 65px;
+    background: url(../../../img/base/icon-warn.png) no-repeat;
+    background-size:96% auto;
+    background-position: center; 
+}
+
+.smile-face {
+	margin:10px 0px 0px 0px;
+    height: 65px;
+    background: url(../../../img/base/smile-face.png) no-repeat;    
+	background-size:96% auto;
+	background-position: center; 
+}
+
+.arrow-higher {
+	width:30px;
+    height: 20px;
+    background: url(../../../img/base/arrow-higher.jpg) no-repeat;
+    background-size:50% auto;
+    background-position: left; 
+    float:right;
+    margin-top:5px;
+}
+
+.arrow-lower {
+	width:30px;
+    height: 20px;
+    background: url(../../../img/base/arrow-lower.jpg) no-repeat;    
+	background-size:50% auto;
+	background-position: left; 
+	float:right;
+	margin-top:5px;
+}
+
+.manpower .lastMonth {
+    display: inline-block;
+    height: 71px;
+    width: 100%;
+    padding-top: 50px;
+    text-align: right;
+    font-weight: 700;
+/*     color: #1C84C6; */
+    margin-right: 2px;
+}
+.lastMonthBlue {
+    color: #1C84C6;
+}
+.lastMonthRed {
+    color: #ff6600;
+}
+.manpower .lastLabel {
+    display: inline-block;
+    width: 100%;
+    text-align: right;
+    font-size: 11px;
+}
+
+.row {
+    margin-left: 0px;
+}
+
+.column .tab-content{
+    min-height: 350px;
+}
+
+.column .widget-toolbar a {
+    font-size: 12px;
+    text-decoration: underline;
+}
+
+.column .widget-toolbar .green {
+    background-color: #23C6C8;
+    padding: 3px 1px;
+   
+}
+ .column .widget-toolbar .white {
+    background-color: #FFFFF;
+    padding: 3px 1px;
+    border: solid 1px gray;
+    color: black !important;
+   
+}
+.pointer{
+ cursor: pointer;	
+}
+
+.rowContentHeight{
+    height: 318px;
+}
+
+.trendByMonth-bar{
+	height : 350px;
+}
+.manpowerTrend-line{
+    height : 350px;
+}
+#averageCompare{
+	width:170px;
+	  font-size: 15px;
+}
+
+/*浜哄姏鎴愭湰鎵ц鐜� begin*/
+.barlineObject{padding-top: 54px;padding-left: 40px;width: 100%;padding-right: 40px;}
+.barline{position:relative;width:82%;background:#cdcdcd;height:20px;border-radius:4px;}
+.barline #percent{float:left;background-image:url("../../../img/base/black_bg.png");width:55px;height:30px;line-height:25px;text-align:center;margin-left:-30px;margin-top:-38px;display:inline-block;color:#ffffff;font-size:16px;}
+.barline #line{float:left;height:20px;overflow:hidden;background:#22c5c8;border-radius:4px;}
+.barLineValue{position: absolute;right: -42px;}
+/*浜哄姏鎴愭湰鎵ц鐜� end*/

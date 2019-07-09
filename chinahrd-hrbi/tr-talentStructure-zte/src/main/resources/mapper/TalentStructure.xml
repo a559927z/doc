@@ -1,0 +1,899 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.zte.talentStructure.mvc.pc.dao.TalentStructureDao">
+<cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+	<!-- 编制分析 -->
+	<select id="findBudgetAnalyse" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentstructureDto" useCache="true">
+		SELECT
+			t2.number AS number,
+			IFNULL(sum(hec.emp_count_sum), 0) AS empCount
+		FROM  budget_emp_number t2 
+		LEFT JOIN history_emp_count hec ON t2.organization_id = hec.organization_id
+			AND hec.customer_id = t2.customer_id
+			AND hec.day = date_sub(#{now},interval 1 day)
+		WHERE 
+			t2.organization_id = #{organId}
+			AND t2.YEAR = YEAR(#{now})
+			AND t2.customer_id = #{customerId}  
+			AND hec.type in   
+			<foreach collection="personTypeKey" item="type" separator="," open="(" close=")">
+			 #{type}
+		 	</foreach>
+	</select>
+	
+	<!-- 预警值更新 -->
+	<update id="updateConfigWarnValByNormal" >
+    	UPDATE config SET config_val=#{normal} WHERE customer_id=#{customerId} AND config_key='RLJG-normal'
+    </update>
+	<update id="updateConfigWarnValByRisk" >
+    	UPDATE config SET config_val=#{risk} WHERE customer_id=#{customerId} AND config_key='RLJG-risk'
+    </update>
+    
+    <select id="queryOrganId" resultType="java.lang.String" useCache="true">
+    	SELECT DISTINCT organization_id
+    	FROM dim_organization
+    	WHERE customer_id = #{customerId}
+    </select>
+
+	<!-- 人力结构核心 -->
+	<select id="queryEmpInfo" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentstructureDto" useCache="true">
+		SELECT
+		t2.emp_id empId,
+		-- t2.sex,
+		t2.sequence_sub_name as sequenceSubName,
+		t2.ability_lv_name as abilityLvName,
+		t2.work_place as workPlace,
+		concat(t2.user_name,'(',t2.user_name_ch,')') as userNameCh,
+		t2.organization_parent_id organizationPId,
+		t2.organization_id organizationId,
+		t2.organization_name organizationName,
+		t2.ability_id abilityId,
+		t2.ability_name abilityName,
+		t2.work_place workPlace,
+		t2.degree degree,
+		-- t2.company_age companyAge,
+		t2.sequence_id sequenceId,
+		t2.sequence_name sequenceName,
+		t1.code_item_key seqKey,
+		t4.full_path,
+		concat(t3.curt_name,'级') abCurtName,
+		(SELECT MAX(curt_name) FROM dim_ability where customer_id =#{customerId} ) maxAbLevel
+		FROM
+		dim_emp t2
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr ON t2.emp_id=pr.emp_id AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+		</if>
+		LEFT JOIN soure_code_item t1 ON t1.customer_id = t2.customer_id AND t2.sequence_id = code_item_id
+		LEFT JOIN dim_ability t3 on t3.ability_id = t2.ability_id AND t3.customer_id = t2.customer_id
+		LEFT JOIN dim_organization t4 on t4.organization_id = t2.organization_id AND t4.customer_id = t2.customer_id
+		WHERE
+		t2.customer_id = #{customerId}
+		AND t2.organization_id in (
+		SELECT t0.organization_id FROM dim_organization t0
+		WHERE locate(
+		(SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{organId} AND t.customer_id = #{customerId}
+		), t0.full_path
+		)AND t0.customer_id = #{customerId}
+		)
+		AND t2.run_off_date is null
+		AND days=#{day}
+		ORDER BY t3.show_index
+	</select>
+
+
+	<!-- 人力结构核心 -->
+	<select id="queryAbEmpCountBarBySeqId" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentstructureDto" useCache="true">
+		SELECT
+		t2.emp_id empId,
+		t2.sex,
+		t2.sequence_sub_name as sequenceSubName,
+		t2.ability_lv_name as abilityLvName,
+		t2.organization_name organizationName,
+		t2.work_place as workPlace,
+		concat(t2.user_name,'(',t2.user_name_ch,')') as userNameCh,
+		t2.sequence_id sequenceId,
+		t2.sequence_name sequenceName,
+		concat(t3.curt_name,'级') abCurtName
+		FROM
+		dim_emp t2
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr ON t2.emp_id=pr.emp_id AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+		</if>
+		LEFT JOIN dim_ability t3 on t3.ability_id = t2.ability_id AND t3.customer_id = t2.customer_id
+		WHERE
+		t2.customer_id = #{customerId}
+		AND t2.organization_id in (
+		SELECT t0.organization_id FROM dim_organization t0
+		WHERE locate(
+		(SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{organId} AND t.customer_id = #{customerId}
+		), t0.full_path
+		)AND t0.customer_id = #{customerId}
+		)
+		AND t2.sequence_id = #{seqId}
+		AND t2.run_off_date is null
+		AND days=#{day}
+		ORDER BY t3.show_index
+	</select>
+
+	<!-- 管理者首页-团队画像  -->
+	<select id="queryTeamImg" resultType="net.chinahrd.entity.dtozte.pc.manage.TeamImgEmpDto">
+		SELECT
+		t3.emp_id empId,
+
+		t3.sequence_name sequenceName,
+		t3.sequence_sub_name as sequenceSubName,
+		t3.ability_lv_name as abilityLvName,
+		t3.organization_name organizationName,
+		concat(t3.user_name,'(',t3.user_name_ch,')') as userNameCh,
+
+		t3.work_place workPlace,
+		t4.show_index showIndex,
+		t4.ability_id abilityId,
+		t4.ability_name abilityName,
+		t3.sex sex,
+		t3.birth_date birthDate,
+		t3.marry_status marryStatus,
+		t3.age age,
+		t3.company_age companyAge,
+		t3.blood blood,
+		t4.curt_name curtName,
+		t5.type personalityType
+		FROM dim_emp t3
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr ON t3.emp_id=pr.emp_id AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+		</if>
+		LEFT JOIN dim_ability t4 on t3.ability_id = t4.ability_id
+		AND t3.customer_id = t4.customer_id
+		-- 员工性格
+		LEFT JOIN emp_personality t5 on t5.customer_id = t3.customer_id AND t5.emp_id = t3.emp_id
+		WHERE 1=1
+		-- 当前机构下所有子孙部门
+		AND t3.organization_id IN
+		(
+		SELECT t1.organization_id FROM dim_organization t1
+		WHERE
+		locate(
+		(
+		SELECT t.full_path FROM dim_organization t
+		WHERE t.organization_id = #{organId}
+		AND t.customer_id = #{customerId}
+		), t1.full_path
+		)
+		AND t1.customer_id = #{customerId}
+		)
+		AND t3.customer_id = #{customerId}
+		AND t3.run_off_date IS NULL
+		AND t3.days=#{day}
+		<!-- AND t3.ability_id is NOT NULL  -->
+		ORDER BY t4.show_index ASC
+	</select>
+
+	<!-- 人员结构-团队画像 性别 -->
+	<select id="getSexData" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentStructureTeamImgDto">
+		SELECT a.sex AS id,a.name, IFNULL(b.total,0) AS total FROM(
+			SELECT '男' AS name,'m' AS sex
+			UNION
+			SELECT '女' AS name,'w' AS sex
+		) AS a LEFT JOIN (
+			SELECT
+			vde.sex,
+			count(de.emp_id) AS total
+			FROM dim_emp de
+			INNER JOIN dim_organization AS org
+			ON de.customer_id = #{customerId}
+			AND de.run_off_date IS NULL
+			AND de.days=#{day}
+			AND org.customer_id = #{customerId}
+			AND locate(
+				(
+					SELECT t.full_path FROM dim_organization t
+					WHERE t.organization_id = #{organId}
+					AND t.customer_id = #{customerId}
+				), org.full_path
+			)
+			AND org.organization_id=de.organization_id
+
+			<if test="crowds!=null and crowds.size()>0">
+				INNER JOIN population_relation as pr
+				ON pr.days=de.days
+				AND pr.customer_id=de.customer_id
+				AND pr.population_id IN
+				<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+					#{crowd}
+				</foreach>
+				AND pr.emp_id=de.emp_id
+			</if>
+
+			INNER JOIN v_dim_emp AS vde
+			ON vde.customer_id=#{customerId}
+			AND vde.emp_id=de.emp_id
+			GROUP BY vde.sex
+		) AS b ON a.sex=b.sex;
+	</select>
+
+	<!-- 人员结构-团队画像 性别列表 -->
+	<select id="getSexDataListCount" resultType="Integer">
+		SELECT
+		COUNT(*) AS total
+		FROM dim_emp de
+		INNER JOIN dim_organization AS org
+		ON de.customer_id = #{customerId}
+		AND de.run_off_date IS NULL
+		AND de.days=#{day}
+		AND org.customer_id = #{customerId}
+		AND locate(
+		(
+		SELECT t.full_path FROM dim_organization t
+		WHERE t.organization_id = #{organId}
+		AND t.customer_id = #{customerId}
+		), org.full_path
+		)
+		AND org.organization_id=de.organization_id
+
+
+
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr
+			ON pr.days=de.days
+			AND pr.customer_id=de.customer_id
+			AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			AND pr.emp_id=de.emp_id
+		</if>
+
+
+		INNER JOIN v_dim_emp AS vde
+		ON vde.customer_id= #{customerId}
+		AND vde.emp_id=de.emp_id
+		AND vde.sex=#{id}
+	</select>
+
+	<!-- 人员结构-团队画像 性别列表 -->
+	<select id="getSexDataList" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentStructureTeamImgListDto">
+		SELECT
+		de.emp_id,
+		vde.sex,
+		vde.user_name_ch AS userNameCh,
+		vde.organization_name AS organizationName,
+		vde.sequence_name AS sequenceName,
+		vde.sequence_sub_name AS sequenceSubName,
+		vde.ability_lv_name AS abilityLvName,
+		vde.work_place AS workPlace
+		FROM dim_emp de
+		INNER JOIN dim_organization AS org
+		ON de.customer_id = #{customerId}
+		AND de.run_off_date IS NULL
+		AND de.days=#{day}
+		AND org.customer_id = #{customerId}
+		AND locate(
+			(
+				SELECT t.full_path FROM dim_organization t
+				WHERE t.organization_id = #{organId}
+				AND t.customer_id = #{customerId}
+			), org.full_path
+		)
+		AND org.organization_id=de.organization_id
+
+
+
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr
+			ON pr.days=de.days
+			AND pr.customer_id=de.customer_id
+			AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			AND pr.emp_id=de.emp_id
+		</if>
+
+
+		INNER JOIN v_dim_emp AS vde
+		ON vde.customer_id= #{customerId}
+		AND vde.emp_id=de.emp_id
+		AND vde.sex=#{id}
+		ORDER BY CONVERT(vde.user_name_ch USING GBK) ASC
+		LIMIT #{offset},#{limit}
+	</select>
+
+	<!-- 人员结构-团队画像 婚姻状况 -->
+	<select id="getMarryStatusData" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentStructureTeamImgDto">
+		SELECT a.marry_status AS id,a.name, IFNULL(b.total,0) AS total FROM(
+		SELECT '未婚' AS name,0 AS marry_status
+		UNION
+		SELECT '已婚' AS name,1 AS marry_status
+		) AS a LEFT JOIN (
+		SELECT
+		de.marry_status,
+		count(de.emp_id) AS total
+		FROM dim_emp AS de
+		INNER JOIN dim_organization AS org
+		ON de.customer_id = #{customerId}
+		AND de.run_off_date IS NULL
+		AND de.days=#{day}
+		AND org.customer_id = #{customerId}
+		AND locate(
+		(
+		SELECT t.full_path FROM dim_organization t
+		WHERE t.organization_id = #{organId}
+		AND t.customer_id = #{customerId}
+		), org.full_path
+		)
+		AND org.organization_id=de.organization_id
+
+
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr
+			ON pr.days=de.days
+			AND pr.customer_id=de.customer_id
+			AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			AND pr.emp_id=de.emp_id
+		</if>
+
+		INNER JOIN v_dim_emp AS vde
+		ON vde.customer_id= #{customerId}
+		AND vde.emp_id=de.emp_id
+
+		GROUP BY de.marry_status
+		) AS b ON a.marry_status=b.marry_status;
+	</select>
+
+	<!-- 人员结构-团队画像 婚姻状况 列表 -->
+	<select id="getMarryStatusDataListCount" resultType="Integer">
+		SELECT
+		count(*) AS total
+		FROM dim_emp AS de
+		INNER JOIN dim_organization AS org
+		ON de.customer_id = #{customerId}
+		AND de.run_off_date IS NULL
+		AND de.days=#{day}
+		AND org.customer_id = #{customerId}
+		AND locate(
+		(
+		SELECT t.full_path FROM dim_organization t
+		WHERE t.organization_id =  #{organId}
+		AND t.customer_id = #{customerId}
+		), org.full_path
+		)
+		AND org.organization_id=de.organization_id
+		AND de.marry_status=#{id}
+
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr
+			ON pr.days=de.days
+			AND pr.customer_id=de.customer_id
+			AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			AND pr.emp_id=de.emp_id
+		</if>
+
+		INNER JOIN v_dim_emp AS vde
+		ON vde.customer_id= #{customerId}
+		AND vde.emp_id=de.emp_id;
+	</select>
+	<!-- 人员结构-团队画像 婚姻状况 列表 -->
+	<select id="getMarryStatusDataList" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentStructureTeamImgListDto">
+		SELECT
+		de.emp_id,
+		vde.sex,
+		vde.user_name_ch AS userNameCh,
+		vde.organization_name AS organizationName,
+		vde.sequence_name AS sequenceName,
+		vde.sequence_sub_name AS sequenceSubName,
+		vde.ability_lv_name AS abilityLvName,
+		vde.work_place AS workPlace
+		FROM dim_emp AS de
+		INNER JOIN dim_organization AS org
+		ON de.customer_id = #{customerId}
+		AND de.run_off_date IS NULL
+		AND de.days=#{day}
+		AND org.customer_id = #{customerId}
+		AND locate(
+			(
+				SELECT t.full_path FROM dim_organization t
+				WHERE t.organization_id =  #{organId}
+				AND t.customer_id = #{customerId}
+			), org.full_path
+		)
+		AND org.organization_id=de.organization_id
+		AND de.marry_status=#{id}
+
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr
+			ON pr.days=de.days
+			AND pr.customer_id=de.customer_id
+			AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			AND pr.emp_id=de.emp_id
+		</if>
+
+		INNER JOIN v_dim_emp AS vde
+		ON vde.customer_id= #{customerId}
+		AND vde.emp_id=de.emp_id
+		ORDER BY CONVERT(vde.user_name_ch USING GBK) ASC
+		LIMIT #{offset},#{limit}
+	</select>
+
+	<!-- 人员结构-团队画像 血型 -->
+	<select id="getBloodData" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentStructureTeamImgDto">
+		SELECT
+			IFNULL(vde.blood,'0') AS id,
+			IFNULL(vde.blood,'其他') AS name,
+			count(de.emp_id) AS total
+		FROM dim_emp de
+		INNER JOIN dim_organization AS org
+		ON de.customer_id = #{customerId}
+		AND de.run_off_date IS NULL
+		AND de.days=#{day}
+		AND org.customer_id = #{customerId}
+		AND locate(
+			(
+				SELECT t.full_path FROM dim_organization t
+				WHERE t.organization_id = #{organId}
+				AND t.customer_id = #{customerId}
+			), org.full_path
+		)
+		AND org.organization_id=de.organization_id
+
+
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr
+			ON pr.days=de.days
+			AND pr.customer_id=de.customer_id
+			AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			AND pr.emp_id=de.emp_id
+		</if>
+
+
+		INNER JOIN v_dim_emp AS vde
+		ON vde.customer_id=#{customerId}
+		AND vde.emp_id=de.emp_id
+		GROUP BY vde.blood
+		ORDER BY CASE WHEN vde.blood IS NULL THEN 0 ELSE 1 END DESC,total DESC;
+	</select>
+
+	<!-- 人员结构-团队画像 血型 列表 -->
+	<select id="getBloodDataListCount" resultType="Integer">
+		SELECT
+		count(*) AS total
+		FROM dim_emp de
+		INNER JOIN dim_organization AS org
+		ON de.customer_id = #{customerId}
+		AND de.run_off_date IS NULL
+		AND de.days=#{day}
+		AND org.customer_id = #{customerId}
+		AND locate(
+		(
+		SELECT t.full_path FROM dim_organization t
+		WHERE t.organization_id =  #{organId}
+		AND t.customer_id = #{customerId}
+		), org.full_path
+		)
+		AND org.organization_id=de.organization_id
+
+
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr
+			ON pr.days=de.days
+			AND pr.customer_id=de.customer_id
+			AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			AND pr.emp_id=de.emp_id
+		</if>
+
+
+		INNER JOIN v_dim_emp AS vde
+		ON vde.customer_id=#{customerId}
+		AND vde.emp_id=de.emp_id
+		AND vde.blood=#{id}
+	</select>
+
+	<!-- 人员结构-团队画像 血型 列表 -->
+	<select id="getBloodDataList" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentStructureTeamImgListDto">
+		SELECT
+		de.emp_id,
+		vde.sex,
+		vde.user_name_ch AS userNameCh,
+		vde.organization_name AS organizationName,
+		vde.sequence_name AS sequenceName,
+		vde.sequence_sub_name AS sequenceSubName,
+		vde.ability_lv_name AS abilityLvName,
+		vde.work_place AS workPlace
+		FROM dim_emp de
+		INNER JOIN dim_organization AS org
+		ON de.customer_id = #{customerId}
+		AND de.run_off_date IS NULL
+		AND de.days=#{day}
+		AND org.customer_id = #{customerId}
+		AND locate(
+		(
+		SELECT t.full_path FROM dim_organization t
+		WHERE t.organization_id =  #{organId}
+		AND t.customer_id = #{customerId}
+		), org.full_path
+		)
+		AND org.organization_id=de.organization_id
+
+
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr
+			ON pr.days=de.days
+			AND pr.customer_id=de.customer_id
+			AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			AND pr.emp_id=de.emp_id
+		</if>
+
+
+		INNER JOIN v_dim_emp AS vde
+		ON vde.customer_id=#{customerId}
+		AND vde.emp_id=de.emp_id
+		AND vde.blood=#{id}
+
+		ORDER BY CONVERT(vde.user_name_ch USING GBK) ASC
+		LIMIT #{offset},#{limit}
+	</select>
+
+	<!-- 人员结构-团队画像 星座分布 -->
+	<select id="getStarData" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentStructureTeamImgDto">
+		SELECT aa.number,count(*) AS total FROM(
+		SELECT
+		CASE WHEN a.number >= 321 AND a.number &lt; 419 THEN 0
+		WHEN a.number >= 420 AND a.number &lt;= 520 THEN 1
+		WHEN a.number >= 521 AND a.number &lt;= 621 THEN 2
+		WHEN a.number >= 622 AND a.number &lt;= 722 THEN 3
+		WHEN a.number >= 723 AND a.number &lt;= 822 THEN 4
+		WHEN a.number >= 823 AND a.number &lt;= 922 THEN 5
+		WHEN a.number >= 923 AND a.number &lt;= 1023 THEN 6
+		WHEN a.number >= 1024 AND a.number &lt;= 1122 THEN 7
+		WHEN a.number >= 1123 AND a.number &lt;= 1221 THEN 8
+		WHEN a.number &lt;= 1222 AND a.number &lt;= 119 THEN 9
+		WHEN a.number >= 120 AND a.number &lt;= 218 THEN 10
+		ELSE 11 END AS number,
+		a.emp_id
+		FROM(
+
+			SELECT
+			month(vde.birth_date)*100+day(vde.birth_date) AS number,
+			de.emp_id
+			FROM dim_emp de
+			INNER JOIN dim_organization AS org
+			ON de.customer_id = #{customerId}
+			AND de.run_off_date IS NULL
+			AND de.days=#{day}
+			AND org.customer_id = #{customerId}
+			AND locate(
+			(
+			SELECT t.full_path FROM dim_organization t
+			WHERE t.organization_id = #{organId}
+			AND t.customer_id = #{customerId}
+			), org.full_path
+			)
+			AND org.organization_id=de.organization_id
+
+
+			<if test="crowds!=null and crowds.size()>0">
+				INNER JOIN population_relation as pr
+				ON pr.days=de.days
+				AND pr.customer_id=de.customer_id
+				AND pr.population_id IN
+				<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+					#{crowd}
+				</foreach>
+				AND pr.emp_id=de.emp_id
+			</if>
+
+
+			INNER JOIN v_dim_emp AS vde
+			ON vde.customer_id=#{customerId}
+			AND vde.emp_id=de.emp_id
+
+			) AS a
+		) AS aa GROUP BY aa.number
+		ORDER BY aa.number ASC;
+	</select>
+
+	<!-- 人员结构-团队画像 星座分布 列表 -->
+	<select id="getStarDataListCount" resultType="Integer">
+		SELECT
+		count(*) AS total
+		FROM(
+
+			SELECT
+			month(vde.birth_date)*100+day(vde.birth_date) AS number,
+			de.emp_id
+			FROM dim_emp de
+			INNER JOIN dim_organization AS org
+			ON de.customer_id = #{customerId}
+			AND de.run_off_date IS NULL
+			AND de.days=#{day}
+			AND org.customer_id = #{customerId}
+			AND locate(
+			(
+			SELECT t.full_path FROM dim_organization t
+			WHERE t.organization_id = #{organId}
+			AND t.customer_id = #{customerId}
+			), org.full_path
+			)
+			AND org.organization_id=de.organization_id
+
+
+			<if test="crowds!=null and crowds.size()>0">
+				INNER JOIN population_relation as pr
+				ON pr.days=de.days
+				AND pr.customer_id=de.customer_id
+				AND pr.population_id IN
+				<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+					#{crowd}
+				</foreach>
+				AND pr.emp_id=de.emp_id
+			</if>
+
+
+			INNER JOIN v_dim_emp AS vde
+			ON vde.customer_id=#{customerId}
+			AND vde.emp_id=de.emp_id
+
+		) AS a
+		WHERE CASE WHEN a.number >= 321 AND a.number &lt; 419 THEN 0
+		WHEN a.number >= 420 AND a.number &lt;= 520 THEN 1
+		WHEN a.number >= 521 AND a.number &lt;= 621 THEN 2
+		WHEN a.number >= 622 AND a.number &lt;= 722 THEN 3
+		WHEN a.number >= 723 AND a.number &lt;= 822 THEN 4
+		WHEN a.number >= 823 AND a.number &lt;= 922 THEN 5
+		WHEN a.number >= 923 AND a.number &lt;= 1023 THEN 6
+		WHEN a.number >= 1024 AND a.number &lt;= 1122 THEN 7
+		WHEN a.number >= 1123 AND a.number &lt;= 1221 THEN 8
+		WHEN a.number &lt;= 1222 AND a.number &lt;= 119 THEN 9
+		WHEN a.number >= 120 AND a.number &lt;= 218 THEN 10
+		ELSE 11 END=#{id}
+	</select>
+	<!-- 人员结构-团队画像 星座分布 列表 -->
+	<select id="getStarDataList" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentStructureTeamImgListDto">
+		SELECT
+		a.emp_id,
+		a.sex,
+		a.userNameCh,
+		a.organizationName,
+		a.sequenceName,
+		a.sequenceSubName,
+		a.abilityLvName,
+		a.workPlace
+		FROM(
+
+			SELECT
+			month(vde.birth_date)*100+day(vde.birth_date) AS number,
+			de.emp_id,
+			vde.sex,
+			vde.user_name_ch AS userNameCh,
+			vde.organization_name AS organizationName,
+			vde.sequence_name AS sequenceName,
+			vde.sequence_sub_name AS sequenceSubName,
+			vde.ability_lv_name AS abilityLvName,
+			vde.work_place AS workPlace
+			FROM dim_emp de
+			INNER JOIN dim_organization AS org
+			ON de.customer_id = #{customerId}
+			AND de.run_off_date IS NULL
+			AND de.days=#{day}
+			AND org.customer_id = #{customerId}
+			AND locate(
+			(
+			SELECT t.full_path FROM dim_organization t
+			WHERE t.organization_id = #{organId}
+			AND t.customer_id = #{customerId}
+			), org.full_path
+			)
+			AND org.organization_id=de.organization_id
+
+
+			<if test="crowds!=null and crowds.size()>0">
+				INNER JOIN population_relation as pr
+				ON pr.days=de.days
+				AND pr.customer_id=de.customer_id
+				AND pr.population_id IN
+				<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+					#{crowd}
+				</foreach>
+				AND pr.emp_id=de.emp_id
+			</if>
+
+
+			INNER JOIN v_dim_emp AS vde
+			ON vde.customer_id=#{customerId}
+			AND vde.emp_id=de.emp_id
+
+		) AS a
+		WHERE CASE WHEN a.number >= 321 AND a.number &lt; 419 THEN 0
+		WHEN a.number >= 420 AND a.number &lt;= 520 THEN 1
+		WHEN a.number >= 521 AND a.number &lt;= 621 THEN 2
+		WHEN a.number >= 622 AND a.number &lt;= 722 THEN 3
+		WHEN a.number >= 723 AND a.number &lt;= 822 THEN 4
+		WHEN a.number >= 823 AND a.number &lt;= 922 THEN 5
+		WHEN a.number >= 923 AND a.number &lt;= 1023 THEN 6
+		WHEN a.number >= 1024 AND a.number &lt;= 1122 THEN 7
+		WHEN a.number >= 1123 AND a.number &lt;= 1221 THEN 8
+		WHEN a.number &lt;= 1222 AND a.number &lt;= 119 THEN 9
+		WHEN a.number >= 120 AND a.number &lt;= 218 THEN 10
+		ELSE 11 END=#{id}
+
+		ORDER BY CONVERT(a.userNameCh USING GBK) ASC
+		LIMIT #{offset},#{limit}
+	</select>
+
+	<!-- 人员结构-团队画像 性格 -->
+	<select id="getPersonalityData" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentStructureTeamImgDto">
+		SELECT
+		CASE WHEN sci.code_item_id IS NULL THEN '0' ELSE xx.personality_id END AS id,
+		xx.total,
+		CASE WHEN sci.code_item_id IS NULL THEN '其他' ELSE sci.code_item_name END AS name
+		FROM(
+			SELECT personality_id,count(*) AS total FROM(
+				SELECT
+				de.emp_id,
+				IFNULL(ep.personality_id,0) AS personality_id
+				FROM dim_emp de
+				INNER JOIN dim_organization AS org
+				ON de.customer_id = #{customerId}
+				AND de.run_off_date IS NULL
+				AND de.days=#{day}
+				AND org.customer_id = #{customerId}
+				AND locate(
+					(
+						SELECT t.full_path FROM dim_organization t
+						WHERE t.organization_id = #{organId}
+						AND t.customer_id = #{customerId}
+					), org.full_path
+				)
+				AND org.organization_id=de.organization_id
+
+
+				<if test="crowds!=null and crowds.size()>0">
+					INNER JOIN population_relation as pr
+					ON pr.days=de.days
+					AND pr.customer_id=de.customer_id
+					AND pr.population_id IN
+					<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+						#{crowd}
+					</foreach>
+					AND pr.emp_id=de.emp_id
+				</if>
+
+
+				INNER JOIN v_dim_emp AS vde
+				ON vde.customer_id=#{customerId}
+				AND vde.emp_id=de.emp_id
+
+				LEFT JOIN emp_personality AS ep
+				ON ep.customer_id=de.customer_id
+				AND ep.emp_id=de.emp_id
+			) AS x GROUP BY personality_id
+		) AS xx LEFT JOIN soure_code_item AS sci
+		ON sci.code_group_id = 'personality'
+		AND sci.customer_id=#{customerId}
+		AND sci.code_item_id = xx.personality_id
+		ORDER BY CASE WHEN id='0' THEN 0 ELSE 1 END DESC,xx.total DESC;
+	</select>
+
+	<!-- 人员结构-团队画像 性格 列表 -->
+	<select id="getPersonalityDataListCount" resultType="Integer">
+		SELECT
+		count(*) AS total
+		FROM dim_emp de
+		INNER JOIN dim_organization AS org
+		ON de.customer_id = #{customerId}
+		AND de.run_off_date IS NULL
+		AND de.days=#{day}
+		AND org.customer_id = #{customerId}
+		AND locate(
+		(
+		SELECT t.full_path FROM dim_organization t
+		WHERE t.organization_id = #{organId}
+		AND t.customer_id = #{customerId}
+		), org.full_path
+		)
+		AND org.organization_id=de.organization_id
+
+
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr
+			ON pr.days=de.days
+			AND pr.customer_id=de.customer_id
+			AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			AND pr.emp_id=de.emp_id
+		</if>
+
+		INNER JOIN v_dim_emp AS vde
+		ON vde.customer_id=#{customerId}
+		AND vde.emp_id=de.emp_id
+
+
+		LEFT JOIN emp_personality AS ep
+		ON ep.customer_id=de.customer_id
+		AND ep.emp_id=de.emp_id
+
+		WHERE IFNULL(ep.personality_id,'0') =#{id}
+	</select>
+	<!-- 人员结构-团队画像 性格 列表 -->
+	<select id="getPersonalityDataList" resultType="net.chinahrd.entity.dtozte.pc.talentstructure.TalentStructureTeamImgListDto">
+		SELECT
+		de.emp_id,
+		vde.sex,
+		vde.user_name_ch AS userNameCh,
+		vde.organization_name AS organizationName,
+		vde.sequence_name AS sequenceName,
+		vde.sequence_sub_name AS sequenceSubName,
+		vde.ability_lv_name AS abilityLvName,
+		vde.work_place AS workPlace
+		FROM dim_emp de
+		INNER JOIN dim_organization AS org
+		ON de.customer_id = #{customerId}
+		AND de.run_off_date IS NULL
+		AND de.days=#{day}
+		AND org.customer_id = #{customerId}
+		AND locate(
+		(
+		SELECT t.full_path FROM dim_organization t
+		WHERE t.organization_id = #{organId}
+		AND t.customer_id = #{customerId}
+		), org.full_path
+		)
+		AND org.organization_id=de.organization_id
+
+
+		<if test="crowds!=null and crowds.size()>0">
+			INNER JOIN population_relation as pr
+			ON pr.days=de.days
+			AND pr.customer_id=de.customer_id
+			AND pr.population_id IN
+			<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+				#{crowd}
+			</foreach>
+			AND pr.emp_id=de.emp_id
+		</if>
+
+		INNER JOIN v_dim_emp AS vde
+		ON vde.customer_id=#{customerId}
+		AND vde.emp_id=de.emp_id
+
+
+		LEFT JOIN emp_personality AS ep
+		ON ep.customer_id=de.customer_id
+		AND ep.emp_id=de.emp_id
+
+		WHERE IFNULL(ep.personality_id,'0') =#{id}
+
+		ORDER BY CONVERT(vde.user_name_ch USING GBK) ASC
+		LIMIT #{offset},#{limit}
+	</select>
+</mapper>

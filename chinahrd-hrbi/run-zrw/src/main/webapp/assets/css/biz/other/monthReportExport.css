@@ -1,0 +1,465 @@
+.monthReportExport {
+    position: relative;
+    font-size: 14px;
+    color: #777777;
+}
+
+#page-one {
+    display: block;
+}
+
+#page-two,#page-three {
+    display: none;
+}
+.salesMargin30{margin:30px -15px;}
+
+/*页面通用样式 begin*/
+.overflowauto{overflow: auto;}
+.minwidthpc100{min-width:100%;}
+.height350{height:350px !important; }
+.table{font-size:12px;}
+.table .total td{ background-color: #F5F5F5;}
+.table th{background-color: #FFFFFF; border-bottom: 0px !important;}
+.table th,.table td{white-space: nowrap; text-align: center; line-height: 25px !important;}
+
+.monthReportExport .widget-box{
+    margin-top: 10px;
+}
+.monthReportExport .index-common-title {
+    position: relative;
+    width: 100%;
+    height: 34px;
+}
+
+.monthReportExport .index-common-title-left {
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    background-color: #88b7e0;
+    width: 2px;
+    height: 15px;
+}
+
+.monthReportExport .index-common-title-text {
+    position: absolute;
+    top: 6px;
+    left: 20px;
+    color: #444444;
+}
+
+.monthReportExport .rightbody {
+    width: 100%;
+    background-color: #fff;
+    padding: 5px;
+}
+
+.monthReportExport .top-div {
+    position: relative;
+    height: 160px;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+}
+
+.monthReportExport .bottom-div {
+    position: relative;
+    width: 100%;
+    min-height: 350px;
+    border: 1px solid #e0e0e0;
+}
+
+.monthReportExport .bottom-div2 {
+    border: none;
+}
+.monthReportExport .bottom-div .bottom-div-first{
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+}
+.monthReportExport .bottom-div .bottom-div-first span{
+    color: #999;
+    margin-left: 10px;
+}
+
+.monthReportExport .rightdiv {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    padding-left: 6px;
+    padding-right: 6px;
+    color: #fff;
+    background-color: #009edd;
+    border-radius: 2px;
+    line-height: 24px;
+}
+
+.monthReportExport .condition-input-text {
+    border-color: #a4a4a4;
+    width: 46px;
+    height: 24px;
+    padding-left: 6px;
+    margin-top: 2px;
+    margin-left: 4px;
+}
+
+.monthReportExport .condition-text-one {
+    margin-left: 6px;
+    margin-right: 3px;
+    margin-top: 4px;
+}
+
+/*页面通用样式 end*/
+/*tab 切换 样式 begin*/
+.index-jxmb-tab {
+    position: relative;
+    font-size: 12px;
+    height: 34px;
+    width: 100%;
+    border-left: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.index-jxmb-tab .index-jxmb-btn {
+    border-top: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+    height: 34px;
+    line-height: 32px;
+    padding: 0 10px;
+    text-align: center;
+    float: left;
+    cursor: pointer;
+    background-color: #fafafa;
+    border-bottom: 1px solid #e5e5e5;
+    min-width: 120px;
+}
+
+.index-jxmb-tab .index-jxmb-btn-select {
+    border-top: 2px solid #009edd;
+    border-bottom: #ffffff;
+    background: #ffffff;
+    line-height: 30px;
+    cursor: default;
+}
+
+/*tab 切换 样式 end*/
+/*左边导航 begin*/
+.monthReportExport .leftbody {
+    position: absolute;
+    width: 120px;
+    left: 0px;
+    top: 0px;
+}
+
+.monthReportExport .leftlistbigdiv {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-indent: 14px;
+    font-weight: bold;
+}
+
+.monthReportExport .leftlistset {
+    background-image: url("../../../img/index/setUp.png");
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: 12px;
+    top: 17px;
+    cursor: pointer;
+}
+
+.monthReportExport .selectlist {
+    background-color: #fff;
+    cursor: default;
+}
+
+.monthReportExport .leftlistdiv {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+    text-indent: 14px;
+}
+
+/*左边导航 end*/
+
+/*菜单 begin*/
+.rightbodypage .menu {
+    position: absolute;
+    top: 168px;
+    left: -20px;
+}
+
+.rightbodypage .menu ul, li {
+    list-style: none;
+}
+
+.rightbodypage .menu-line {
+    position: relative;
+    text-align: right;
+    padding-right: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #5b5b5b;
+}
+
+.rightbodypage .menu-line1 {
+    height: 23px;
+    line-height: 9px;
+    background: url("../../../img/index/line1.png") no-repeat right;
+}
+
+.rightbodypage .menu-line2 {
+    height: 36px;
+    line-height: 34px;
+    background: url("../../../img/index/line2.png") no-repeat right;
+}
+
+.rightbodypage .menu-line3 {
+    height: 23px;
+    line-height: 34px;
+    background: url("../../../img/index/line3.png") no-repeat right;
+}
+
+.rightbodypage .menu-line-select {
+    font-weight: bold;
+}
+
+.rightbodypage .menu-line-spor {
+    display: none;
+    position: absolute;
+    right: 0px;
+    top: 12px;
+    background: #0099cc;
+    width: 10px;
+    height: 10px;
+    border-radius: 6px;
+}
+
+.rightbodypage .menu-line-spor1 {
+    top: 0px;
+}
+
+.rightbodypage .menu-line-spor2 {
+    top: 12px;
+}
+
+.rightbodypage .menu-line-select .menu-line-spor {
+    display: block;
+}
+
+/*菜单 end*/
+
+/*当前页面独立样式 begin */
+.monthReportExport .contrast-right {
+    padding-left: 180px;
+    padding-right: 16px;
+    margin-bottom: 30px;
+}
+
+.monthReportExport .contrast-right > div.ct-row {
+    padding-top: 30px;
+}
+
+.monthReportExport .contrast-right > div:first-child {
+    height: 200px;
+}
+
+/*当前页面独立样式 end */
+
+/*table begin*/
+.monthReportExport .top-right-title {
+    border: 1px solid #e0e0e0;
+    height: 140px;
+    line-height: 120px;
+    margin: 20px 0 30px;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 40px;
+    text-align: center;
+}
+
+.monthReportExport .top-right-btn {
+    float: right;
+    border: 1px solid #e0e0e0;
+    height: 140px;
+    margin: 20px 0 30px;
+    padding: 5px 30px;
+}
+
+.monthReportExport .panel {
+    border-radius: 0;
+    margin-bottom: 0;
+    border: 0;
+}
+
+.monthReportExport .panel-default > .panel-heading {
+    border-color: transparent;
+}
+
+.monthReportExport .panel .panel-body {
+    border: 1px solid #d5deeb;
+    padding: 0;
+}
+
+.monthReportExport .panel-heading {
+    font-weight: 700;
+    font-style: normal;
+    font-size: 16px;
+    color: #333333;
+}
+
+.monthReportExport .panel-heading a {
+    font-size: 13px;
+    font-weight: normal;
+    margin-left: 15px;
+}
+
+/*table end*/
+
+/*第一行的数据块 begin*/
+.monthReportExport .accord-yj-float {
+    position: relative;
+    width: 110px;
+    height: 62px;
+    margin: 8px auto 0;
+    text-align: center;
+}
+
+.monthReportExport .accord-yj-float-value {
+    font-size: 40px;
+    color: #666666;
+}
+
+.monthReportExport .accord-yj-float-people {
+    position: absolute;
+    top: 32px;
+    right: 0px;
+    color: #777777;
+    font-size: 12px;
+}
+
+.monthReportExport .index-yj-div-bottom {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    /*height: 32px;*/
+    line-height: 32px;
+    border-top: 1px solid #e0e0e0;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.monthReportExport .index-yj-div-bottom-value {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 88%;
+}
+
+.monthReportExport .index-yj-div-bottom-right {
+    margin-top: 10px;
+    background-image: url("../../../img/index/continue.png");
+    width: 10px;
+    height: 14px;
+}
+
+/*第一行的数据块 end*/
+#firstSettingModal .modal-body .setting-page {
+    display: inline-block;
+    border: 1px solid #999;
+    font-size: 14px;
+    text-align: center;
+    width: 132px;
+    padding: 10px 0;
+    margin: 5px;
+    cursor: pointer;
+}
+#firstSettingModal .modal-body .setting-page.selected{
+    background-color: #d6e9c4;
+}
+#BudgetBlock{padding-top: 50px; }
+#BudgetBlock .tooltip{top: 65px; left: 22px; display: block;}
+
+#budgetYear{
+    border-top: 1px solid #999;
+}
+.widget-table .widget-table-bold{
+    font-weight: bold;
+    text-align: center;
+    line-height: 32px;
+    height: 34px;
+}
+.widget-table .widget-table-row>span{
+    display: inline-block;
+    text-align: center;
+    position: relative;
+    border-bottom: 1px solid #999;
+    line-height: 32px;
+}
+.widget-table .widget-table-row>span:first-child{
+    border-left: 1px solid #999;
+    border-right: 1px solid #999;
+}
+.widget-table .widget-table-row>span:last-child{
+    border-right: 1px solid #999;
+}
+
+.widget-table .widget-table-icon{
+    position: absolute;
+    right: -3px;
+}
+.alert-success{
+    position: absolute;
+    left: 293px;
+    top: 9px;
+    padding: 3px 8px;
+}
+/*筛选条件 begin*/
+.dis-search{width: 280px;font-size: 12px !important;margin:10px 0;}
+.dis-search .dis-search-input{line-height:2 !important;font-size: 12px !important;float: left;width: 74%;height: 34px;margin-top: 1px;border: 1px solid #e0e0e0;font-size: 12px;padding-top: 4px;padding-left: 12px;}
+.dis-search .dis-search-input-btn{cursor:pointer;font-size: 12px !important;float: left;width: 26%;background-color: #009edd;height: 36px;line-height:36px;border: 1px solid #e0e0e0;padding-left: 9px;margin-left: -1px;color: #fff;}
+.dis-search-tip{display: inline-block;color: #888;line-height: 2;padding: 6px 28px;}
+
+.dis-insure-search{width: 500px; font-size: 12px !important;margin-left: 10px;}
+.dis-insure-search .dis-search-input{line-height:2 !important;font-size: 12px !important;float: left;width: 35%;height: 34px;margin-top: 1px;border: 1px solid #e0e0e0;font-size: 12px;padding-top: 4px;padding-left: 12px;}
+.dis-insure-search .dis-search-select{line-height:2 !important;float: left; width: 30%;vertical-align: middle;margin:3px 20px 0; }
+.dis-insure-search .dis-search-input-btn{cursor:pointer;font-size: 12px !important;float: left;width: 15%;background-color: #009edd;height: 36px;line-height:36px;border: 1px solid #e0e0e0;margin-right: 5px;color: #fff;text-align: center;}
+
+.dis-search-input-btn{width:45px !important;}
+
+/*jqgrid*/
+.ui-widget-content{border:0px !important;}
+.ui-corner-all{border-radius:0px !important;}
+.ui-state-default, .ui-widget-content .ui-state-default{border: 0px;background: #FFFFFF !important;}
+.ui-jqgrid-hdiv .ui-jqgrid-htable{border:0px !important;}
+.ui-jqgrid .ui-jqgrid-bdiv{border:0px !important;}
+.ui-jqgrid .ui-jqgrid-labels{border:0px !important; border-bottom: 1px solid #e1e1e1 !important;}
+.ui-jqgrid .ui-jqgrid-btable{border:0px !important;}
+.ui-jqgrid .ui-jqgrid-labels th{border:0px !important;}
+.ui-jqgrid tr.ui-state-highlight.ui-row-ltr td{background-color: #fff !important;}
+.ui-jqgrid tr.ui-row-ltr td{border-right:0px !important;}
+.ui-state-highlight .ui-icon{background-image: url("../../../css/jqueryui/images/ui-icons_222222_256x240.png") !important;}
+.ui-icon-radio-off{display:none;}
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus { border: 0px; background: #fff; font-weight: normal; color: #666;}
+.ui-state-default .ui-icon{background-image:none !important;}
+
+.titleArea{
+    font-size: 20px;
+    padding-left: 28%;
+    margin-top: 10px;
+}
+.textArea {
+    padding-left: 13%;
+    padding-bottom: 10px;
+    color: #999999;
+}
+.chartArea {
+    height: 260px;
+    padding-left: 25%;
+    padding-right: 30%;
+}
+#preChange, #preUnusual {
+    margin-top: 20px;
+    height: 220px;
+}

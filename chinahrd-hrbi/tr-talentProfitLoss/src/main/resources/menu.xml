@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus name="驱动力">
+		<menu code="RenCaiSunYi" name="人才损益" url="talentProfitLoss/toTalentProfitLossView" icon="" mobile="false">
+			<block code="xxxx" >查看模块</block>
+		</menu>
+	</menus>

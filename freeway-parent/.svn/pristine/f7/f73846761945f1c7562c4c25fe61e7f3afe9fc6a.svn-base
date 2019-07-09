@@ -1,0 +1,39 @@
+package net.chinahrd.response;
+
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * module信息
+ * @author wzmo
+ */
+@Data
+public class RbacModuleRes implements Serializable {
+    /**
+     * id
+     */
+    private String moduleId;
+    /**
+     * parentId
+     */
+    private String modulePid;
+
+    /**
+     * url
+     */
+    private String moduleUrl;
+    /**
+     * 名称
+     */
+    private String moduleName;
+    /**
+     * 类型
+     */
+    private String moduleType;
+
+    /**
+     * 类型
+     */
+    private Integer moduleSort;
+}

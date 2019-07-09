@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.module.SysProcessDao">
+
+
+
+	<!-- 检查系统过程执行状态 -->
+    <select id="checkSysProcessStatus" resultType="int">
+		SELECT status 
+		FROM sys_sync_status  
+		WHERE code='pro_lv1_all'
+    </select>
+	<!-- 查询系统所依赖的原表 -->
+	
+    <select id="querySysSourceTable" resultType="java.lang.String">
+		SELECT DISTINCT(smt.table_name) t
+		FROM sys_module_table smt 
+		WHERE 1=1
+    </select>
+    
+	<!-- 查询系统所依赖的原表发生错误的数量 -->
+    <select id="querySysSourceTableErrorNum" resultType="int">
+		SELECT count(DISTINCT(sts.table_name)) num
+		FROM sys_table_status sts 
+		WHERE sts.table_name IN 
+		<foreach item="item" collection="list" open="(" separator="," close=")"> 
+		#{item} 
+		</foreach>
+		AND sts.status=3
+    </select>
+
+
+ <!-- 查询系统所依赖的原表抽取完成的数量-->
+    <select id="querySysSourceTableCompleteNum" resultType="int">
+		SELECT count(DISTINCT(sts.table_name)) num
+		FROM sys_table_status sts 
+		WHERE sts.table_name IN 
+		<foreach item="item" collection="list" open="(" separator="," close=")"> 
+		#{item} 
+		</foreach>
+		AND sts.status=2
+    </select>
+ 
+     <select id="callSysProcess" statementType="CALLABLE" resultType="net.chinahrd.entity.dto.ProcessErrorDto">
+		call pro_lv1_all(#{p_customer_id, mode=IN, jdbcType=VARCHAR},
+			#{p_user_id, mode=IN, jdbcType=VARCHAR});
+    </select>
+ 
+  
+
+</mapper>

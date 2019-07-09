@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<configuration status="info" name="defaultLogConfig">
+    <properties>
+        <property name="LOG_HOME">./logs</property>
+        <property name="log4j.level">DEBUG</property>
+        <property name="PATTERN_LAYOUT">%highlight{%d{HH:mm:ss.SSS} %5p - %c{1.}.%M(%L) - %m \n}{FATAL=white, ERROR=red, WARN=blue, INFO=black, DEBUG=green, TRACE=blue}</property>
+        <property name="FILE_PATTERN_LAYOUT">%highlight{%d{yyyy-MM-dd HH:mm:ss.SSS} %5p - %c{1.}.%M(%L) - %m \n}{FATAL=white, ERROR=red, WARN=blue, INFO=black, DEBUG=green, TRACE=blue}</property>
+    </properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${PATTERN_LAYOUT}" charset="UTF-8"/>
+        </Console>
+        <!--warn及以下日志-->
+        <RollingFile name="INFO" fileName="${LOG_HOME}/generator-info.log" filePattern="${LOG_HOME}/generator-info-%d{yyyyMMdd}-%i.log.gz">
+            <PatternLayout charset="UTF-8" pattern="${FILE_PATTERN_LAYOUT}"/>
+            <Filters>
+                <!--如果是error级别拒绝-->
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <!--如果是debug\info\warn输出-->
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <!--单个文件大小-->
+                <SizeBasedTriggeringPolicy size="500MB"/>
+            </Policies>
+            <!--保存日志文件个数-->
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <!--error级别日志输出-->
+        <RollingFile name="ERROR" fileName="${LOG_HOME}/service-error.log" filePattern="${LOG_HOME}/service-error-%d{yyyyMMdd}-%i.log.gz">
+            <PatternLayout charset="UTF-8" pattern="${FILE_PATTERN_LAYOUT}"/>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="500MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <AsyncLogger name="org.springframework" level="warn">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </AsyncLogger>
+        <AsyncLogger name="com.mybatis" level="error">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </AsyncLogger>
+        
+        <AsyncLogger name="com.alibaba" level="error">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </AsyncLogger>
+        <AsyncLogger name="io.netty" level="error">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </AsyncLogger>
+        <AsyncLogger name="springfox" level="error">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </AsyncLogger>
+        <AsyncLogger name="org.apache" level="error">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </AsyncLogger>
+        <AsyncLogger name="org.hibernate" level="error">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </AsyncLogger>
+        <AsyncLogger name="com.baomidou" level="error">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </AsyncLogger>
+        <AsyncLogger name="com.zaxxer" level="error">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </AsyncLogger>
+        <!-- <AsyncLogger name="org.mybatis.spring" level="error">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </AsyncLogger>
+ -->
+        <Root level="${log4j.level}">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="INFO" />
+            <AppenderRef ref="ERROR" />
+        </Root>
+    </Loggers>
+</configuration>

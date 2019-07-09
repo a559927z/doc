@@ -1,0 +1,869 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.recruitBoard.mvc.pc.dao.RecruitBoardDao">
+    <cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+    <!-- 获取带子架构的所有组织机构 -->
+    <sql id="queryFullOrganId">
+    (
+        SELECT o.organization_id
+        FROM dim_organization o
+        WHERE LOCATE(
+            (
+            SELECT o1.full_path FROM dim_organization o1
+            WHERE o1.customer_id = #{customerId} AND o1.organization_id = #{organId}
+            ),
+            o.full_path
+        )
+        AND o.customer_id = #{customerId}
+    )
+    </sql>
+
+    <select id="findEmpPQMaxDate" resultType="string" useCache="true">
+    SELECT MAX(tepr.date) FROM emp_pq_relation tepr WHERE tepr.customer_id = #{customerId}
+    </select>
+
+    <!-- 查询待招岗位 -->
+    <select id="queryWaitRecruitPost" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitPositionMeetRateDto" useCache="true">
+    SELECT
+        rp.position_id AS positionId,
+        dp.position_name AS positionName,
+        SUM(rp.plan_num) AS planNum
+    FROM recruit_public rp
+    LEFT JOIN dim_position dp ON rp.customer_id = dp.customer_id AND dp.position_id = rp.position_id
+    WHERE rp.customer_id = #{customerId}
+    AND rp.`year` = #{year}
+    AND rp.organization_id IN <include refid="queryFullOrganId"></include>
+    AND rp.is_public = 2
+    GROUP BY rp.position_id,dp.position_name
+    ORDER BY SUM(rp.plan_num) desc,rp.start_date
+    </select>
+
+    <!-- 查询待招人数 -->
+    <select id="queryWaitRecruitNum" resultType="int" useCache="true">
+    SELECT
+        SUM(rp.plan_num) - SUM(rp.employ_num)
+    FROM recruit_public rp
+    LEFT JOIN dim_position dp ON rp.customer_id = dp.customer_id AND dp.position_id = rp.position_id
+    WHERE rp.customer_id = #{customerId}
+    AND rp.`year` = #{year}
+    AND rp.organization_id IN <include refid="queryFullOrganId"></include>
+    AND rp.is_public = 2
+    AND rp.plan_num - rp.employ_num &gt; 0
+    ORDER BY rp.start_date
+    </select>
+
+    <!-- 查询招聘费用及预算 -->
+    <select id="queryRecruitCostAndBudget" resultType="map" useCache="true">
+    SELECT
+        rv.budget_value AS budgetValue,
+        rv.outlay AS outlay
+    FROM recruit_value rv
+    WHERE rv.customer_id = #{customerId}
+    AND rv.organization_id = #{organId}
+    AND rv.`year` = #{year}
+    </select>
+
+    <!-- 查询岗位满意度 -->
+    <select id="queryPostMeetRate" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitPositionMeetRateDto" useCache="true">
+    SELECT
+        rp.recruit_public_id AS id,
+        rp.organization_id AS organId,
+		dor.organization_name AS organName,
+        rp.position_id AS positionId,
+        dp.position_name AS positionName,
+        rp.start_date AS startDate,
+        rp.end_date AS endDate,
+        rp.plan_num AS planNum,
+        rp.employ_num AS employNum,
+        rp.is_public AS isPublic,
+        rp.resume_num AS resumeNum,
+        rp.interview_num AS interviewNum,
+        rp.offer_num AS offerNum,
+        rp.entry_num AS entryNum,
+        1 AS isView,
+        if(rp.end_date &lt; #{currDate} and rp.plan_num - rp.employ_num &gt; 0, 1, 0) AS isWarn,
+        rp.employ_num/rp.plan_num as meetRate
+    FROM recruit_public rp
+    LEFT JOIN dim_position dp ON rp.customer_id = dp.customer_id AND dp.position_id = rp.position_id
+    LEFT JOIN dim_organization dor ON dor.customer_id = rp.customer_id AND dor.organization_id = rp.organization_id
+    WHERE rp.customer_id = #{customerId}
+    AND rp.`year` = #{year}
+    AND rp.organization_id IN <include refid="queryFullOrganId"></include>
+    ORDER BY isWarn DESC,rp.end_date,meetRate DESC
+    </select>
+
+    <select id="findPositionResultCount" resultType="int" useCache="true">
+    SELECT COUNT(rr.recruit_result_id) FROM recruit_result  rr
+    WHERE rr.customer_id = #{customerId}
+    AND rr.recruit_public_id = #{publicId}
+    AND rr.`year` = #{year}
+    <choose>
+        <when test="type == 1">
+        AND rr.is_interview = 1
+        </when>
+        <when test="type == 2">
+        AND rr.is_offer = 1
+        </when>
+        <when test="type == 3">
+        AND rr.is_entry = 1
+        </when>
+        <otherwise>
+        AND rr.is_resume = 1
+        </otherwise>
+    </choose>
+    </select>
+
+    <select id="queryPositionResult" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitPositionResultDto" useCache="true">
+    SELECT
+        rr.recruit_result_id AS id,
+        rr.username,
+        rr.sex,
+        rr.age,
+        sci.sys_code_item_name AS degree,
+        rr.major,
+        rr.school,
+        rr.url
+    FROM recruit_result  rr
+    LEFT JOIN sys_code_item sci ON sci.code_group_id = 'degree' AND sci.customer_id = rr.customer_id
+                            AND sci.sys_code_item_id = rr.degree_id
+    WHERE rr.customer_id = #{customerId}
+    AND rr.recruit_public_id = #{publicId}
+    AND rr.`year` = #{year}
+    <choose>
+        <when test="type == 1">
+        AND rr.is_interview = 1
+        </when>
+        <when test="type == 2">
+        AND rr.is_offer = 1
+        </when>
+        <when test="type == 3">
+        AND rr.is_entry = 1
+        </when>
+        <otherwise>
+        AND rr.is_resume = 1
+        </otherwise>
+    </choose>
+    ORDER BY convert(rr.username using GBK)
+    </select>
+
+    <!-- 招聘渠道统计 -->
+    <select id="queryRecruitChannel" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitChannelQueryDto" useCache="true">
+    SELECT
+        rp.position_id AS positionId,
+        dp.position_name AS positionName,
+        drp.days AS positionDays,
+        drp.employ_num AS postionEmployNum,
+        rc.channel_id AS channelId,
+        dc.channel_name AS channelName,
+        rc.employ_num AS employNum,
+        rc.outlay,
+        rc.days,
+        (
+            SELECT count(vde.emp_id)
+            FROM v_dim_emp vde
+            WHERE vde.run_off_date is not null
+            AND vde.channel_id = rc.channel_id
+            AND vde.position_id = rp.position_id
+            AND vde.customer_id = #{customerId}
+            AND TIMESTAMPDIFF(DAY, vde.entry_date, vde.run_off_date) &lt;= #{cycleDays}
+            AND YEAR(vde.entry_date) = #{year}
+        ) AS dimissionNum
+    FROM recruit_channel rc
+    LEFT JOIN dim_channel dc ON rc.channel_id = dc.channel_id AND rc.customer_id = dc.customer_id
+    LEFT JOIN recruit_public rp ON rc.recruit_public_id = rp.recruit_public_id AND rc.customer_id = rp.customer_id
+                                AND rp.`year` = #{year}
+    LEFT JOIN (
+        SELECT
+          trp.position_id,
+          SUM(trp.days) AS days,
+          SUM(trp.employ_num) AS employ_num
+        FROM recruit_public trp
+        WHERE trp.customer_id = #{customerId}
+        AND trp.`year` = #{year}
+        AND trp.organization_id IN <include refid="queryFullOrganId"></include>
+        GROUP BY trp.position_id
+    ) drp ON rp.position_id = drp.position_id
+    INNER JOIN dim_position dp ON rp.customer_id = dp.customer_id AND dp.position_id = rp.position_id
+    <if test="keyName != null and keyName != ''">
+        AND dp.position_name LIKE CONCAT('%',#{keyName},'%')
+    </if>
+    WHERE rc.customer_id = #{customerId}
+    AND rp.organization_id IN <include refid="queryFullOrganId"></include>
+    ORDER BY CONVERT(dp.position_name USING GBK),CONVERT(dc.channel_name USING GBK)
+    </select>
+
+    <!-- 获取配置周期的天数 -->
+    <select id="queryDismisstionWeekCycleDays" resultType="int" useCache="true">
+    SELECT ddw.days
+    FROM dim_dismission_week ddw
+    WHERE ddw.customer_id = #{customerId}
+    AND ddw.type = #{type}
+    </select>
+
+    <!-- 获取周期流失率 -->
+    <select id="queryDismissionRate" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitDismissionWeekDto" useCache="true">
+    SELECT
+        tdw.weekId,
+        tdw.weekName,
+        COUNT(tvde.emp_id)/#{employNum} AS dismissionRate
+    FROM (
+        SELECT
+            vde.emp_id,
+            TIMESTAMPDIFF(DAY,vde.entry_date, IFNULL(vde.run_off_date,#{currDate})) AS runoffdate
+        FROM v_dim_emp vde
+        WHERE vde.customer_id = #{customerId}
+        <choose>
+            <when test="parent != null">
+                AND vde.position_id = #{parent}
+                AND vde.channel_id = #{channelId}
+            </when>
+            <otherwise>
+                AND vde.position_id = #{channelId}
+            </otherwise>
+        </choose>
+        AND vde.organization_id IN <include refid="queryFullOrganId"></include>
+        AND YEAR(vde.entry_date) = #{year}
+    ) tvde
+    INNER JOIN (
+        SELECT
+        ddw.dismission_week_id AS weekId,
+        ddw.`name` AS weekName,
+        ddw.days,
+        IFNULL(ddw2.days,0) AS prevDays,
+        ddw.customer_id,
+        ddw.type
+        FROM dim_dismission_week ddw
+        LEFT JOIN dim_dismission_week ddw2 ON ddw.customer_id = ddw2.customer_id
+        AND ddw.type - 1 = ddw2.type
+        WHERE ddw.customer_id = #{customerId}
+        ORDER BY ddw.type
+    ) tdw ON tvde.runoffdate &gt; tdw.prevDays AND tvde.runoffdate &lt;= tdw.days
+    GROUP BY tdw.weekId,tdw.weekName
+    ORDER BY tdw.type
+    </select>
+
+    <select id="findPositionPayMaxYearMonth" resultType="string" >
+     SELECT MAX(rss.year_months) FROM recruit_salary_statistics rss WHERE rss.customer_id = #{customerId}
+    </select>
+
+    <!-- 获取招聘岗位薪酬列表 -->
+    <select id="queryPositionPay" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitPositionPayDto" useCache="true">
+    SELECT
+        rp.position_id AS positionId,
+        rss.position_name AS positionName,
+        rss.rank_name AS rankName,
+        rss.avg_sal AS pay,
+        rss.emp_total AS empTotal
+    FROM recruit_public rp
+    INNER JOIN recruit_salary_statistics rss ON rp.customer_id = rss.customer_id AND rp.position_id = rss.position_id
+                              AND rss.year_months = #{yearMonth}
+    WHERE rp.customer_id = #{customerId}
+    AND rp.`year` = #{year}
+    AND rp.organization_id IN <include refid="queryFullOrganId"></include>
+    <if test="keyName != null and keyName != ''">
+        AND rss.position_name LIKE CONCAT('%',#{keyName},'%')
+    </if>
+    ORDER BY convert(rss.position_name using GBK),rss.rank_name
+    </select>
+
+    <!-- 获取异动统计 -->
+    <select id="queryRecruitChange" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitJobChangeTotalDto" useCache="true">
+    SELECT
+        dct.change_type_id AS changeTypeId,
+        dct.curt_name AS curtName,
+        dct.change_type_name AS changeTypeName,
+        COUNT(vde.emp_id) AS empNum,
+        GROUP_CONCAT(vde.user_name_ch ORDER BY jc.change_date DESC,convert(vde.user_name_ch using GBK) SEPARATOR '、') as empStr
+    FROM v_dim_emp vde
+    INNER JOIN job_change jc ON vde.emp_id = jc.emp_id AND vde.customer_id = jc.customer_id
+                                    AND YEAR(jc.change_date) = #{year}
+                                    AND jc.change_date = (
+        SELECT MAX(tjc.change_date) AS change_date
+        FROM job_change tjc
+        LEFT JOIN dim_change_type tdct ON tdct.customer_id = tjc.customer_id AND tjc.change_type_id = tdct.change_type_id
+        WHERE tjc.emp_id = jc.emp_id
+        AND tjc.customer_id = #{customerId}
+        AND tdct.curt_name = #{changeType}
+    )
+    LEFT JOIN dim_change_type dct ON dct.customer_id = jc.customer_id AND jc.change_type_id = dct.change_type_id
+    INNER JOIN (
+        SELECT
+        dp.position_id,
+        dp.position_name,
+        dpn.number,
+        COUNT(DISTINCT tvde.emp_id) AS jobNum
+        FROM dim_position dp
+        INNER JOIN recruit_public rp ON rp.customer_id = dp.customer_id AND rp.position_id = dp.position_id
+                                    AND rp.organization_id IN <include refid="queryFullOrganId"></include>
+        INNER JOIN budget_position_number dpn ON dp.position_id = dpn.position_id AND  dp.customer_id = dpn.customer_id
+                                    AND dpn.`year` = #{year} AND dpn.organization_id = #{organId}
+        LEFT JOIN v_dim_emp tvde ON tvde.position_id = dp.position_id AND tvde.customer_id = dp.customer_id
+        WHERE dp.customer_id = #{customerId}
+        AND tvde.organization_id IN <include refid="queryFullOrganId"></include>
+        group by dp.position_id,dp.position_name,dpn.number
+    ) tdp ON jc.position_id_ed = tdp.position_id AND (tdp.number is not null and tdp.number - jobNum > 0)
+    WHERE dct.curt_name = #{changeType}
+    AND vde.organization_id IN <include refid="queryFullOrganId"></include>
+    GROUP BY dct.curt_name,dct.curt_name,dct.change_type_name
+    </select>
+
+    <!-- 获取异动人员详细 -->
+    <select id="queryRecruitChangeList" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitJobChangeDto" useCache="true">
+    SELECT
+        vde.emp_id AS empId,
+        vde.user_name_ch AS userNameCh,
+        vde.sex,
+        vde.age,
+        vde.degree,
+        ee.major,
+        vde.organization_name AS organizationName,
+        jc.position_name_ed AS positionNameEd,
+        jc.position_name AS positionName,
+        jc.change_date AS changeDate
+    FROM v_dim_emp vde
+    LEFT JOIN (
+      SELECT a.emp_id,a.major
+      FROM (
+        SELECT e.emp_id,e.major,e.end_date
+        FROM emp_edu e
+        WHERE e.customer_id = #{customerId}
+        AND e.is_last_major = 1
+        ORDER BY e.emp_id,e.end_date DESC
+      ) a group by a.emp_id
+    ) ee ON ee.emp_id = vde.emp_id
+    INNER JOIN job_change jc ON vde.emp_id = jc.emp_id AND vde.customer_id = jc.customer_id
+                                    AND YEAR(jc.change_date) = #{year}
+                                    AND jc.change_date = (
+        SELECT MAX(tjc.change_date) AS change_date
+        FROM job_change tjc
+        LEFT JOIN dim_change_type tdct ON tdct.customer_id = tjc.customer_id AND tjc.change_type_id = tdct.change_type_id
+        WHERE tjc.emp_id = jc.emp_id
+        AND tjc.customer_id = #{customerId}
+        AND tdct.curt_name = #{changeType}
+    )
+    LEFT JOIN dim_change_type dct ON dct.customer_id = jc.customer_id AND jc.change_type_id = dct.change_type_id
+    INNER JOIN (
+        SELECT
+        dp.position_id,
+        dp.position_name,
+        dpn.number,
+        COUNT(DISTINCT tvde.emp_id) AS jobNum
+        FROM dim_position dp
+        INNER JOIN recruit_public rp ON rp.customer_id = dp.customer_id AND rp.position_id = dp.position_id
+                                      AND rp.organization_id IN <include refid="queryFullOrganId"></include>
+        INNER JOIN budget_position_number dpn ON dp.position_id = dpn.position_id AND  dp.customer_id = dpn.customer_id
+                                    AND dpn.`year` = #{year} AND dpn.organization_id = #{organId}
+        LEFT JOIN v_dim_emp tvde ON tvde.position_id = dp.position_id AND tvde.customer_id = dp.customer_id
+        WHERE dp.customer_id = #{customerId}
+        AND tvde.organization_id IN <include refid="queryFullOrganId"></include>
+        group by dp.position_id,dp.position_name,dpn.number
+    ) tdp ON jc.position_id_ed = tdp.position_id AND (tdp.number is not null and tdp.number - jobNum > 0)
+    WHERE dct.curt_name = #{changeType}
+    AND vde.organization_id IN <include refid="queryFullOrganId"></include>
+    ORDER BY jc.change_date DESC,convert(vde.user_name_ch using GBK)
+    </select>
+
+    <!-- 获取画像绩效标签 -->
+    <select id="queryImagesPerformanceTags" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitTagDto" useCache="true">
+        SELECT
+        dp.curt_name AS tagId,
+        dp.performance_name AS tagName,
+        dp.show_index AS tagVal,
+        0 AS tagType
+        FROM dim_performance dp
+        WHERE dp.customer_id = #{customerId}
+    </select>
+
+    <!-- 获取岗位画像查询标签 -->
+    <select id="queryImagesQueryTags" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitTagDto" useCache="true">
+    SELECT
+        t.tagId,
+        t.tagName,
+        t.tagType,
+        t.tagVal
+    FROM (
+        SELECT
+            msc.school_type AS tagId,
+            msc.school_type AS  tagName,
+            0 AS tagVal,
+            1 AS tagType
+        FROM matching_school msc
+        WHERE msc.customer_id = #{customerId}
+        GROUP BY msc.school_type
+        UNION ALL
+        SELECT
+            sci.sys_code_item_id AS tagId,
+            sci.sys_code_item_name AS tagName,
+            sci.show_index AS tagVal,
+            2 AS tagType
+        FROM sys_code_item sci
+        WHERE sci.code_group_id = 'degree'
+        AND sci.customer_id = #{customerId}
+        UNION ALL
+        SELECT
+            mso.matching_soure_id AS tagId,
+            mso.v1 AS tagName,
+            mso.show_index AS tagVal,
+            3 AS tagType
+        FROM matching_soure mso
+        WHERE mso.customer_id = #{customerId}
+        UNION ALL
+        SELECT
+            dq.quality_id AS tagId,
+            dq.vocabulary AS tagName,
+            null AS tagVal,
+            4 AS tagType
+        FROM dim_quality dq
+        WHERE dq.customer_id = #{customerId}
+    ) t
+    ORDER BY t.tagType,convert(t.tagName USING GBK)
+    </select>
+
+    <select id="queryPositionPerfEmpCount" resultType="int" useCache="true">
+    SELECT COUNT(vde.emp_id)
+    FROM v_dim_emp vde
+    INNER JOIN (
+        SELECT
+            pc.emp_id,
+            COUNT(pc.position_id) AS total
+        FROM performance_change pc
+        LEFT JOIN dim_performance dp ON pc.customer_id = dp.customer_id AND pc.performance_id = dp.performance_id
+        WHERE pc.customer_id = #{customerId}
+        AND LEFT(pc.`year_month`,4) &gt; ${year}
+        AND dp.curt_name &gt;= #{star}
+        GROUP BY pc.emp_id
+        HAVING total &gt;= #{continueNum}
+    ) tpc ON tpc.emp_id = vde.emp_id
+    WHERE vde.customer_id = #{customerId}
+    AND vde.position_id = #{position}
+    </select>
+
+    <!-- 获取某些岗位高绩效的人群信息 -->
+    <select id="queryHighPerfImagesEmps" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitHighPerfEmpDto" useCache="true">
+    SELECT
+        vde.emp_id AS empId,
+        vde.sex,
+        vde.degree_id AS degreeId,
+        vde.degree,
+        ms.school_type AS schoolType
+    FROM v_dim_emp vde
+    INNER JOIN (
+        SELECT
+            pc.emp_id,
+            COUNT(pc.position_id) AS total
+        FROM performance_change pc
+        LEFT JOIN dim_performance dp ON pc.customer_id = dp.customer_id AND pc.performance_id = dp.performance_id
+        WHERE pc.customer_id = #{customerId}
+        AND LEFT(pc.`year_month`,4) &gt; ${year}
+        AND dp.curt_name &gt;= #{star}
+        GROUP BY pc.emp_id
+        HAVING total &gt;= #{continueNum}
+    ) tpc ON tpc.emp_id = vde.emp_id
+    LEFT JOIN (
+        SELECT a.emp_id,a.school_name
+        FROM (
+        SELECT e.emp_id,e.school_name,e.end_date
+        FROM emp_edu e
+        WHERE e.customer_id = #{customerId}
+        AND e.is_last_major = 1
+        ORDER BY e.emp_id,e.end_date DESC
+        ) a group by a.emp_id
+    ) ee ON ee.emp_id = vde.emp_id
+    LEFT JOIN (
+        SELECT a1.`name`,a1.school_type
+        FROM (
+            SELECT a.`name`,a.school_type,if(@tmp=name,@rn:=@rn+1,@rn:=1) as rn,@tmp:=name
+            FROM matching_school a,(SELECT @tmp:=null,@rn:=1) b
+            WHERE a.customer_id = #{customerId}
+            ORDER BY name,school_type desc
+        ) a1 where a1.rn = 1
+    ) ms ON ms.`name` = ee.school_name
+    WHERE vde.customer_id = #{customerId}
+    AND vde.position_id = #{position}
+    </select>
+
+    <!-- 获取高绩效画像标签-关健人才优势标签 -->
+    <select id="querySuperiorityTags" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitTagDto" useCache="true">
+    SELECT
+      ktt.content AS tagId,
+      ktt.content AS tagName,
+      count(kt.emp_id) AS tagVal,
+      2 AS tagType
+    FROM key_talent kt
+    INNER JOIN key_talent_tags ktt ON kt.customer_id = ktt.customer_id AND kt.key_talent_id = ktt.key_talent_id
+    WHERE kt.customer_id =  #{customerId}
+    AND ktt.type = 1
+    AND kt.is_delete = 0
+    <if test="emps != null and emps.size() > 0">
+        AND kt.emp_id IN
+        <foreach collection="emps" item="emp" open="(" close=")" separator=",">
+            '${emp}'
+        </foreach>
+    </if>
+    GROUP BY ktt.content
+    ORDER BY COUNT(kt.emp_id) DESC,CONVERT(ktt.content USING GBK)
+    LIMIT 5
+    </select>
+
+    <!-- 获取高绩效人群的岗位能力素质 -->
+    <select id="queryEmpQualityTags" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitEmpQualityTagDto" useCache="true">
+    SELECT
+        epr.emp_id AS empId,
+        dq.quality_id AS qualityId,
+        dq.vocabulary,
+        pms.show_index AS showIndex,
+        ms.show_index-pms.show_index AS score
+    FROM emp_pq_relation epr
+    LEFT JOIN matching_soure ms ON epr.matching_soure_id = ms.matching_soure_id AND ms.customer_id = epr.customer_id
+    LEFT JOIN position_quality pq ON pq.quality_id = epr.quality_id AND pq.customer_id = epr.customer_id
+    LEFT JOIN matching_soure pms ON pq.matching_soure_id = pms.matching_soure_id AND pq.customer_id = pms.customer_id
+    LEFT JOIN dim_quality dq ON dq.quality_id = epr.quality_id AND dq.customer_id = epr.customer_id
+    WHERE epr.customer_id = #{customerId}
+    AND epr.date = #{maxDate}
+    <if test="emps != null and emps.size() > 0">
+        AND epr.emp_id IN
+        <foreach collection="emps" item="emp" open="(" close=")" separator=",">
+            '${emp}'
+        </foreach>
+    </if>
+    AND pq.position_id = #{position}
+    AND ms.show_index-pms.show_index &gt;= 0
+    ORDER BY score DESC, CONVERT (dq.vocabulary USING GBK)
+    </select>
+
+    <!-- 获取推荐人才统计 -->
+    <select id="queryPositionRecommendCount" resultType="int" parameterType="map" useCache="true">
+    SELECT SUM(t.total)
+    FROM (
+        SELECT
+          count(vde.emp_id) AS total
+        FROM v_dim_emp vde
+        <if test="schoolType != null">
+        LEFT JOIN (
+            SELECT
+                tee.emp_id,
+                1 AS co3
+            FROM (
+                SELECT
+                    e.emp_id, e.school_name, e.end_date
+                FROM emp_edu e
+                WHERE e.customer_id = #{customerId} AND e.is_last_major = 1
+                ORDER BY e.emp_id, e.end_date DESC
+            ) tee
+            LEFT JOIN (
+                SELECT
+                    a1.`name`,
+                    a1.school_type
+                FROM (
+                    SELECT
+                      a.`name`, a.school_type, IF (@tmp = NAME ,@rn :=@rn + 1 ,@rn := 1) AS rn ,@tmp := NAME
+                    FROM matching_school a, (SELECT @tmp := NULL ,@rn := 1) b
+                    WHERE a.customer_id = #{customerId}
+                    ORDER BY NAME, school_type DESC
+                ) a1
+                WHERE a1.rn = 1
+            ) tms ON tee.school_name = tms.`name`
+            WHERE tms.school_type = #{schoolType}
+            GROUP BY tee.emp_id
+        ) ms ON ms.emp_id = vde.emp_id
+        </if>
+        <if test="contents != null and contents.size() > 0">
+        LEFT JOIN (
+            SELECT tkt.emp_id, COUNT(tkt.key_talent_id) AS co1
+            FROM key_talent tkt
+            INNER JOIN key_talent_tags tktt on tkt.key_talent_id = tktt.key_talent_id and tkt.customer_id = tktt.customer_id and tktt.type = 1
+            WHERE tkt.customer_id = #{customerId}
+            AND tkt.is_delete = 0
+            AND
+            <foreach collection="contents" item="content" open="(" close=")" separator="OR">
+                tktt.content = '${content}'
+            </foreach>
+            GROUP BY tkt.emp_id
+            ) kt ON kt.emp_id = vde.emp_id
+        </if>
+        <if test="qualitys != null and qualitys.size() > 0">
+            LEFT JOIN (
+            SELECT epr.emp_id,
+            COUNT(epr.quality_id) AS co2
+            FROM (
+                SELECT epr2.emp_id,epr2.quality_id,epr2.matching_soure_id
+                FROM (
+                SELECT epr1.emp_id,epr1.quality_id,epr1.matching_soure_id
+                FROM emp_pq_relation epr1
+                WHERE epr1.customer_id = #{customerId}
+                AND epr1.quality_id IN
+                <foreach collection="qualitys" item="q" open="(" close=")" separator=",">
+                    '${q.k}'
+                </foreach>
+                ORDER BY epr1.date desc
+                ) epr2
+                GROUP BY epr2.emp_id,epr2.quality_id
+            ) epr
+            INNER JOIN matching_soure eps ON epr.matching_soure_id = eps.matching_soure_id AND eps.customer_id = #{customerId}
+            INNER JOIN dim_quality dq ON dq.quality_id = epr.quality_id AND dq.customer_id = #{customerId}
+            WHERE
+            <foreach collection="qualitys" item="q" open="(" close=")" separator="OR">
+                (epr.quality_id = '${q.k}'
+                <if test="{q.v} != null">
+                    AND eps.show_index &gt;= '${q.v}'
+                </if> )
+            </foreach>
+            GROUP BY epr.emp_id
+            ) pr ON pr.emp_id = vde.emp_id
+        </if>
+        WHERE vde.customer_id = #{customerId}
+        AND vde.run_off_date IS NULL
+        <if test="total != 0">
+            AND (
+            <if test="sex != null">
+                IF (vde.sex = #{sex}, 1, 0)
+            </if>
+            <if test="degreeId != null">
+                + IF (vde.degree_id = #{degreeId}, 1, 0)
+            </if>
+            <if test="schoolType != null">
+                + IFNULL(ms.co3, 0)
+            </if>
+            <if test="contents != null and contents.size() > 0">
+                + IFNULL(kt.co1, 0)
+            </if>
+            <if test="qualitys != null and qualitys.size() > 0">
+                + IFNULL(pr.co2, 0)
+            </if>
+            )/#{total} &gt;= 0.5
+        </if>
+        <if test="organIds != null and organIds.size() > 0">
+            AND vde.organization_id IN
+            <foreach collection="organIds" item="organId" separator="," open="(" close=")" >
+                '${organId}'
+            </foreach>
+        </if>
+        <if test="sex != null || degreeId != null || schoolType != null || total == 0">
+        UNION ALL
+        SELECT
+          COUNT(ot.out_talent_id) AS total
+        FROM out_talent ot
+        LEFT JOIN (
+            SELECT a1.`name`,a1.school_type
+            FROM (
+                SELECT a.`name`,a.school_type,if(@tmp=name,@rn:=@rn+1,@rn:=1) as rn,@tmp:=name
+                FROM matching_school a,(SELECT @tmp:=null,@rn:=1) b
+                WHERE a.customer_id = #{customerId}
+                ORDER BY name,school_type desc
+            ) a1 where a1.rn = 1
+        ) ms ON ms.`name` = ot.school
+        WHERE ot.customer_id = #{customerId}
+        <if test="total != 0">
+            AND (
+                <choose>
+                    <when test="sex != null || degreeId != null || schoolType != null">
+                        <if test="sex != null">
+                            IF(ot.sex = #{sex}, 1, 0)
+                        </if>
+                        <if test="degreeId != null">
+                            + IF(ot.degree_id = #{degreeId}, 1, 0)
+                        </if>
+                        <if test="schoolType != null">
+                            + IF(ms.school_type = #{schoolType}, 1, 0)
+                        </if>
+                    </when>
+                    <otherwise>0</otherwise>
+                </choose>
+            )/#{total} &gt;= 0.5
+        </if>
+        </if>
+    ) t
+    </select>
+
+    <!-- 获取推荐人才明细 -->
+    <select id="queryPositionRecommendEmp" resultType="net.chinahrd.entity.dto.pc.recruitBoard.RecruitRecommendEmpDto" parameterType="map" useCache="true">
+    SELECT
+        t.empId,
+        t.userNameCh,
+        t.imgPath,
+        t.organName,
+        t.qualitysStr,
+        t.score,
+        t.type,
+        t.url
+    FROM (
+        SELECT
+            vde.emp_id AS empId,
+            vde.user_name_ch AS userNameCh,
+            vde.img_path AS imgPath,
+            vde.organization_name AS organName,
+            <choose>
+            <when test="qualitys != null and qualitys.size() > 0">pr.qualitys_str AS qualitysStr,</when>
+            <otherwise>NULL AS qualitysStr,</otherwise>
+            </choose>
+            <choose>
+                <when test="total ==0">
+                    1 AS score,
+                </when>
+                <otherwise>
+                    (
+                    <if test="sex != null">
+                        IF (vde.sex = #{sex}, 1, 0)
+                    </if>
+                    <if test="degreeId != null">
+                        + IF (vde.degree_id = #{degreeId}, 1, 0)
+                    </if>
+                    <if test="schoolType != null">
+                        + IFNULL(ms.co3, 0)
+                    </if>
+                    <if test="contents != null and contents.size() > 0">
+                        + IFNULL(kt.co1, 0)
+                    </if>
+                    <if test="qualitys != null and qualitys.size() > 0">
+                        + IFNULL(pr.co2, 0)
+                    </if>
+                    ) /#{total} AS score,
+                </otherwise>
+            </choose>
+            0 AS type,
+            NULL AS url
+        FROM v_dim_emp vde
+        <if test="schoolType != null">
+        LEFT JOIN (
+            SELECT
+            tee.emp_id,
+            1 AS co3
+            FROM (
+                SELECT
+                e.emp_id,
+                e.school_name,
+                e.end_date
+                FROM emp_edu e
+                WHERE e.customer_id = #{customerId}
+                AND e.is_last_major = 1
+                ORDER BY e.emp_id, e.end_date DESC
+            ) tee
+            LEFT JOIN (
+                SELECT
+                a1.`name`,
+                a1.school_type
+                FROM (
+                    SELECT
+                    a.`name`,
+                    a.school_type,
+                    IF (@tmp = NAME ,@rn :=@rn + 1 ,@rn := 1) AS rn ,@tmp := NAME
+                    FROM matching_school a, (SELECT @tmp := NULL ,@rn := 1) b
+                    WHERE a.customer_id = #{customerId}
+                    ORDER BY NAME, school_type DESC
+                ) a1
+                WHERE a1.rn = 1
+            ) tms ON tee.school_name = tms.`name`
+            WHERE tms.school_type = #{schoolType}
+            GROUP BY tee.emp_id
+        ) ms ON ms.emp_id = vde.emp_id
+        </if>
+        <if test="contents != null and contents.size() > 0">
+        LEFT JOIN (
+            SELECT tkt.emp_id,COUNT(tkt.key_talent_id) AS co1
+            FROM key_talent tkt
+            INNER JOIN key_talent_tags tktt on tkt.key_talent_id = tktt.key_talent_id and tkt.customer_id = tktt.customer_id and tktt.type = 1
+            WHERE tkt.customer_id = #{customerId}
+            AND tkt.is_delete = 0
+            AND
+            <foreach collection="contents" item="content" open="(" close=")" separator="OR">
+                tktt.content = '${content}'
+            </foreach>
+            GROUP BY tkt.emp_id
+        ) kt ON kt.emp_id = vde.emp_id
+        </if>
+        <if test="qualitys != null and qualitys.size() > 0">
+        LEFT JOIN (
+            SELECT epr.emp_id,
+            GROUP_CONCAT(DISTINCT dq.vocabulary, ':', eps.v1) AS qualitys_str,
+            COUNT(epr.quality_id) AS co2
+            FROM (
+                SELECT epr2.emp_id,epr2.quality_id,epr2.matching_soure_id
+                FROM (
+                SELECT epr1.emp_id,epr1.quality_id,epr1.matching_soure_id
+                FROM emp_pq_relation epr1
+                WHERE epr1.customer_id = #{customerId}
+                AND epr1.quality_id IN
+                <foreach collection="qualitys" item="q" open="(" close=")" separator=",">
+                '${q.k}'
+                </foreach>
+                ORDER BY epr1.date desc
+                ) epr2
+                GROUP BY epr2.emp_id,epr2.quality_id
+            ) epr
+            INNER JOIN matching_soure eps ON epr.matching_soure_id = eps.matching_soure_id AND eps.customer_id = #{customerId}
+            INNER JOIN dim_quality dq ON dq.quality_id = epr.quality_id AND dq.customer_id = #{customerId}
+            WHERE
+            <foreach collection="qualitys" item="q" open="(" close=")" separator="OR">
+                (epr.quality_id = '${q.k}'
+                <if test="{q.v} != null">
+                    AND eps.show_index &gt;= '${q.v}'
+                </if> )
+            </foreach>
+            GROUP BY epr.emp_id
+        ) pr ON pr.emp_id = vde.emp_id
+        </if>
+        WHERE vde.customer_id = #{customerId}
+        AND vde.run_off_date IS NULL
+        <if test="organIds != null and organIds.size() > 0">
+            AND vde.organization_id IN
+            <foreach collection="organIds" item="organId" separator="," open="(" close=")" >
+                '${organId}'
+            </foreach>
+        </if>
+        HAVING score &gt;= 0.5
+        <if test="sex != null || degreeId != null || schoolType != null || total == 0">
+        UNION ALL
+        SELECT
+            ot.out_talent_id AS empId,
+            ot.user_name_ch AS userNameCh,
+            null AS imgPath,
+            null AS organName,
+            null AS qualitysStr,
+            <choose>
+                <when test="total == 0">
+                    1 AS score,
+                </when>
+                <otherwise>
+                    (
+                    <choose>
+                        <when test="sex != null || degreeId != null || schoolType != null">
+                            <if test="sex != null">
+                                IF(ot.sex = #{sex}, 1, 0)
+                            </if>
+                            <if test="degreeId != null">
+                                + IF(ot.degree_id = #{degreeId}, 1, 0)
+                            </if>
+                            <if test="schoolType != null">
+                                + IF(ms.school_type = #{schoolType}, 1, 0)
+                            </if>
+                        </when>
+                        <otherwise>
+                            0
+                        </otherwise>
+                    </choose>
+                    )/#{total} AS score,
+                </otherwise>
+            </choose>
+            1 AS type,
+            ot.url AS url
+        FROM out_talent ot
+        LEFT JOIN (
+          SELECT a1.`name`,a1.school_type
+          FROM (
+            SELECT a.`name`,a.school_type,if(@tmp=name,@rn:=@rn+1,@rn:=1) as rn,@tmp:=name
+            FROM matching_school a,(SELECT @tmp:=null,@rn:=1) b
+            WHERE a.customer_id = #{customerId}
+            ORDER BY name,school_type desc
+          ) a1 where a1.rn = 1
+        ) ms ON ms.`name` = ot.school
+        WHERE ot.customer_id = #{customerId}
+        <if test="total > 0">
+        HAVING  score &gt;= 0.5
+        </if>
+        </if>
+    ) t
+    ORDER BY t.score DESC,convert(t.userNameCh using GBK)
+    </select>
+</mapper>

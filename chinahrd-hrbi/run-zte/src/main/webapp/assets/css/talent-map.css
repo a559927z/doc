@@ -1,0 +1,334 @@
+/**
+ * 	 ------------- 整体布局 ------------------- */
+/* 整体 */
+.u-map {
+	position: relative;
+}
+
+/* 表格 */
+.u-map-table {
+}
+
+/* 画布 */
+.u-map-canvas {
+	z-index: 10;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+/* 点 */
+.u-point-group-wrapper,
+.u-point-wrapper {
+	display: inline-block;
+	margin: auto 1px;
+	position: relative;
+	z-index: 100;
+	margin-top: 2px;
+	cursor: pointer;
+}
+
+.u-point-wrapper {
+	width: 38px;
+	height: 31px;
+}
+
+/** ------------- 整体布局 ------------------- */
+
+.u-map-table table, .u-map-table td {
+	border-collapse: collapse;
+	vertical-align: middle;
+	text-align: center;
+}
+
+/** */
+.u-map-table .u-map-grid {
+	border: 1px solid #CCCCCC;
+	text-align: left;
+	vertical-align: top;
+}
+
+.u-map-table-label {
+	font-weight: bold;
+	height: 25px;
+}
+.u-map-right-label {
+	color: #666;
+	width: 30px;
+}
+.u-map-left_label {
+	width: 35px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-right: 5px;
+}
+
+/** 左侧类别样式  */
+.u-map-left_type {
+	border-bottom: 1px solid #CCCCCC;
+	border-right: 1px solid #CCCCCC;
+	font-weight: bolder;
+	width: 35px;
+}
+/** 下侧人数样式  */
+.u-map-table_num {
+	color: #666;
+	font-size: 12px;
+	height: 12px;
+}
+
+/** 角坐标轴名称样式 */
+.u-map-yaxis-title {
+	height: 25px;
+	border-bottom: 2px #CCCCCC solid;
+	font-weight: bold;
+}
+.u-map-xaxis-title {
+	width: 60px;
+	font-weight: bold;
+}
+
+/* 点样式 */
+.u-map .u-point, .u-map .u-point-group {
+	display: inline-block;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url(../img/talent/map_arrow.png);
+	position: relative;
+}
+
+.u-point-d {
+	margin-bottom: 3px;
+}
+
+/** 实心点样式
+------------------------------------------*/
+.u-point {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-image: url(../img/talent/map_arrow.png);
+}
+.u-point-l .u-point {
+	background-position : -199px -3px;
+}
+
+.u-point-d .u-point {
+	background-position : -240px -3px;
+}
+
+.u-point-u .u-point {
+	background-position : -152px -3px;
+}
+/** 空心点（带箭头）样式
+------------------------------------------*/
+.u-point-ring  {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-image: url(../img/talent/map_arrow.png);
+	background-repeat: no-repeat;
+}
+.u-point-l .u-point-ring {
+	background-position : -173px -3px;
+}
+.u-point-d .u-point-ring {
+	background-position : -220px -3px;
+}
+.u-point-u .u-point-ring {
+	background-position : -130px -3px;
+}
+/** 空心点（无箭头）样式
+------------------------------------------*/
+.u-point-comment-n  {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background: url(../img/talent/commentNTip.png) no-repeat center;
+}
+/** 灰色点样式
+------------------------------------------*/
+.u-point-gray  {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background: url(../img/talent/pgray.png) no-repeat center;
+}
+
+.u-point-comment-y  {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background: url(../img/talent/commentYTip.png) no-repeat center;
+}
+
+.u-point-l-comment .u-point-righty {
+	margin-left:3px;
+	display: inline-block;
+	width: 16px;
+	height: 10px;
+	background-repeat:no-repeat;
+	background-image: url(../img/talent/comment-ly.png);
+}
+
+.u-point-l-comment .u-point-lefty {
+	margin-left:3px;
+	display: inline-block;
+	width: 16px;
+	height: 10px;
+	background-repeat:no-repeat;
+	background-image: url(../img/talent/comment-ly.png);
+}
+
+.u-point-d-comment .u-point-downy {
+	margin-left:3px;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-repeat:no-repeat;
+	background-image: url(../img/talent/comment-dy.png);
+}
+
+.u-point-u-comment .u-point-upy {
+	margin-left:3px;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-repeat:no-repeat;
+	background-image: url(../img/talent/comment-uy.png);
+}
+
+.u-point-l-comment .u-point-rightn {
+	margin-left:3px;
+	display: inline-block;
+	width: 16px;
+	height: 10px;
+	background-repeat:no-repeat;
+	background-image: url(../img/talent/comment-ln.png);
+}
+
+.u-point-l-comment .u-point-leftn {
+	margin-left:3px;
+	display: inline-block;
+	width: 16px;
+	height: 10px;
+	background-repeat:no-repeat;
+	background-image: url(../img/talent/comment-ln.png);
+}
+
+.u-point-d-comment .u-point-downn {
+	margin-left:3px;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-repeat:no-repeat;
+	background-image: url(../img/talent/comment-dn.png);
+}
+
+.u-point-u-comment .u-point-upn {
+	margin-left:3px;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-repeat:no-repeat;
+	background-image: url(../img/talent/comment-un.png);
+}
+
+/** 点中文字样式 */
+.u-point-label {
+	/* height: 13px; */
+	font-size: 10px;
+	display: block;
+	color: #444;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+	width:38px;
+	padding-top:2px;
+}
+
+/** 隐藏文字 */
+.u-map-hideText .u-point-label {
+	display: none;
+}
+
+/* 汇总点 样式 */
+.u-point-group-wrapper {
+	min-width: 71px;
+}
+
+.u-map-grid .u-point-group {
+	width: 30px;
+	height: 16px;
+	background-position : -70px 0;
+	color: #fff;
+	padding-left : 23px;
+	padding-right: 2px;
+	padding-top : 3px;
+	text-align: center;
+}
+
+.u-point-group-arrow {
+	display : inline-block;
+	width: 16px;
+	height: 16px;
+	background-repeat:no-repeat;
+	background-image: url(../img/talent/map_arrow.png);
+}
+
+.u-point-l .u-point-group-arrow {
+	background-position : -52px 0px;
+}
+.u-point-u .u-point-group-arrow {
+	background-position : -15px 0px;
+}
+.u-point-d .u-point-group-arrow {
+	background-position : 2px 0px;
+}
+
+/**
+ * 	以下样式可选 
+ * ---------------------------------------------------------- */
+
+/** 单元格样式 */
+.u-map-cell_4_7, .u-map-cell_5_7 {
+	background: #99CE7E;
+}
+.u-map-cell_4_6, .u-map-cell_5_6 {
+	background: #D9EBB1;
+}
+.u-map-cell_3_5, .u-map-cell_4_5, .u-map-cell_5_5 {
+	background: #FFFFDD;
+}
+.u-map-cell_2_4, .u-map-cell_3_4, .u-map-cell_4_4, .u-map-cell_5_4 {
+	background: #FFFBB1;
+}
+.u-map-cell_2_3, .u-map-cell_3_3, .u-map-cell_4_3 {
+	background: #FCED88;
+}
+.u-map-cell_1_2, .u-map-cell_2_2 {
+	background: #FDDFDE;
+}
+.u-map-cell_1_1, .u-map-cell_2_1 {
+	background: #F2AFA9;
+}
+
+/** 左侧label */
+.u-map-left_label_1 {
+	border-bottom: 1px solid #F2F2F2;
+}
+.u-map-left_label_1, .u-map-left_label_2 {
+	background: #D7D7D7;
+}
+
+.u-map-left_label_3, .u-map-left_label_4 {
+	border-bottom: 1px solid #F2F2F2;
+}
+.u-map-left_label_3, .u-map-left_label_4, .u-map-left_label_5 {
+	background: #E4E4E4;
+}
+
+.u-map-left_label_6, .u-map-left_label_7 {
+	border-top: 1px solid #E3E3E3;
+	background: #F2F2F2;
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<setting name="cacheEnabled" value="true" />
+	</settings>
+
+	<typeAliases>
+		<typeAlias alias="itemDto" type="net.chinahrd.entity.dto.pc.common.ItemDto" />
+		<typeAlias alias="compareDto" type="net.chinahrd.entity.dto.pc.common.CompareDto" />
+		<typeAlias alias="empDto" type="net.chinahrd.entity.dto.pc.common.EmpDto" />
+		<typeAlias alias="perBenefitDto" type="net.chinahrd.entity.dto.pc.benefit.PerBenefitDto" />
+		
+		<typeAlias alias="soureOrganDto" type="net.chinahrd.entity.dto.pc.admin.OrganDto" />
+		<typeAlias alias="riskTreeDto" type="net.chinahrd.entity.dto.pc.common.RiskTreeDto" />
+	</typeAliases>
+</configuration> 

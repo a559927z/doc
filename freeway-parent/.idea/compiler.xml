@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="freeway-base-facade" />
+        <module name="freeway-business-facade" />
+        <module name="freeway-business-service" />
+        <module name="freeway-business-web" />
+        <module name="freeway-common" />
+        <module name="freeway-dubbo-support" />
+        <module name="freeway-generator" />
+        <module name="freeway-platform-admin" />
+        <module name="freeway-platform-facade" />
+        <module name="freeway-web-support" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="freeway-base-facade" target="1.8" />
+      <module name="freeway-business-facade" target="1.8" />
+      <module name="freeway-business-service" target="1.8" />
+      <module name="freeway-business-web" target="1.8" />
+      <module name="freeway-common" target="1.8" />
+      <module name="freeway-dubbo-support" target="1.8" />
+      <module name="freeway-facade" target="1.8" />
+      <module name="freeway-generator" target="1.8" />
+      <module name="freeway-parent" target="1.8" />
+      <module name="freeway-platform-admin" target="1.8" />
+      <module name="freeway-platform-facade" target="1.8" />
+      <module name="freeway-support" target="1.8" />
+      <module name="freeway-web-support" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

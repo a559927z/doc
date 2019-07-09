@@ -1,0 +1,104 @@
+2019-03-21 11:28:47.668  INFO - n.c.ServiceApplication.logStarting(50) - Starting ServiceApplication on HR4G9S67J3GOB0K with PID 92324 (D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes started by Administrator in D:\MyXFiles\svn\freeway-parent) 
+2019-03-21 11:28:47.692 DEBUG - n.c.ServiceApplication.logStarting(53) - Running with Spring Boot v2.1.3.RELEASE, Spring v5.1.5.RELEASE 
+2019-03-21 11:28:47.693  INFO - n.c.ServiceApplication.logStartupProfileInfo(679) - The following profiles are active: dev 
+2019-03-21 11:28:49.213 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\demo\dao\EmpInfoDAO.class] 
+2019-03-21 11:28:49.215 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\ModuleInfoDAO.class] 
+2019-03-21 11:28:49.215 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\RoleInfoDAO.class] 
+2019-03-21 11:28:49.216 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\UserInfoDAO.class] 
+2019-03-21 11:28:49.216 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\UserSecurityDAO.class] 
+2019-03-21 11:28:49.218 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'empInfoDAO' and 'net.chinahrd.modules.demo.dao.EmpInfoDAO' mapperInterface 
+2019-03-21 11:28:49.220 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'moduleInfoDAO' and 'net.chinahrd.modules.rbac.dao.ModuleInfoDAO' mapperInterface 
+2019-03-21 11:28:49.221 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'roleInfoDAO' and 'net.chinahrd.modules.rbac.dao.RoleInfoDAO' mapperInterface 
+2019-03-21 11:28:49.221 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'userInfoDAO' and 'net.chinahrd.modules.rbac.dao.UserInfoDAO' mapperInterface 
+2019-03-21 11:28:49.221 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'userSecurityDAO' and 'net.chinahrd.modules.rbac.dao.UserSecurityDAO' mapperInterface 
+2019-03-21 11:28:49.231 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\platform\demo\dao\DemoUserInfoDAO.class] 
+2019-03-21 11:28:49.232 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'demoUserInfoDAO' and 'net.chinahrd.platform.demo.dao.DemoUserInfoDAO' mapperInterface 
+2019-03-21 11:28:52.583 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Scanned package: 'net.chinahrd.modules.**.entity' for aliases 
+2019-03-21 11:28:52.586 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Property 'mapperLocations' was not specified or no matching resources found 
+2019-03-21 11:28:52.841 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Scanned package: 'net.chinahrd.platform.**.entity' for aliases 
+2019-03-21 11:28:52.841 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Property 'mapperLocations' was not specified or no matching resources found 
+2019-03-21 16:34:46.113  INFO - n.c.ServiceApplication.logStarting(50) - Starting ServiceApplication on HR4G9S67J3GOB0K with PID 10372 (D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes started by Administrator in D:\MyXFiles\svn\freeway-parent) 
+2019-03-21 16:34:46.149 DEBUG - n.c.ServiceApplication.logStarting(53) - Running with Spring Boot v2.1.3.RELEASE, Spring v5.1.5.RELEASE 
+2019-03-21 16:34:46.150  INFO - n.c.ServiceApplication.logStartupProfileInfo(679) - The following profiles are active: dev 
+2019-03-21 16:34:47.515 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\demo\dao\EmpInfoDAO.class] 
+2019-03-21 16:34:47.515 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\ModuleInfoDAO.class] 
+2019-03-21 16:34:47.516 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\RoleInfoDAO.class] 
+2019-03-21 16:34:47.516 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\UserInfoDAO.class] 
+2019-03-21 16:34:47.517 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'empInfoDAO' and 'net.chinahrd.modules.demo.dao.EmpInfoDAO' mapperInterface 
+2019-03-21 16:34:47.520 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'moduleInfoDAO' and 'net.chinahrd.modules.rbac.dao.ModuleInfoDAO' mapperInterface 
+2019-03-21 16:34:47.520 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'roleInfoDAO' and 'net.chinahrd.modules.rbac.dao.RoleInfoDAO' mapperInterface 
+2019-03-21 16:34:47.520 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'userInfoDAO' and 'net.chinahrd.modules.rbac.dao.UserInfoDAO' mapperInterface 
+2019-03-21 16:34:47.529 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\platform\demo\dao\DemoUserInfoDAO.class] 
+2019-03-21 16:34:47.530 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'demoUserInfoDAO' and 'net.chinahrd.platform.demo.dao.DemoUserInfoDAO' mapperInterface 
+2019-03-21 16:34:50.707 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Scanned package: 'net.chinahrd.modules.**.entity' for aliases 
+2019-03-21 16:34:50.708 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor@4ea56bdb' 
+2019-03-21 16:34:50.709 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor@32227215' 
+2019-03-21 16:34:50.711 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Property 'mapperLocations' was not specified or no matching resources found 
+2019-03-21 16:34:51.235 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Scanned package: 'net.chinahrd.platform.**.entity' for aliases 
+2019-03-21 16:34:51.235 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor@7d1c164a' 
+2019-03-21 16:34:51.235 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor@209f3887' 
+2019-03-21 16:34:51.236 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Property 'mapperLocations' was not specified or no matching resources found 
+2019-03-21 16:39:03.158  INFO - n.c.ServiceApplication.logStarting(50) - Starting ServiceApplication on HR4G9S67J3GOB0K with PID 1824 (D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes started by Administrator in D:\MyXFiles\svn\freeway-parent) 
+2019-03-21 16:39:03.171 DEBUG - n.c.ServiceApplication.logStarting(53) - Running with Spring Boot v2.1.3.RELEASE, Spring v5.1.5.RELEASE 
+2019-03-21 16:39:03.172  INFO - n.c.ServiceApplication.logStartupProfileInfo(679) - The following profiles are active: dev 
+2019-03-21 16:39:04.422 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\demo\dao\EmpInfoDAO.class] 
+2019-03-21 16:39:04.422 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\ModuleInfoDAO.class] 
+2019-03-21 16:39:04.423 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\RoleInfoDAO.class] 
+2019-03-21 16:39:04.423 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\UserInfoDAO.class] 
+2019-03-21 16:39:04.424 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'empInfoDAO' and 'net.chinahrd.modules.demo.dao.EmpInfoDAO' mapperInterface 
+2019-03-21 16:39:04.427 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'moduleInfoDAO' and 'net.chinahrd.modules.rbac.dao.ModuleInfoDAO' mapperInterface 
+2019-03-21 16:39:04.427 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'roleInfoDAO' and 'net.chinahrd.modules.rbac.dao.RoleInfoDAO' mapperInterface 
+2019-03-21 16:39:04.427 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'userInfoDAO' and 'net.chinahrd.modules.rbac.dao.UserInfoDAO' mapperInterface 
+2019-03-21 16:39:04.437 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\platform\demo\dao\DemoUserInfoDAO.class] 
+2019-03-21 16:39:04.437 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'demoUserInfoDAO' and 'net.chinahrd.platform.demo.dao.DemoUserInfoDAO' mapperInterface 
+2019-03-21 16:39:07.475 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Scanned package: 'net.chinahrd.modules.**.entity' for aliases 
+2019-03-21 16:39:07.476 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor@4db77402' 
+2019-03-21 16:39:07.476 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor@73c48264' 
+2019-03-21 16:39:07.478 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Property 'mapperLocations' was not specified or no matching resources found 
+2019-03-21 16:39:08.027 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Scanned package: 'net.chinahrd.platform.**.entity' for aliases 
+2019-03-21 16:39:08.027 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor@c4d2c44' 
+2019-03-21 16:39:08.027 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor@13866329' 
+2019-03-21 16:39:08.028 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Property 'mapperLocations' was not specified or no matching resources found 
+2019-03-21 16:44:25.480  INFO - n.c.ServiceApplication.logStarting(50) - Starting ServiceApplication on HR4G9S67J3GOB0K with PID 1088 (D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes started by Administrator in D:\MyXFiles\svn\freeway-parent) 
+2019-03-21 16:44:25.494 DEBUG - n.c.ServiceApplication.logStarting(53) - Running with Spring Boot v2.1.3.RELEASE, Spring v5.1.5.RELEASE 
+2019-03-21 16:44:25.495  INFO - n.c.ServiceApplication.logStartupProfileInfo(679) - The following profiles are active: dev 
+2019-03-21 16:44:26.767 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\demo\dao\EmpInfoDAO.class] 
+2019-03-21 16:44:26.768 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\ModuleInfoDAO.class] 
+2019-03-21 16:44:26.768 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\RoleInfoDAO.class] 
+2019-03-21 16:44:26.769 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\UserInfoDAO.class] 
+2019-03-21 16:44:26.770 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'empInfoDAO' and 'net.chinahrd.modules.demo.dao.EmpInfoDAO' mapperInterface 
+2019-03-21 16:44:26.773 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'moduleInfoDAO' and 'net.chinahrd.modules.rbac.dao.ModuleInfoDAO' mapperInterface 
+2019-03-21 16:44:26.773 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'roleInfoDAO' and 'net.chinahrd.modules.rbac.dao.RoleInfoDAO' mapperInterface 
+2019-03-21 16:44:26.774 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'userInfoDAO' and 'net.chinahrd.modules.rbac.dao.UserInfoDAO' mapperInterface 
+2019-03-21 16:44:26.782 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\platform\demo\dao\DemoUserInfoDAO.class] 
+2019-03-21 16:44:26.782 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'demoUserInfoDAO' and 'net.chinahrd.platform.demo.dao.DemoUserInfoDAO' mapperInterface 
+2019-03-21 16:44:29.795 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Scanned package: 'net.chinahrd.modules.**.entity' for aliases 
+2019-03-21 16:44:29.796 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor@18b6d3c1' 
+2019-03-21 16:44:29.796 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor@422ab737' 
+2019-03-21 16:44:29.798 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Property 'mapperLocations' was not specified or no matching resources found 
+2019-03-21 16:44:30.324 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Scanned package: 'net.chinahrd.platform.**.entity' for aliases 
+2019-03-21 16:44:30.324 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor@33a8c9c9' 
+2019-03-21 16:44:30.325 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor@382dc417' 
+2019-03-21 16:44:30.325 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Property 'mapperLocations' was not specified or no matching resources found 
+2019-03-21 17:38:39.730  INFO - n.c.ServiceApplication.logStarting(50) - Starting ServiceApplication on HR4G9S67J3GOB0K with PID 11280 (D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes started by Administrator in D:\MyXFiles\svn\freeway-parent) 
+2019-03-21 17:38:39.744 DEBUG - n.c.ServiceApplication.logStarting(53) - Running with Spring Boot v2.1.3.RELEASE, Spring v5.1.5.RELEASE 
+2019-03-21 17:38:39.744  INFO - n.c.ServiceApplication.logStartupProfileInfo(679) - The following profiles are active: dev 
+2019-03-21 17:38:41.028 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\demo\dao\EmpInfoDAO.class] 
+2019-03-21 17:38:41.029 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\ModuleInfoDAO.class] 
+2019-03-21 17:38:41.029 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\RoleInfoDAO.class] 
+2019-03-21 17:38:41.030 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\modules\rbac\dao\UserInfoDAO.class] 
+2019-03-21 17:38:41.031 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'empInfoDAO' and 'net.chinahrd.modules.demo.dao.EmpInfoDAO' mapperInterface 
+2019-03-21 17:38:41.034 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'moduleInfoDAO' and 'net.chinahrd.modules.rbac.dao.ModuleInfoDAO' mapperInterface 
+2019-03-21 17:38:41.034 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'roleInfoDAO' and 'net.chinahrd.modules.rbac.dao.RoleInfoDAO' mapperInterface 
+2019-03-21 17:38:41.034 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'userInfoDAO' and 'net.chinahrd.modules.rbac.dao.UserInfoDAO' mapperInterface 
+2019-03-21 17:38:41.042 DEBUG - o.m.s.m.ClassPathMapperScanner.scanCandidateComponents(437) - Identified candidate component class: file [D:\MyXFiles\svn\freeway-parent\freeway-business-service\target\classes\net\chinahrd\platform\demo\dao\DemoUserInfoDAO.class] 
+2019-03-21 17:38:41.042 DEBUG - o.m.s.m.ClassPathMapperScanner.debug(49) - Creating MapperFactoryBean with name 'demoUserInfoDAO' and 'net.chinahrd.platform.demo.dao.DemoUserInfoDAO' mapperInterface 
+2019-03-21 17:38:44.005 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Scanned package: 'net.chinahrd.modules.**.entity' for aliases 
+2019-03-21 17:38:44.006 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor@481b2f10' 
+2019-03-21 17:38:44.006 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor@2b6c7012' 
+2019-03-21 17:38:44.009 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Property 'mapperLocations' was not specified or no matching resources found 
+2019-03-21 17:38:44.534 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Scanned package: 'net.chinahrd.platform.**.entity' for aliases 
+2019-03-21 17:38:44.535 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor@14b275bd' 
+2019-03-21 17:38:44.535 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Registered plugin: 'com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor@4ed18798' 
+2019-03-21 17:38:44.535 DEBUG - o.m.s.SqlSessionFactoryBean.debug(49) - Property 'mapperLocations' was not specified or no matching resources found 
+2019-03-21 17:38:48.108  INFO - n.c.ServiceApplication.logStarted(59) - Started ServiceApplication in 9.228 seconds (JVM running for 12.865) 

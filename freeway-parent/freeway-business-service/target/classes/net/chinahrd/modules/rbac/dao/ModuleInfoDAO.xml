@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.modules.rbac.dao.ModuleInfoDAO">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ModuleInfoResultMap" type="net.chinahrd.modules.rbac.entity.ModuleInfo">
+        <result column="module_id" property="moduleId" />
+        <result column="module_name" property="moduleName" />
+        <result column="module_type" property="moduleType" />
+        <result column="module_url" property="moduleUrl" />
+        <result column="module_sort" property="moduleSort" />
+
+    </resultMap>
+
+
+
+</mapper>

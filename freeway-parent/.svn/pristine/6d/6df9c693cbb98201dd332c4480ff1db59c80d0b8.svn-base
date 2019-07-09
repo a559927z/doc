@@ -1,0 +1,24 @@
+
+#Tomcat端口配置
+server.port=8012
+
+# jdbc_config   datasource
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://127.0.0.1:3306/platform?useUnicode=true&useSSL=false&characterEncoding=utf8
+spring.datasource.username=root
+spring.datasource.password=root
+
+#redis
+# Redis数据库索引（默认为0）
+spring.redis.database=0
+# Redis服务器地址
+spring.redis.host=40.125.213.43
+# Redis服务器连接端口
+spring.redis.port=7000
+# Redis服务器连接密码（默认为空）
+spring.redis.password=zrw1409
+
+elastic.job.zk.serverLists=127.0.0.1:2181
+elastic.job.zk.namespace=platform-job
+elastic.job.demoJobTest1.cron=0 0/3 * * * ? 
+#elastic.job.demoJobTest1.overwrite=true

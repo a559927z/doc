@@ -1,0 +1,19 @@
+@import '~antd/lib/style/themes/default.less';
+
+.import{
+  :global(.ant-modal-body){
+    padding: 0;
+  }
+  .importContent{
+    text-align: center;
+    padding: 60px 0 80px;
+    .covered{
+      margin-bottom: 20px;
+    }
+    .uplaodBtn{
+      margin-bottom: 30px;
+      border-color: @primary-color;
+      color:  @primary-color;
+    }
+  }
+}

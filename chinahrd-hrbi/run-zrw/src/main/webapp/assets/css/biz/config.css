@@ -1,0 +1,22 @@
+.page-explain{
+	background:#F3FDFF;
+	padding: 10px 10px 10px 10px;
+}
+
+.config-page{
+	background-color: white;
+}
+.explain{
+	color:#999999;
+}
+.config-body .form-group label{
+	font-weight: bold;
+}
+
+.split{
+	width:100%;
+	float:left;
+	height: 24px;
+	border-bottom: 1px solid #EFEFEF;
+	margin: 0 15px 15px 15px;
+}

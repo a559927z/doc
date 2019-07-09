@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="base" />
+        <module name="hrd-util" />
+        <module name="hrd-weka" />
+        <module name="jar" />
+        <module name="run" />
+        <module name="run-vue" />
+        <module name="run-zrw" />
+        <module name="tr-accordDismiss" />
+        <module name="tr-benefit" />
+        <module name="tr-clientImg" />
+        <module name="tr-dismissRisk" />
+        <module name="tr-empAttendance-zrw" />
+        <module name="tr-employeePerformance" />
+        <module name="tr-empSatisfaction" />
+        <module name="tr-homePage" />
+        <module name="tr-humanInventory" />
+        <module name="tr-humanInventory-zrw" />
+        <module name="tr-keyTalent" />
+        <module name="tr-laborEfficiency" />
+        <module name="tr-manpowerCost" />
+        <module name="tr-monthReport" />
+        <module name="tr-organizationalStructure" />
+        <module name="tr-positionCompetency" />
+        <module name="tr-promotionBoard" />
+        <module name="tr-recruitBoard" />
+        <module name="tr-salaryBoard" />
+        <module name="tr-salesBoard" />
+        <module name="tr-sequenceCount" />
+        <module name="tr-talentContrast" />
+        <module name="tr-talentMaps" />
+        <module name="tr-talentProfile" />
+        <module name="tr-talentProfitLoss" />
+        <module name="tr-talentSearch" />
+        <module name="tr-talentStructure" />
+        <module name="tr-teamImg" />
+        <module name="tr-trainBoard" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="base" target="1.8" />
+      <module name="hrbi" target="1.5" />
+      <module name="hrd-util" target="1.7" />
+      <module name="hrd-weka" target="1.8" />
+      <module name="jar" target="1.5" />
+      <module name="run" target="1.8" />
+      <module name="run-vue" target="1.8" />
+      <module name="run-zrw" target="1.8" />
+      <module name="tr-accordDismiss" target="1.8" />
+      <module name="tr-benefit" target="1.8" />
+      <module name="tr-clientImg" target="1.8" />
+      <module name="tr-dismissRisk" target="1.8" />
+      <module name="tr-empAttendance-zrw" target="1.8" />
+      <module name="tr-employeePerformance" target="1.8" />
+      <module name="tr-empSatisfaction" target="1.8" />
+      <module name="tr-homePage" target="1.8" />
+      <module name="tr-humanInventory" target="1.8" />
+      <module name="tr-humanInventory-zrw" target="1.8" />
+      <module name="tr-keyTalent" target="1.8" />
+      <module name="tr-laborEfficiency" target="1.8" />
+      <module name="tr-manpowerCost" target="1.8" />
+      <module name="tr-monthReport" target="1.8" />
+      <module name="tr-organizationalStructure" target="1.8" />
+      <module name="tr-positionCompetency" target="1.8" />
+      <module name="tr-promotionBoard" target="1.8" />
+      <module name="tr-recruitBoard" target="1.8" />
+      <module name="tr-salaryBoard" target="1.8" />
+      <module name="tr-salesBoard" target="1.8" />
+      <module name="tr-sequenceCount" target="1.8" />
+      <module name="tr-talentContrast" target="1.8" />
+      <module name="tr-talentMaps" target="1.8" />
+      <module name="tr-talentProfile" target="1.8" />
+      <module name="tr-talentProfitLoss" target="1.8" />
+      <module name="tr-talentSearch" target="1.8" />
+      <module name="tr-talentStructure" target="1.8" />
+      <module name="tr-teamImg" target="1.8" />
+      <module name="tr-trainBoard" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

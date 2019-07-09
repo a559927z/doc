@@ -1,0 +1,161 @@
+.data {
+  padding: 0;
+  padding: 0;
+  display: flex;
+  margin: 0 -10px;
+  li {
+    flex: 1;
+    margin: 0 10px;
+    padding: 15px 20px;
+    background: #fff;
+  }
+  &.sumData {
+    li {
+      cursor: pointer;
+    }
+    .title {
+      font-size: 14px;
+      color: #424656;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .num {
+      font-size: 36px;
+      font-weight: 600;
+      color: #000;
+    }
+    .total {
+      padding-top: 10px;
+      border-top: 1px solid #e9e9e9;
+      font-size: 14px;
+      color: #424656;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    li {
+      height: 130px;
+      width: 1%;
+    }
+  }
+  &.opData {
+    margin-top: 20px;
+    li {
+      height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      cursor: pointer;
+      i {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+    }
+  }
+}
+
+.searchArea {
+  background: #fff;
+  height: 115px;
+  margin-top: 20px;
+  padding: 15px 20px;
+  .input {
+    margin: 15px 0;
+  }
+  .title {
+    font-size: 14px;
+    color: #424656;
+  }
+}
+
+.picArea {
+  margin-top: 20px;
+  height: 140px;
+  border-radius: 4px;
+  background: #fff;
+  :global {
+    .swiper-container {
+      padding: 16px 40px;
+      width: 100%;
+      height: 100%;
+      .swiper-slide {
+        height: 100%;
+      }
+      .img {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        z-index: 2;
+      }
+      .name {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+        bottom: 0;
+        margin: auto;
+        height: 20px;
+        color: rgba(0,0,0,.65);
+      }
+      .swiper-pagination-fraction {
+        bottom: 0;
+      }
+    }
+  }
+}
+
+.tabs {
+  background: #fff;
+  padding: 0 20px;
+  height: 400px;
+  :global {
+    table {
+      font-size: 12px;
+      table-layout: fixed;
+    }
+    .ant-table-scroll table {
+      width: calc(100% - 17px) !important;
+    }
+
+    .ant-tabs-bar {
+      margin-bottom: 0;
+    }
+
+    .ant-table-fixed-header .ant-table-scroll {
+      // .ant-table-header
+      &:after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 17px;
+        height: 50px;
+        background: #fff;
+      }
+    }
+
+    .ant-table-thead > tr > th {
+      font-weight: bold;
+    }
+
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding-left: 2px;
+      padding-right: 0;
+    }
+
+    .ant-table-thead > tr > th {
+      background: #fff;
+    }
+  }
+}

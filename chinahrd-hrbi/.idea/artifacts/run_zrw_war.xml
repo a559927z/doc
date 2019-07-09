@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="run-zrw:war">
+    <output-path>$PROJECT_DIR$/run-zrw/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>run-zrw</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="run-zrw.war">
+      <element id="artifact" artifact-name="run-zrw:war exploded" />
+    </root>
+  </artifact>
+</component>

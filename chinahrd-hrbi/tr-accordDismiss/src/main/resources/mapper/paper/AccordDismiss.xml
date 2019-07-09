@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.accordDismiss.mvc.pc.dao.AccordDismissDao">
+
+	<!-- 查询子孙节点  查询当前机构及子机构的流失数据 -->
+	<select id="querySubDismissData" resultType="net.chinahrd.entity.dto.pc.accordDismiss.DismissContrastDto">
+<!-- 		select ec.year_month as yearMonth,ec.organization_id as organizationId,vdo.organization_name as organizationName, -->
+<!-- 	    ec.month_begin_sum as beginSum,ec.month_end_sum as endSum,ec.act_count_sum as runOffCount -->
+<!-- 	  	from monthly_emp_count ec  -->
+<!-- 		inner JOIN dim_organization vdo  -->
+<!-- 		on vdo.organization_id = ec.organization_id -->
+<!-- 		and ec.customer_id= vdo.customer_id  -->
+<!-- 		where (vdo.organization_id = #{organId} or vdo.organization_parent_id =  #{organId})  -->
+<!-- 		and ec.year_month between  #{beginYearMonth} and  #{endYearMonth}  -->
+<!-- 		and ec.customer_id = #{customerId}  -->
+		SELECT
+			rot.`YEAR_MONTH` AS yearMonth,
+			hecm.organization_id AS organizationId,
+			vdo.organization_name AS organizationName,
+			hecm.month_begin_sum AS beginSum,
+			hecm.month_end_sum AS endSum,
+			rot.act_count_sum AS runOffCount
+		FROM
+			run_off_total rot
+		INNER JOIN history_emp_count_month hecm on rot.`year_month` = hecm.`year_month` AND hecm.organization_id = rot.organization_id AND rot.customer_id = hecm.customer_id AND hecm.type = 1 
+		INNER JOIN dim_organization vdo ON vdo.organization_id = rot.organization_id AND rot.customer_id = vdo.customer_id
+		WHERE
+			(vdo.organization_id = #{organId} OR vdo.organization_parent_id = #{organId})
+			AND rot.`YEAR_MONTH` BETWEEN #{beginYearMonth} AND #{endYearMonth} 
+			AND rot.customer_id = #{customerId}
+    </select>
+
+	<!--获取机构的人员流失记录 -->
+	<select id="queryDismissRecord" resultType="net.chinahrd.entity.dto.pc.accordDismiss.DismissRecordDto">
+	   SELECT ror.emp_id as empId, case when ror.re_hire = 3 then 3 else ror.re_hire end as reHire,ror.where_abouts as whereAbouts,
+	   			case when dro.type = 3 then 3 else dro.type end as type,dro.run_off_name as runOffName
+       FROM run_off_record ror
+	   LEFT JOIN dim_run_off dro on ror.run_off_id = dro.run_off_id and ror.customer_id= dro.customer_id
+	   LEFT JOIN v_dim_emp vde on vde.emp_id = ror.emp_id and ror.customer_id= vde.customer_id
+	   where ror.customer_id = #{customerId}
+       AND vde.organization_id IN (
+        SELECT o.organization_id
+        FROM dim_organization o
+        WHERE LOCATE(
+        (
+        SELECT o1.full_path
+        FROM dim_organization o1
+        WHERE o1.customer_id = #{customerId}
+        AND o1.organization_id = #{organizationId}
+        ),
+        o.full_path
+        )
+        AND o.customer_id = #{customerId}
+      )
+		<if test="quarterLastDay != null">
+		AND (
+			YEAR (ror.run_off_date) = YEAR (#{quarterLastDay}) AND QUARTER (ror.run_off_date) = QUARTER (#{quarterLastDay})
+		)
+		</if>
+		<if test="yearMonths != null">
+		AND DATE_FORMAT(ror.run_off_date, '%Y%m') = #{yearMonths}
+		</if>
+		order by type desc
+    </select>
+
+	<!--获取流失人员明细数据 -->
+	<select id="queryRunOffDetail" resultType="net.chinahrd.entity.dto.pc.accordDismiss.AccordDismissDto">
+    SELECT
+        vde.emp_id AS empId,
+        CONCAT(vde.user_name,'（',vde.user_name_ch,'）') AS userNameCh,
+        ror.is_warn AS isWarn,
+        vde.organization_name AS organizationName,
+        vde.is_key_talent as isKeyTalent,
+        vde.position_name AS positionName,
+		vde.sequence_id as sequenceId ,
+        vde.sequence_name AS sequenceName,
+		vde.ability_id as abilityId,
+		vde.ability_name AS abilityName,
+		per.performance_key as performanceKey,
+		vde.performance_name AS performanceName,
+<!-- 		tt.key_talent_type_id as keyTalentTypeId, -->
+<!-- 		tt.key_talent_type_name AS keyTalentTypeName, -->
+		dro.type AS roType,
+		ror.run_off_date AS roDate,
+		ror.where_abouts AS whereAbouts
+    FROM run_off_record ror
+    	INNER JOIN v_dim_emp vde ON ror.emp_id = vde.emp_id AND ror.customer_id = vde.customer_id AND ror.run_off_date = vde.run_off_date
+		<!-- INNER JOIN dim_ability abl ON abl.ability_id = vde.ability_id AND abl.customer_id = vde.customer_id -->
+		INNER JOIN dim_performance per ON per.performance_id = vde.performance_id AND per.customer_id = vde.customer_id
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id AND dro.customer_id = ror.customer_id
+		<if test="kTTIdlist.size != 0 ">
+			INNER JOIN(
+			        SELECT emp_id,customer_id FROM key_talent
+					WHERE key_talent_type_id IN
+					<foreach item="item" collection="kTTIdlist" open="(" separator="," close=")"> #{item} </foreach>
+					<if test="notKeyTalent == true">
+					AND is_delete=0
+					union
+					SELECT  emp_id,customer_id FROM v_dim_emp
+					WHERE is_key_talent=0
+					</if>
+				) kt ON kt.emp_id=ror.emp_id AND kt.customer_id = ror.customer_id
+				    <if test="notKeyTalent == false">
+						AND vde.is_key_talent=1
+					</if>
+
+
+		</if>
+    WHERE
+         ror.customer_id = #{customerId} AND ror.run_off_date BETWEEN #{startYm} AND DATE_ADD(#{endYm} , INTERVAL 1 DAY)
+         and EXISTS
+	    (SELECT 1 FROM dim_organization t1 WHERE
+			locate(
+				(
+					SELECT t.full_path FROM dim_organization t
+					WHERE t.organization_id = #{organizationId}
+					AND t.customer_id = #{customerId}
+				),
+				t1.full_path ) and t1.organization_id = vde.organization_id
+		)
+		<if test="roTypelist.size != 0 "> AND dro.type in
+			<foreach item="item" collection="roTypelist" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		<if test="sequenceIdlist.size != 0 "> AND vde.sequence_id in
+			<foreach item="item" collection="sequenceIdlist" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		<if test="abilityIdlist.size != 0 "> AND vde.ability_id in
+			<foreach item="item" collection="abilityIdlist" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		<if test="kTTIdlist.size ==0 and notKeyTalent == true">
+      		AND vde.is_key_talent=0
+		</if>
+		<if test="performanceKeylist.size != 0 "> AND per.performance_key in
+			<foreach item="item" collection="performanceKeylist" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+        AND ror.customer_id= #{customerId}
+        ORDER BY roDate DESC
+        limit #{rowBounds.offset} , #{rowBounds.limit}
+    </select>
+
+
+
+	<select id="queryRunOffCount" resultType="int">
+    SELECT
+        COUNT(1)
+    FROM run_off_record ror
+    	INNER JOIN v_dim_emp vde ON ror.emp_id = vde.emp_id AND ror.customer_id = vde.customer_id AND ror.run_off_date = vde.run_off_date
+		<!-- INNER JOIN dim_ability abl ON abl.ability_id = vde.ability_id AND abl.customer_id = vde.customer_id -->
+		INNER JOIN dim_performance per ON per.performance_id = vde.performance_id AND per.customer_id = vde.customer_id
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id AND dro.customer_id = ror.customer_id
+		<if test="kTTIdlist.size != 0 ">
+			INNER JOIN(
+			        SELECT emp_id,customer_id FROM key_talent
+					WHERE key_talent_type_id IN
+					<foreach item="item" collection="kTTIdlist" open="(" separator="," close=")"> #{item} </foreach>
+					AND is_delete=0
+					<if test="notKeyTalent == true">
+					union
+					SELECT  emp_id,customer_id FROM v_dim_emp
+					WHERE is_key_talent=0
+					</if>
+				) kt ON  kt.emp_id=ror.emp_id AND kt.customer_id = ror.customer_id
+				<if test="notKeyTalent == false">
+						AND vde.is_key_talent=1
+					</if>
+		</if>
+    WHERE
+         ror.customer_id = #{customerId} AND ror.run_off_date BETWEEN #{startYm} AND DATE_ADD(#{endYm} , INTERVAL 1 DAY)
+<!--          and dro.type = 1  -->
+         and EXISTS
+	    (SELECT 1 FROM dim_organization t1 WHERE
+			locate(
+				(
+					SELECT t.full_path FROM dim_organization t
+					WHERE t.organization_id = #{organizationId}
+					AND t.customer_id = #{customerId}
+				),
+				t1.full_path ) and t1.organization_id = vde.organization_id
+		)
+		<if test="roTypelist.size != 0 "> AND dro.type in
+			<foreach item="item" collection="roTypelist" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		<if test="sequenceIdlist.size != 0 "> AND vde.sequence_id in
+			<foreach item="item" collection="sequenceIdlist" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		<if test="abilityIdlist.size != 0 "> AND vde.ability_id in
+			<foreach item="item" collection="abilityIdlist" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		<if test="kTTIdlist.size ==0 and notKeyTalent == true">
+      		AND vde.is_key_talent=0
+		</if>
+		<if test="performanceKeylist.size != 0 "> AND per.performance_key in
+			<foreach item="item" collection="performanceKeylist" open="(" separator="," close=")"> #{item} </foreach>
+        </if>
+
+         AND ror.customer_id= #{customerId}
+    </select>
+
+	<!--获取流失人员明细数据    根据姓名 查询-->
+	<select id="queryRunOffDetailByName" resultType="net.chinahrd.entity.dto.pc.accordDismiss.AccordDismissDto">
+    SELECT
+        vde.emp_id AS empId,
+        CONCAT(vde.user_name,'（',vde.user_name_ch,'）') AS userNameCh,
+        ror.is_warn AS isWarn,
+        vde.organization_name AS organizationName,
+        vde.is_key_talent as isKeyTalent,
+        vde.position_name AS positionName,
+		vde.sequence_id as sequenceId ,
+        vde.sequence_name AS sequenceName,
+		vde.ability_id as abilityId,
+		vde.ability_name AS abilityName,
+		per.performance_key as performanceKey,
+		vde.performance_name AS performanceName,
+		dktt.key_talent_type_id as keyTalentTypeId,
+		dktt.key_talent_type_name AS keyTalentTypeName,
+		dro.type AS roType,
+		ror.run_off_date AS roDate,
+		ror.where_abouts AS whereAbouts
+    FROM run_off_record ror
+    	INNER JOIN v_dim_emp vde ON ror.emp_id = vde.emp_id AND ror.customer_id = vde.customer_id AND ror.run_off_date = vde.run_off_date
+		<!-- INNER JOIN dim_ability abl ON abl.ability_id = vde.ability_id AND abl.customer_id = vde.customer_id -->
+		INNER JOIN dim_performance per ON per.performance_id = vde.performance_id AND per.customer_id = vde.customer_id
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id AND dro.customer_id = ror.customer_id
+
+		LEFT JOIN key_talent kt ON vde.emp_id = kt.key_talent_id and vde.customer_id= kt.customer_id
+		LEFT JOIN dim_key_talent_type dktt ON dktt.key_talent_type_id = kt.key_talent_type_id and kt.customer_id= dktt.customer_id
+
+<!-- 		INNER JOIN dim_key_talent_type tt ON tt.key_talent_type_id = vde.key_talent_type_id AND tt.customer_id = vde.customer_id -->
+    WHERE
+         ror.customer_id = #{customerId}
+<!--       	 and dro.type = 1  -->
+         and EXISTS
+	    (SELECT 1 FROM dim_organization t1 WHERE
+			locate(
+				(
+					SELECT t.full_path FROM dim_organization t
+					WHERE t.organization_id = #{organizationId}
+					AND t.customer_id = #{customerId}
+				),
+				t1.full_path ) and t1.organization_id = vde.organization_id
+		)
+		AND ((vde.emp_key  LIKE CONCAT('%',#{keyName},'%')) OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+        AND ror.customer_id= #{customerId}
+        ORDER BY roDate DESC
+        limit #{rowBounds.offset} , #{rowBounds.limit}
+    </select>
+
+
+
+	<select id="queryRunOffByNameCount" resultType="int">
+     SELECT
+        COUNT(1)
+    FROM run_off_record ror
+    	INNER JOIN v_dim_emp vde ON ror.emp_id = vde.emp_id AND ror.customer_id = vde.customer_id AND ror.run_off_date = vde.run_off_date
+		<!-- INNER JOIN dim_ability abl ON abl.ability_id = vde.ability_id AND abl.customer_id = vde.customer_id -->
+		INNER JOIN dim_performance per ON per.performance_id = vde.performance_id AND per.customer_id = vde.customer_id
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id AND dro.customer_id = ror.customer_id
+<!-- 		INNER JOIN dim_key_talent_type tt ON tt.key_talent_type_id = vde.key_talent_type_id AND tt.customer_id = vde.customer_id -->
+    WHERE
+         ror.customer_id = #{customerId}
+<!--       	 and dro.type = 1  -->
+         and EXISTS
+	    (SELECT 1 FROM dim_organization t1 WHERE
+			locate(
+				(
+					SELECT t.full_path FROM dim_organization t
+					WHERE t.organization_id = #{organizationId}
+					AND t.customer_id = #{customerId}
+				),
+				t1.full_path ) and t1.organization_id = vde.organization_id
+		)
+		AND ((vde.emp_key  LIKE CONCAT('%',#{keyName},'%')) OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+        AND ror.customer_id= #{customerId}
+    </select>
+
+	<select id="queryDismissTrend" resultType="net.chinahrd.entity.dto.pc.accordDismiss.DismissTrendDto">
+<!-- 	SELECT -->
+<!-- 		mec.organization_id AS organId, -->
+<!-- 		mec.month_begin_sum AS monthBegin, -->
+<!-- 		mec.month_end_sum AS monthEnd, -->
+<!-- 		mec.month_count_sum AS monthCount, -->
+<!-- 		mec.act_count_sum AS accordCount, -->
+<!-- 		mec.`year_month` AS yearMonth -->
+<!-- 	FROM monthly_emp_count mec -->
+<!-- 	INNER JOIN ( -->
+<!-- 		SELECT -->
+<!-- 		CONCAT(LEFT(tmec.`year_month`,4),'Q',FLOOR((FLOOR(RIGHT(tmec.`year_month`,2))+2)/3)) as tempQuarter -->
+<!-- 		FROM monthly_emp_count tmec -->
+<!-- 		WHERE tmec.`year_month` &lt;= CONCAT(YEAR(#{prevQuarter}),IF(MONTH(#{prevQuarter}) > 9,MONTH(#{prevQuarter}),CONCAT('0',MONTH(#{prevQuarter})))) -->
+<!-- 		AND tmec.organization_id = #{organId} AND tmec.customer_id = #{customerId} -->
+<!-- 		GROUP BY tempQuarter -->
+<!-- 		ORDER BY tempQuarter DESC -->
+<!-- 		LIMIT 0, 8  --> <!-- 这里取8条，如果取5条统计当年累计流失率不正确，由前端处理成最新5条记录 -->
+<!-- 	) AS temp_emp_count ON CONCAT(LEFT(mec.`year_month`,4),'Q',FLOOR((FLOOR(right(mec.`year_month`,2))+2)/3)) = temp_emp_count.tempQuarter -->
+<!-- 	WHERE (mec.organization_id = #{organId} AND mec.customer_id = #{customerId}) -->
+<!-- 	OR mec.organization_id IN ( -->
+<!-- 		SELECT vdo1.organization_parent_id -->
+<!-- 		FROM dim_organization vdo1 -->
+<!-- 		WHERE vdo1.organization_id = #{organId} -->
+<!-- 		AND vdo1.customer_id = #{customerId} -->
+<!-- 	) -->
+		SELECT
+			rot.organization_id AS organId,
+			hecm.month_begin_sum AS monthBegin,
+			hecm.month_end_sum AS monthEnd,
+			hecm.month_count_sum AS monthCount,
+			rot.act_count_sum AS accordCount,
+			rot.`year_month` AS yearMonth
+		FROM
+			run_off_total rot
+		INNER JOIN history_emp_count_month hecm on rot.`year_month` = hecm.`year_month` AND hecm.organization_id = rot.organization_id AND rot.customer_id = hecm.customer_id AND hecm.type = 1
+		INNER JOIN (
+			SELECT CONCAT( LEFT (tmec.`year_month`, 4), 'Q', FLOOR(( FLOOR(RIGHT(tmec.`year_month`, 2)) + 2 ) / 3 )) AS tempQuarter
+			FROM run_off_total tmec
+			WHERE
+				tmec.`year_month` &lt;= CONCAT( YEAR (#{prevQuarter}), IF ( MONTH (#{prevQuarter}) > 9, MONTH (#{prevQuarter}), CONCAT('0', MONTH(#{prevQuarter}))) )
+			AND tmec.organization_id = #{organId}
+			AND tmec.customer_id = #{customerId}
+			GROUP BY tempQuarter
+			ORDER BY tempQuarter DESC
+			LIMIT 0, 8) AS temp_emp_count
+		ON CONCAT(LEFT(rot.`year_month`,4),'Q',FLOOR((FLOOR(right(rot.`year_month`,2))+2)/3)) = temp_emp_count.tempQuarter 
+		WHERE 
+			(rot.organization_id = #{organId} AND rot.customer_id = #{customerId})
+		OR rot.organization_id IN 
+			( SELECT vdo1.organization_parent_id FROM dim_organization vdo1 WHERE vdo1.organization_id = #{organId} AND vdo1.customer_id = #{customerId} ) 
+	</select>
+
+	<select id="queryQuarterLastDay" resultType="string">
+	<!-- 这里不使用更新时间。因为更新时间字段不准的 -->
+<!-- 		SELECT MAX(mec.refresh) FROM monthly_emp_count mec WHERE mec.customer_id  = #{customerId} -->
+	<!-- 这里使用离职表最大离职时间。数据限定在2015-12-18内的人 -->
+		select Max(run_off_date) from run_off_record WHERE customer_id  = #{customerId} and run_off_date &lt;= '2015-12-18' 
+	</select>
+
+	<select id="queryDisminss4Quarter" resultType="net.chinahrd.entity.dto.pc.accordDismiss.DismissTrendDto">
+<!-- 	SELECT -->
+<!-- 		mec.month_begin_sum AS monthBegin, -->
+<!-- 		mec.month_end_sum AS monthEnd, -->
+<!-- 		mec.act_count_sum AS accordCount, -->
+<!-- 		mec.`year_month` AS yearMonth -->
+<!-- 	FROM monthly_emp_count mec -->
+<!-- 	WHERE ( -->
+<!-- 		FLOOR(LEFT(mec.`year_month`,4)) = YEAR(#{quarterLastDay}) -->
+<!-- 		AND FLOOR((FLOOR(RIGHT(mec.`year_month`,2))+2)/3) = QUARTER (#{quarterLastDay}) -->
+<!-- 	) -->
+<!-- 	AND mec.organization_id = #{organId} -->
+<!-- 	AND mec.customer_id = #{customerId} -->
+		SELECT
+			hecm.month_begin_sum AS monthBegin,
+			hecm.month_end_sum AS monthEnd,
+			rot.act_count_sum AS accordCount,
+			rot.`year_month` AS yearMonth
+		FROM
+			run_off_total rot
+		INNER JOIN history_emp_count_month hecm on rot.`year_month` = hecm.`year_month` AND hecm.organization_id = rot.organization_id AND rot.customer_id = hecm.customer_id AND hecm.type = 1
+		WHERE
+			(
+				FLOOR(LEFT(rot.`year_month`, 4)) = YEAR (#{quarterLastDay})
+				AND FLOOR((FLOOR(RIGHT(rot.`year_month`, 2)) + 2) / 3) = QUARTER (#{quarterLastDay})
+			)
+		AND rot.organization_id = #{organId}
+		AND rot.customer_id = #{customerId}
+	</select>
+
+	<select id="queryQuarterDismiss4Pref" resultType="net.chinahrd.entity.dto.pc.accordDismiss.QuarterDismissCountDto">
+	SELECT
+		dp.performance_id AS typeId,
+		dp.performance_name	AS typeName,
+		count(vde.emp_id) AS workingCount,
+		count(tror.emp_id) AS runOffCount
+	FROM dim_performance dp
+	LEFT JOIN v_dim_emp vde ON vde.performance_id = dp.performance_id
+							AND dp.customer_id = vde.customer_id 
+	INNER JOIN (
+				SELECT
+					t1.organization_id
+				FROM
+					dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT
+								t.full_path
+							FROM
+								dim_organization t
+							WHERE
+								t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						),
+						t1.full_path
+					)
+			) t1 ON t1.organization_id = vde.organization_id							
+	LEFT JOIN (
+		SELECT ror.emp_id,
+		ror.customer_id
+		FROM run_off_record ror
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id
+								AND ror.customer_id = dro.customer_id
+								AND dro.type = 1
+		where (
+			YEAR (ror.run_off_date) = YEAR (#{quarterLastDay})
+			AND QUARTER (ror.run_off_date) = QUARTER (#{quarterLastDay})
+		)
+	) tror ON tror.emp_id = vde.emp_id AND tror.customer_id = vde.customer_id
+	WHERE dp.customer_id = #{customerId}
+	GROUP BY typeId,typeName
+	ORDER BY typeId DESC,typeName DESC;
+	</select>
+
+	<select id="queryQuarterDismiss4Ability" resultType="net.chinahrd.entity.dto.pc.accordDismiss.QuarterDismissCountDto">
+	SELECT
+		da.ability_id AS typeId,
+		da.ability_name AS typeName,
+		count(vde.emp_id) AS workingCount,
+		count(tror.emp_id) AS runOffCount
+	FROM dim_ability da
+	LEFT JOIN v_dim_emp vde ON da.ability_id = vde.ability_id
+							AND da.customer_id = vde.customer_id
+	INNER JOIN (
+				SELECT
+					t1.organization_id
+				FROM
+					dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT
+								t.full_path
+							FROM
+								dim_organization t
+							WHERE
+								t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						),
+						t1.full_path
+					)
+			) t1 ON t1.organization_id = vde.organization_id					
+	LEFT JOIN (
+		SELECT ror.emp_id,
+			ror.customer_id
+		FROM run_off_record ror
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id
+									AND ror.customer_id = dro.customer_id
+									AND dro.type = 1
+		where (
+			YEAR (ror.run_off_date) = YEAR (#{quarterLastDay})
+			AND QUARTER (ror.run_off_date) = QUARTER (#{quarterLastDay})
+		)
+	) tror ON tror.emp_id = vde.emp_id AND tror.customer_id = vde.customer_id
+	WHERE da.customer_id = #{customerId}
+	GROUP BY typeId,typeName
+	ORDER BY da.type,da.show_index;
+	</select>
+
+	<select id="queryQuarterDismiss4CompanyAge" resultType="net.chinahrd.entity.dto.pc.accordDismiss.QuarterDismissCountDto">
+	SELECT
+		IF(vde.company_age &gt;= 0 AND vde.company_age &lt; 3, 1,
+		IF(vde.company_age &gt;= 3 AND vde.company_age &lt; 12, 2,
+		IF(vde.company_age &gt;= 12 AND vde.company_age &lt; 36, 3,
+		IF(vde.company_age &gt;= 36 AND vde.company_age &lt; 60, 4,
+		IF(vde.company_age &gt;= 60, 5,NULL))))) AS typeId,
+		count(vde.emp_id) AS workingCount,
+		count(tror.emp_id) AS runOffCount
+	FROM v_dim_emp vde
+	INNER JOIN (
+				SELECT
+					t1.organization_id
+				FROM
+					dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT
+								t.full_path
+							FROM
+								dim_organization t
+							WHERE
+								t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						),
+						t1.full_path
+					)
+			) t1 ON t1.organization_id = vde.organization_id	
+	LEFT JOIN (
+		SELECT ror.emp_id,
+		ror.customer_id
+		FROM run_off_record ror
+		INNER JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id
+							AND ror.customer_id = dro.customer_id
+							AND dro.type = 1
+		where (
+			YEAR (ror.run_off_date) = YEAR (#{quarterLastDay})
+			AND QUARTER (ror.run_off_date) = QUARTER (#{quarterLastDay})
+		)
+	) tror ON tror.emp_id = vde.emp_id AND tror.customer_id = vde.customer_id
+	WHERE  vde.customer_id = #{customerId}  
+	GROUP BY typeId
+	</select>
+	<!-- 统计近两个季度的关键人才流失人数 -->
+	<select id="countQuaKeyPerson" resultType="net.chinahrd.entity.dto.pc.common.CompareDto">
+		select count(ror.emp_id) as cur,
+			CONCAT(YEAR(ror.run_off_date),QUARTER(ror.run_off_date))  AS date
+		from run_off_record ror
+		inner JOIN v_dim_emp vde on vde.emp_id = ror.emp_id  
+		INNER JOIN (
+				SELECT
+					t1.organization_id
+				FROM
+					dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT
+								t.full_path
+							FROM
+								dim_organization t
+							WHERE
+								t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						),
+						t1.full_path
+					)
+			) t1 ON t1.organization_id = vde.organization_id	
+		LEFT JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id AND dro.customer_id = ror.customer_id 
+		where ror.run_off_date BETWEEN #{beginDate} and #{endDate} 
+		and vde.is_key_talent = 1 
+		and dro.type = 1 
+		and ror.customer_id = #{customerId} 
+		GROUP BY date order by date desc  
+	</select>
+
+	<!-- 统计近两个季度的高绩效主动流失人数 -->
+	<select id="countQuaHighPerform" resultType="net.chinahrd.entity.dto.pc.common.CompareDto">
+		select count(ror.emp_id) as cur,
+		CONCAT(YEAR(ror.run_off_date),QUARTER(ror.run_off_date))  AS date
+		from run_off_record ror 
+		inner JOIN v_dim_emp vde on vde.emp_id = ror.emp_id  
+		INNER JOIN (
+				SELECT
+					t1.organization_id
+				FROM
+					dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT
+								t.full_path
+							FROM
+								dim_organization t
+							WHERE
+								t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						),
+						t1.full_path
+					)
+			) t1 ON t1.organization_id = vde.organization_id		
+		left join dim_performance dp on dp.performance_id = vde.performance_id
+		LEFT JOIN dim_run_off dro ON ror.run_off_id = dro.run_off_id AND dro.customer_id = ror.customer_id 
+		where ror.run_off_date BETWEEN #{beginDate} and #{endDate} 
+		and dp.performance_key >= 4  
+		and dro.type = 1 
+		and ror.customer_id = #{customerId} 
+		GROUP BY date order by date desc 
+	</select>
+
+</mapper>

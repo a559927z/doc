@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.benefit.mvc.app.dao.MobilePerBenefitDao">
+
+	<!-- 查询行业均值 -->
+	<select id="queryAvgValue" resultType="java.lang.Integer">
+		SELECT
+			pv.`value` as avgValue
+		FROM dim_organization org 
+		INNER JOIN dim_profession pr on pr.profession_id = org.profession_id 
+		inner join profession_value pv on pv.profession_id = pr.profession_id 
+											AND pv.profession_value_key = 'pcb'
+											AND pv.refresh = (SELECT MAX(refresh) FROM profession_value)
+		where org.organization_id = #{organizationId}
+		AND org.customer_id = #{customerId}
+	</select>
+	
+	<!-- 查询人均效益趋势（按月统计） -->
+	<select id="queryTrendByMonth" resultType="net.chinahrd.entity.dto.app.benefit.BenefitDto">
+		 select f.fte_value as eqEmpNum,f.gain_amount as profit, 
+		 round(f.gain_amount/f.fte_value,2) as benefitValue,
+		 f.target_value as targetValue,
+		 f.year_month as yearMonth
+		 from  fact_fte f 
+		 where f.organization_id = #{organizationId} 
+		 AND f.customer_id = #{customerId} 
+		 AND FLOOR(LEFT(f.`year_month`,4)) =#{year}
+		 order by f.year_month desc
+		  limit 0, #{limitNum}
+	</select>
+
+	
+	<!-- 查询“当前组织人均效益”数据(包含子节点) -->
+	<select id="queryOrgBenefit" resultType="net.chinahrd.entity.dto.app.benefit.BenefitDto">
+		 select o.organization_id as id,o.organization_name as organizationName,
+		 f.fte_value as eqEmpNum,f.gain_amount as profit,  f.sales_amount as salesAmount,
+		 round(f.gain_amount/f.fte_value,4) as benefitValue,
+		 f.fulltime_sum as fulltimeSum,f.passtime_sum as passtimeSum,
+		 f.overtime_sum as overtimeSum,
+		 f.year_month as yearMonth
+		 from  fact_fte f 
+<!-- 		 inner join trade_profit p on  -->
+<!-- 		 f.organization_id = p.organization_id and f.year_month = p.year_month  -->
+		 LEFT JOIN dim_organization o on o.organization_id = f.organization_id  and f.customer_id = o.customer_id 
+		 where (f.organization_id = #{organizationId} or o.organization_parent_id = #{organizationId} )
+		 and f.year_month = (select max(ff.year_month) from fact_fte ff where ff.customer_id = #{customerId}) 
+--     	 and o.is_single = 1
+    	 and f.customer_id = #{customerId}
+		 order by o.depth 
+	</select>
+	
+	<select id="queryLastMonth" resultType="string">
+		SELECT MAX(`year_month`) FROM fact_fte  WHERE customer_id  = #{customerId}
+	</select>
+</mapper>

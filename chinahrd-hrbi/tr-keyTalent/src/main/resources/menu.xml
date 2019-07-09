@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus code="" name="胜任力">
+		<menu code="GuanJianRenCaiKu" name="关键人才库" url="keyTalents/toKeyTalentsView" icon="" mobile="true" relies="">
+			
+		</menu>
+	</menus>

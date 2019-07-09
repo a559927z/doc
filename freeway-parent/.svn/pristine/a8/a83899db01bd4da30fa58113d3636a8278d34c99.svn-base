@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.chinahrd.platform.rbac.dao.UserInfoDAO">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="UserInfoResultMap" type="net.chinahrd.platform.rbac.entity.UserInfo">
+        <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="password" property="password"/>
+    </resultMap>
+
+
+    <!--用户-->
+    <resultMap id="RbacUserResMap" type="net.chinahrd.response.RbacUserRes">
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="tenantId" column="tenant_id" jdbcType="VARCHAR"/>
+        <!--角色集合-->
+        <collection property="roles" column="user_id" javaType="java.util.List"
+                    select="selectRolesByUserId"></collection>
+    </resultMap>
+    <!--权限-->
+    <resultMap id="RbacResourceResMap" type="net.chinahrd.response.RbacResourceRes">
+        <result column="resource_id" property="resourceId" jdbcType="VARCHAR"/>
+        <result column="resource_pid" property="resourcePid" jdbcType="VARCHAR"/>
+        <result column="resource_url" property="resourceUrl" jdbcType="VARCHAR"/>
+        <result column="resource_name" property="resourceName" jdbcType="VARCHAR"/>
+        <result column="resource_type" property="resourceType" jdbcType="VARCHAR"/>
+        <result column="resource_sort" property="resourceSort" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--角色-->
+    <resultMap id="RbacRoleResMap" type="net.chinahrd.response.RbacRoleRes">
+        <result column="role_id" property="roleId" jdbcType="VARCHAR"/>
+        <result column="role_name" property="roleName" jdbcType="VARCHAR"/>
+        <result column="role_code" property="roleCode" jdbcType="VARCHAR"/>
+        <!--权限集合-->
+        <collection property="resources" column="role_id" javaType="java.util.List"
+                    select="selectResourcesByRoleId"></collection>
+    </resultMap>
+
+    <!--根据角色id查询权限(先从角色权限关联表查询角色id相等，在查询权限id，根据权限id在权限表里查询权限)-->
+    <select id="selectResourcesByRoleId" resultMap="RbacResourceResMap" parameterType="java.lang.String">
+           select m.* from rbac_resource as  m where m.resource_id in (select rm.resource_id from rbac_role_resource as rm where rm.role_id=#{roleId})
+    </select>
+
+    <!--根据用户中的角色查询角色-->
+    <select id="selectRolesByUserId" resultMap="RbacRoleResMap" parameterType="java.lang.String">
+          select r.* from rbac_role  as r where r.role_id in (select ur.role_id from rbac_user_role as  ur where ur.user_id=#{userId})
+    </select>
+
+    <select id="selectByUserName" resultMap="RbacUserResMap" parameterType="java.lang.String">
+        select u.*
+		from rbac_user as u
+		where u.user_name = #{userName}
+    </select>
+
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.teamImg.mvc.app.dao.MobileTeamImgDao">
+
+    <!-- 管理者首页-团队画像  -->
+     <select id="queryTeamImg" resultType="net.chinahrd.entity.dto.app.teamImg.TeamImgDto">
+			SELECT
+				t3.emp_id empId,
+				t3.user_name_ch UserNameCh,
+				t3.work_place workPlace,
+				t4.show_index showIndex,
+				t4.ability_id abilityId,
+				t4.ability_name abilityName,
+				t3.sex sex,
+				t3.birth_date birthDate,
+				t3.marry_status marryStatus,
+				t3.age age,
+				t3.company_age companyAge,
+				t3.blood blood,
+				t4.curt_name curtName
+			FROM
+			( SELECT t1.organization_id FROM dim_organization t1 WHERE locate( 
+																		( SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{organId} 
+																		AND t.customer_id = #{customerId} ), t1.full_path )
+																		AND t1.customer_id = #{customerId} 
+				limit 0,10000) a 
+			STRAIGHT_JOIN 	v_dim_emp t3 on t3.organization_id=a.organization_id
+			LEFT JOIN dim_ability t4 ON t3.ability_id = t4.ability_id
+			AND t3.customer_id = t4.customer_id 
+			where t3.customer_id = #{customerId} AND t3.run_off_date IS NULL  
+			ORDER BY t4.show_index ASC
+     </select>
+
+      <!-- 管理者首页-团队画像-性格  -->
+     <select id="queryEmpPersonality" resultType="net.chinahrd.entity.dto.KVItemDto">
+		SELECT
+			sys_code_item_name k,
+			IFNULL(total, 0) v
+		FROM
+			sys_code_item sci
+		LEFT JOIN (
+			SELECT
+				count(1) total,
+				t5.personality_id
+			FROM
+				(
+					SELECT
+						t1.organization_id
+					FROM
+						dim_organization t1
+					WHERE
+						locate(
+							(
+								SELECT
+									t.full_path
+								FROM
+									dim_organization t
+								WHERE
+									t.organization_id = #{organId}
+								AND t.customer_id = #{customerId}
+							),
+							t1.full_path
+						)
+					AND t1.customer_id = #{customerId}
+					LIMIT 0,
+					10000
+				) a STRAIGHT_JOIN v_dim_emp t3 ON t3.organization_id = a.organization_id
+			INNER JOIN emp_personality t5 ON t5.customer_id = t3.customer_id
+			AND t5.emp_id = t3.emp_id
+			WHERE
+				t3.customer_id = #{customerId}
+			AND t3.run_off_date IS NULL
+			GROUP BY
+				t5.personality_id
+		) b ON sci.sys_code_item_id = b.personality_id
+		WHERE
+			sci.code_group_id = 'personality'
+		ORDER BY
+			v DESC
+    </select>
+
+</mapper>

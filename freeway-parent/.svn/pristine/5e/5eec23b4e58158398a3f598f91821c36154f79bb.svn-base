@@ -1,0 +1,151 @@
+package net.chinahrd.generator;
+
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.InjectionConfig;
+import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * <p>
+ *  平台系统代码自动生成工具
+ * </p>
+ *
+ * @author bright
+ * @since 2019/3/8 13:49
+ */
+public class PlatformGenerator {
+    // 可变配置
+    // 作者
+    private static final String author_name = "bright";
+
+    // 模块名
+    private static final String module_name = "demo";
+
+    // 表统一前缀，一般建议同模块表用模块名做前缀
+    private static final String table_prefix = "demo";
+
+    // 表名，可一次多个
+    private static final String[] table_include = new String[] {"demo_user_info"};
+
+    // true表示：
+    // 1、controller api里如果有类型为CurrentUser的参数且有相关注解标志，将自动注入当前登录用户信息
+    // 2、controller api里如果有类型基于BasePageRequest或者BaseRequest的参数，将自动注入当前登录用户信息到其currentUser属性里去
+    private static final Boolean injectCurrentUser = true;
+
+    // 表统一前缀，一般建议同模块表用模块名做前缀
+    private static final String parent_packege = "net.chinahrd.modules";
+    // true表示生成基于dubbo分布式部署相关代码（业务功能类采用）
+    // false表示生成传统部署相关代码（系统后台管理类采用）
+    private static final Boolean supportDubbo = false;
+
+    // 业务系统连接多个数据源，有部分表（rbac及数据源）存储在平台库,包名区别开来，相应的supportDubbo也应设置为true
+    //private static final String parent_packege = "net.chinahrd.platform";
+    //private static final Boolean supportDubbo = true;
+
+
+    public static void main(String[] args) {
+        // 代码生成器
+        AutoGenerator mpg = new AutoGenerator();
+
+        // 全局配置
+        GlobalConfig gc = new GlobalConfig();
+        String projectPath = System.getProperty("user.home") + "/freeway-platform";
+        gc.setOutputDir(projectPath + "/src/main/java");//生成文件的输出目录
+        gc.setAuthor(author_name);//开发人员
+        //gc.setOpen(true);//是否打开输出目录
+        // 自定义文件命名，注意 %s 会自动填充表实体属性！
+        gc.setMapperName("%sDAO");
+        gc.setXmlName("%sDAO");
+        gc.setServiceName("%sService");
+        //gc.setServiceImplName("%sServiceImpl");
+        gc.setSwagger2(true);
+        gc.setFileOverride(true);
+        gc.setActiveRecord(false);
+        gc.setEnableCache(false);// XML 二级缓存
+        gc.setBaseResultMap(true);// XML ResultMap
+        gc.setBaseColumnList(true);// XML columList
+        mpg.setGlobalConfig(gc);
+
+        // 数据源配置
+        DataSourceConfig dsc = new DataSourceConfig();
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/platform?useUnicode=true&useSSL=false&characterEncoding=utf8");
+        // dsc.setSchemaName("public"); 数据库 schema name
+        dsc.setDriverName("com.mysql.jdbc.Driver");
+        dsc.setUsername("root");
+        dsc.setPassword("root");
+        mpg.setDataSource(dsc);
+
+        // 包配置
+        PackageConfig pc = new PackageConfig();
+        pc.setModuleName(module_name);
+        pc.setParent(parent_packege);//父包名。// 自定义包路径  如果为空，将下面子包名必须写全部， 否则就只需写子包名
+        pc.setEntity("entity");
+        pc.setController("controller");//设置控制器包名
+        pc.setXml("dao");// 设置xml文件的包名
+        pc.setMapper("dao");// 设置dao的包名
+        pc.setController("web");
+        mpg.setPackageInfo(pc);
+
+        // 注入自定义配置，可以在 VM 中使用 cfg.supportDubbo 设置的值
+        InjectionConfig cfg = new InjectionConfig() {
+            @Override
+            public void initMap() {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("supportDubbo", supportDubbo);
+                map.put("injectCurrentUser", injectCurrentUser);
+                this.setMap(map);
+            }
+        };
+        mpg.setCfg(cfg);
+
+        List<FileOutConfig> focList = new ArrayList<FileOutConfig>();
+        // 自定义 xxList.jsp 生成
+        // focList.add(new FileOutConfig("/template/list.jsp.vm") {
+        // @Override
+        // public String outputFile(TableInfo tableInfo) {
+        // // 自定义输入文件名称
+        // return "D://my_" + tableInfo.getEntityName() + ".jsp";
+        // }
+        // });
+        // cfg.setFileOutConfigList(focList);
+        // mpg.setCfg(cfg);
+
+        // 调整 xml 生成目录演示
+        /*
+         * focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
+         *
+         * @Override public String outputFile(TableInfo tableInfo) { return
+         * "d:/xx/xx/modules/" + tableInfo.getEntityName() + "Mapper.xml"; } });
+         */
+
+        cfg.setFileOutConfigList(focList);
+        mpg.setCfg(cfg);
+
+        // 策略配置
+        StrategyConfig strategy = new StrategyConfig();
+        strategy.setNaming(NamingStrategy.underline_to_camel);//数据库表映射到实体的命名策略
+        strategy.setColumnNaming(NamingStrategy.underline_to_camel);//数据库表字段映射到实体的命名策略, 未指定按照 naming 执行
+
+        // 自定义实体父类
+        strategy.setSuperEntityClass("net.chinahrd.common.BaseEntity");
+        // 自定义实体，公共字段
+        strategy.setSuperEntityColumns(new String[]{"create_by", "create_date", "update_by", "update_date"});
+
+        strategy.setEntityLombokModel(true);//【实体】是否为lombok模型（默认 false）
+        strategy.setRestControllerStyle(true);//生成 @RestController 控制器
+        strategy.setSuperControllerClass("net.chinahrd.common.AbstractBaseController");
+        strategy.setInclude(table_include);
+        strategy.setTablePrefix(table_prefix + "_");//表前缀
+
+        mpg.setStrategy(strategy);
+        //mpg.setTemplateEngine(new FreemarkerTemplateEngine());
+        mpg.execute();
+        // 打印注入设置
+        System.err.println(mpg.getCfg().getMap().get("supportDubbo"));
+    }
+}

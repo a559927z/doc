@@ -1,0 +1,185 @@
+.passwd-container {
+    position: relative;
+    margin: 0 auto;
+    width: 580px
+}
+
+.passwd-layout {
+    background-color: #f4f6f9
+}
+
+.passwd-layout .passwd-border {
+    content: " ";
+    height: 16px;
+    background: #0099cc
+}
+
+.passwd-layout .passwd-header {
+    height: 169px;
+    padding: 80px 0 0 175px
+}
+
+.passwd-layout .passwd-header-title {
+    font-size: 24px;
+    color: #444;
+    margin: auto 20px
+}
+
+.passwd-layout .main-content {
+    margin-left: 0;
+    min-height: 565px;
+    padding-left: 15px;
+    padding-right: 15px
+}
+
+.passwd-layout label {
+    margin-bottom: 20px
+}
+
+.passwd-layout .widget-box {
+    visibility: hidden;
+    position: absolute;
+    overflow: hidden;
+    width: 100%;
+    border-bottom: 0;
+    -moz-transform: scale(0, 1) translate(-150px);
+    -webkit-transform: scale(0, 1) translate(-150px);
+    -o-transform: scale(0, 1) translate(-150px);
+    -ms-transform: scale(0, 1) translate(-150px);
+    transform: scale(0, 1) translate(-150px);
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 0 30px 20px #e0e0e0;
+    -moz-box-shadow: 0 0 30px 20px #e0e0e0;
+    box-shadow: 0 0 30px 20px #e0e0e0;
+}
+
+.passwd-layout .widget-box.visible {
+    visibility: visible;
+    -moz-transform: scale(1, 1) translate(0);
+    -webkit-transform: scale(1, 1) translate(0);
+    -o-transform: scale(1, 1) translate(0);
+    -ms-transform: scale(1, 1) translate(0);
+    transform: scale(1, 1) translate(0);
+    -webkit-transition: all .3s ease;
+    transition: all .3s ease;
+    -o-transition: none;
+    -webkit-transition: none;
+}
+
+.passwd-layout .widget-box .widget-header {
+    background: none;
+    border: none;
+    position: absolute;
+    top: 20px;
+    padding: 0;
+}
+
+.passwd-layout .widget-box .widget-header > :first-child {
+    line-height: 18px;
+}
+
+.passwd-layout .widget-box .widget-header .hrd-hint-icon {
+    margin-right: 10px;
+}
+
+.passwd-layout .widget-box .widget-header .widget-caption {
+    vertical-align: top;
+    margin-left: 10px;
+}
+
+.passwd-layout .widget-box .widget-body {
+    padding: 58px 68px 36px;
+    background: linear-gradient(180deg, #0099cc 60%, transparent 10%),
+    linear-gradient(180deg, #f4f6f9 40%, transparent 10%);
+
+}
+
+.passwd-layout .widget-box .widget-main {
+    border: 1px solid #d0d0d0;
+    padding: 40px;
+    background: #fff
+}
+
+.passwd-layout .widget-box .widget-main input {
+    border:1px solid #d0d0d0;
+    height: 48px;
+    padding-left: 20px;
+    -webkit-border-radius: 4px!important;
+    -moz-border-radius: 4px!important;
+    border-radius: 4px!important;
+}
+
+.passwd-layout .widget-box .widget-main input:focus {
+    border-color: #0099cc;
+    -webkit-box-shadow: 0 0 5px 1px #0099cc!important;
+    -moz-box-shadow: 0 0 5px 1px #0099cc!important;
+    box-shadow: 0 0 8px 1px #0099cc!important;
+}
+
+.passwd-layout .widget-box .widget-body .toolbar > div > a {
+    font-size: 15px;
+    font-weight: 400;
+    text-shadow: 1px 0 1px rgba(0, 0, 0, 0.25)
+}
+
+.passwd-layout .widget-box .widget-main .widget-btn {
+    padding-top: 20px;
+}
+
+.passwd-layout .widget-box .widget-main .btn-success {
+    height: 50px;
+    width: 100%;
+    background-color: #0099cc;
+    border-color: #0099cc;
+    font-size: 14px;
+}
+.passwd-layout .widget-box .widget-main .btn-success[disabled]{
+    -moz-opacity: .3;
+    opacity: .3;
+    filter:alpha(opacity=30);
+}
+
+.passwd-box .toolbar {
+    background: #5090c1;
+    border-top: 2px solid #597597
+}
+
+.passwd-box .toolbar > div {
+    width: 50%;
+    display: inline-block;
+    padding: 9px 0 11px
+}
+
+.passwd-box .toolbar > div:first-child {
+    float: left;
+    text-align: left
+}
+
+.passwd-box .toolbar > div:first-child > a {
+    margin-left: 11px
+}
+
+.passwd-box .toolbar > div:first-child + div {
+    float: right;
+    text-align: right
+}
+
+.passwd-box .toolbar > div:first-child + div > a {
+    margin-right: 11px
+}
+
+.hrd-icon {
+    display: inline-block;
+    background: url("../../img/base/icon-hrd.png") no-repeat;
+    width: 295px;
+    height: 39px;
+}
+
+.hint-icon {
+    display: inline-block;
+    background: url("../../img/base/icon-hint.png") no-repeat;
+    width: 18px;
+    height: 18px;
+}

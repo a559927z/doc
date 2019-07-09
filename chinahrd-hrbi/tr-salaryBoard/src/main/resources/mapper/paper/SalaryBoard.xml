@@ -1,0 +1,1364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.salaryBoard.mvc.pc.dao.SalaryBoardDao">
+	
+	<!-- 组织员工人数 -->
+	<select id="queryEmpCount" resultType="int">
+		select count(vde.emp_id) from v_dim_emp vde
+		LEFT JOIN dim_organization org
+		on vde.organization_id=org.organization_id
+		and vde.customer_id=org.customer_id
+		where vde.customer_id=#{customerId}
+		<if test="quit==0">
+			and vde.run_off_date is null
+		</if>
+		and vde.organization_id IN (
+			SELECT t1.organization_id
+			FROM dim_organization t1
+			WHERE t1.customer_id = vde.customer_id
+			AND	locate(
+				(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.customer_id = t1.customer_id
+					AND t.organization_id = #{organId}
+				),
+				t1.full_path
+			)
+		)
+	</select>
+    <!-- 薪酬年度预算与去年的比较 -->
+	<select id="querySalaryBudgetYear" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			pv.year as year,
+			pv.pay_value as payValue,
+			round((pv.pay_value-pv1.pay_value)/pv1.pay_value*100,2) as compareValue
+		FROM
+			pay_value pv
+		LEFT JOIN
+			pay_value pv1
+			on pv.organization_id=pv1.organization_id
+			and pv.customer_id=pv1.customer_id
+			and pv1.year=(#{year}-1)
+		WHERE
+			pv.year = #{year}
+			and pv.customer_id=#{customerId}
+			and pv.organization_id =#{organId}
+	</select>
+
+	 <!-- 当前年薪酬累计 -->
+	<select id="querySalarySumThisYear" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			sum(pc.sum_pay) AS sumPay,
+		  	sum(pc.sum_salary) AS sumSalary,
+		  	sum(pc.sum_welfare) AS sumWelfare,
+			max(pc.`year_month`) AS yearMonth,
+			substr(max(pc.`year_month`), 1, 4) AS year
+		FROM
+			pay_collect pc
+		WHERE
+			substr(pc.`year_month`, 1, 4) = #{year}
+			and pc.customer_id=#{customerId}
+			and pc.organization_id =#{organId}
+	</select>
+
+	<select id="querySalarySumLastYear" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			sum(pc.sum_pay) as sumPay
+		FROM
+			pay_collect pc
+		WHERE
+		pc.customer_id=#{customerId}
+		and pc.organization_id =#{organId}
+		and	pc.`year_month`&gt;=#{beginDate}
+		and pc.`year_month`&lt;=#{endDate}
+	</select>
+
+	<!-- 查询人力总费用-->
+	<select id="queryCostTotal" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		select sum(t.cost) as cost from manpower_cost t
+       	where substr(t.`year_month`,1,4)= #{year}
+       	and t.customer_id=#{customerId} and t.organization_id=#{organId} 
+	</select>
+
+	<!-- 查询营业收入,支出-->
+	<select id="queryIncomeExpenditureYear" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			sum(tp.expend_amount) as expenditure,
+			sum(tp.sales_amount) as salesAmount
+		FROM
+			trade_profit tp
+		WHERE
+			substr(tp.`year_month`, 1, 4) = #{year}
+			and tp.customer_id=#{customerId} and tp.organization_id=#{organId} 
+	</select>
+
+	<!-- 查询薪酬福利费用-->
+	<select id="querysalaryWelfareYear" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			sum(pc.sum_pay+pc.sum_welfare) as cost
+		FROM
+			pay_collect pc
+		WHERE
+			substr(pc.`year_month`, 1, 4) = #{year}
+			and pc.customer_id=#{customerId}
+			and pc.organization_id =#{organId}
+	</select>
+
+	<!-- 薪酬月份统计-->
+	<select id="querySalaryPayTotal" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			pc.`year_month` as yearMonth,sum_pay as sumPay
+		FROM
+			pay_collect pc
+		WHERE
+			substr(pc.`year_month`, 1, 4) =  #{year}
+			and pc.customer_id=#{customerId}
+			and pc.organization_id =#{organId}
+		order by pc.`year_month`
+	</select>
+
+	<!-- 下级组织薪酬统计以及平均统计-->
+	<select id="querySalarySubOrganization" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			#{year} as year,
+			dimo.organization_name as organizationName,
+			sum_pay AS sumPay,
+			pc.avg_pay as avgPay
+		FROM
+			pay_collect_year pc
+		INNER JOIN dim_organization dimo ON pc.organization_id = dimo.organization_id
+		AND pc.customer_id = dimo.customer_id
+		WHERE
+			pc.`year`=  #{year}
+		and dimo.organization_parent_id=#{organId}
+		and pc.customer_id=#{customerId}
+		GROUP BY  dimo.organization_name
+		order by sum_pay desc
+	</select>
+
+	<!-- 组织KPI达标率、人力成本、薪酬总额的年度趋势-->
+	<select id="querySalaryCostKpi" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			pcy.`year` as year,
+			pcy.sum_pay as sumPay,
+			(
+				SELECT
+					sum(mc.cost)
+				FROM
+					manpower_cost mc
+				WHERE
+					mc.organization_id = pcy.organization_id
+				and mc.customer_id=pcy.customer_id
+				and substr(mc.`year_month`,1,4)=pcy.`year`
+			) as cost,
+		(
+				SELECT
+					sum(dk.kpi_value)
+				FROM
+					dept_kpi dk
+				WHERE
+					dk.organization_id = pcy.organization_id
+				and dk.customer_id=pcy.customer_id
+				and dk.`year`=pcy.`year`
+			) as kpi
+		FROM
+			pay_collect_year pcy
+		where  pcy.organization_id=#{organId}
+			and pcy.customer_id=#{customerId}
+		order by pcy.`year`
+	</select>
+
+	<!-- 营业额、利润、人力成本及薪酬总额的月度趋势-->
+	<select id="querySalaryCostSalesProfit" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			yearMonth,
+			sum(gainAmount) as gainAmount,
+			sum(salesAmount) as salesAmount,
+			sum(cost) as cost,
+			sum(sumPay) as sumPay 
+			FROM
+			(
+				SELECT
+					ft.`year_month` as yearMonth,
+					ft.gain_amount as gainAmount,
+					ft.sales_amount AS salesAmount,
+					0 AS cost,
+					0 as sumPay
+				FROM
+					fact_fte ft
+				WHERE
+				 ft.organization_id = #{organId}
+				AND ft.customer_id = #{customerId}
+				and substr(`year_month`,1,4)= #{year}
+				UNION
+					SELECT
+						mc.`year_month` as yearMonth,
+						0 AS gainAmount,
+						0 AS salesAmount,
+						mc.cost,
+						0 as sumPay
+						
+					FROM
+						manpower_cost mc
+					WHERE
+						 mc.organization_id = #{organId}
+					AND mc.customer_id = #{customerId}
+					and substr(`year_month`,1,4)= #{year}
+				UNION
+					SELECT
+						pc.`year_month` as yearMonth,
+						0 AS gainAmount,
+						0 AS salesAmount,
+						0 as cost,
+						pc.sum_pay as sumPay
+					FROM
+						pay_collect pc
+					WHERE
+					 pc.organization_id = #{organId}
+					AND pc.customer_id = #{customerId}
+				 and substr(`year_month`,1,4)= #{year}
+			) AS aa
+		GROUP BY yearMonth
+	</select>
+	
+	<!-- 下级组织人力资本投资回报率 -->
+	<select id="querySalaryOrganRateOfReturn" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			tp.organization_id organId,
+			hdo.organization_name organizationName,
+			((ifnull(tp.sales_amount,0) - (ifnull(tp.expend_amount,0) - ifnull((pc.sum_pay+pc.sum_welfare),0)))/(pc.sum_pay+pc.sum_welfare)) as rateReturn
+		FROM
+			trade_profit tp
+		LEFT JOIN pay_collect pc ON tp.organization_id = pc.organization_id
+		AND tp.customer_id = pc.customer_id
+		AND tp.`year_month` = pc.`year_month`
+		INNER JOIN history_dim_organization_month hdo ON hdo.`year_month` = tp.`year_month`
+		AND hdo.organization_id = tp.organization_id
+		AND (hdo.organization_id = #{organId} OR hdo.organization_parent_id = #{organId})
+		WHERE
+			tp.customer_id = #{customerId}
+		AND tp.`year_month` = #{yearMonth}
+		ORDER BY tp.organization_id
+	</select>
+
+	<!-- 人力资本投资回报率月度趋势-->
+	<select id="querySalaryMonthRateOfReturn" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			tp.`year_month` as yearMonth,
+			((ifnull(tp.sales_amount,0) - (ifnull(tp.expend_amount,0) - ifnull((pc.sum_pay+pc.sum_welfare),0)))/(pc.sum_pay+pc.sum_welfare)) as rateReturn
+		FROM
+			trade_profit tp
+		left JOIN pay_collect pc ON tp.organization_id = pc.organization_id
+		AND tp.customer_id = pc.customer_id
+		AND tp.`year_month` = pc.`year_month`
+		WHERE
+			substr(tp.`year_month`, 1, 4) = #{year}
+		and tp.organization_id=#{organId} and tp.customer_id=#{customerId}
+		order by tp.`year_month`
+	</select>
+	
+	<!-- 组织平均薪酬-->
+	<select id="querySalaryAvgPayList" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			pcy.`year` AS YEAR,
+			pcy.avg_pay AS avgPay
+		FROM
+			dim_organization org
+		INNER JOIN pay_collect_year pcy ON org.organization_id = pcy.organization_id
+		AND org.customer_id = pcy.customer_id
+		where org.organization_id=#{organId} and org.customer_id=#{customerId}
+		order by pcy.`year`
+	</select>
+
+	<!-- 行业分位值年度趋势-->
+	<select id="querySalaryBitValueYear" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			pqr.`year` AS YEAR,
+			pqr.quantile_value AS quantileValue,
+			sci.sys_code_item_name AS bitValue
+		FROM
+			dim_organization org
+		INNER JOIN dim_profession pr ON org.profession_id = pr.profession_id
+		AND pr.refresh = (
+			SELECT
+				MAX(refresh)
+			FROM
+				dim_profession
+		)
+		INNER JOIN profession_quantile_relation pqr ON pr.profession_id = pqr.profession_id
+		AND org.customer_id = pqr.customer_id
+		INNER JOIN sys_code_item sci ON sci.sys_code_item_id = pqr.quantile_id
+		AND sci.customer_id = pqr.customer_id
+		where org.organization_id=#{organId} and org.customer_id=#{customerId}
+		and pqr.year=#{year}
+		order by sci.show_index
+	</select>
+
+	<!-- 薪酬差异度岗位表-->
+	<select id="querySalaryDifferencePost" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			dp.position_name as positionName,
+			pay.`year_month` as year,
+			round((
+				<!-- (max(AES_DECRYPT(pay.pay_should,#{cryptKey})) - min(AES_DECRYPT(pay.pay_should,#{cryptKey}))) / min(AES_DECRYPT(pay.pay_should,#{cryptKey})) -->
+				(max(replace(unhex(pay.pay_should),#{cryptKey},'')) - min(replace(unhex(pay.pay_should),#{cryptKey},''))) / min(replace(unhex(pay.pay_should),#{cryptKey},''))
+			),2) AS difference
+		FROM
+		 v_dim_emp vde 
+	 	INNER JOIN dim_position dp
+	  	on vde.position_id=dp.position_id
+	  	and vde.customer_id=dp.customer_id
+		inner JOIN pay pay ON pay.emp_id = vde.emp_id
+		AND vde.customer_id = pay.customer_id
+		and pay.`year_month`=(select max(`year_month`) from pay where customer_id=#{customerId})
+		where vde.organization_id IN (
+			SELECT t1.organization_id
+			FROM dim_organization t1
+			WHERE t1.customer_id = vde.customer_id
+			AND	locate(
+				(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.customer_id = t1.customer_id
+					AND t.organization_id =#{organId}
+				),
+				t1.full_path
+			)
+		)
+		 and vde.customer_id=#{customerId}
+		 GROUP BY
+			dp.position_name
+		 order by difference desc
+	</select>
+
+	<!-- 员工CR值-->
+	<select id="querySalaryEmpCR" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			vde.user_name_ch AS empName,
+			<!-- round(AES_DECRYPT(pay.pay_should,#{cryptKey})/pc.quantile_value,2)  as crValue, -->
+			round(replace(unhex(pay.pay_should),#{cryptKey},'')/pc.quantile_value,2)  as crValue,
+			pay.`year_month` AS YEAR
+		FROM
+			v_dim_emp vde
+		inner JOIN pay pay ON pay.emp_id = vde.emp_id
+		AND pay.customer_id = vde.customer_id
+		and pay.`year_month`=(select max(`year_month`) from pay where customer_id=#{customerId})
+		inner JOIN pay_collect pc 
+		on pc.customer_id = vde.customer_id
+		and pc.`year_month`=pay.`year_month`
+		and pc.organization_id=#{organId}
+		inner JOIN performance_change pf ON pf.emp_id=vde.emp_id
+		and pf.customer_id=vde.customer_id 
+		and pf.`year_month`=(select max(`year_month`) from performance_change)
+		and pf.performance_name='五星'
+		where 1=1
+		and vde.organization_id IN (
+			SELECT t1.organization_id
+			FROM dim_organization t1
+			WHERE t1.customer_id = vde.customer_id
+			AND	locate(
+				(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.customer_id = t1.customer_id
+					AND t.organization_id =#{organId}
+				),
+				t1.full_path
+			)
+		)
+		AND vde.customer_id =#{customerId}
+		ORDER BY crValue desc
+	</select>
+
+	<!-- 员工CR值记录数-->
+	<select id="findSalaryEmpCRCount" resultType="int">
+		SELECT
+			count(vde.emp_id)
+		FROM
+			v_dim_emp vde
+		inner JOIN pay pay ON pay.emp_id = vde.emp_id
+		AND pay.customer_id = vde.customer_id
+		and pay.`year_month`=(select max(`year_month`) from pay where customer_id=#{customerId})
+		inner JOIN pay_collect pc 
+		on pc.customer_id = vde.customer_id
+		and pc.`year_month`=pay.`year_month`
+		and pc.organization_id=#{organId}
+		inner JOIN performance_change pf ON pf.emp_id=vde.emp_id
+		and pf.customer_id=vde.customer_id 
+		and pf.`year_month`=(select max(`year_month`) from performance_change)
+		and pf.performance_name='五星'
+		where 1=1
+		and vde.organization_id IN (
+			SELECT t1.organization_id
+			FROM dim_organization t1
+			WHERE t1.customer_id = vde.customer_id
+			AND	locate(
+				(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.customer_id = t1.customer_id
+					AND t.organization_id =#{organId}
+				),
+				t1.full_path
+			)
+		)
+		AND vde.customer_id =#{customerId}
+	</select>
+
+	<!-- 员工CR值分页-->
+	<select id="findSalaryEmpCR" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryEmpCRDto">
+		SELECT
+			vde.user_name_ch as name,
+			vde.organization_name as organizationName,
+			vde.rank_name as abilityLvName,
+			vde.performance_name as performanceName,
+			<!-- round(AES_DECRYPT(pay.pay_should,#{cryptKey})/pc.quantile_value,2)  as cr -->
+			round(replace(unhex(pay.pay_should),#{cryptKey},'')/pc.quantile_value,2)  as cr
+		FROM
+			v_dim_emp vde
+		inner JOIN pay pay ON pay.emp_id = vde.emp_id
+		AND pay.customer_id = vde.customer_id
+		and pay.`year_month`=(select max(`year_month`) from pay where customer_id=#{customerId})
+		inner JOIN pay_collect pc 
+		on pc.customer_id = vde.customer_id
+		and pc.`year_month`=pay.`year_month`
+		and pc.organization_id=#{organId}
+		inner JOIN performance_change pf ON pf.emp_id=vde.emp_id
+		and pf.customer_id=vde.customer_id 
+		and pf.`year_month`=(select max(`year_month`) from performance_change)
+		and pf.performance_name='五星'
+		where 1=1
+		and vde.organization_id IN (
+			SELECT t1.organization_id
+			FROM dim_organization t1
+			WHERE t1.customer_id = vde.customer_id
+			AND	locate(
+				(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.customer_id = t1.customer_id
+					AND t.organization_id =#{organId}
+				),
+				t1.full_path
+			)
+		)
+		AND vde.customer_id =#{customerId}
+		order by cr desc
+	</select>
+
+	<!-- 工资总额月度趋势-->
+	<select id="querySalaryWagesMonth" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWageDto">
+		SELECT
+		  	pc.sum_salary as sumSalary,
+			pc.`year_month` AS yearMonth
+		FROM
+			pay_collect pc
+		where substr(pc.`year_month`, 1, 4) = #{year}
+		and pc.organization_id=#{organId} and pc.customer_id=#{customerId}
+		order by pc.`year_month`
+	</select>
+
+	<!-- 工资总额及占薪酬比年度趋势-->
+	<select id="querySalaryWagesYear" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWageDto">
+		SELECT
+			pcy.year AS year,
+			pcy.sum_salary as sumSalary,
+			(pcy.sum_salary/pcy.sum_pay) as wageShare
+		FROM
+			pay_collect_year pcy
+		where  pcy.organization_id=#{organId} and pcy.customer_id=#{customerId}
+		order by pcy.year
+	</select>
+
+	<!-- 下级组织工资对比-->
+	<select id="querySalarySubOrgWages" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWageDto">
+		SELECT
+			dimo.organization_name as organizationName,
+			sum_salary AS sumSalary,
+			pc.avg_salary as avgSalary
+		FROM
+			pay_collect_year pc
+		INNER JOIN dim_organization dimo ON pc.organization_id = dimo.organization_id
+		AND pc.customer_id = dimo.customer_id
+		WHERE
+			pc.`year`=  #{year}
+		and dimo.organization_parent_id=#{organId}
+		and pc.customer_id=#{customerId}
+		GROUP BY  dimo.organization_name
+		order by sum_salary desc
+	</select>
+
+	<!-- 工资结构-->
+	<select id="querySalaryWageStructure" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWageDto">
+		SELECT
+			structure_name AS structureName,
+			sum(sa.salary_value_year) AS salaryValue
+		FROM
+			dim_structure st
+		INNER JOIN salary_year sa ON sa.structure_id = st.structure_id
+		AND sa.customer_id = st.customer_id
+		INNER JOIN v_dim_emp vde ON vde.emp_id = sa.emp_id
+		AND vde.customer_id = sa.customer_id
+		WHERE
+			sa.customer_id = #{customerId}
+		<if test="subOrganIdList.size != 0">
+			AND vde.organization_id IN
+			<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+				#{organ}
+			</foreach>
+		</if>
+		AND sa.`year` = #{year}
+		GROUP BY
+			st.structure_name
+		ORDER BY
+			sum(sa.salary_value_year) DESC
+	</select>
+
+	<!-- 固定与浮动薪酬比-->
+	<select id="querySalaryFixedProportion" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWageDto">
+		SELECT
+			a.col AS salaryValue,
+			b.col AS fixedSalary,
+			round(b.col / a.col, 2) AS fixed
+		FROM
+			(
+				SELECT
+					sum(sa1.salary_value_year) col
+				FROM
+					v_dim_emp vde
+				INNER JOIN salary_year sa1 ON vde.emp_id = sa1.emp_id
+				AND vde.customer_id = sa1.customer_id
+				WHERE
+					vde.customer_id = #{customerId}
+				<if test="subOrganIdList.size != 0">
+					AND vde.organization_id IN
+					<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+						#{organ}
+					</foreach>
+				</if>
+				AND sa1.`year` = #{year}
+			) a
+		INNER JOIN (
+			SELECT
+				sum(sa1.salary_value_year) col
+			FROM
+				v_dim_emp vde
+			INNER JOIN salary_year sa1 ON vde.emp_id = sa1.emp_id
+			AND vde.customer_id = sa1.customer_id
+			INNER JOIN dim_structure st1 ON st1.structure_id = sa1.structure_id
+			AND st1.customer_id = sa1.customer_id
+			AND st1.is_fixed = 1
+			WHERE
+				vde.customer_id = #{customerId}
+			<if test="subOrganIdList.size != 0">
+				AND vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+			</if>
+			AND sa1.`year` = #{year}
+		) b
+	</select>
+
+	<!-- 职位序列固定与浮动薪酬比-->
+	<select id="querySalarySequenceFixed" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWageDto">
+		SELECT
+			a.sequence_Id AS sequenceId,
+			a.sequence_Name AS sequenceName,
+			b.col / a.col AS fixed
+		FROM
+			(
+				SELECT
+					vde.sequence_Id,
+					vde.sequence_Name,
+					ds.show_index,
+					sum(sa1.salary_value_year) AS col
+				FROM
+					v_dim_emp vde
+				INNER JOIN salary_year sa1 ON vde.emp_id = sa1.emp_id
+				AND vde.customer_id = sa1.customer_id
+				INNER JOIN dim_sequence ds ON vde.sequence_id = ds.sequence_id
+				AND ds.customer_id = vde.customer_id
+				WHERE
+					vde.customer_id = #{customerId}
+				<if test="subOrganIdList.size != 0">
+					AND vde.organization_id IN
+					<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+						#{organ}
+					</foreach>
+				</if>
+				AND sa1.`year` = #{year}
+				GROUP BY
+					vde.sequence_Id,
+					vde.sequence_Name,
+					ds.show_index
+			) a
+		INNER JOIN (
+		SELECT
+				vde.sequence_Id,
+				vde.sequence_Name,
+				sum(sa1.salary_value_year) col
+			FROM
+		    dim_structure st1
+			STRAIGHT_JOIN  salary_year sa1 ON st1.structure_id = sa1.structure_id
+			AND st1.customer_id = sa1.customer_id
+			AND st1.is_fixed = 1
+		  STRAIGHT_JOIN v_dim_emp vde  ON vde.emp_id = sa1.emp_id
+			AND vde.customer_id = sa1.customer_id
+			WHERE
+				vde.customer_id = #{customerId}
+			<if test="subOrganIdList.size != 0">
+				AND vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+			</if>
+			AND sa1.`year` = #{year}
+			GROUP BY
+				sequence_Id, vde.sequence_Name
+		) b ON a.sequence_Id = b.sequence_Id
+		ORDER BY
+			a.show_index
+	</select>
+
+	<!-- 职位层级固定与浮动薪酬比-->
+	<select id="querySalaryAbilityFixed" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWageDto">
+		SELECT
+			a.ability_name AS abilityName,
+			b.col / a.col AS fixed
+		FROM
+			(
+				SELECT
+					da.type,
+					da.show_index,
+					da.ability_id,
+					da.ability_name,
+					sum(sa1.salary_value_year) col
+				FROM
+					v_dim_emp vde
+				INNER JOIN salary_year sa1 ON vde.emp_id = sa1.emp_id
+				AND vde.customer_id = sa1.customer_id
+				INNER JOIN dim_ability da ON da.ability_id = vde.ability_id
+				AND da.customer_id = vde.customer_id
+				WHERE
+					vde.customer_id = #{customerId}
+				<if test="subOrganIdList.size != 0">
+					AND vde.organization_id IN
+					<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+						#{organ}
+					</foreach>
+				</if>
+				<if test="positionId != null and positionId != ''">
+					and vde.sequence_id=#{positionId}
+				</if>
+				AND sa1.`year` = #{year}
+				GROUP BY
+					da.type,
+					da.show_index,
+					da.ability_id,
+					da.ability_name
+			) a
+		INNER JOIN (
+			SELECT
+				da.type,
+				da.show_index,
+				da.ability_id,
+				da.ability_name,
+				sum(sa1.salary_value_year) col
+			FROM
+				v_dim_emp vde
+			INNER JOIN salary_year sa1 ON vde.emp_id = sa1.emp_id
+			AND vde.customer_id = sa1.customer_id
+			INNER JOIN dim_structure st1 ON st1.structure_id = sa1.structure_id
+			AND st1.customer_id = sa1.customer_id
+			AND st1.is_fixed = 1
+			INNER JOIN dim_ability da ON da.ability_id = vde.ability_id
+			AND da.customer_id = vde.customer_id
+			WHERE
+				vde.customer_id = #{customerId}
+			<if test="subOrganIdList.size != 0">
+				AND vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+			</if>
+			<if test="positionId != null and positionId != ''">
+				and vde.sequence_id=#{positionId}
+			</if>
+			AND sa1.`year` = #{year}
+			GROUP BY
+				da.type,
+				da.show_index,
+				da.ability_id,
+				da.ability_name
+		) b ON a.type = b.type
+		AND a.ability_id = b.ability_id
+		ORDER BY
+			a.type,
+			a.show_index
+	</select>
+
+	<!-- 查询下级组织-->
+	<select id="querySubOrganization" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWageDto">
+		SELECT
+			org.organization_id as organizationId,
+			org.organization_name as organizationName
+		FROM
+			dim_organization org
+		WHERE
+			org.organization_parent_id =#{organId}
+		and org.customer_id=#{customerId}
+	</select>
+
+
+	<!-- 年终奖金总额与利润的年度趋势-->
+	<select id="querySalaryBonusProfit" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWageDto">
+		SELECT year,sum(profit) as profit,sum(bonus) as bonus FROM(
+		SELECT
+			substr(ft.`year_month`, 1, 4) AS YEAR,
+			sum(ft.gain_amount) AS profit,
+			0 as bonus
+		FROM
+			fact_fte ft
+		where 1=1
+		and ft.organization_id = #{organId}
+		AND ft.customer_id =#{customerId}
+		and ft.gain_amount>0
+		GROUP BY substr(ft.`year_month`, 1, 4)
+		union
+		SELECT
+			pcy.year AS YEAR,
+			0 as profit,
+			pcy.sum_bonus AS bonus
+		FROM
+			pay_collect_year pcy
+		where 1=1
+		and pcy.organization_id = #{organId}
+		AND pcy.customer_id =#{customerId}
+		and pcy.sum_bonus>0
+		GROUP BY pcy.year
+		) as aa GROUP BY year
+	</select>
+
+	<!-- 年终奖金总额与利润的年度列表-->
+	<select id="querySalaryBonusProfitList" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWageDto">
+		SELECT year,sum(profit) as profit,sum(bonus) as bonus,round(sum(bonus)/sum(profit)*100,2) as bonusProportion FROM(
+		SELECT
+			substr(ft.`year_month`, 1, 4) AS YEAR,
+			sum(ft.gain_amount) AS profit,
+			0 as bonus
+		FROM
+			fact_fte ft
+		where 1=1
+		and ft.organization_id = #{organId}
+		AND ft.customer_id =#{customerId}
+		and ft.gain_amount>0
+		GROUP BY substr(ft.`year_month`, 1, 4)
+		union
+		SELECT
+			pcy.year AS YEAR,
+			0 as profit,
+			pcy.sum_bonus AS bonus
+		FROM
+			pay_collect_year pcy
+		where 1=1
+		and pcy.organization_id = #{organId}
+		AND pcy.customer_id =#{customerId}
+		and pcy.sum_bonus>0
+		GROUP BY pcy.year
+		) as aa GROUP BY year
+		
+	</select>
+
+	<!-- 福利费用统计-->
+	<select id="querySalaryWelfare" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryBoardDto">
+		SELECT
+			sum(pc.sum_pay) AS sumPay,
+		  	sum(pc.sum_welfare) AS sumWelfare,
+			max(pc.`year_month`) AS yearMonth,
+			substr(max(pc.`year_month`), 1, 4) AS year
+		FROM
+			pay_collect pc
+		WHERE
+			substr(pc.`year_month`, 1, 4) = #{year}
+			and pc.customer_id=#{customerId}
+			and pc.organization_id =#{organId}
+	</select>
+
+	<!-- 福利总额月度趋势-->
+	<select id="querySalaryWelfareMonth" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT
+		  	pc.sum_welfare as sumWelfare,
+			pc.`year_month` AS yearMonth
+		FROM
+			pay_collect pc
+		where substr(pc.`year_month`, 1, 4) = #{year}
+		and pc.organization_id=#{organId} and pc.customer_id=#{customerId}
+		order by pc.`year_month`
+	</select>
+
+	<!-- 福利总额及占薪酬比年度趋势-->
+	<select id="querySalaryWelfareYear" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT
+			pcy.year AS year,
+			pcy.sum_welfare as sumWelfare,
+			(pcy.sum_welfare/pcy.sum_pay) as welfareShare
+		FROM
+			pay_collect_year pcy
+		where  pcy.organization_id=#{organId} and pcy.customer_id=#{customerId}
+		order by pcy.`year` 
+	</select>
+
+	<!-- 下级组织福利对比-->
+	<select id="querySalarySubOrgWelfare" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT
+			dimo.organization_name AS organizationName,
+			sum(pc.sum_welfare) AS sumWelfare
+		FROM
+			pay_collect pc
+		LEFT JOIN dim_organization dimo ON pc.organization_id = dimo.organization_id
+		AND pc.customer_id = dimo.customer_id
+		WHERE
+			dimo.organization_parent_id = #{organId} and pc.customer_id=#{customerId}
+			and substr(pc.`year_month`, 1, 4) = #{year}
+		GROUP BY
+			dimo.organization_name
+		order by sumWelfare desc
+	</select>
+
+
+	<!-- 下级组织平均福利对比-->
+	<select id="querySalarySubOrgAvgWelfare" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT
+			dimo.organization_name as organizationName,
+			pc.avg_welfare as avgWelfare
+		FROM
+			pay_collect_year pc
+		INNER JOIN dim_organization dimo ON pc.organization_id = dimo.organization_id
+		AND pc.customer_id = dimo.customer_id
+		WHERE
+			pc.`year`=  #{year}
+		and dimo.organization_parent_id=#{organId}
+		and pc.customer_id=#{customerId}
+		GROUP BY dimo.organization_name
+		order by avg_welfare desc
+	</select>
+
+	<!-- 国家固定福利-->
+	<select id="querySalaryFixedBenefits" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+	SELECT
+	sys_code_item_name AS welfareName,
+	round(sum(wn.welfare_value), 2) AS welfare,
+	round(
+		(
+			SELECT
+				count(vde.emp_id)
+			FROM
+				welfare_nfb wn1
+			INNER JOIN v_dim_emp vde ON vde.emp_id = wn1.emp_id
+			AND vde.customer_id = wn1.customer_id
+			WHERE
+				wn1.`year_month` = (
+					SELECT
+						max(`year_month`)
+					FROM
+						welfare_nfb
+					WHERE
+						customer_id = #{customerId}
+				)
+			AND wn1.nfb_id = wn.nfb_id
+			<if test="subOrganIdList.size != 0">
+				AND vde.organization_id IN
+				<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+					#{organ}
+				</foreach>
+			</if>
+			AND vde.customer_id = #{customerId}
+		) / #{empCount} *100,2) coverageRate
+		FROM
+			sys_code_item sci
+		INNER JOIN welfare_nfb wn ON sci.sys_code_item_id = wn.nfb_id
+		AND sci.customer_id = wn.customer_id
+		AND substr(wn.`year_month`, 1, 4) = #{year}
+		AND wn.customer_id = #{customerId}
+		INNER JOIN v_dim_emp vde ON vde.emp_id = wn.emp_id
+		AND wn.customer_id = vde.customer_id
+		<if test="subOrganIdList.size != 0">
+			AND vde.organization_id IN
+			<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+				#{organ}
+			</foreach>
+		</if>
+		WHERE
+			sci.code_group_id = 'nfb'
+		GROUP BY
+			sci.sys_code_item_name
+		ORDER BY
+			sci.show_index
+	</select>
+	<select id="querySalaryFixedBenefits2" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT 
+			sys_code_item_name AS welfareName,
+			round(t.nfb_total, 2) AS welfare,
+			round((t.enjoin_nfb_total / t.month_total) * 100, 2) AS coverageRate
+		from welfare_nfb_total t 
+			INNER JOIN sys_code_item sci ON sci.sys_code_item_id = t.nfb_id
+		where organization_id = #{organId} and t.customer_id = #{customerId} and `year`= #{year}
+		ORDER BY
+			sci.show_index
+	</select>
+
+	<!-- 国家固定福利明细数目-->
+	<select id="findSalaryBenefitsDetailedCount" resultType="int">
+		SELECT
+			count(vde.emp_id)
+		FROM
+			sys_code_item sci
+		INNER JOIN welfare_nfb wn force index(ind_ym)  ON sci.sys_code_item_id = wn.nfb_id
+		AND sci.customer_id = wn.customer_id
+		INNER JOIN v_dim_emp vde ON vde.emp_id = wn.emp_id
+		AND vde.customer_id = wn.customer_id
+		WHERE
+			sci.code_group_id = 'nfb'
+		<if test="yearMonth == null or yearMonth == ''">
+		AND wn.`year_month` = (select max(`year_month`) from welfare_nfb)
+		</if>
+		<if test="yearMonth != null and yearMonth != ''">
+		AND wn.`year_month` = #{yearMonth}
+		</if>
+		<if test="welfareKey!= null and welfareKey!=''">
+			AND sci.sys_code_item_id = #{welfareKey}
+		</if>
+		<if test="keyName!= null and keyName!=''">
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="subOrganIdList.size != 0">
+			AND vde.organization_id IN
+			<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+				#{organ}
+			</foreach>
+		</if>
+		AND vde.customer_id = #{customerId}
+	</select>
+
+	<!-- 国家固定福利明细分页-->
+	<select id="findSalaryBenefitsDetailed" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT
+			vde.user_name_ch AS empName,
+			sci.sys_code_item_name AS welfareName,
+			wn.date AS payDate,
+			round(wn.welfare_value, 2) AS payAmount
+		FROM
+			sys_code_item sci
+		INNER JOIN welfare_nfb wn force index(ind_ym)  ON sci.sys_code_item_id = wn.nfb_id
+		AND sci.customer_id = wn.customer_id
+		INNER JOIN v_dim_emp vde ON vde.emp_id = wn.emp_id
+		AND vde.customer_id = wn.customer_id
+		WHERE
+			sci.code_group_id = 'nfb'
+		<if test="yearMonth == null or yearMonth == ''">
+		AND wn.`year_month` = (select max(`year_month`) from welfare_nfb)
+		</if>
+		<if test="yearMonth != null and yearMonth != ''">
+		AND wn.`year_month` = #{yearMonth}
+		</if>
+		<if test="welfareKey!= null and welfareKey!=''">
+			AND sci.sys_code_item_id = #{welfareKey}
+		</if>
+		<if test="keyName!= null and keyName!=''">
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="subOrganIdList.size != 0">
+			AND vde.organization_id IN
+			<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+				#{organ}
+			</foreach>
+		</if>
+		AND vde.customer_id = #{customerId}
+		ORDER BY
+			wn.`year_month` desc
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<!-- 企业货币福利-->
+	<!-- <select id="querySalaryBenefitsCurrency" resultType="net.chinahrd.biz.paper.dto.drivingforce.SalaryWelfareDto">
+		SELECT
+		sys_code_item_name AS welfareName,
+		round(sum(wc.welfare_value), 2) AS welfare,
+		round(count(DISTINCT vde.emp_id)/ #{empCount} *100,2) coverageRate
+		FROM
+			sys_code_item sci
+		INNER JOIN welfare_cpm wc ON sci.sys_code_item_id = wc.cpm_id
+		AND sci.customer_id = wc.customer_id
+		AND substr(wc.`year_month`, 1, 4) = #{year}
+		AND wc.customer_id =#{customerId}
+		INNER JOIN v_dim_emp vde ON vde.emp_id = wc.emp_id
+			and wc.customer_id=vde.customer_id
+		AND vde.organization_id IN (
+			SELECT
+				t1.organization_id
+			FROM
+				dim_organization t1
+			WHERE
+				t1.customer_id = vde.customer_id
+			AND locate(
+				(
+					SELECT
+						t.full_path
+					FROM
+						dim_organization t
+					WHERE
+						t.customer_id = t1.customer_id
+					AND t.organization_id = #{organId}
+				),
+				t1.full_path
+			)
+		)
+		WHERE
+			sci.code_group_id = 'cpm'
+		GROUP BY
+			sci.sys_code_item_name
+		ORDER BY welfare desc, coverageRate desc
+	</select> -->
+	<select id="querySalaryBenefitsCurrency2" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT 
+			sys_code_item_name AS welfareName,
+			round(t.cpm_total, 2) AS welfare,
+			round((t.enjoin_cpm_total / t.month_total) * 100, 2) AS coverageRate
+		from welfare_cpm_total t 
+			INNER JOIN sys_code_item sci ON sci.sys_code_item_id = t.cpm_id
+		where organization_id = #{organId} and t.customer_id = #{customerId} and `year`= #{year}
+		ORDER BY welfare desc, coverageRate desc
+	</select>
+	
+	<!-- 企业货币福利明细数目-->
+	<select id="findSalaryCurrencyDetailedCount" resultType="int">
+		SELECT
+			count(vde.emp_id)
+		FROM
+			v_dim_emp vde
+		INNER JOIN welfare_cpm wc FORCE INDEX (ind_ym) ON wc.emp_id = vde.emp_id
+		AND wc.customer_id = vde.customer_id
+		STRAIGHT_JOIN sys_code_item sci ON sci.sys_code_item_id = wc.cpm_id
+		AND sci.customer_id = wc.customer_id
+		WHERE
+			sci.code_group_id = 'cpm'
+		<if test="yearMonth == null or yearMonth == ''">
+		AND wc.`year_month` = (select max(`year_month`) from welfare_cpm)
+		</if>
+		<if test="yearMonth != null and yearMonth != ''">
+		AND wc.`year_month` = #{yearMonth}
+		</if>
+		<if test="welfareKey!= null">
+			and sci.sys_code_item_id = #{welfareKey}
+		</if>
+		<if test="keyName!= null">
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="subOrganIdList.size != 0">
+		AND vde.organization_id IN
+			<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+				#{organ}
+			</foreach>
+		</if>
+		AND vde.customer_id=#{customerId}
+	</select>
+	
+	<!-- 企业货币福利明细-->
+	<select id="findSalaryCurrencyDetailed" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT
+			vde.user_name_ch AS empName,
+			sci.sys_code_item_name AS welfareName,
+			wc.date AS grantDate,
+			round(wc.welfare_value, 2) AS grantAmount
+		FROM
+			v_dim_emp vde
+		INNER JOIN welfare_cpm wc FORCE INDEX (ind_ym) ON wc.emp_id = vde.emp_id
+		AND wc.customer_id = vde.customer_id
+		STRAIGHT_JOIN sys_code_item sci ON sci.sys_code_item_id = wc.cpm_id
+		AND sci.customer_id = wc.customer_id
+		WHERE
+			sci.code_group_id = 'cpm'
+		<if test="yearMonth == null or yearMonth == ''">
+		AND wc.`year_month` = (select max(`year_month`) from welfare_cpm)
+		</if>
+		<if test="yearMonth != null and yearMonth != ''">
+		AND wc.`year_month` = #{yearMonth}
+		</if>
+		<if test="welfareKey!= null">
+			and sci.sys_code_item_id = #{welfareKey}
+		</if>
+		<if test="keyName!= null">
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="subOrganIdList.size != 0">
+		AND vde.organization_id IN
+			<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+				#{organ}
+			</foreach>
+		</if>
+		AND vde.customer_id=#{customerId}
+		order by wc.`year_month` desc, CONVERT(vde.user_name_ch using gbk)
+		limit #{offset}, #{limit}
+	</select>
+
+	<!-- 企业非货币福利-->
+	<select id="querySalaryBenefitsNoCurrency" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT
+			sys_code_item_name AS welfareName,
+			count(DISTINCT vde.emp_id) AS welfare,
+			round( count(DISTINCT vde.emp_id) / #{empCount} * 100, 2 ) coverageRate
+		FROM
+			v_dim_emp vde
+		INNER JOIN welfare_uncpm wu FORCE INDEX (ind_ym) ON wu.emp_id = vde.emp_id
+		AND wu.customer_id = vde.customer_id
+		AND wu.`year_month` >= #{yearHead}
+		AND wu.`year_month` &lt;= #{yearLast}
+		AND wu.customer_id = #{customerId}
+		STRAIGHT_JOIN sys_code_item sci ON sci.sys_code_item_id = wu.uncpm_id
+		AND sci.customer_id = wu.customer_id
+		WHERE
+			sci.code_group_id = 'uncpm'
+		<if test="subOrganIdList.size != 0">
+		AND vde.organization_id IN
+			<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+				#{organ}
+			</foreach>
+		</if>
+		GROUP BY
+			sci.sys_code_item_name
+	</select>
+	
+	<!-- 企业非货币福利明细数目-->
+	<select id="findSalaryNoCurrencyDetailedCount" resultType="int">
+		SELECT
+			count(vde.emp_id)
+		FROM
+			sys_code_item sci
+		INNER JOIN welfare_uncpm wu ON sci.sys_code_item_id = wu.uncpm_id
+		AND sci.customer_id = wu.customer_id
+		INNER JOIN v_dim_emp vde ON vde.emp_id = wu.emp_id
+		AND vde.customer_id = wu.customer_id
+		WHERE
+			sci.code_group_id = 'uncpm'
+		<if test="yearMonth == null or yearMonth == ''">
+		AND wu.`year_month` = (select max(`year_month`) from welfare_uncpm)
+		</if>
+		<if test="yearMonth != null and yearMonth != ''">
+		AND wu.`year_month` = #{yearMonth}
+		</if>
+		<if test="welfareKey!= null">
+			and sci.sys_code_item_id = #{welfareKey}
+		</if>
+		<if test="keyName!= null">
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="subOrganIdList.size != 0">
+		AND vde.organization_id IN
+			<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+				#{organ}
+			</foreach>
+		</if>
+		and vde.customer_id=#{customerId}
+		order by  sci.show_index
+	</select>
+
+	<!-- 企业非货币福利明细-->
+	<select id="findSalaryNoCurrencyDetailed" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT
+			vde.user_name_ch AS empName,
+			sci.sys_code_item_name AS welfareName,
+			wu.note AS holidayTime
+		FROM
+			sys_code_item sci
+		INNER JOIN welfare_uncpm wu force index(ind_ym_eId) ON sci.sys_code_item_id = wu.uncpm_id
+		AND sci.customer_id = wu.customer_id
+		STRAIGHT_JOIN v_dim_emp vde ON vde.emp_id = wu.emp_id
+		AND vde.customer_id = wu.customer_id
+		WHERE
+			sci.code_group_id = 'uncpm'
+		<if test="yearMonth == null or yearMonth == ''">
+		AND wu.`year_month` = (select max(`year_month`) from welfare_uncpm)
+		</if>
+		<if test="yearMonth != null and yearMonth != ''">
+		AND wu.`year_month` = #{yearMonth}
+		</if>
+		<if test="welfareKey!= null">
+			and sci.sys_code_item_id = #{welfareKey}
+		</if>
+		<if test="keyName!= null">
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="subOrganIdList.size != 0">
+		AND vde.organization_id IN
+			<foreach collection="subOrganIdList" item="organ" open="(" separator="," close=")">
+				#{organ}
+			</foreach>
+		</if>
+		and vde.customer_id=#{customerId}
+		ORDER BY wu.`year_month` DESC
+		limit #{offset}, #{limit}
+	</select>
+
+	<!-- 持股统计-->
+	<select id="querySalaryShares" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalarySharesDto">
+		SELECT
+			round(pcy.sum_share/10000,2) as sumShares,
+			pcy.count_share as empSharesCount,
+			pcy.count_share/#{empCount} as sharesCover
+		FROM
+			pay_collect_year pcy
+		where pcy.organization_id=#{organId}
+		and pcy.customer_id=#{customerId}
+		and pcy.year=#{year}
+	</select>
+
+	<!-- 持股员工总数年度趋势-->
+	<select id="querySalaryEmpShares" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalarySharesDto">
+		SELECT
+			pcy.`year` as year,
+			pcy.count_share as empSharesCount
+		FROM
+			pay_collect_year pcy
+		where organization_id=#{organId}
+		and pcy.customer_id=#{customerId}
+		GROUP BY pcy.`year`
+	</select>
+
+	<!-- 持股数量年度趋势-->
+	<select id="querySalarySumShares" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalarySharesDto">
+		SELECT
+			pcy.`year` as year,
+			round(sum(pcy.sum_share)/10000,2) as sumShares
+		FROM
+			pay_collect_year pcy
+		where organization_id=#{organId}
+		and pcy.customer_id=#{customerId}
+		GROUP BY pcy.`year`
+	</select>
+
+	<!-- 下级组织持股员工数-->
+	<select id="querySalarySubOrgShares" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalarySharesDto">
+		SELECT
+			#{year} year,
+			org.organization_name as organizationName,
+			pcy.count_share as empSharesCount
+		FROM
+			pay_collect_year pcy
+		inner JOIN dim_organization org on pcy.organization_id=org.organization_id
+		and org.customer_id=pcy.customer_id
+		where org.organization_parent_id=#{organId}
+		and pcy.customer_id=#{customerId}
+		and pcy.`year`=#{year}
+		order by empSharesCount desc 
+	</select>
+
+	<!-- 下级组织持股数量-->
+	<select id="querySalarySubOrgSumShares" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalarySharesDto">
+		SELECT
+			#{year} year,
+			org.organization_name as organizationName,
+			round(pcy.sum_share/10000,2) as sumShares
+		FROM
+			pay_collect_year pcy
+		inner JOIN dim_organization org on pcy.organization_id=org.organization_id
+		and org.customer_id=pcy.customer_id
+		where org.organization_parent_id=#{organId}
+		and pcy.customer_id=#{customerId}
+		and pcy.`year`=#{year}
+		order by sumShares desc 
+	</select>
+
+
+	<!-- 员工股票期权记录数-->
+	<select id="findSalaryEmpSharesCount" resultType="int">
+		SELECT
+			count(vde.emp_id)
+		FROM
+			share_holding sh
+		INNER JOIN v_dim_emp vde ON vde.emp_id = sh.emp_id
+		AND vde.customer_id = sh.customer_id
+		INNER JOIN dim_organization dimo ON dimo.organization_id = vde.organization_id
+		AND dimo.customer_id = vde.customer_id
+		where vde.organization_id IN (
+			SELECT t1.organization_id
+			FROM dim_organization t1
+			WHERE t1.customer_id = vde.customer_id
+			AND	locate(
+				(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.customer_id = t1.customer_id
+					AND t.organization_id = #{organId}
+				),
+				t1.full_path
+			)
+		) 
+		and sh.customer_id=#{customerId}
+		<if test="keyName!= null">
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+	</select>
+
+	<!-- 员工股票期权分页-->
+	<select id="findSalaryEmpShares" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryEmpSharesDto">
+		SELECT
+			vde.user_name_ch AS empName,
+			sh.now_share AS currentShares,
+			sh.confer_share AS grantShares,
+			sh.price AS grantPrice,
+			sh.hold_period AS holdYear,
+			sh.sub_num AS subtractShares,
+			sh.sub_date AS subtractDate
+		FROM
+			share_holding sh
+		INNER JOIN v_dim_emp vde ON vde.emp_id = sh.emp_id
+		AND vde.customer_id = sh.customer_id
+		INNER JOIN dim_organization dimo ON dimo.organization_id = vde.organization_id
+		AND dimo.customer_id = vde.customer_id
+		where vde.organization_id IN (
+			SELECT t1.organization_id
+			FROM dim_organization t1
+			WHERE t1.customer_id = vde.customer_id
+			AND	locate(
+				(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.customer_id = t1.customer_id
+					AND t.organization_id = #{organId}
+				),
+				t1.full_path
+			)
+		) 
+		and sh.customer_id=#{customerId}
+		<if test="keyName!= null">
+			AND (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		order by sh.now_share  desc,convert(vde.user_name_ch using GBK)
+	</select>
+
+	<!-- 查询福利的KEY和NAME-->
+	<select id="querySalaryWelfareCategory" resultType="net.chinahrd.entity.dto.pc.salaryBoard.SalaryWelfareDto">
+		SELECT
+			t.sys_code_item_id as welfareKey,
+			t.sys_code_item_name as welfareName
+		FROM sys_code_item t
+		WHERE t.code_group_id = #{welfareType}
+		AND t.customer_id= #{customerId}
+		order by t.show_index
+	</select>
+	
+	<select id="querySalaryTime" resultType="int">
+		SELECT DISTINCT
+			`year_month`
+		FROM
+			pay
+		WHERE
+			customer_id = #{customerId}
+		AND SUBSTR(`year_month`, 1, 4) = #{year}
+		ORDER BY
+			`year_month`
+	</select>
+</mapper>

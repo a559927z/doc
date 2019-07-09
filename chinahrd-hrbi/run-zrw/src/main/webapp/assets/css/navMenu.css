@@ -1,0 +1,85 @@
+
+.u-nMenu-dropdown-submenu {
+	position: relative;
+}
+
+.u-nMenu-dropdown-submenu>.dropdown-menu {
+	top: 0;
+	left: 100%;
+	margin-top: -6px;
+	margin-left: -1px;
+	-webkit-border-radius: 0 6px 6px 6px;
+	-moz-border-radius: 0 6px 6px;
+	border-radius: 0 6px 6px 6px;
+}
+
+.u-nMenu-dropdown-submenu:hover>.dropdown-menu {
+	display: block;
+}
+
+.u-nMenu-dropdown-submenu>a:after {
+	display: block;
+	content: " ";
+	float: right;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-style: solid;
+	border-width: 5px 0 5px 5px;
+	border-left-color: #ccc;
+	margin-top: 5px;
+	margin-right: -10px;
+}
+
+.u-nMenu-dropdown-submenu:hover>a:after {
+	border-left-color: #fff;
+}
+
+.u-nMenu-dropdown-submenu.pull-left {
+	float: none;
+}
+
+.u-nMenu-dropdown-submenu.pull-left>.dropdown-menu {
+	left: -100%;
+	margin-left: 10px;
+	-webkit-border-radius: 6px 0 6px 6px;
+	-moz-border-radius: 6px 0 6px 6px;
+	border-radius: 6px 0 6px 6px;
+}
+
+/* .u-nMenu-dropdown { */
+/* 	position: relative; */
+/* } */
+
+
+.u-nMenu-a-btn {
+	color: #777;
+	position: relative;
+	display: block;
+	padding: 10px 15px;
+	text-decoration: none;
+	/* 	以下可选 */
+	padding-top: 15px;
+	padding-bottom: 15px;
+	line-height: 20px;
+}
+
+.u-nMenu-content {
+	display: none;
+}
+
+.u-nMenu-dropdown-submenu-right {
+	display: inline-block;
+	width: 600px;
+}
+
+.u-dropdown-menu>li>a {
+	display:inline-block;
+}
+
+.u-nMenu-divider {
+	height: 1px;
+	margin: 9px 0;
+	overflow: hidden;
+	background-color: #e5e5e5;
+}

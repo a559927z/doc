@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2" xmlns:viz="http://www.gexf.net/1.2draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
+    <meta lastmodifieddate="2014-01-30">
+        <creator>Gephi 0.8.1</creator>
+        <description></description>
+    </meta>
+    <graph defaultedgetype="undirected" mode="static">
+        <attributes class="node" mode="static">
+            <attribute id="modularity_class" title="Modularity Class" type="integer"></attribute>
+        </attributes>
+        <nodes>
+            <node id="0" label="管理者">
+                <attvalues>
+                    <attvalue for="modularity_class" value="0"></attvalue>
+                </attvalues>
+                <viz:size value="70"></viz:size>
+                <viz:position x="3" y="0" z="10"></viz:position>
+            </node>
+
+            <node id="1" label="陈利清">
+                <attvalues>
+                    <attvalue for="modularity_class" value="1"></attvalue>
+                </attvalues>
+                <viz:size value="40"></viz:size>
+                <viz:position x="0" y="10" z="5"></viz:position>
+            </node>
+            <node id="2" label="颜思思">
+                <attvalues>
+                    <attvalue for="modularity_class" value="1"></attvalue>
+                </attvalues>
+                <viz:size value="40"></viz:size>
+                <viz:position x="1" y="10" z="5"></viz:position>
+            </node>
+            <node id="3" label="王锦华">
+                <attvalues>
+                    <attvalue for="modularity_class" value="1"></attvalue>
+                </attvalues>
+                <viz:size value="40"></viz:size>
+                <viz:position x="2" y="10" z="5"></viz:position>
+            </node>
+            <node id="4" label="李圆">
+                <attvalues>
+                    <attvalue for="modularity_class" value="1"></attvalue>
+                </attvalues>
+                <viz:size value="40"></viz:size>
+                <viz:position x="3" y="10" z="5"></viz:position>
+            </node>
+            <node id="5" label="廖菲菲">
+                <attvalues>
+                    <attvalue for="modularity_class" value="1"></attvalue>
+                </attvalues>
+                <viz:size value="40"></viz:size>
+                <viz:position x="4" y="10" z="5"></viz:position>
+            </node>
+            <node id="6" label="蒋娜钰">
+                <attvalues>
+                    <attvalue for="modularity_class" value="1"></attvalue>
+                </attvalues>
+                <viz:size value="40"></viz:size>
+                <viz:position x="5" y="10" z="5"></viz:position>
+            </node>
+            <node id="7" label="姚俊">
+                <attvalues>
+                    <attvalue for="modularity_class" value="1"></attvalue>
+                </attvalues>
+                <viz:size value="40"></viz:size>
+                <viz:position x="6" y="10" z="5"></viz:position>
+            </node>
+            <node id="8" label="黄锦华">
+                <attvalues>
+                    <attvalue for="modularity_class" value="1"></attvalue>
+                </attvalues>
+                <viz:size value="40"></viz:size>
+                <viz:position x="7" y="10" z="5"></viz:position>
+            </node>			
+    </nodes>
+    <edges>
+        <edge id="0" source="1" target="0"></edge>
+        <edge id="1" source="2" target="0"></edge>
+        <edge id="2" source="3" target="0"></edge>
+        <edge id="3" source="4" target="0"></edge>
+        <edge id="4" source="5" target="0"></edge>
+        <edge id="5" source="6" target="0"></edge>
+        <edge id="6" source="7" target="0"></edge>
+        <edge id="7" source="8" target="0"></edge>
+    </edges>
+  </graph>
+</gexf>

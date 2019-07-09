@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.benefit.mvc.pc.dao.PerBenefitDao">
+
+	<!-- 查询行业均值 -->
+	<select id="queryAvgValue" resultType="double">
+	SELECT pv.`value` as avgValue
+	FROM dim_organization org
+	INNER JOIN dim_profession pr ON pr.profession_id = org.profession_id
+	INNER join profession_value pv ON pv.profession_id = pr.profession_id
+										AND pv.profession_value_key = 'pcb'
+	where org.organization_id = #{organizationId}
+	AND org.customer_id = #{customerId}
+	</select>
+	
+	<!-- 查询人均效益趋势（按月统计） -->
+	<select id="queryTrendByMonth" resultType="perBenefitDto">
+		 select 
+		 	f.fte_value as eqEmpNum,
+		 	f.gain_amount as profit, 
+		 	round(f.gain_amount/f.fte_value,2) as benefitValue,
+		 	f.target_value as targetValue,
+		 	f.year_month as yearMonth
+		 from  fact_fte f 
+<!-- 		 inner join trade_profit p on  -->
+<!-- 		 f.organization_id = p.organization_id and f.year_month = p.year_month  -->
+		 where f.organization_id = #{organizationId} 
+		 AND f.customer_id = #{customerId}
+		 order by f.year_month desc limit 0, #{limitNum}
+	</select>
+	
+	<!-- 查询人均效益趋势（按年统计） -->
+	<select id="queryTrendByYear" resultType="perBenefitDto">
+		 select sum(f.fte_value) as eqEmpNum, sum(f.gain_amount) as profit ,
+		 round(sum(f.gain_amount)/sum(f.fte_value),4) as benefitValue,
+		  yt.target_value as targetValue,
+		 substr(f.year_month,1,4) as yearMonth 
+		 from  fact_fte f
+		 Left join target_benefit_value yt
+		 ON f.organization_id = yt.organization_id and f.customer_id = yt.customer_id 
+		 AND substr(f.year_month,1,4)=yt.year 
+		 where f.organization_id = #{organizationId} 
+		      AND f.customer_id = #{customerId} 
+		 group by substr(f.year_month,1,4)
+		 order by substr(f.year_month,1,4) desc
+		 LIMIT 0 , 7 -- 人均效益趋势界面显示6条，但这里取7条计算环比
+	</select>
+	
+	<!-- 查询等效全职员工数的最大日期 -->
+	<select id="findFteMaxDate" resultType="java.lang.Integer">
+		 select max(f.year_month) from fact_fte f  
+		  where f.customer_id = #{customerId} 
+		 <if test="organizationId != null">
+		 	AND f.organization_id = #{organizationId} 
+		 </if>	
+	</select>
+	
+	<!-- 查询“当前组织人均效益”数据(包含子节点) -->
+	<select id="queryOrgBenefit" resultType="perBenefitDto">
+	select
+		o.organization_id as id,
+		o.organization_name as organizationName,
+		f.fte_value as eqEmpNum,
+		f.gain_amount as profit,
+		f.sales_amount as salesAmount,
+		round(f.gain_amount/f.fte_value,4) as benefitValue,
+		f.fulltime_sum as fulltimeSum,
+		f.passtime_sum as passtimeSum,
+		f.overtime_sum as overtimeSum
+	from  fact_fte f
+	LEFT JOIN dim_organization o on o.organization_id = f.organization_id  and f.customer_id = o.customer_id
+	where f.customer_id = #{customerId}
+	and	(f.organization_id = #{organizationId} or o.organization_parent_id = #{organizationId} )
+	and f.year_month = (select max(ff.year_month) from fact_fte ff where ff.customer_id = #{customerId})
+-- 	and o.is_single = 1
+	order by o.depth
+	</select>
+	
+	<!-- 查询当前组织最近12个月人均效益、利润总额、销售总额数据 -->
+	<select id="queryOrgRecentData" resultType="net.chinahrd.entity.dto.pc.benefit.PerBenefitAmountDto">
+	SELECT
+		SUM(f.gain_amount) AS gainAmount,
+		SUM(f.sales_amount) AS salesAmount,
+		SUM(f.fte_value) AS fteValue,
+		ROUND(SUM(f.gain_amount)/SUM(f.fte_value),4) AS benefit,
+		SUM(ttf.gain_amount) AS yoyGainAmount,
+		SUM(ttf.sales_amount) AS yoySalesAmount,
+		SUM(ttf.fte_value) AS yoyfteValue,
+		ROUND(SUM(ttf.gain_amount)/SUM(ttf.fte_value),4) AS yoyBenefit
+	FROM fact_fte f
+	LEFT JOIN (
+		SELECT
+		tf.`year_month`,
+		tf.gain_amount,
+		tf.sales_amount,
+		tf.fte_value
+		FROM fact_fte tf
+		WHERE tf.organization_id = #{organizationId}
+		AND tf.`year_month` BETWEEN #{yoyBeginYearMonth} AND #{yoyEndYearMontth}
+		AND tf.customer_id = #{customerId}
+	) ttf ON ttf.`year_month` = f.`year_month` - 100
+	WHERE f.organization_id = #{organizationId}
+	AND f.`year_month` BETWEEN #{currBeginYearMonth} AND #{currEndYearMonth}
+	AND f.customer_id = #{customerId}
+	</select>
+	
+	<select id="queryVariationRange" resultType="perBenefitDto" >
+	SELECT
+		ff2.organization_id as organizationId,
+		ff2.organization_name as organizationName,
+		ff2.benefit_value as value,
+		ff2.range_per as rangePer,
+		ff2.`year_month` as yearMonth
+	FROM (
+		SELECT ff.organization_id, ff.`year_month`
+		FROM fact_fte ff
+		INNER JOIN dim_organization dor ON ff.organization_id = dor.organization_id AND ff.customer_id = dor.customer_id
+		WHERE ff.`year_month` = #{maxYm}
+		and ff.customer_id = #{customerId}
+		and (dor.organization_id = #{organizationId} OR dor.organization_parent_id = #{organizationId})
+		<if test="upgrade == true">
+			and ff.range_per &gt; 0
+		</if>
+		<if test="upgrade == false">
+			and ff.range_per &lt; 0
+		</if>
+		ORDER BY ff.range_per
+		<if test="upgrade == true">
+			 desc
+		</if>
+		LIMIT 0,3
+	) t
+	INNER JOIN fact_fte ff2 on ff2.organization_id = t.organization_id
+	where (ff2.`year_month` = #{perYm} or ff2.`year_month` = t.`year_month`)
+	and ff2.customer_id = #{customerId}
+	ORDER BY ff2.`year_month` desc,ff2.range_per
+	<if test="upgrade == true">
+		 desc
+	</if>
+	</select>
+	
+</mapper>

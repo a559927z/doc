@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.admin.RoleDao">
+    <cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+    <resultMap id="RoleMap" type="net.chinahrd.entity.dto.pc.admin.RoleDto">
+        <id property="id" column="role_id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="roleKey" column="role_key"/>
+        <result property="roleName" column="role_name"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="note" column="note"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="modifyUserId" column="modify_user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+    <select id="findAllCount" resultType="int" useCache="true">
+        SELECT count(dr.role_id) FROM dim_role dr
+        <where>
+            <if test="customerId != null">
+                dr.customer_id = #{customerId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="RoleMap" useCache="true">
+        SELECT
+        dr.role_id,
+        dr.role_key,
+        dr.role_name,
+        dr.customer_id,
+        dr.note,
+        dr.create_user_id,
+        dr.modify_user_id,
+        dr.create_time,
+        dr.modify_time
+        FROM dim_role dr
+        <where>
+            <if test="customerId != null">
+                dr.customer_id = #{customerId}
+            </if>
+        </where>
+        ORDER BY dr.role_key
+    </select>
+
+    <select id="findRoleById" resultMap="RoleMap">
+        SELECT
+        dr.role_id,
+        dr.role_key,
+        dr.role_name,
+        dr.customer_id,
+        dr.note,
+        dr.create_user_id,
+        dr.modify_user_id,
+        dr.create_time,
+        dr.modify_time
+      FROM dim_role dr
+      WHERE dr.role_id = #{roleId} AND dr.customer_id = #{customerId}
+    </select>
+
+
+    <insert id="insertRole">
+    	INSERT INTO dim_role
+    	(role_id,customer_id,role_key,role_name,note,create_user_id,modify_user_id,create_time,modify_time)
+    	VALUES
+    	(#{roleId},#{customerId},#{roleKey},#{roleName},#{note},#{createUserId},#{modifyUserId},#{createTime},#{modifyTime})
+    </insert>
+
+    <update id="updateRole">
+        UPDATE dim_role
+        <set>
+            <if test="roleKey != null">
+                role_key = #{roleKey},
+            </if>
+            <if test="roleName != null">
+                role_name = #{roleName},
+            </if>
+            <if test="note != null">
+                note = #{note},
+            </if>
+            <if test="modifyUserId != null">
+                modify_user_id = #{modifyUserId},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime}
+            </if>
+        </set>
+        WHERE  role_id = #{id} AND customer_id = #{customerId}
+    </update>
+
+    <delete id="deleteRole">
+        delete from dim_role
+        <where>
+            <if test="customerId != null">
+                customer_id = #{customerId}
+            </if>
+            <if test="roleIds != null and roleIds.size() > 0">
+                AND role_id IN
+                <foreach collection="roleIds" item="id" separator="," open="(" close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </delete>
+    
+    <select id="hasEmpByRoleId" resultType="java.lang.Integer" useCache="true">
+		SELECT count(1) FROM user_role_relation where customer_id = #{customerId} 
+            <if test="roleIds != null and roleIds.size() > 0">
+                AND role_id IN
+                <foreach collection="roleIds" item="id" separator="," open="(" close=")">
+                    #{id}
+                </foreach>
+            </if>
+    </select>
+    
+    
+
+
+    <select id="findRoleOfUser" resultType="net.chinahrd.entity.dto.pc.admin.UserRoleDto">
+    SELECT
+      dr.role_id AS roleId,
+      dr.role_key AS roleKey,
+      dr.role_name AS roleName,
+	  IFNULL(
+	  (SELECT 1
+      FROM user_role_relation urr
+      WHERE dr.role_id = urr.role_id
+      AND urr.user_id = #{userId} AND urr.customer_id = #{customerId}),
+      0) as isSelect
+    FROM dim_role dr
+    WHERE dr.customer_id = #{customerId}
+    ORDER BY dr.role_key
+    </select>
+
+    <delete id="deleteUserRole" parameterType="string">
+        DELETE FROM user_role_relation WHERE user_id = #{userId} AND customer_id = #{customerId}
+    </delete>
+
+    <insert id="addUserRole" parameterType="list">
+        INSERT INTO user_role_relation (
+        user_role_id,
+        role_id,
+        user_id,
+        customer_id,
+        create_user_id,
+        create_time
+        )
+        VALUES
+        <foreach collection="list" item="dto" separator=",">
+        (
+            #{dto.userRoleId},
+            #{dto.roleId},
+            #{dto.userId},
+            #{dto.customerId},
+            #{dto.createUserId},
+            #{dto.createTime}
+        )
+        </foreach>
+    </insert>
+
+	<!-- 查询当前登录人的所有角色ID -->
+	<select id="queryRoleIdByUserId"  resultType="net.chinahrd.entity.dto.pc.common.ItemDto" useCache="true">
+      SELECT
+        dr.role_id AS id,
+        dr.role_name AS name
+      FROM dim_role dr
+      LEFT JOIN user_role_relation ur ON dr.role_id = ur.role_id
+      WHERE ur.user_id = #{userId}
+      AND ur.customer_id = #{customerId}
+	</select>
+
+</mapper>

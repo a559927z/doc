@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.manpowerCost.mvc.pc.dao.ManpowerCostDao">
+
+    <!-- 成本和人均成本（按月环比） -->
+    <select id="queryCompareMonth" resultType="net.chinahrd.entity.dto.pc.manpowerCost.ManpowerCompareDto">
+		select cost,cost_avg as costAvg,`year_month` as yearMonth,1 as type
+		from manpower_cost  where `year_month`=#{yearMonth1}
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		union
+		select cost,cost_avg as costAvg,`year_month` as yearMonth,0 as type
+		from manpower_cost  where `year_month`=#{yearMonth2}
+        AND organization_id = #{organId} AND customer_id = #{customerId}
+	</select>
+
+    <!-- 成本和人均成本（按年同比） -->
+    <select id="queryCompareYear" resultType="net.chinahrd.entity.dto.pc.manpowerCost.ManpowerCompareDto">
+		select sum(cost) cost,sum(cost)/(select sum(ifnull(emp_count_sum,0))/2 from history_emp_count 
+								 where type in (SELECT config_val FROM `config`  where 
+								function_id=#{functionId}   and customer_id = #{customerId}
+								and config_key='RLCB-personType'
+								) 
+								 and (day=#{year1_begin} or day=#{year1_end})  and customer_id = #{customerId}
+								and organization_id=#{organId}
+								) as costAvg,
+			  substr(`year_month`,1,4) as yearMonth,1 as type
+		from manpower_cost   where substr(`year_month`,1,4)=#{year1}  
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		group by substr(`year_month`,1,4)
+		union
+		select sum(cost) cost,sum(cost)/(select sum(ifnull(emp_count_sum,0))/2 from history_emp_count 
+								 where type in (SELECT config_val FROM `config`  where 
+								function_id=#{functionId} and customer_id = #{customerId}
+								and config_key='RLCB-personType'
+								) 
+								 and (day=#{year2_begin} or day=#{year2_end})
+								and organization_id=#{organId}   and customer_id = #{customerId}
+								) as costAvg,
+		substr(`year_month`,1,4) as yearMonth,0 as type
+		from manpower_cost   where substr(`year_month`,1,4)=#{year2}  
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		group by substr(`year_month`,1,4)
+	</select>
+
+
+    <!-- 成本月度趋势 -->
+    <select id="queryTrendByMonth" resultType="net.chinahrd.entity.dto.pc.manpowerCost.ManpowerDto">
+		select cost,`year_month` as yearMonth
+		from manpower_cost   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		ORDER BY `year_month`
+	</select>
+
+    <!-- 本年预算 -->
+    <select id="queryYearBudget" resultType="java.lang.Double">
+		SELECT mcv.budget_value
+		FROM manpower_cost_value mcv
+		WHERE mcv.`year` =#{year}
+		AND mcv.organization_id = #{organId}
+		AND mcv.customer_id = #{customerId}
+		LIMIT 1;
+	</select>
+
+    <!-- 人均成本月度趋势 -->
+    <select id="queryAvgTrendByMonth" resultType="net.chinahrd.entity.dto.pc.manpowerCost.ManpowerDto">
+		select cost_avg as costAvg,`year_month` as yearMonth
+		from manpower_cost   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		ORDER BY `year_month`
+	</select>
+
+    <!-- 人力成本结构 -->
+    <select id="queryItemDetail" resultType="net.chinahrd.entity.dto.pc.manpowerCost.ManpowerItemDto">
+		select mct.item_name AS itemName,sum(mct.item_cost)cost
+	      from manpower_cost  mc INNER JOIN manpower_cost_item mct
+                on mc.organization_id=mct.organization_id and mc.`year_month` = mct.`year_month`
+                and mc.customer_id=mct.customer_id
+           where substr(mc.`year_month`,1,4)=#{year}   
+		AND mc.organization_id = #{organId} AND mc.customer_id = #{customerId}
+		GROUP BY mct.item_name
+		ORDER BY mct.item_name
+	</select>
+
+    <!-- 各架构人力成本 -->
+    <select id="queryOrganCost" resultType="net.chinahrd.entity.dto.pc.manpowerCost.ManpowerOrganDto">
+        select do.organization_id organId,do.organization_name organ,sum(mc.cost)cost
+        from manpower_cost mc INNER JOIN
+        dim_organization do
+        on mc.organization_id=do.organization_id and mc.customer_id=do.customer_id
+        where substr(mc.`year_month`,1,4)=#{year}
+        <!-- 		AND mc.organization_id = #{organId}  -->
+        AND mc.customer_id = #{customerId}
+        AND (do.organization_id = #{organId} or do.organization_parent_id = #{organId} )
+        GROUP BY do.organization_id,do.organization_name
+        ORDER BY cost DESC
+    </select>
+
+
+    <!-- 人力成本占比（按月环比） -->
+    <select id="queryProportionMonth" resultType="net.chinahrd.entity.dto.pc.manpowerCost.ManpowerCompareDto">
+		select cost,cost_company as total,`year_month` as yearMonth,1 as type
+		from manpower_cost  where `year_month`=#{yearMonth1}
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		union
+		select cost,cost_company as total,`year_month` as yearMonth,0 as type
+		from manpower_cost  where `year_month`=#{yearMonth2}
+        AND organization_id = #{organId} AND customer_id = #{customerId}
+	</select>
+
+    <!-- 人力成本占比（按年同比） -->
+    <select id="queryProportionYear" resultType="net.chinahrd.entity.dto.pc.manpowerCost.ManpowerCompareDto">
+		select sum(cost) cost,sum(cost_company) as total,substr(`year_month`,1,4) as yearMonth,1 as type
+		from manpower_cost   where substr(`year_month`,1,4)=#{year1}  
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		group by substr(`year_month`,1,4)
+		union
+		select sum(cost) cost,sum(cost_company) as total,substr(`year_month`,1,4) as yearMonth,0 as type
+		from manpower_cost   where substr(`year_month`,1,4)=#{year2}  
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		group by substr(`year_month`,1,4)
+	</select>
+
+    <!-- 查询行业均值 -->
+    <select id="queryAvgValue" resultType="java.lang.Double">
+		SELECT
+			pv.`value` as avgValue
+		FROM dim_organization org 
+		INNER JOIN dim_profession pr on pr.profession_id = org.profession_id
+		inner join profession_value pv on pv.profession_id = pr.profession_id 
+											AND pv.profession_value_key = 'mc'
+											AND pv.refresh = (SELECT MAX(refresh) FROM profession_value)
+		where org.organization_id = #{organId}
+		AND org.customer_id = #{customerId}
+	</select>
+
+
+    <select id="queryAllDetailData" resultType="net.chinahrd.entity.dto.pc.manpowerCost.ManpowerDto">
+		select m.cost,m.costAvg,p.gainAmount,p.salesAmount,m.`year_month` AS yearMonth  from
+		(select cost,cost_avg as costAvg,`year_month`
+		from manpower_cost   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId})m
+		LEFT JOIN (
+		select gain_amount AS gainAmount,sales_amount as salesAmount,`year_month`
+		from fact_fte   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		)p on m.`year_month`=p.`year_month`
+		union
+		select m.cost,m.costAvg,p.gainAmount,p.salesAmount,p.`year_month` AS yearMonth from
+		(
+		select gain_amount AS gainAmount,sales_amount as salesAmount,`year_month` 
+		from fact_fte   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		)p
+		LEFT JOIN (select cost,cost_avg as costAvg,`year_month` 
+		from manpower_cost   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId})m  
+		on m.`year_month`=p.`year_month`
+		ORDER BY yearMonth
+	</select>
+
+
+    <!-- 	<select id="queryAllDetailData" resultType="net.chinahrd.entity.dto.pc.manpowerCost.ManpowerDto"> -->
+    <!-- 		select gain_amount AS gainAmount,sales_amount as salesAmount,`year_month` as yearMonth -->
+    <!-- 		from fact_fte   where substr(`year_month`,1,4)=#{year}    -->
+    <!-- 		AND organization_id = #{organId} AND customer_id = #{customerId} -->
+    <!-- 	</select> -->
+</mapper>

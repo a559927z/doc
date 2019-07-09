@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.eis.sms.dao.SMSSendStatusDao">
+
+	<resultMap type="net.chinahrd.eis.sms.SMSSendStatus" id="SendStatusMap">
+		<id property="id" column="id"/>
+		<result property="provider" column="provider" />
+		<result property="msgNo" column="msgNo" />
+		<result property="mobile" column="mobile" />
+		<result property="smsTxt" column="smsTxt" />
+		<result property="sendTime" column="sendTime" />
+		<result property="status" column="status" />
+		<result property="telecomStatus" column="telecomStatus" />
+	</resultMap>
+
+	<select id="querySMSSendStatus" resultMap="SendStatusMap" parameterType="java.lang.String">
+        SELECT
+        s.id,
+        s.provider,
+        s.msgNo,
+        s.mobile,
+        s.smsTxt,
+        s.sendTime,
+        s.status,
+        s.telecomStatus
+      FROM sms_send_status s
+      <where>
+           <if test="mobile != null">
+               s.mobile = #{mobile}
+           </if>
+      </where>
+    </select>
+	
+	<!-- 员工配置数据 -->
+    <insert id="addSMSSendStatus" parameterType="net.chinahrd.eis.sms.SMSSendStatus">
+      INSERT INTO sms_send_status
+      (
+      	id,
+        provider,
+        msgNo,
+        mobile,
+        smsTxt,
+        sendTime,
+        status,
+        telecomStatus
+      )
+      VALUES
+      <foreach collection="dtos" item="dto" separator=",">
+      (
+      	#{dto.id},
+        #{dto.provider},
+        #{dto.msgNo},
+        #{dto.mobile},
+        #{dto.smsTxt},
+        #{dto.sendTime},
+        #{dto.status},
+        #{dto.telecomStatus}
+      )
+      </foreach>
+    </insert>
+    
+</mapper>

@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.employeePerformance.mvc.pc.dao.PerChangeDao">
+	<cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+
+    <select id="queryHighLowMonthCount" resultType="net.chinahrd.entity.dto.KVItemDto" useCache="true">
+    SELECT COUNT(vde.emp_id) as k,
+        GROUP_CONCAT(vde.user_name_ch ORDER BY convert(vde.user_name_ch using GBK)) AS v
+    FROM v_dim_emp vde
+    INNER JOIN dim_sequence s ON s.customer_id = vde.customer_id
+	AND s.sequence_id = vde.sequence_id
+    INNER JOIN performance_change pc ON vde.emp_id = pc.emp_id AND vde.customer_id = pc.customer_id
+    LEFT JOIN dim_performance dp ON pc.customer_id = dp.customer_id AND pc.performance_id = dp.performance_id
+    WHERE vde.customer_id = #{customerId}
+    AND pc.`year_month` = #{yearMonth}
+    AND pc.`type` = #{preWeek}
+    AND dp.curt_name IN
+    <foreach collection="ranks" item="rank" open="(" close=")" separator=",">
+        #{rank}
+    </foreach>
+    AND vde.organization_id IN (
+        SELECT t1.organization_id
+        FROM dim_organization t1
+        WHERE t1.customer_id = #{customerId}
+        AND	locate(
+            (
+            SELECT t.full_path
+            FROM dim_organization t
+            WHERE t.customer_id = #{customerId}
+            AND t.organization_id = #{organId}
+            ),
+            t1.full_path
+        )
+    )
+    </select>
+
+    <select id="queryHighLow2MonthCount" resultType="net.chinahrd.entity.dto.KVItemDto" useCache="true">
+    SELECT COUNT(a.emp_id) as k,GROUP_CONCAT(a.user_name_ch) AS v
+    FROM(
+        SELECT vde.emp_id,vde.user_name_ch,COUNT(pc.`year_month`) AS co1
+        FROM v_dim_emp vde
+        INNER JOIN dim_sequence s ON s.customer_id = vde.customer_id
+		AND s.sequence_id = vde.sequence_id
+        INNER JOIN performance_change pc ON vde.emp_id = pc.emp_id AND vde.customer_id = pc.customer_id
+        LEFT JOIN dim_performance dp ON pc.customer_id = dp.customer_id AND pc.performance_id = dp.performance_id
+        WHERE vde.customer_id = #{customerId}
+        AND pc.`year_month` IN
+        <foreach collection="yearMonths" item="yearMonth" open="(" close=")" separator=",">
+            #{yearMonth}
+        </foreach>
+        AND pc.`type` = #{preWeek}
+        AND dp.curt_name IN
+        <foreach collection="ranks" item="rank" open="(" close=")" separator=",">
+            #{rank}
+        </foreach>
+        AND vde.organization_id IN (
+            SELECT t1.organization_id
+            FROM dim_organization t1
+            WHERE t1.customer_id = #{customerId}
+            AND	locate(
+                (
+                SELECT t.full_path
+                FROM dim_organization t
+                WHERE t.customer_id = #{customerId}
+                AND t.organization_id = #{organId}
+                ),
+                t1.full_path
+            )
+        )
+        GROUP BY vde.emp_id,vde.user_name_ch
+        HAVING co1 >= 2
+        ORDER BY dp.curt_name DESC,convert(vde.user_name_ch using GBK)
+    ) a
+    </select>
+
+
+    <select id="queryHighLowPreByMonth" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PerfChangeEmpDto"  useCache="true">
+        SELECT vde.emp_id AS empId,
+            vde.user_name_ch AS userName,
+            vde.img_path AS imgPath,
+            <if test="prevYearMonth != null">
+            pc2.performance_name AS prevPerformanceName,
+            </if>
+            pc.performance_name AS performanceName
+        FROM v_dim_emp vde
+        INNER JOIN dim_sequence s ON s.customer_id = vde.customer_id
+		AND s.sequence_id = vde.sequence_id
+        INNER JOIN performance_change pc ON vde.customer_id = pc.customer_id AND vde.emp_id = pc.emp_id  AND vde.organization_id = pc.organization_id
+            AND pc.`year_month` = #{yearMonth} AND pc.`type` = #{preWeek}
+        <if test="ranks != null and ranks.size() > 0">
+            INNER JOIN dim_performance dp ON pc.customer_id = dp.customer_id AND pc.performance_id = dp.performance_id AND dp.performance_key IN
+            <foreach collection="ranks" item="rank" separator="," open="(" close=")">
+                '${rank}'
+            </foreach>
+        </if>
+        <if test="prevYearMonth != null">
+        <choose>
+            <when test="manyPerf == true">
+                INNER JOIN performance_change pc2 ON vde.customer_id = pc2.customer_id AND vde.emp_id = pc2.emp_id AND vde.organization_id = pc2.organization_id
+                AND pc2.`year_month` = #{prevYearMonth} AND pc2.`type` = #{preWeek}
+                <if test="ranks != null and ranks.size() > 0">
+                    INNER JOIN dim_performance dp2 ON pc2.customer_id = dp2.customer_id AND pc2.performance_id = dp2.performance_id AND dp2.performance_key IN
+                    <foreach collection="ranks" item="rank" separator="," open="(" close=")">
+                    '${rank}'
+                    </foreach>
+                </if>
+            </when>
+            <otherwise>
+                LEFT JOIN performance_change pc2 ON vde.customer_id = pc2.customer_id AND vde.emp_id = pc2.emp_id AND vde.organization_id = pc2.organization_id
+                AND pc2.`year_month` = #{prevYearMonth} AND pc2.`type` = #{preWeek}
+            </otherwise>
+        </choose>
+        </if>
+        WHERE vde.customer_id = #{customerId}
+        AND vde.organization_id IN (
+            SELECT t1.organization_id
+            FROM dim_organization t1
+            WHERE t1.customer_id = #{customerId}
+            AND	locate(
+                (
+                SELECT t.full_path
+                FROM dim_organization t
+                WHERE t.customer_id = #{customerId}
+                AND t.organization_id = #{organizationId}
+                ),
+                t1.full_path
+            )
+        )
+        ORDER BY dp.curt_name DESC, convert(vde.user_name_ch using GBK)
+    </select>
+    
+    <select id="queryHighLowPreByMonth2" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PerfChangeEmpDto"
+            parameterType="net.chinahrd.entity.dto.pc.employeePerformance.PerfChangeQueryDto"  useCache="true">
+        SELECT vde.emp_id AS empId,
+            vde.user_name_ch AS userName,
+            vde.img_path AS imgPath,
+            pc.performance_name AS performanceName,
+			pc2.performance_name AS prevPerformanceName
+        FROM v_dim_emp vde
+        INNER JOIN dim_sequence s ON s.customer_id = vde.customer_id
+		AND s.sequence_id = vde.sequence_id
+        INNER JOIN performance_change pc ON vde.customer_id = pc.customer_id AND vde.emp_id = pc.emp_id  AND vde.organization_id = pc.organization_id
+            AND pc.`year_month` = #{yearMonth} AND pc.`type` = #{preWeek}
+		INNER JOIN performance_change pc2 ON vde.customer_id = pc2.customer_id AND vde.emp_id = pc2.emp_id AND vde.organization_id = pc2.organization_id
+            AND pc2.`year_month` = #{prevYearMonth} AND pc2.`type` = #{preWeek}
+        WHERE vde.customer_id = #{customerId}
+        AND vde.organization_id IN (
+            SELECT t1.organization_id
+            FROM dim_organization t1
+            WHERE t1.customer_id = vde.customer_id
+            AND	locate(
+                (
+                SELECT t.full_path
+                FROM dim_organization t
+                WHERE t.customer_id = t1.customer_id
+                AND t.organization_id = #{organizationId}
+                ),
+                t1.full_path
+            )
+        )
+        ORDER BY convert(vde.user_name_ch using GBK)
+    </select>
+    
+    <select id="queryPreYearMonthByCustomerId" resultType="java.lang.Integer"  useCache="true">
+		select DISTINCT t.year_month from
+		 performance_change t where	t.customer_id=#{customerId} AND `type` = #{perWeek}
+		 ORDER BY t.year_month desc
+	</select>
+
+    <select id="queryPreChangeCountByMonth" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PreChangeStatusDto"  useCache="true">
+        select
+	        sum(case when d.performance_key>d2.performance_key then 1 ELSE 0 end) as rise,
+	        sum(case when d2.performance_key>d.performance_key then 1 ELSE 0 end) as down,
+	        sum(case when d.performance_key=d2.performance_key then 1 ELSE 0 end) as equal
+        from performance_change t
+        inner JOIN performance_change t2 on t2.customer_id=t.customer_id
+        	AND t2.`type` = #{preWeek} and t2.emp_id=t.emp_id and t2.year_month=#{beginYearMonth}
+        INNER JOIN dim_performance d on d.customer_id=t.customer_id and d.performance_id=t.performance_id
+        INNER JOIN dim_performance d2 on d2.customer_id=t2.customer_id and d2.performance_id=t2.performance_id
+        INNER JOIN v_dim_emp vde ON vde.emp_id = t.emp_id
+			AND vde.customer_id = t.customer_id
+		INNER JOIN dim_sequence ds ON ds.sequence_id = vde.sequence_id
+			AND vde.customer_id = ds.customer_id 
+        where t.customer_id = #{customerId}
+        AND t.year_month=#{endYearMonth}
+        AND t.`type` = #{preWeek}
+        AND t.organization_id IN
+        (
+        SELECT t1.organization_id FROM dim_organization t1
+        WHERE
+        locate(
+        (
+        SELECT t.full_path FROM dim_organization t
+        WHERE t.organization_id = #{organizationId}
+        AND t.customer_id = #{customerId}
+        ), t1.full_path
+        )
+        AND t1.customer_id = #{customerId}
+        )
+        <if test="crowds!=null and crowds.size()>0">
+        AND t.emp_id IN (
+			SELECT
+				emp_id
+			FROM
+				population_relation_month pr
+			WHERE
+				pr.population_id IN 
+				<foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+	                #{crowd}
+	            </foreach>
+			AND pr.`year_month` = #{endYearMonth}
+			GROUP BY
+				emp_id
+		)
+        </if>
+        <if test="changeNum != null and changeNum > 1">
+            	<!-- 查询变化在两级以上的人 -->
+            AND abs(d.performance_key-d2.performance_key)>=#{changeNum}
+        </if>
+    </select>
+
+
+    <select id="queryPreChangeListByMonth" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PerfChangeEmpDto"  useCache="true">
+		select   t.emp_id,d.performance_key,d2.performance_key 
+		from performance_change t 
+		inner JOIN performance_change t2 on t2.customer_id=t.customer_id and 
+		t2.emp_id=t.emp_id  and t2.year_month=201412 
+		 left JOIN dim_performance d on d.customer_id=t.customer_id and d.performance_id=t.performance_id
+		 left join dim_performance d2 on d2.customer_id=t2.customer_id and d2.performance_id=t2.performance_id
+		 where 1=1
+ 	-- t.year_month=201506 and 
+  	-- t.customer_id='b5c9410dc7e4422c8e0189c7f8056b5f'
+	-- t.organization_id ='423238847d2311e58aee08606e0aa89a'
+	-- and t2.performance_key&gt;t.performance_key;-- 降的明细
+	-- and t2.performance_key=t.performance_key;-- 相等的明细
+	-- and t2.performance_key&lt;t.performance_key;-- 升的明细
+	-- and t2.performance_key-t.performance_key&gt;=2;--降2及以上的
+	-- and t.performance_key-t2.performance_key&gt;=2;--升2及以上的
+	</select>
+
+    <!-- 查询绩效分布 -->
+    <select id="queryPreDistributionListByMonth" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PerfChangeEmpDto"
+            parameterType="net.chinahrd.entity.dto.pc.employeePerformance.PerfChangeQueryDto"  useCache="true">
+        SELECT
+	        t.emp_id AS empId,
+	        e.user_name_ch AS userName,
+	        e.img_path AS imgPath,
+	        d.performance_key AS perKey,
+	        d.performance_name AS performanceName,
+	        prev_perf.performance_name AS prevPerformanceName
+        FROM performance_change t
+        <if test="crowds != null and crowds.size() > 0">
+            INNER JOIN population_relation_month as pr ON t.emp_id=pr.emp_id AND pr.population_id IN
+            <foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+                #{crowd}
+            </foreach>
+            AND pr.`year_month`=#{yearMonth}
+        </if>
+        INNER JOIN dim_performance d ON t.customer_id = d.customer_id AND d.performance_id = t.performance_id
+        LEFT JOIN v_dim_emp e ON t.customer_id = e.customer_id AND e.emp_id = t.emp_id
+        LEFT JOIN dim_sequence s ON s.customer_id = t.customer_id AND s.sequence_id = e.sequence_id
+        LEFT JOIN (
+        SELECT
+        pc.emp_id,
+        pc.performance_name
+        FROM performance_change pc
+        WHERE pc.customer_id = #{customerId}
+        <choose>
+            <when test="prevYearMonth != null">
+                AND pc.`year_month` = #{prevYearMonth}
+            </when>
+            <otherwise>
+                AND pc.`year_month` IS NULL
+            </otherwise>
+        </choose>
+        ) prev_perf ON prev_perf.emp_id = t.emp_id
+        WHERE t.`type` = #{preWeek}
+        <if test="yearMonth != null">
+            AND t.year_month = #{yearMonth}
+        </if>
+        <if test="empType == 1">
+            AND s.curt_name = 'M'
+        </if>
+        <if test="empType == 2">
+            AND s.curt_name != 'M'
+        </if>
+        AND t.organization_id IN
+        (
+            SELECT t1.organization_id FROM dim_organization t1
+            WHERE t1.customer_id = t.customer_id
+            AND locate(
+                (
+                    SELECT t2.full_path FROM dim_organization t2
+                    WHERE t2.customer_id = t1.customer_id
+                    AND t2.organization_id = #{organizationId}
+                ),
+                t1.full_path
+            )
+        )
+        AND t.customer_id = #{customerId}
+        ORDER BY d.curt_name DESC, convert(e.user_name_ch using GBK)
+    </select>
+
+    <select id="queryPreStarCountByMonth" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PreStarCountDto"  useCache="true">
+		select d.performance_key as performanceKey
+			 , sum(CASE when s.curt_name ='M' then 1 else 0 end) as mgrCount
+			 , sum(CASE when s.curt_name !='M' then 1 else 0 end) as notMgrCount
+			 ,count(e.emp_id) as joinCount
+			 ,d.performance_name as performanceName
+			 from dim_performance d  
+			 LEFT JOIN performance_change t on d.customer_id=t.customer_id and d.performance_id=t.performance_id
+			 		AND t.`type` = #{preWeek} 
+			 		and t.year_month=#{yearMonth}  
+				 	and t.organization_id IN
+						(
+							SELECT t1.organization_id FROM dim_organization t1
+							WHERE
+								locate(
+									(
+										SELECT t.full_path FROM dim_organization t
+										WHERE t.organization_id = #{organizationId}
+										AND t.customer_id = #{customerId}
+									), t1.full_path
+								)
+							AND t1.customer_id = #{customerId}
+						)
+			INNER JOIN v_dim_emp e on t.customer_id=e.customer_id and e.emp_id=t.emp_id 
+			INNER join dim_sequence s on s.customer_id=t.customer_id and s.sequence_id=e.sequence_id
+			where d.customer_id = #{customerId}
+            <if test="crowds!=null and crowds.size()>0">
+                AND e.emp_id IN (SELECT pr.emp_id FROM population_relation_month as pr WHERE pr.population_id IN
+                <foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+                    #{crowd}
+                </foreach>
+                AND pr.`year_month` = #{yearMonth}
+                )
+            </if>
+			GROUP BY d.performance_key,d.performance_name
+			ORDER BY d.performance_key
+	</select>
+
+    <!--获取个人绩效明细数据 -->
+    <select id="queryPerformanceDetail" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PreDetailDto"  useCache="true">
+        SELECT
+            vde.emp_id AS empId,
+            vde.user_name_ch AS userNameCh,
+            vde.position_name AS positionName,
+            vde.sequence_name AS sequenceName,
+            vde.organization_name AS organizationName,
+            vde.ability_name AS abilityName,
+            vde.rank_name AS rankName,
+            vde.performance_id AS performanceId,
+            p1.performance_name AS performanceName1,
+            p2.performance_name AS performanceName2,
+            p3.performance_name AS performanceName3,
+            dp.performance_key AS performanceKey
+        FROM v_dim_emp vde
+        INNER JOIN dim_sequence ds ON ds.sequence_id = vde.sequence_id
+			AND ds.customer_id = vde.customer_id
+        INNER JOIN performance_change p1 ON vde.customer_id = p1.customer_id
+	        AND vde.emp_id = p1.emp_id
+	        AND p1.YEAR_MONTH = #{yearMonth1}
+	        AND p1.`type` = #{preWeek}
+	        <if test="keyName != null and keyName != ''">
+	        AND (vde.emp_key LIKE CONCAT('%', #{keyName}, '%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+	        </if>
+        INNER JOIN dim_performance dp ON dp.customer_id = vde.customer_id
+        	AND p1.performance_id = dp.performance_id
+        LEFT JOIN performance_change p2 ON vde.customer_id = p2.customer_id
+	        AND vde.emp_id = p2.emp_id
+	        AND vde.organization_id = p2.organization_id
+	        AND p2.`type` = #{preWeek}
+	        AND p2.YEAR_MONTH = #{yearMonth2}
+        LEFT JOIN performance_change p3 ON vde.customer_id = p3.customer_id
+	        AND vde.emp_id = p3.emp_id
+	        AND vde.organization_id = p3.organization_id
+	        AND p3.YEAR_MONTH = #{yearMonth3}
+	        AND p3.`type` = #{preWeek}
+        WHERE vde.customer_id = #{customerId}
+        	AND vde.organization_id IN (
+        SELECT
+        t1.organization_id
+        FROM
+        dim_organization t1
+        WHERE t1.customer_id = vde.customer_id
+        AND locate(
+            (
+            SELECT t2.full_path
+            FROM dim_organization t2
+            WHERE t2.customer_id = t1.customer_id
+            AND t2.organization_id = #{organizationId}
+            ),
+            t1.full_path
+            )
+        )
+        <if test="sequenceIdlist.size != 0 ">
+            AND vde.sequence_id in
+            <foreach item="item" collection="sequenceIdlist" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+        <if test="abilityIdlist.size != 0 ">
+            AND vde.ability_id in
+            <foreach item="item" collection="abilityIdlist" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+        <if test="performanceKeylist.size != 0 ">
+            AND dp.performance_key in
+            <foreach item="item" collection="performanceKeylist" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+        ORDER BY dp.performance_key DESC, CONVERT (vde.user_name_ch USING gbk)
+        LIMIT #{rowBounds.offset} , #{rowBounds.limit}
+    </select>
+
+
+    <select id="queryPerformanceDetailCount" resultType="int"  useCache="true">
+        SELECT COUNT(1) FROM v_dim_emp vde
+        INNER JOIN dim_sequence ds ON ds.sequence_id = vde.sequence_id
+		AND ds.customer_id = vde.customer_id
+        INNER JOIN performance_change p1 ON vde.customer_id=p1.customer_id and vde.emp_id=p1.emp_id
+        and p1.year_month=#{yearMonth1}
+        AND p1.`type` = #{preWeek}
+        <if test="keyName != null and keyName != ''">
+        AND (vde.emp_key LIKE CONCAT('%', #{keyName}, '%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+        </if>
+        INNER JOIN dim_performance dp ON dp.customer_id=vde.customer_id AND p1.performance_id=dp.performance_id
+        LEFT JOIN performance_change p2 ON vde.customer_id=p2.customer_id
+        and vde.emp_id=p2.emp_id and vde.organization_id=p2.organization_id
+        and p2.year_month=#{yearMonth2}
+        AND p2.`type` = #{preWeek}
+        LEFT JOIN performance_change p3 ON vde.customer_id=p3.customer_id and vde.emp_id=p3.emp_id and
+        vde.organization_id=p3.organization_id
+        and p3.year_month=#{yearMonth3}
+        AND p3.`type` = #{preWeek}
+        WHERE vde.customer_id= #{customerId}
+        AND vde.organization_id IN
+        (
+            SELECT t1.organization_id FROM dim_organization t1
+            WHERE  t1.customer_id = vde.customer_id
+            AND locate(
+                (
+                SELECT t2.full_path FROM dim_organization t2
+                WHERE t2.customer_id = t1.customer_id
+                AND t2.organization_id = #{organizationId}
+                ),
+                t1.full_path
+            )
+        )
+        <if test="sequenceIdlist.size != 0 ">AND vde.sequence_id in
+            <foreach item="item" collection="sequenceIdlist" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+        <if test="abilityIdlist.size != 0 ">AND vde.ability_id in
+            <foreach item="item" collection="abilityIdlist" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+        <if test="performanceKeylist.size != 0 ">AND dp.performance_key in
+            <foreach item="item" collection="performanceKeylist" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+    </select>
+
+    <!--已废弃：获取个人绩效明细数据  ByName-->
+    <select id="queryPerformanceDetailByName" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PreDetailDto"  useCache="true">
+    SELECT vde.emp_id as empId,
+        vde.user_name_ch as userNameCh,
+        vde.position_name as positionName,
+        vde.sequence_name as sequenceName,
+        vde.organization_name as organizationName,
+        vde.ability_name as abilityName,
+        vde.rank_name as rankName,
+        vde.performanceName1,
+        vde.performanceName
+	    FROM (SELECT vde.emp_id,
+	       vde.user_name_ch,
+	       vde.position_name,
+	       vde.sequence_name,
+	       vde.performance_id,
+	       vde.organization_name,
+	       vde.ability_name,
+	       vde.rank_name,
+	       vde.performance_name as performanceName1,
+	         p.performance_name as performanceName
+	       FROM v_dim_emp  vde
+	       INNER JOIN
+			(SELECT p.emp_id,p.organization_id,p.customer_id, group_concat(p.performance_name)  performance_name
+				FROM (
+				   SELECT v.emp_id,p.performance_name,v.organization_id,v.customer_id
+				   from performance_change p INNER JOIN v_dim_emp v
+				   		ON p.emp_id=v.emp_id AND v.organization_id=p.organization_id
+				    	AND v.customer_id=p.customer_id
+			       where  v.customer_id=#{customerId}
+			            AND ((v.emp_key  LIKE CONCAT('%',#{keyName},'%')) OR v.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+						-- 绩效包含离职人员 lb确认 bug300
+			       		-- AND v.run_off_date IS NULL
+						AND p.`year_month` = (SELECT MAX(`year_month`) FROM performance_change)
+						 AND v.organization_id IN(
+							SELECT t1.organization_id FROM dim_organization t1
+							WHERE
+								locate(
+									(
+										SELECT t.full_path FROM dim_organization t
+										WHERE t.organization_id = #{organizationId}
+										AND t.customer_id = #{customerId}
+									), t1.full_path
+								)
+							AND t1.customer_id = #{customerId}
+						)
+			       		ORDER BY p.emp_id,p.`year_month` desc
+			      ) p GROUP BY p.emp_id,p.organization_id,p.customer_id
+		    )p ON p.emp_id=vde.emp_id
+       		AND vde.organization_id=p.organization_id
+       		AND vde.customer_id=p.customer_id
+       	) vde LEFT JOIN dim_performance dp
+		    ON vde.performance_id=dp.performance_id
+		    WHERE dp.customer_id=#{customerId}
+		   ORDER BY dp.performance_key DESC,CONVERT (vde.user_name_ch USING gbk)
+		limit #{rowBounds.offset} , #{rowBounds.limit}
+    </select>
+
+
+    <!--已废弃：-->
+    <select id="queryPerformanceDetailByNameCount" resultType="int" useCache="true">
+   SELECT COUNT(1) 
+    FROM v_dim_emp  vde 
+       inner join
+	(SELECT p.emp_id,p.organization_id,p.customer_id , group_concat(p.performance_name)  performance_name from
+		(
+		   SELECT v.emp_id,p.performance_name,v.organization_id,v.customer_id
+		   FROM performance_change p INNER JOIN v_dim_emp v
+		   		ON p.emp_id=v.emp_id AND v.organization_id=p.organization_id
+		    	AND v.customer_id=p.customer_id
+	       WHERE  v.customer_id=#{customerId}
+	            AND ((v.emp_key  LIKE CONCAT('%',#{keyName},'%')) OR v.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+				-- 绩效包含离职人员 lb确认 bug300
+	       		-- AND v.run_off_date IS NULL
+				AND p.`year_month` = (SELECT MAX(`year_month`) FROM performance_change)
+				 AND v.organization_id IN(
+						SELECT t1.organization_id FROM dim_organization t1
+						WHERE
+							locate(
+								(
+									SELECT t.full_path FROM dim_organization t
+									WHERE t.organization_id = #{organizationId}
+									AND t.customer_id = #{customerId}
+								), t1.full_path
+							)
+						AND t1.customer_id = #{customerId}
+					)
+	       		ORDER BY p.emp_id,p.`year_month` desc
+	      ) p GROUP BY p.emp_id,p.organization_id,p.customer_id
+      )p ON p.emp_id=vde.emp_id
+       AND vde.organization_id=p.organization_id
+       AND vde.customer_id=p.customer_id
+    </select>
+
+    <select id="queryEmpCount" resultType="int" useCache="true">
+    SELECT COUNT(DISTINCT e.emp_id)
+    FROM v_dim_emp e
+    <if test="crowds != null and crowds.size() > 0">
+        INNER JOIN population_relation_month as pr ON e.emp_id=pr.emp_id AND pr.population_id IN
+        <foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+            #{crowd}
+        </foreach>
+        AND pr.`year_month`=#{yearMonth}
+    </if>
+    INNER JOIN dim_sequence s on s.customer_id=e.customer_id and s.sequence_id=e.sequence_id
+    WHERE e.customer_id = #{customerId}
+    AND e.organization_id IN (
+      SELECT t1.organization_id
+      FROM dim_organization t1
+      WHERE locate(
+        (SELECT t.full_path
+        FROM dim_organization t
+        WHERE t.organization_id = #{organizationId}
+        AND t.customer_id = #{customerId}),
+        t1.full_path
+      )
+      AND t1.customer_id = #{customerId}
+    )
+    AND e.entry_date &lt;= #{time} AND (e.run_off_date &gt; #{time} OR e.run_off_date is null)
+    <if test="empType==1">
+        AND s.curt_name = 'M'
+    </if>
+    <if test="empType==2">
+        AND s.curt_name != 'M'
+    </if>
+    </select>
+
+    <select id="queryPerfDistributeCount" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PreStarCountDto" parameterType="net.chinahrd.entity.dto.pc.employeePerformance.PerfChangeQueryDto" useCache="true">
+    SELECT 1 AS performanceKey,COUNT(pc.emp_id) AS joinCount
+    FROM performance_change pc
+    INNER JOIN dim_performance dp ON pc.customer_id = dp.customer_id AND pc.performance_id = dp.performance_id
+    INNER JOIN v_dim_emp e ON pc.customer_id = e.customer_id
+	AND e.emp_id = pc.emp_id
+	<if test="crowds != null and crowds.size() > 0">
+        INNER JOIN population_relation_month as pr ON e.emp_id=pr.emp_id AND pr.population_id IN
+        <foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+            #{crowd}
+        </foreach>
+        AND pr.`year_month`=#{yearMonth}
+    </if>
+	INNER JOIN dim_sequence s ON s.customer_id = pc.customer_id
+	AND s.sequence_id = e.sequence_id
+    WHERE pc.customer_id = #{customerId}
+    AND pc.type = #{preWeek}
+    AND pc.`year_month` = #{yearMonth}
+    <if test="lowPerfs != null and lowPerfs.size != 0 ">
+        AND dp.curt_name IN
+        <foreach item="perf" collection="lowPerfs" open="(" separator="," close=")">#{perf}</foreach>
+    </if>
+    AND pc.organization_id IN (
+        SELECT t1.organization_id FROM dim_organization t1
+        WHERE t1.customer_id = #{customerId}
+        AND locate(
+            (
+                SELECT t2.full_path FROM dim_organization t2
+                WHERE t2.customer_id = #{customerId}
+                AND t2.organization_id = #{organizationId}
+            ),
+            t1.full_path
+        )
+    )
+    UNION ALL
+    SELECT 2 as performanceKey, COUNT(pc.emp_id) AS joinCount
+    FROM performance_change pc
+    INNER JOIN dim_performance dp ON pc.customer_id = dp.customer_id AND pc.performance_id = dp.performance_id
+    INNER JOIN v_dim_emp e ON pc.customer_id = e.customer_id
+	AND e.emp_id = pc.emp_id
+	<if test="crowds != null and crowds.size() > 0">
+        INNER JOIN population_relation_month as pr ON e.emp_id=pr.emp_id AND pr.population_id IN
+        <foreach collection="crowds" open="(" close=")" separator="," item="crowd">
+            #{crowd}
+        </foreach>
+        AND pr.`year_month`=#{yearMonth}
+    </if>
+	INNER JOIN dim_sequence s ON s.customer_id = pc.customer_id
+	AND s.sequence_id = e.sequence_id
+    WHERE pc.customer_id = #{customerId}
+    AND pc.type = #{preWeek}
+    AND pc.`year_month` = #{yearMonth}
+    <if test="heightPerfs != null and heightPerfs.size != 0 ">
+        AND dp.curt_name IN
+        <foreach item="perf" collection="heightPerfs" open="(" separator="," close=")">#{perf}</foreach>
+    </if>
+    AND pc.organization_id IN (
+        SELECT t1.organization_id FROM dim_organization t1
+        WHERE t1.customer_id = #{customerId}
+        AND locate(
+            (
+                SELECT t2.full_path FROM dim_organization t2
+                WHERE t2.customer_id = #{customerId}
+                AND t2.organization_id = #{organizationId}
+            ),
+            t1.full_path
+        )
+    )
+    </select>
+
+    <select id="queryPerfDistributeEmp" resultType="net.chinahrd.entity.dto.pc.employeePerformance.PerfChangeEmpDto" useCache="true">
+    SELECT
+        t.emp_id AS empId,
+        e.user_name_ch AS userName,
+        e.img_path AS imgPath,
+        d.performance_key AS perKey,
+        d.performance_name AS performanceName,
+        prev.performance_name AS prevPerformanceName
+    FROM performance_change t
+    <if test="crowds != null and crowds.size() > 0">
+        INNER JOIN population_relation_month as pr ON t.emp_id=pr.emp_id AND pr.population_id IN
+        <foreach collection="crowds" item="crowd" open="(" close=")" separator="," >
+            #{crowd}
+        </foreach>
+        AND pr.`year_month`=#{yearMonth}
+    </if>
+    INNER JOIN dim_performance d ON t.customer_id = d.customer_id AND d.performance_id = t.performance_id
+    LEFT JOIN v_dim_emp e ON t.customer_id = e.customer_id AND e.emp_id = t.emp_id
+    LEFT JOIN dim_sequence s ON s.customer_id = t.customer_id AND s.sequence_id = e.sequence_id
+    LEFT JOIN (
+        SELECT
+        pc.emp_id,
+        pc.performance_name
+        FROM performance_change pc
+        WHERE pc.customer_id = #{customerId}
+        <if test="yearMonth != null">
+            AND pc.year_month = if(#{yearMonth}%100 = 6,#{yearMonth}-94,#{yearMonth}-6)
+        </if>
+    ) prev ON prev.emp_id = t.emp_id
+    WHERE t.customer_id = #{customerId}
+    AND t.`type` = #{preWeek}
+    <if test="ranks != null and ranks.size != 0 ">
+        AND d.curt_name <if test="hasNotKey == true">NOT</if> IN
+        <foreach collection="ranks" item="rank"  open="(" separator="," close=")">'${rank}'</foreach>
+    </if>
+    <if test="yearMonth != null">
+        AND t.year_month = #{yearMonth}
+    </if>
+    <if test="empType == 1">
+        AND s.curt_name = 'M'
+    </if>
+    <if test="empType == 2">
+        AND s.curt_name != 'M'
+    </if>
+    AND t.organization_id IN (
+        SELECT t1.organization_id FROM dim_organization t1
+        WHERE t1.customer_id = #{customerId}
+        AND locate(
+          (SELECT t2.full_path FROM dim_organization t2
+          WHERE t2.customer_id = #{customerId}
+          AND t2.organization_id = #{organizationId}
+          ),
+          t1.full_path
+        )
+    )
+    ORDER BY d.curt_name DESC, convert(e.user_name_ch using GBK)
+    </select>
+    
+    <select id="queryPerchangeByOrgan" resultType="net.chinahrd.entity.dto.app.performance.PerfChangeCountDto" useCache="true">
+    	SELECT
+    		t1.organization_id organId,
+			t1.organization_name organName,
+			t1.perCount perCount,
+			t2.count count,
+			t1.perCount/t2.count rate
+		FROM
+			(
+				SELECT
+					organization_id,
+					organization_name,
+					COUNT(1) perCount
+				FROM
+					performance_change
+				WHERE customer_id = #{customerId}
+				AND `year_month` = #{yearMonth}
+				GROUP BY
+					organization_id
+			) t1
+		INNER JOIN (
+			SELECT
+				organization_id,
+				COUNT(1) count
+			FROM
+				history_emp_count_month
+			WHERE customer_id = #{customerId}
+			AND `year_month` = #{yearMonth}
+			GROUP BY
+				organization_id
+		) t2 ON t1.organization_id = t2.organization_id
+		WHERE t1.organization_id IN (
+			SELECT o.organization_id
+			FROM dim_organization o
+			WHERE o.customer_id = #{customerId}
+			AND locate(
+				(SELECT d.full_path
+				FROM dim_organization d
+				WHERE d.customer_id = #{customerId}
+				AND d.organization_id = #{organId}
+				), o.full_path
+			)
+		)
+    </select>
+</mapper>

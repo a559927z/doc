@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: net.chinahrd:project-framework:3.0">
+    <CLASSES>
+      <root url="jar://D:/maven/repository/net/chinahrd/project-framework/3.0/project-framework-3.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://D:/maven/repository/net/chinahrd/project-framework/3.0/project-framework-3.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://D:/maven/repository/net/chinahrd/project-framework/3.0/project-framework-3.0-sources.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../git/project-framework/src/main/java" />
+    </SOURCES>
+  </library>
+</component>

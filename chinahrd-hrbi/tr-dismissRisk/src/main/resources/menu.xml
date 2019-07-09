@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<menus name="驱动力">
+		<menu code="RenCaiWenDingXing" name="人才稳定性" url="dismissRisk/toDismissRiskView" icon="" mobile="false">
+			
+		</menu>
+	</menus>

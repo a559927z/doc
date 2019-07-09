@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.common.MessageDao">
+    <select id="findAllMessage" resultType="net.chinahrd.entity.dto.pc.common.MessageResultDto">
+	    SELECT
+	        me.messages_id AS id,
+	        me.customer_id AS customerId,
+	        me.content AS content,
+	        me.send_emp_id AS createEmpId,
+	        me.create_time AS createTime,
+	        me.type AS type,
+	        df.function_name AS target,
+	        CASE WHEN me.url is not null OR me.url!='' THEN me.url ELSE df.url END  AS targetUrl,
+	        vde.user_name AS userName,
+	        vde.user_name_ch AS userNameCh,
+	        do.organization_id AS organId,
+	        do.organization_name AS organName 
+	    FROM messages me
+	  INNER JOIN messages_status ms ON me.messages_id = ms.messages_id AND me.customer_id = ms.customer_id 
+	    INNER JOIN v_dim_emp vde ON vde.emp_id = me.send_emp_id AND vde.customer_id = me.customer_id 
+	    LEFT JOIN dim_organization do ON do.organization_id = me.organization_id AND do.customer_id = me.customer_id  
+	    LEFT JOIN dim_function df ON df.function_id = me.quota_id AND df.customer_id = me.customer_id 
+	   
+	    WHERE me.is_delete = 0 AND ms.is_read=0
+	     AND ms.emp_id = #{empId}
+	    <if test="customerId != null">
+	    AND me.customer_id = #{customerId}
+	    </if>
+	    <if test="organizationId != null">
+	    AND ((me.type=2 AND me.organization_id = #{organizationId})
+	     OR me.type=1)
+	    </if>
+	    ORDER BY me.create_time DESC
+    </select>
+    <update id="deleteMessage" >
+    UPDATE messages me SET is_delete = 1, delete_time = SYSDATE() WHERE messages_id = #{messageId} AND customer_id = #{customerId}
+    </update>
+    
+        <update id="readMessage" >
+		    UPDATE messages_status ms
+		     INNER JOIN messages me
+		    SET ms.is_read = 1, ms.read_time = SYSDATE() 
+		    WHERE me.messages_id = ms.messages_id 
+		        AND me.customer_id = ms.customer_id 
+		     AND ms.emp_id = #{empId}
+			    AND me.is_delete = 0 AND ms.is_read=0
+			    <if test="customerId != null">
+			    AND me.customer_id = #{customerId}
+			    </if>
+			    <if test="organizationId != null">
+			      AND ((me.type=2 AND me.organization_id = #{organizationId})
+			     OR me.type=1)
+			    </if>
+        </update>
+    
+    <update id="readMessageById" >
+		    UPDATE messages_status 
+		    SET is_read = 1,read_time = SYSDATE() 
+		    WHERE 
+		      emp_id = #{empId}
+		     AND messages_id = #{messageId}
+			 AND is_read=0
+		    <if test="customerId != null">
+		    AND customer_id = #{customerId}
+		    </if>
+        </update>
+    
+     <insert id="addMessage" parameterType="net.chinahrd.entity.dto.pc.common.MessageCreateDto">
+    INSERT INTO messages (
+      messages_id,
+      customer_id,
+      quota_id,
+      content,
+      url,
+      organization_id,
+      send_emp_id,
+      type,
+      is_delete,
+      create_time
+    )
+    VALUES (
+      #{dto.messageId},
+      #{dto.customerId},
+      #{dto.quataId},
+      #{dto.content},
+      #{dto.url},
+      #{dto.organizationId},
+      #{dto.createEmpId},
+      #{dto.type},
+      0,
+      #{dto.createTime}
+    )
+    </insert>
+
+    <insert id="addMessageStatus" parameterType="net.chinahrd.entity.dto.pc.common.MessageStatusCreateDto">
+      INSERT INTO messages_status (
+        messages_status_id,
+        customer_id,
+        messages_id,
+        is_read,
+        emp_id
+      )
+      
+      VALUES
+      <foreach collection="list" item="dto" separator=",">
+      (
+        #{dto.messageStatusId},
+        #{dto.customerId},
+        #{dto.messageId},
+        0,
+        #{dto.empId}
+      )
+      </foreach>
+    </insert>
+</mapper>

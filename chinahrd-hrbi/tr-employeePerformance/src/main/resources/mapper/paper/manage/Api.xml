@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.employeePerformance.mvc.pc.dao.PerChangeApiDao">
+	<cache-ref namespace="net.chinahrd.ehcache.normal"/>
+
+
+     <!-- 管理者首页-绩效目标-部门  -->
+    <select id="queryPerformance" resultType="net.chinahrd.entity.dto.pc.manage.PerformanceDto">
+     SELECT content,weight,progress FROM dept_per_exam_relation as a WHERE organization_id=#{organId} AND customer_id=#{customerId};
+    </select>
+
+    <!-- 管理者首页-绩效目标-下属 -->
+    <select id="queryPerformanceEmp" resultType="net.chinahrd.entity.dto.pc.manage.PerformanceEmpDto">
+    SELECT
+		vde.emp_id AS EmpId,
+		vde.user_name_ch AS NAME,
+		eper.content AS AssessParentName,
+		eper.sub_content AS AssessName,
+		eper.weight,
+		eper.progress,
+		eper.emp_idp AS IDP,
+		eper.idp AS IDPTotal
+		FROM
+		v_dim_emp vde
+		INNER JOIN (
+		SELECT
+		t1.organization_id
+		FROM
+		dim_organization t1
+		WHERE
+		locate(
+		(
+		SELECT
+		t.full_path
+		FROM
+		dim_organization t
+		WHERE
+		t.organization_id = #{organId}
+		AND t.customer_id = #{customerId}
+		),
+		t1.full_path
+		)
+		AND t1.customer_id = #{customerId}
+		) b ON vde.organization_id = b.organization_id
+		INNER JOIN emp_per_exam_relation eper ON vde.emp_id = eper.emp_id
+		AND vde.customer_id = eper.customer_id
+		WHERE
+		vde.customer_id = #{customerId}
+		AND vde.run_off_date IS NULL
+		ORDER BY CONVERT(vde.user_name_ch USING GBK) ASC
+    </select>
+</mapper>

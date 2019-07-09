@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.app.dao.KanbanConfigDao">
+
+    <select id="getAlreadyAddedList" resultType="net.chinahrd.entity.dto.app.KanbanConfigMobileDto">
+	    select t3.function_config_mobile_id as functionConfigMobileId,
+				t3.customer_id as customerId,
+				t3.emp_id as empId,
+				t3.function_id as functionId,
+				t.function_name as functionName,
+				t2.image_add_url as imageUrl
+		from dim_function t
+		inner join exp_function_mobile t2 
+			on t.customer_id=t2.customer_id and t.function_id=t2.function_id
+		INNER JOIN function_config_mobile t3 on t.customer_id=t3.customer_id and t.function_id=t3.function_id
+		where t.quota_or_fun = 1 and t.function_parent_id !=""
+			and t3.emp_id=#{empId}
+			and t.customer_id = #{customerId}
+		ORDER BY t3.show_index,t3.create_time
+    </select>
+    
+    <select id="getNotAddedList" resultType="net.chinahrd.entity.dto.app.KanbanConfigMobileDto">
+	    select t.customer_id as customerId,
+			 t.function_id as functionId,
+			 t.function_name as functionName,
+			 t2.image_add_url as imageUrl
+		 from dim_function t
+		inner join exp_function_mobile t2 
+			on t.customer_id=t2.customer_id and t.function_id=t2.function_id
+		where t.quota_or_fun = 1 and t.function_parent_id !=""
+		and NOT EXISTS(
+			SELECT a.function_id from function_config_mobile a 
+			where t.customer_id=a.customer_id 
+			and t.function_id=a.function_id
+			and a.emp_id=#{empId}
+		)
+		and t.customer_id=#{customerId}
+		ORDER BY t.full_path
+
+    </select>
+
+    <insert id="addKanbanItem"  parameterType="net.chinahrd.entity.dto.app.KanbanConfigMobileDto">
+    INSERT INTO function_config_mobile (
+        function_config_mobile_id,
+        customer_id,
+        emp_id,
+        function_id,
+        create_time
+    )
+    VALUES(
+      #{dto.functionConfigMobileId},
+      #{dto.customerId},
+      #{dto.empId},
+      #{dto.functionId},
+      #{dto.createTime}
+      )
+    </insert>
+    
+     <delete id="deleteKanbanItem" parameterType="string">
+		DELETE FROM function_config_mobile WHERE function_Config_Mobile_Id = #{functionConfigMobileId}
+    </delete>
+    
+    <update id="updateKanbanItem" parameterType="list">
+	    <foreach collection="dtos" item="dto" separator=";">
+	    
+	    </foreach>
+    </update>
+    
+    
+</mapper>

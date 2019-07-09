@@ -1,0 +1,829 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.trainBoard.mvc.app.dao.MobileTrainBoardDao">
+	
+    <!-- 培训年度费用 -->
+	<select id="queryTrainCostYear" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			tol.`year` AS YEAR,
+			sum(tol.outlay) AS cost,
+			tvl.budget_value AS budgetCost,
+			round(
+				sum(tol.outlay) / tvl.budget_value,
+				3
+			) AS budgetRate
+		FROM
+			train_outlay tol
+		left JOIN train_value tvl ON tol.customer_id = tvl.customer_id
+		AND tol.organization_id = tvl.organization_id
+		AND tol.`year` = tvl.`year`
+		where tol.`year`=#{year}
+		and tol.customer_id=#{customerId}
+		and tol.organization_id =#{organId}
+	</select>
+
+	<!-- 培训计划已完成和总数 -->
+	<select id="queryTrainPlan" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		select tp.year,round(tp.trainNum/tp1.trainNum,4) as completeRate from 
+		(
+			SELECT
+				count(t.train_name ) as trainNum,t.`year`
+			FROM
+				train_plan t
+			WHERE
+				t.organization_id = #{organId}
+			AND t.`year` = #{year}
+			AND t.customer_id=#{customerId}
+			AND t.`status` = 1
+		)tp
+		INNER JOIN
+		(
+			SELECT
+				count(t.train_name ) as trainNum 
+			FROM
+				train_plan t
+			WHERE
+				t.organization_id = #{organId}
+				AND t.customer_id=#{customerId}
+				AND t.`year` = #{year}
+		)tp1
+	</select>
+
+	<!-- 组织总人数 -->
+	<select id="queryEmpCount" resultType="int" useCache="true">
+		select count(vde.emp_id) from v_dim_emp vde
+		LEFT JOIN dim_organization org
+		on vde.organization_id=org.organization_id
+		and vde.customer_id=org.customer_id
+		where vde.customer_id=#{customerId}
+		and vde.run_off_date is null
+		and vde.organization_id IN (
+			SELECT t1.organization_id
+			FROM dim_organization t1
+			WHERE t1.customer_id = vde.customer_id
+			AND	locate(
+				(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.customer_id = t1.customer_id
+					AND t.organization_id = #{organId}
+				),
+				t1.full_path
+			)
+		)
+	</select>
+
+	<!-- 培训课程的覆盖率 -->
+	<select id="queryTrainCover" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			count(DISTINCT ete.emp_id)/#{empCount} as coverageRate
+		FROM
+			emp_train_experience ete
+		inner JOIN v_dim_emp vde ON vde.emp_id = ete.emp_id
+		AND vde.customer_id = ete.customer_id
+		inner JOIN dim_organization org on vde.organization_id=org.organization_id
+		and vde.customer_id=org.customer_id
+		where ete.customer_id=#{customerId}
+		and year(ete.start_date)&lt;=#{year} and year(ete.finish_date)&gt;=#{year}
+		and vde.run_off_date is null
+		and vde.organization_id IN (
+			SELECT t1.organization_id
+			FROM dim_organization t1
+			WHERE t1.customer_id = vde.customer_id
+			AND	locate(
+				(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.customer_id = t1.customer_id
+					AND t.organization_id = #{organId}
+				),
+				t1.full_path
+			)
+		)
+	</select>
+
+	<!-- 培训费用月度统计 -->
+	<select id="queryTrainMonthCostList" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			date_format(date,'%y/%m') as yearMonth,
+			sum(tol.outlay) as cost 
+		FROM
+			train_outlay tol
+		where tol.`year`=#{year}
+		and tol.customer_id=#{customerId}
+		and tol.organization_id =#{organId}
+		GROUP BY date_format(date,'%y/%m')
+		order by date_format(date,'%y/%m')
+	</select>
+
+	<!-- 培训费用季度统计 -->
+	<select id="queryTrainQuarterCostList" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			QUARTER(date) as quarter,
+			sum(tol.outlay) as cost 
+		FROM
+			train_outlay tol
+		where tol.`year`=#{year}
+		and tol.customer_id=#{customerId}
+		and tol.organization_id =#{organId}
+		GROUP BY QUARTER(date)
+		order by QUARTER(date)
+	</select>
+
+	<!-- 培训费用月度人均统计 -->
+	<select id="queryTrainMonthAvgCostList" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			date_format(tol.date, '%y/%m') AS yearMonth,
+			round(sum(tol.outlay)/(
+			select count(distinct ete.emp_id) from emp_train_experience ete,v_dim_emp vde
+			where ete.emp_id=vde.emp_id and ete.customer_id=vde.customer_id
+				and (ete.start_date&lt;=last_day(tol.date) and ete.finish_date&gt;= DATE_ADD(tol.date,interval -day(tol.date)+1 day))
+				and ete.customer_id=tol.customer_id
+				and vde.run_off_date is null
+				and vde.organization_id IN (
+					SELECT t1.organization_id
+					FROM dim_organization t1
+					WHERE t1.customer_id = vde.customer_id
+					AND	locate(
+						(
+							SELECT t.full_path
+							FROM dim_organization t
+							WHERE t.customer_id = t1.customer_id
+							AND t.organization_id =#{organId}
+						),
+						t1.full_path
+					)
+				)
+			),2) as avgCost
+		FROM
+			train_outlay tol
+		where tol.`year`=#{year}
+		and tol.customer_id=#{customerId}
+	    and tol.organization_id =#{organId}
+		GROUP BY date_format(tol.date, '%y/%m')
+		order by date_format(tol.date, '%y/%m')
+	</select>
+
+	<!-- 培训计划完成率 -->
+	<select id="queryTrainMonthPlanList" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			date_format(tp.start_date, '%y/%m') AS yearMonth,
+			round(count(tp1.train_name) / count(tp.train_name),4) as completeRate
+		FROM
+			train_plan tp
+		LEFT JOIN 
+			train_plan tp1
+		on tp1.customer_id=tp.customer_id
+		and tp.organization_id=tp1.organization_id
+		and tp.start_date=tp1.start_date
+		and tp1.`status`='1'
+		where tp.`year`=#{year}
+			and tp.customer_id=#{customerId}
+			and tp.organization_id =#{organId}
+		GROUP BY date_format(tp.start_date, '%y/%m')	
+		order by date_format(tp.start_date, '%y/%m')
+	</select>
+
+
+	<!-- 下级组织人均学时对比 -->
+	<select id="queryPerCapitaHours" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			org.organization_name AS organizationName,
+			round((
+				SELECT
+					sum(ete.train_time)
+				FROM
+					dim_organization org1
+				INNER JOIN v_dim_emp vde ON org1.organization_id = vde.organization_id
+				AND org1.customer_id = vde.customer_id
+				AND vde.run_off_date IS NULL
+				INNER JOIN emp_train_experience ete ON vde.emp_id = ete.emp_id
+				AND vde.customer_id = ete.customer_id
+				and year(ete.start_date)&lt;=#{year} and year(ete.finish_date)&gt;=#{year}
+				WHERE org1.customer_id = org.customer_id
+				AND vde.organization_id IN (
+					SELECT
+						t1.organization_id
+					FROM
+						dim_organization t1
+					WHERE
+						t1.customer_id = vde.customer_id
+					AND locate(
+						(
+							SELECT
+								t.full_path
+							FROM
+								dim_organization t
+							WHERE
+								t.customer_id = t1.customer_id
+							AND t.organization_id = org.organization_id
+						),
+						t1.full_path
+					)
+				)
+			)/ (
+				select count(distinct ete.emp_id) from emp_train_experience ete,v_dim_emp vde
+				where ete.emp_id=vde.emp_id and ete.customer_id=vde.customer_id
+					and year(ete.start_date)&lt;=#{year} and year(ete.finish_date)&gt;=#{year}
+					and ete.customer_id=org.customer_id
+					and vde.run_off_date is null
+					and vde.organization_id IN (
+						SELECT t1.organization_id
+						FROM dim_organization t1
+						WHERE t1.customer_id = vde.customer_id
+						AND	locate(
+							(
+								SELECT t.full_path
+								FROM dim_organization t
+								WHERE t.customer_id = t1.customer_id
+								AND t.organization_id =org.organization_id
+							),
+							t1.full_path
+						)
+					)
+				),2)
+		AS hours
+		FROM
+			dim_organization org
+		WHERE
+			org.organization_parent_id = #{organId}
+		AND org.customer_id =#{customerId}
+		GROUP BY
+		org.organization_name
+	</select>
+
+	<!-- 查询培训总费用-->
+	<select id="queryTrainTotal" resultType="Double" useCache="true">
+		select sum(t.outlay) as cost
+	    from train_outlay t
+        where t.year= #{year}
+        and t.customer_id=#{customerId} and t.organization_id=#{organId} 
+	</select>
+
+	<!-- 查询人力总费用-->
+	<select id="queryCostTotal" resultType="Double" useCache="true">
+		select sum(t.cost) as cost from manpower_cost t
+       	where substr(t.`year_month`,1,4)= #{year}
+       	and t.customer_id=#{customerId} and organization_id=#{organId} 
+	</select>
+
+	<!-- 培训人数-->
+	<select id="queryTrainNum" resultType="int" useCache="true">
+		SELECT
+			count(DISTINCT vde.emp_id)
+		FROM
+			emp_train_experience ete
+		INNER JOIN v_dim_emp vde ON ete.emp_id = vde.emp_id
+		AND ete.customer_id = vde.customer_id
+		and vde.run_off_date is null
+		left JOIN dim_organization org
+		on vde.organization_id=org.organization_id
+		and vde.customer_id = org.customer_id
+		where ete.customer_id=#{customerId}
+			and year(ete.start_date)&lt;=#{year} and year(ete.finish_date)&gt;=#{year}
+			and vde.organization_id IN (
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE t1.customer_id = vde.customer_id
+				AND	locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.customer_id = t1.customer_id
+						AND t.organization_id = #{organId}
+					),
+					t1.full_path
+				)
+			)
+	</select>
+
+	<!-- 培训人次-->
+	<select id="queryTrainPassengers" resultType="int" useCache="true">
+		SELECT
+			count(ete.emp_id)
+		FROM
+			emp_train_experience ete
+		left JOIN v_dim_emp vde ON ete.emp_id = vde.emp_id
+		AND ete.customer_id = vde.customer_id
+		left JOIN dim_organization org
+		on vde.organization_id=org.organization_id
+		and vde.customer_id = org.customer_id
+		where ete.customer_id=#{customerId}
+			and year(ete.start_date)&lt;=#{year} and year(ete.finish_date)&gt;=#{year}
+			and vde.run_off_date is null
+			and vde.organization_id IN (
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE t1.customer_id = vde.customer_id
+				AND	locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.customer_id = t1.customer_id
+						AND t.organization_id = #{organId}
+					),
+					t1.full_path
+				)
+			)
+	</select>
+
+	<!-- 培训时间-->
+	<select id="queryTrainTime" resultType="Double" useCache="true">
+		SELECT
+			sum(ete.train_time)
+		FROM
+			emp_train_experience ete
+		INNER JOIN v_dim_emp vde ON ete.emp_id = vde.emp_id
+		AND ete.customer_id = vde.customer_id
+		and vde.run_off_date is null
+		left JOIN
+		  dim_organization org
+		on vde.organization_id=org.organization_id
+		and vde.customer_id = org.customer_id
+		where ete.customer_id=#{customerId}
+			and year(ete.start_date)&lt;=#{year} and year(ete.finish_date)&gt;=#{year}
+			and vde.organization_id IN (
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE t1.customer_id = vde.customer_id
+				AND	locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.customer_id = t1.customer_id
+						AND t.organization_id = #{organId}
+					),
+					t1.full_path
+				)
+			)
+	</select>
+
+	<!-- 年度费用 -->
+	<select id="queryYearCost" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			t.year AS year,
+			sum(t.outlay) as cost
+		FROM
+			train_outlay t
+		where t.customer_id=#{customerId} and t.organization_id=#{organId}
+		group by t.`year`
+		order by t.`year`
+	</select>
+
+	<!-- 下级组织培训费用 -->
+	<select id="querySubOrganizationCost" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			org.organization_name AS organizationName,
+			sum(tro.outlay) AS cost
+		FROM
+			train_outlay tro
+		LEFT JOIN dim_organization org ON tro.organization_id = org.organization_id
+		and tro.customer_id = org.customer_id
+		WHERE
+			org.organization_parent_id=#{organId}
+			and tro.customer_id=#{customerId}
+			and tro.year=#{year}
+		GROUP BY org.organization_name
+		order by sum(tro.outlay)
+	</select>
+
+	<!-- 下级组织培训平均费用 -->
+	<select id="querySubOrganizationAvgCost" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			org.organization_name AS organizationName,
+			round(sum(tro.outlay)/
+				(	SELECT
+						count(DISTINCT vde.emp_id)
+					FROM
+						dim_organization org1 
+					inner join v_dim_emp vde ON org1.organization_id = vde.organization_id
+					AND org1.customer_id = vde.customer_id
+					and vde.run_off_date is null
+					inner JOIN emp_train_experience ete on vde.emp_id=ete.emp_id
+					and vde.customer_id = ete.customer_id 
+					and year(ete.start_date)&lt;=#{year} and year(ete.finish_date)&gt;=#{year}
+					WHERE org1.customer_id =org.customer_id and
+						vde.organization_id IN (
+							SELECT t1.organization_id
+							FROM dim_organization t1
+							WHERE t1.customer_id = vde.customer_id
+							AND	locate(
+								(
+									SELECT t.full_path
+									FROM dim_organization t
+									WHERE t.customer_id = t1.customer_id
+									AND t.organization_id = org.organization_id
+								),
+								t1.full_path
+							)
+						)
+					)
+				,2) as avgCost
+			FROM
+				train_outlay tro
+			inner JOIN dim_organization org ON tro.organization_id = org.organization_id
+			and tro.customer_id = org.customer_id
+			WHERE
+				org.organization_parent_id =#{organId}
+			AND tro.customer_id =#{customerId}
+			AND tro. YEAR =#{year}
+			GROUP BY
+				org.organization_name
+			ORDER BY
+				sum(tro.outlay)
+	</select>
+
+	<!-- 下级组织培训人次 -->
+	<select id="querySubOrganizationPassengers" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			org.organization_name AS organizationName,
+				(SELECT
+					count(vde.emp_id)
+				FROM
+					dim_organization org1 
+				inner join v_dim_emp vde ON org1.organization_id = vde.organization_id
+				AND org1.customer_id = vde.customer_id
+				and vde.run_off_date is null
+				inner JOIN emp_train_experience ete on vde.emp_id=ete.emp_id
+				and year(ete.start_date)&lt;=#{year} and year(ete.finish_date)&gt;=#{year}
+				and vde.customer_id = ete.customer_id and ete.year=#{year} 
+				WHERE org1.customer_id =org.customer_id
+					and vde.organization_id IN (
+						SELECT t1.organization_id
+						FROM dim_organization t1
+						WHERE t1.customer_id = vde.customer_id
+						AND	locate(
+							(
+								SELECT t.full_path
+								FROM dim_organization t
+								WHERE t.customer_id = t1.customer_id
+								AND t.organization_id = org.organization_id
+							),
+							t1.full_path
+						)
+					)) as frequency
+			FROM
+			 dim_organization org 
+			WHERE
+			org.organization_parent_id = #{organId}
+			and org.customer_id=#{customerId}
+		GROUP BY org.organization_name
+	</select>
+	
+	<!-- 查询下级组织-->
+	<select id="querySubOrganization" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			org.organization_id as organizationId,
+			org.organization_name as organizationName
+		FROM
+			dim_organization org
+		WHERE
+			org.organization_parent_id =#{organId}
+		and org.customer_id=#{customerId}
+	</select>
+
+	<!-- 培训类型次数统计 -->
+	<select id="queryTrainingType" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			dct.course_type_key AS courseTypeKey,
+			dct.course_type_name AS courseTypeName,
+			count(DISTINCT cr.course_id) AS frequency
+		FROM
+			course_record cr
+		inner JOIN dim_course dc ON cr.course_id = dc.course_id
+		AND cr.customer_id = dc.customer_id
+		inner JOIN dim_course_type dct ON dc.course_type_id = dct.course_type_id
+		AND dc.customer_id = dct.customer_id
+		inner join train_plan tp on cr.train_plan_id=tp.train_plan_id
+		AND cr.customer_id = tp.customer_id
+		WHERE
+			cr.customer_id =#{customerId}
+		and cr.`year`=#{year}
+		and year(tp.start_date) &lt;=#{year} and year(tp.end_date) &gt;=#{year}
+		and tp.organization_id=#{organId}
+		GROUP BY
+			course_type_key,
+			dct.course_type_name
+		ORDER BY
+		count(cr.course_id)
+	</select>
+
+	<!-- 培训满意度年度 -->
+	<select id="queryTrainingSatisfaction" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		select ts.`year` as year ,ts.soure as soure from train_satfac ts
+		where ts.customer_id=#{customerId} and ts.organization_id=#{organId}
+		order by ts.year
+	</select>
+
+	<!-- 下级组织讲师统计 -->
+	<select id="queryInternalTrainer" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			ts.organizationPid AS organizationId,
+			ts.organizationName AS organizationName,
+			count(DISTINCT vde.emp_id) AS lecturerNum
+		FROM lecturer lec
+		INNER JOIN v_dim_emp vde ON lec.emp_id = vde.emp_id
+			AND lec.customer_id = vde.customer_id
+			and vde.run_off_date is null
+		INNER JOIN (
+			select
+				org.organization_id as organizationPid,
+				org.organization_name AS organizationName,
+				dorg.organization_id AS organizationId
+			from  dim_organization org
+			INNER JOIN dim_organization dorg
+			on locate(
+				(
+				SELECT torg.full_path
+				FROM dim_organization torg
+				WHERE torg.organization_id = org.organization_id
+				AND torg.customer_id = dorg.customer_id
+				),
+				dorg.full_path
+			) AND org.customer_id = dorg.customer_id
+			WHERE org.customer_id = #{customerId}
+			AND org.organization_parent_id = #{organId}
+		) ts ON ts.organizationId = vde.organization_id
+		WHERE lec.type = 2
+		AND lec.customer_id = #{customerId}
+		GROUP BY ts.organizationName
+		ORDER BY COUNT(vde.emp_id)
+	</select>
+
+
+	<select id="queryInternalTrainerCount" resultType="int" useCache="true">
+		SELECT
+			count(lt.lecturer_name) AS lecturerNum
+		FROM lecturer lt
+		INNER JOIN sys_code_item soi ON lt.customer_id = soi.customer_id
+			AND lt.level_id = soi.sys_code_item_id AND soi.code_group_id = 'lecturerLv'
+		INNER JOIN v_dim_emp vde ON vde.emp_id = lt.emp_id
+			AND vde.customer_id = lt.customer_id
+			and vde.run_off_date is null
+			AND vde.organization_id in (
+				SELECT t0.organization_id FROM dim_organization t0
+				WHERE  t0.customer_id = vde.customer_id
+				AND locate(
+					(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.organization_id = #{organId}
+					AND t.customer_id = t0.customer_id
+					),
+					t0.full_path
+				)
+			)
+		WHERE lt.customer_id = #{customerId}
+		AND lt.type = 2
+	</select>
+
+	<!-- 内部讲师清单 -->
+	<select id="queryInternalTrainerList" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainLecturerDto" useCache="true">
+		SELECT
+			lt.lecturer_name AS lecturerName,
+			soi.sys_code_item_name AS LEVEL,
+			vde.organization_name AS organizationName,
+			vde.rank_name AS abilityLvName,
+			(
+				SELECT count(course_id)
+				FROM lecturer_course_design lcd
+				WHERE lcd.lecturer_id = lt.lecturer_id
+				AND lt.customer_id = lcd.customer_id
+			) as courseNumber,
+			(
+				SELECT count(lecturer_id)
+				FROM lecturer_course_speak lcs
+				WHERE lcs.lecturer_id = lt.lecturer_id
+				AND lcs.customer_id = lt.customer_id
+			) as teachingNumber
+		FROM lecturer lt
+		INNER JOIN sys_code_item soi ON lt.customer_id = soi.customer_id
+	AND lt.level_id = soi.sys_code_item_id AND soi.code_group_id = 'lecturerLv'
+		INNER JOIN v_dim_emp vde ON vde.emp_id = lt.emp_id
+			AND vde.customer_id = lt.customer_id
+			and vde.run_off_date is null
+			AND vde.organization_id in (
+				SELECT t0.organization_id FROM dim_organization t0
+				WHERE  t0.customer_id = vde.customer_id
+				AND locate(
+					(
+					SELECT t.full_path
+					FROM dim_organization t
+					WHERE t.organization_id = #{organId}
+					AND t.customer_id = t0.customer_id
+					),
+					t0.full_path
+				)
+			)
+		WHERE lt.customer_id = #{customerId}
+		AND lt.type = 2
+		ORDER BY soi.sys_code_item_name,convert(vde.user_name_ch using GBK)
+	</select>
+
+
+	<!-- 培训类型记录数查询 -->
+	<select id="findTrainingTypeRecordCount" resultType="int" useCache="true">
+		SELECT
+			count( DISTINCT dc.course_name)
+		FROM
+			course_record cr
+		INNER JOIN dim_course dc ON cr.course_id = dc.course_id
+		AND cr.customer_id = dc.customer_id
+		INNER JOIN dim_course_type dct ON dc.course_type_id = dct.course_type_id
+		AND dc.customer_id = dct.customer_id
+		inner join train_plan tp on cr.train_plan_id=tp.train_plan_id
+		AND cr.customer_id = tp.customer_id
+		where cr.customer_id=#{customerId}
+		and cr.year=#{year}
+		and year(tp.start_date)&lt;=#{year} and year(tp.end_date)&gt;=#{year}
+		and dct.course_type_key=#{type}
+		and tp.organization_id = #{organId}
+	</select>
+
+
+	<!-- 培训类型明细查询 -->
+	<select id="findTrainingTypeRecord" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainTypeDto" useCache="true">
+		  SELECT DISTINCT
+			dct.course_type_name,
+			dc.course_name,
+			cr.start_date,
+			cr.end_date,
+			cr.`status`,
+			(
+				SELECT
+					count(DISTINCT e.emp_id)
+				FROM
+					emp_train_experience e
+					inner join v_dim_emp vde on e.emp_id=vde.emp_id
+					and e.customer_id = vde.customer_id
+					and vde.run_off_date is null
+				WHERE
+					e.course_record_id = cr.course_record_id
+				AND e.customer_id = cr.customer_id
+				and vde.organization_id IN (
+						SELECT t1.organization_id
+						FROM dim_organization t1
+						WHERE t1.customer_id = vde.customer_id
+						AND	locate(
+							(
+								SELECT t.full_path
+								FROM dim_organization t
+								WHERE t.customer_id = t1.customer_id
+								AND t.organization_id = #{organId}
+							),
+							t1.full_path
+						)
+					)
+			) AS trainNum,
+			(
+				SELECT
+					count(DISTINCT e.emp_id)
+				FROM
+					emp_train_experience e
+					inner join v_dim_emp vde on e.emp_id=vde.emp_id
+					and e.customer_id = vde.customer_id
+					and vde.run_off_date is null
+				WHERE
+					e.course_record_id = cr.course_record_id
+				AND e.customer_id = cr.customer_id
+				and vde.organization_id IN (
+						SELECT t1.organization_id
+						FROM dim_organization t1
+						WHERE t1.customer_id = vde.customer_id
+						AND	locate(
+							(
+								SELECT t.full_path
+								FROM dim_organization t
+								WHERE t.customer_id = t1.customer_id
+								AND t.organization_id = #{organId}
+							),
+							t1.full_path
+						)
+					)
+			) /10 AS coverageRate,
+			cr.train_unit AS trainUnit
+		FROM
+			course_record cr
+		INNER JOIN dim_course dc ON cr.course_id = dc.course_id
+		AND cr.customer_id = dc.customer_id
+		INNER JOIN dim_course_type dct ON dc.course_type_id = dct.course_type_id
+		AND dc.customer_id = dct.customer_id
+		inner join train_plan tp on cr.train_plan_id=tp.train_plan_id
+		AND cr.customer_id = tp.customer_id
+		where cr.customer_id=#{customerId}
+		and cr.year=#{year}
+		and year(tp.start_date)&lt;=#{year} and year(tp.end_date)&gt;=#{year}
+		and dct.course_type_key=#{type}
+		and tp.organization_id = #{organId}
+		order by cr.start_date desc
+	</select>
+
+	<!-- 培训记录数查询 -->
+	<select id="findTrainingRecordCount" resultType="int" useCache="true">
+		SELECT
+			count(vde.emp_id)
+		FROM
+			emp_train_experience ete
+		inner JOIN v_dim_emp vde ON ete.emp_id = vde.emp_id
+		AND ete.customer_id = vde.customer_id
+		inner JOIN course_record cr ON cr.course_record_id = ete.course_record_id
+		AND ete.customer_id = cr.customer_id
+		inner JOIN dim_course dc ON dc.course_id = cr.course_id
+		AND dc.customer_id = cr.customer_id
+		inner JOIN dim_course_type dct ON dc.course_type_id = dct.course_type_id
+		AND cr.customer_id = dct.customer_id
+		WHERE 1 = 1 
+		and vde.run_off_date is null
+		and vde.customer_id = #{customerId}
+		<if test="keyName != null ">
+			and (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="organPermitIds != null and organPermitIds.size() > 0">
+		AND vde.organization_id IN
+			 <foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				 #{id}
+			 </foreach>
+		</if>
+		<if test="organId!= null">
+			and vde.organization_id IN (
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE t1.customer_id = vde.customer_id
+				AND	locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.customer_id = t1.customer_id
+						AND t.organization_id = #{organId}
+					),
+					t1.full_path
+				)
+			)
+		</if>
+	</select>
+
+
+	<!-- 培训记录查询 -->
+	<select id="findTrainingRecord" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainRecordDto" useCache="true">
+		SELECT
+			vde.user_name_ch as userName,
+			dct.course_type_name as typeName,
+			ete.course_name as courseName,
+			ete.start_date as startDate,
+			ete.finish_date as finishDate,
+			ete.train_time as trainTime,
+			ete.`status` as status
+		FROM
+			emp_train_experience ete
+		inner JOIN v_dim_emp vde ON ete.emp_id = vde.emp_id
+		AND ete.customer_id = vde.customer_id
+		inner JOIN course_record cr ON cr.course_record_id = ete.course_record_id
+		AND ete.customer_id = cr.customer_id
+		inner JOIN dim_course dc ON dc.course_id = cr.course_id
+		AND dc.customer_id = cr.customer_id
+		inner JOIN dim_course_type dct ON dc.course_type_id = dct.course_type_id
+		AND cr.customer_id = dct.customer_id
+		WHERE 1 = 1 
+		and vde.customer_id = #{customerId}
+		and vde.run_off_date is null
+		<if test="keyName != null ">
+			and (vde.emp_key LIKE CONCAT('%',#{keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{keyName},'%'))
+		</if>
+		<if test="organPermitIds != null and organPermitIds.size() > 0">
+			AND vde.organization_id IN
+			 <foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				 '${id}'
+			 </foreach>
+		</if>
+		<if test="organId!= null">
+			and vde.organization_id IN (
+				SELECT t1.organization_id
+				FROM dim_organization t1
+				WHERE t1.customer_id = vde.customer_id
+				AND	locate(
+					(
+						SELECT t.full_path
+						FROM dim_organization t
+						WHERE t.customer_id = t1.customer_id
+						AND t.organization_id = #{organId}
+					),
+					t1.full_path
+				)
+			)
+		</if>
+		ORDER BY ete.start_date DESC,convert(vde.user_name_ch using GBK)
+	</select>
+	
+	<!-- 查询公司级组织信息 -->
+	<select id="queryCompanyOrganization" resultType="net.chinahrd.entity.dto.app.trainBoard.TrainBoardDto" useCache="true">
+		SELECT
+			org.organization_id AS organizationId,
+			org.organization_name as organizationName
+		FROM
+			dim_organization org
+		WHERE
+			org.organization_parent_id = - 1
+		AND org.customer_id = #{customerId}
+	</select>
+</mapper>

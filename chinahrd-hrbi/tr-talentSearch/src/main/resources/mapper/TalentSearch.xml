@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.talentSearch.mvc.pc.dao.TalentSearchDao">
+
+	<!-- 获取人员详细信息 -->
+	<select id="findEmpDetail" resultType="net.chinahrd.entity.dto.pc.EmpDetailDto">
+	SELECT
+		vde.emp_id AS empId,
+		vde.emp_key AS empKey,
+		vde.user_name_ch AS userName,
+		vde.img_path AS imgPath,
+		vde.organization_name AS organName,
+		vde.position_name AS positionName,
+		tvde.user_name_ch AS empHfName,
+		vde.tel_phone AS telPhone,
+		vde.email,
+		vde.qq,
+		vde.wx_code AS wxCode,
+		vde.sex,
+		vde.birth_date AS birthDate,
+		vde.degree,
+		vde.marry_status AS marryStatus,
+		vde.native_place AS nativePlace,
+		vde.nation,
+		vde.patty_name AS pattyName,
+		vde.national_type AS nationalType,
+		vde.national_id AS nationalId,
+		vde.birth_place AS birthPlace,
+		vde.address,
+		tecp.emp_contact_person_name AS contactPersonName,
+		tecp.tel_phone AS contactTelPhone,
+		tecp.`call` AS contactCall,
+		vde.contract_unit AS contractUnit,
+		vde.work_place AS workPlace,
+		vde.passtime_or_fulltime AS passtimeOrFulltime,
+		vde.contract AS contract,
+		vde.sequence_name AS sequenceName,
+		vde.sequence_sub_name AS sequenceSubName,
+		vde.ability_name AS abilityName,
+		vde.rank_name AS rankName,
+		vde.job_title_name AS jobTitleName,
+		vde.entry_date AS entryDate,
+		vde.regular_date AS regularDate,
+		vde.run_off_date AS runOffDate,
+		vde.apply_type AS applyType,
+		dch.channel_name AS applyChannel,
+		vde.speciality
+	FROM v_dim_emp vde
+	INNER JOIN dim_channel dch on dch.channel_id = vde.channel_id AND dch.customer_id = #{customerId}
+	LEFT JOIN (
+		SELECT
+			ecp.emp_id,
+			ecp.emp_contact_person_name,
+			ecp.tel_phone,
+			ecp.`call`
+		FROM emp_contact_person ecp
+		WHERE ecp.emp_id = #{empId} AND ecp.customer_id = #{customerId}
+		ORDER BY ecp.is_urgent desc
+		LIMIT 0,1
+	) AS tecp ON vde.emp_id = tecp.emp_id
+	LEFT JOIN v_dim_emp tvde ON tvde.emp_id = vde.emp_hf_id AND vde.customer_id = tvde.customer_id
+	where vde.customer_id = #{customerId}  and vde.emp_id = #{empId}
+	LIMIT 0,1
+	</select>
+	
+	<!-- 获取搜索的人数 -->
+	<select id="findEmpAdvancedAllCount" resultType="int" >
+		SELECT count(DISTINCT vde.emp_id)
+		FROM v_dim_emp vde
+		LEFT JOIN dim_ability da ON da.ability_id = vde.ability_id AND da.customer_id = vde.customer_id
+		LEFT JOIN performance_change pc on vde.emp_id=pc.emp_id AND pc.customer_id = vde.customer_id
+		LEFT JOIN dim_performance dp ON dp.performance_id = pc.performance_id AND dp.customer_id = vde.customer_id
+		<if test=" talentSearch.pastHistory!= null">  
+			left join emp_past_resume epr on epr.emp_id=vde.emp_id
+		</if> 
+		<if test=" talentSearch.trainingExperience!= null">  
+			left join emp_train_experience ete on ete.emp_id=vde.emp_id
+		</if>
+		WHERE vde.customer_id = #{customerId}
+		<if test=" talentSearch.keyName!= null">  
+			AND (vde.emp_key LIKE CONCAT('%',#{talentSearch.keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{talentSearch.keyName},'%'))
+		</if>
+		
+		<if test="talentSearch.performanceCondition != null and talentSearch.performanceCondition.size() > 0">
+			<foreach collection="talentSearch.performanceCondition" item="item" >
+				AND EXISTS (select 1 from performance_change t where vde.emp_id = t.emp_id and t.`year_month` = #{item}
+				<if  test=" talentSearch.performanceRankArray!= null">  
+					and t.performance_id in 
+				   <foreach collection="talentSearch.performanceRankArray" item="item" index="index"  open="(" close=")" separator=",">
+						#{item}
+				   </foreach>
+				</if> 
+				)
+			</foreach>
+		</if>
+		<if test="organPermitIds != null and organPermitIds.size() > 0">
+		AND vde.organization_id IN
+			 <foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				 #{id}
+			 </foreach>
+		</if>
+		<if  test=" talentSearch.empTypeArray!= null">  
+			AND (
+		   <foreach collection="talentSearch.empTypeArray" item="item" index="index">
+				 <if test="item == 'type1'">
+				 	 vde.passtime_or_fulltime='f'
+				 </if>
+				 <if test="item == 'type2' and index > 0">
+				 	or vde.passtime_or_fulltime='p'
+				 </if>
+				 <if test="item == 'type2' and index == 0">
+				 	 vde.passtime_or_fulltime='p'
+				 </if>
+				 <if test="item == 'type3' and index > 0">
+				 	or vde.passtime_or_fulltime='s'
+				 </if>
+				 <if test="item == 'type3' and index == 0">
+				 	 vde.passtime_or_fulltime='s'
+				 </if>
+		   </foreach>
+		   )
+		</if> 
+		
+		<if  test=" talentSearch.sexArray!= null">  
+			AND (
+		   <foreach collection="talentSearch.sexArray" item="item" index="index">
+				 <if test="item == 'sex1'">
+				 	 vde.sex='m'
+				 </if>
+				 <if test="item == 'sex2' and index > 0">
+				 	or vde.sex='w'
+				 </if>
+				 <if test="item == 'sex2' and index == 0">
+				 	 vde.sex='w'
+				 </if>
+		   </foreach>
+		   )
+		</if> 
+		
+		<if test=" talentSearch.ageArray!= null and talentSearch.ageArray.size() > 0">
+		and
+		<foreach collection="talentSearch.ageArray" item="item" open="(" close=")" separator="OR">
+		   (vde.age &gt;= '${item.min}'
+		   <if test="{item.max} != null">
+			   AND vde.age &lt; '${item.max}'
+		   </if>
+		   )
+	   </foreach>
+		</if>
+		
+		<if  test=" talentSearch.eduArray!= null">  
+			and vde.degree in 
+		   <foreach collection="talentSearch.eduArray" item="item" index="index"  open="(" close=")" separator=",">
+				#{item}
+		   </foreach>
+		</if> 
+		
+		<if  test=" talentSearch.mainSequenceArray!= null">  
+			and vde.sequence_id in 
+		   <foreach collection="talentSearch.mainSequenceArray" item="item" index="index"  open="(" close=")" separator=",">
+				#{item}
+		   </foreach>
+		</if> 
+		
+		<if  test=" talentSearch.subSequenceArray!= null">  
+			and vde.sequence_sub_id in 
+		   <foreach collection="talentSearch.subSequenceArray" item="item" index="index"  open="(" close=")" separator=",">
+				#{item}
+		   </foreach>
+		</if> 
+		
+		<if  test=" talentSearch.abilityArray!= null">  
+			and vde.ability_id in 
+		   <foreach collection="talentSearch.abilityArray" item="item" index="index"  open="(" close=")" separator=",">
+				#{item}
+		   </foreach>
+		</if> 
+		
+		<if  test=" talentSearch.JobTitleArray!= null">  
+			and vde.job_title_id in 
+		   <foreach collection="talentSearch.JobTitleArray" item="item" index="index"  open="(" close=")" separator=",">
+				#{item}
+		   </foreach>
+		</if> 
+		
+		
+		<if test=" talentSearch.pastHistory!= null">  
+			and (epr.work_unit LIKE CONCAT('%',#{talentSearch.pastHistory},'%') or epr.department_name LIKE CONCAT('%',#{talentSearch.pastHistory},'%')
+			 	or epr.position_name LIKE CONCAT('%',#{talentSearch.pastHistory},'%') or epr.bonus_penalty_name LIKE CONCAT('%',#{talentSearch.pastHistory},'%')
+			 	or epr.witness_name LIKE CONCAT('%',#{talentSearch.pastHistory},'%') or epr.witness_contact_info LIKE CONCAT('%',#{talentSearch.pastHistory},'%')
+			 	or epr.change_reason LIKE CONCAT('%',#{talentSearch.pastHistory},'%')
+			)
+		</if> 
+		
+		<if test=" talentSearch.trainingExperience!= null">  
+			and (ete.course_name LIKE CONCAT('%',#{talentSearch.trainingExperience},'%') or ete.train_time LIKE CONCAT('%',#{talentSearch.trainingExperience},'%')
+			 	or ete.result LIKE CONCAT('%',#{talentSearch.trainingExperience},'%') or ete.train_unit LIKE CONCAT('%',#{talentSearch.trainingExperience},'%')
+			 	or ete.gain_certificate LIKE CONCAT('%',#{talentSearch.trainingExperience},'%') or ete.lecturer_name LIKE CONCAT('%',#{talentSearch.trainingExperience},'%')
+			 	or ete.note LIKE CONCAT('%',#{talentSearch.trainingExperience},'%')
+			) 
+		</if>
+		
+		<if test=" talentSearch.organization!= null">  
+			AND vde.organization_id in (
+					SELECT t0.organization_id FROM dim_organization t0
+					WHERE locate(
+						(SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{talentSearch.organization} AND t.customer_id = #{customerId}
+						), t0.full_path
+					)AND t0.customer_id = #{customerId}
+				)
+		</if>
+	</select>
+    <!-- 获取搜索的人员信息 -->
+	<select id="findEmpAdvancedAll" resultType="empDto">
+		SELECT DISTINCT
+			vde.emp_id AS empId,
+			CONCAT(vde.emp_key,'(',vde.user_name_ch,')') AS userNameCh,
+			vde.organization_id AS organizationId,
+			vde.organization_name AS organizationName,
+			vde.position_name AS positionName,
+			vde.sequence_name AS sequenceName,
+			da.ability_name AS abilityName
+		FROM v_dim_emp vde
+		LEFT JOIN dim_ability da ON da.ability_id = vde.ability_id AND da.customer_id = vde.customer_id
+		LEFT JOIN performance_change pc on vde.emp_id=pc.emp_id AND pc.customer_id = vde.customer_id
+		LEFT JOIN dim_performance dp ON dp.performance_id = pc.performance_id AND dp.customer_id = vde.customer_id
+		<if test=" talentSearch.pastHistory!= null">  
+			left join emp_past_resume epr on epr.emp_id=vde.emp_id
+		</if> 
+		<if test=" talentSearch.trainingExperience!= null">  
+			left join emp_train_experience ete on ete.emp_id=vde.emp_id
+		</if>
+		WHERE vde.customer_id = #{customerId}
+		<if test=" talentSearch.keyName!= null">  
+			AND (vde.emp_key LIKE CONCAT('%',#{talentSearch.keyName},'%') OR vde.user_name_ch LIKE CONCAT('%',#{talentSearch.keyName},'%'))
+		</if>
+		<if test="talentSearch.performanceCondition != null and talentSearch.performanceCondition.size() > 0">
+			<foreach collection="talentSearch.performanceCondition" item="item" >
+				AND EXISTS (select 1 from performance_change t where vde.emp_id = t.emp_id and t.`year_month` = #{item}
+				<if  test=" talentSearch.performanceRankArray!= null">  
+					and t.performance_id in 
+				   <foreach collection="talentSearch.performanceRankArray" item="item" index="index"  open="(" close=")" separator=",">
+						#{item}
+				   </foreach>
+				</if> 
+				)
+			</foreach>
+		</if>
+		<if test="organPermitIds != null and organPermitIds.size() > 0">
+		AND vde.organization_id IN
+			 <foreach collection="organPermitIds" item="id" separator="," open="(" close=")">
+				 #{id}
+			 </foreach>
+		</if>
+		<if  test=" talentSearch.empTypeArray!= null">  
+			AND (
+		   <foreach collection="talentSearch.empTypeArray" item="item" index="index">
+				 <if test="item == 'type1'">
+				 	 vde.passtime_or_fulltime='f'
+				 </if>
+				 <if test="item == 'type2' and index > 0">
+				 	or vde.passtime_or_fulltime='p'
+				 </if>
+				 <if test="item == 'type2' and index == 0">
+				 	 vde.passtime_or_fulltime='p'
+				 </if>
+				 <if test="item == 'type3' and index > 0">
+				 	or vde.passtime_or_fulltime='s'
+				 </if>
+				 <if test="item == 'type3' and index == 0">
+				 	 vde.passtime_or_fulltime='s'
+				 </if>
+		   </foreach>
+		   )
+		</if> 
+		<if  test=" talentSearch.sexArray!= null">  
+			AND (
+		   <foreach collection="talentSearch.sexArray" item="item" index="index">
+				 <if test="item == 'sex1'">
+				 	 vde.sex='m'
+				 </if>
+				 <if test="item == 'sex2' and index > 0">
+				 	or vde.sex='w'
+				 </if>
+				 <if test="item == 'sex2' and index == 0">
+				 	  vde.sex='w'
+				 </if>
+		   </foreach>
+		   )
+		</if>
+		<if test=" talentSearch.ageArray!= null and talentSearch.ageArray.size() > 0">
+			and
+			<foreach collection="talentSearch.ageArray" item="item" open="(" close=")" separator="OR">
+				(vde.age &gt;= #{item.min}
+				<if test="item.max != null">
+					AND vde.age &lt; #{item.max}
+				</if>
+				)
+			</foreach>
+		</if>
+		
+		<if  test=" talentSearch.eduArray!= null">  
+			and vde.degree in 
+		   <foreach collection="talentSearch.eduArray" item="item" index="index"  open="(" close=")" separator=",">
+				#{item}
+		   </foreach>
+		</if> 
+		
+		<if  test=" talentSearch.mainSequenceArray!= null">  
+			and vde.sequence_id in 
+		   <foreach collection="talentSearch.mainSequenceArray" item="item" index="index"  open="(" close=")" separator=",">
+				#{item}
+		   </foreach>
+		</if> 
+		
+		<if  test=" talentSearch.subSequenceArray!= null">  
+			and vde.sequence_sub_id in 
+		   <foreach collection="talentSearch.subSequenceArray" item="item" index="index"  open="(" close=")" separator=",">
+				#{item}
+		   </foreach>
+		</if> 
+		
+		<if  test=" talentSearch.abilityArray!= null">  
+			and vde.ability_id in 
+		   <foreach collection="talentSearch.abilityArray" item="item" index="index"  open="(" close=")" separator=",">
+				#{item}
+		   </foreach>
+		</if> 
+		
+		<if  test=" talentSearch.JobTitleArray!= null">  
+			and vde.job_title_id in 
+		   <foreach collection="talentSearch.JobTitleArray" item="item" index="index"  open="(" close=")" separator=",">
+				#{item}
+		   </foreach>
+		</if> 
+		
+		<if test=" talentSearch.pastHistory!= null">  
+			and (epr.work_unit LIKE CONCAT('%',#{talentSearch.pastHistory},'%') or epr.department_name LIKE CONCAT('%',#{talentSearch.pastHistory},'%')
+			 	or epr.position_name LIKE CONCAT('%',#{talentSearch.pastHistory},'%') or epr.bonus_penalty_name LIKE CONCAT('%',#{talentSearch.pastHistory},'%')
+			 	or epr.witness_name LIKE CONCAT('%',#{talentSearch.pastHistory},'%') or epr.witness_contact_info LIKE CONCAT('%',#{talentSearch.pastHistory},'%')
+			 	or epr.change_reason LIKE CONCAT('%',#{talentSearch.pastHistory},'%')
+			)
+		</if> 
+		
+		<if test=" talentSearch.trainingExperience!= null">  
+			and (ete.course_name LIKE CONCAT('%',#{talentSearch.trainingExperience},'%') or ete.train_time LIKE CONCAT('%',#{talentSearch.trainingExperience},'%')
+			 	or ete.result LIKE CONCAT('%',#{talentSearch.trainingExperience},'%') or ete.train_unit LIKE CONCAT('%',#{talentSearch.trainingExperience},'%')
+			 	or ete.gain_certificate LIKE CONCAT('%',#{talentSearch.trainingExperience},'%') or ete.lecturer_name LIKE CONCAT('%',#{talentSearch.trainingExperience},'%')
+			 	or ete.note LIKE CONCAT('%',#{talentSearch.trainingExperience},'%')
+			) 
+		</if>
+		<if test=" talentSearch.organization!= null">  
+			AND vde.organization_id in (
+					SELECT t0.organization_id FROM dim_organization t0
+					WHERE locate(
+						(SELECT t.full_path FROM dim_organization t WHERE t.organization_id = #{talentSearch.organization} AND t.customer_id = #{customerId}
+						), t0.full_path
+					)AND t0.customer_id = #{customerId}
+				)
+		</if>
+		<if test="sidx != ''">
+		ORDER BY #{sidx} #{sord}
+		</if>
+		LIMIT #{offset}, #{limit}
+	</select>
+
+</mapper>

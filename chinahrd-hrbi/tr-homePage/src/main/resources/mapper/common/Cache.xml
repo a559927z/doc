@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.homepage.module.CacheDao">
+	
+	
+	<!-- 预警加班周期内有效工作天数 -->
+	<select id="queryAvailabilityDayNum" resultType="java.lang.Integer"> 
+		SELECT count(1) FROM holiday h
+		INNER JOIN (select config_val cVal from config where config_key=#{key} AND customer_id=#{customerId}) w 
+		WHERE h.type=4  AND h.date BETWEEN DATE_ADD(#{curdate},INTERVAL -w.cVal WEEK)
+						AND DATE_ADD(#{curdate},INTERVAL -1 DAY)
+				AND h.customer_id=#{customerId}
+	</select>
+	
+
+</mapper>

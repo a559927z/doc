@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.pc.dao.admin.OrganTypeDao">
+
+	<select id="findList" resultType="net.chinahrd.entity.dto.pc.admin.OrganTypeDto">
+		SELECT 
+			t.organization_type_id    AS 'organizationTypeId',
+			t.customer_id			  AS 'customerId',
+			t.organization_type_key   AS 'organizationTypeKey',
+			t.organization_type_level AS 'organizationTypeLevel',
+			t.organization_type_name  AS 'organizationTypeName'
+		 FROM dim_organization_type t        
+		 <where>
+		 	1=1
+		 	<if test="orgType != null and orgType.organizationTypeLevel != null and orgType.organizationTypeLevel != '' and orgType.organizationTypeLevel != 'null'">
+		 		AND t.organization_type_level = #{orgType.organizationTypeLevel}
+		 	</if>
+		 </where>
+			
+	</select>
+
+</mapper>

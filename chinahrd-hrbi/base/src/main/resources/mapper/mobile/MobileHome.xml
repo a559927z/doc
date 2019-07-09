@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="net.chinahrd.mvc.app.dao.home.MobileHomeDao">
+	 	 <select id="getFunctionList" resultType="net.chinahrd.entity.dto.app.KanbanConfigMobileDto">
+	    select 
+	    		t.function_key as functionCode,
+				t.function_name as functionName,
+				t2.url as pageUrl,
+				t2.is_show_organ as showOrgBar,
+				t2.is_scroll as scroll,
+				t2.units as totalUnits,
+				t2.image_url as imageUrl
+		from dim_function t
+		inner join exp_function_mobile t2 
+			on t.customer_id=t2.customer_id and t.function_id=t2.function_id
+		where t.quota_or_fun = 2 and t.function_parent_id !=""
+			and t.customer_id = #{customerId}
+	
+    </select>
+	 
+	 <select id="getAlreadyAddedList" resultType="net.chinahrd.entity.dto.app.KanbanConfigMobileDto">
+	    select t3.function_config_mobile_id as functionConfigMobileId,
+	    		t.function_key as functionCode,
+				t.function_name as functionName,
+				t2.url as pageUrl,
+				t2.is_show_organ as showOrgBar,
+				t2.is_scroll as scroll,
+				t2.units as totalUnits,
+				t2.image_url as imageUrl
+		from dim_function t
+		inner join exp_function_mobile t2 
+			on t.customer_id=t2.customer_id and t.function_id=t2.function_id
+		INNER JOIN function_config_mobile t3 on t.customer_id=t3.customer_id and t.function_id=t3.function_id
+		where t.quota_or_fun = 1 and t.function_parent_id !=""
+			and t3.emp_id=#{empId}
+			and t.customer_id = #{customerId}
+<!-- 			and t3.is_view=1 -->
+		ORDER BY t3.show_index,t3.create_time
+    </select>
+    <select id="getQuotaByName" resultType="net.chinahrd.entity.dto.app.KanbanConfigMobileDto">
+	    select 
+	    		t.function_key as functionCode,
+				t.function_name as functionName,
+				t2.url as pageUrl,
+				t2.is_show_organ as showOrgBar,
+				t2.is_scroll as scroll,
+				t2.units as totalUnits,
+				t2.image_quota as imageUrl
+		from dim_function t
+		inner join exp_function_mobile t2 
+			on t.customer_id=t2.customer_id and t.function_id=t2.function_id
+		where t.quota_or_fun = 1 and t.full_path LIKE CONCAT(#{name},'_%')
+			and t.customer_id = #{customerId}
+    </select>
+	<!-- 主动流失率 -->
+	<select id="queryQuarterLastDay" resultType="string">
+		SELECT MAX(mec.refresh) FROM monthly_emp_count mec WHERE mec.customer_id  = #{customerId}
+	</select>
+	<select id="queryDisminss" resultType="net.chinahrd.entity.dto.app.dismiss.DismissTrendDto">
+		SELECT
+			mec.month_begin_sum AS monthBegin,
+			mec.month_end_sum AS monthEnd,
+			mec.act_count_sum AS accordCount,
+			mec.`year_month` AS yearMonth
+		FROM monthly_emp_count mec
+		WHERE (
+			FLOOR(LEFT(mec.`year_month`,4)) = YEAR(#{quarterLastDay})
+			AND FLOOR((FLOOR(RIGHT(mec.`year_month`,2))+2)/3) = QUARTER (#{quarterLastDay})
+		)
+		AND mec.organization_id = #{organId}
+		AND mec.customer_id = #{customerId}
+	</select>
+	
+	<!-- 关键人才库 -->
+	<select id="queryRunoffRiskCount" resultType="int" >
+		    SELECT COUNT(1) 
+ 			FROM key_talent kt 
+  			inner join dimission_risk dr
+  				on kt.emp_id=dr.emp_id and kt.customer_id=dr.customer_id
+  			inner join dim_key_talent_type dktt
+  				on dktt.key_talent_type_id=kt.key_talent_type_id and kt.customer_id=dktt.customer_id
+ 			inner join v_dim_emp vde
+ 			    on vde.emp_id=kt.emp_id and kt.customer_id=vde.customer_id AND vde.run_off_date IS NULL
+  			where  dr.is_last=1 and (dr.risk_flag=1 or dr.risk_flag=2)
+  			and kt.customer_id = #{customerId}
+  			AND kt.is_delete=0 
+  			AND vde.organization_id IN
+  			<foreach collection="list" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+    </select>
+    
+    <!-- 人员结构  可用编制数 -->
+    <select id="findBudgetAnalyse" resultType="net.chinahrd.entity.dto.app.talent.structure.TalentstructureDto">
+    	SELECT
+			t2.number AS number,
+			IFNULL(sum(hec.emp_count_sum), 0) AS empCount 
+		FROM  budget_emp_number t2 
+		LEFT JOIN history_emp_count hec ON t2.organization_id = hec.organization_id
+			AND hec.customer_id = t2.customer_id
+			AND hec.day = date_sub(#{now},interval 1 day)
+			AND hec.type in   
+			<foreach collection="personTypeKey" item="type" separator="," open="(" close=")">
+			 #{type}
+		 	</foreach>
+		WHERE 
+			t2.organization_id = #{organId}
+			AND t2.YEAR = YEAR(#{now})
+			AND t2.customer_id = #{customerId}  
+    </select>
+    
+     <!-- 团队画像  总人数 -->
+   <select id="queryTeamImgEmpCount" resultType="int">
+		SELECT COUNT(1) 
+		FROM v_dim_emp t3
+		WHERE  t3.customer_id = #{customerId}
+		-- 当前机构下所有子孙部门
+		AND t3.organization_id IN
+			(
+				SELECT t1.organization_id FROM dim_organization t1
+				WHERE
+					locate(
+						(
+							SELECT t.full_path FROM dim_organization t
+							WHERE t.organization_id = #{organId}
+							AND t.customer_id = #{customerId}
+						), t1.full_path
+					)
+				AND t1.customer_id = #{customerId}
+			)
+		AND t3.run_off_date IS NULL 
+     </select>
+	
+	   <!-- 人均效益 -->
+	 <select id="queryBenfitLastMonth" resultType="string" >
+    	SELECT MAX(`year_month`) FROM fact_fte  WHERE customer_id  = #{customerId}
+    </select>
+    
+    <select id="queryBenefitValue" resultType="double" >
+    	 select 
+		 round(f.gain_amount/f.fte_value,2) as benefitValue
+		 from  fact_fte f 
+		 where f.organization_id = #{organId} 
+		 AND f.customer_id = #{customerId} 
+		 AND FLOOR(LEFT(f.`year_month`,4)) =#{year}
+		 order by f.year_month desc
+		 limit 0, 1
+    </select>
+	
+	   <!-- 员工绩效  低绩效-->
+    <select id="queryPreYearMonth" resultType="int" >
+    	select MAX(t.year_month) from
+		 performance_change t 
+		 where	t.customer_id=#{customerId} 
+		 AND `type` = #{perWeek}
+    </select>
+	<select id="queryLowPerCount" resultType="int">
+        SELECT 
+		   SUM(CASE WHEN (per.curt_name BETWEEN #{lowL} AND #{lowH}) THEN 1 ELSE 0 END) 
+        FROM v_dim_emp vde
+        INNER JOIN performance_change pc 
+        	ON vde.customer_id = pc.customer_id AND vde.emp_id = pc.emp_id  
+        	AND vde.organization_id = pc.organization_id
+            AND pc.`year_month` = #{yearMonth} AND pc.`type` = #{preWeek}
+        INNER JOIN dim_performance per
+		ON  pc.performance_id=per.performance_id AND per.customer_id = pc.customer_id 
+        WHERE vde.customer_id = #{customerId}
+        AND vde.organization_id IN (
+            SELECT t1.organization_id
+            FROM dim_organization t1
+            WHERE t1.customer_id = vde.customer_id
+            AND	locate(
+                (
+                SELECT t.full_path
+                FROM dim_organization t
+                WHERE t.customer_id = t1.customer_id
+                AND t.organization_id = #{organId}
+                ),
+                t1.full_path
+            )
+        )
+    </select>
+	   <!-- 人力成本 执行率-->
+   <!-- 本年总成本  本年预算 -->
+	<select id="queryYearTotalAndBudget" resultType="java.lang.Double">
+		select budget_value  AS value
+		from manpower_cost_value   
+		where year=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+		UNION ALL
+		select SUM(cost) AS value
+		from manpower_cost   where substr(`year_month`,1,4)=#{year}   
+		AND organization_id = #{organId} AND customer_id = #{customerId}
+	</select>
+	
+	
+	   <!-- 培训看板 执行率-->
+    <select id="queryTrainRate" resultType="java.lang.Double" >
+		SELECT
+			round(
+				sum(tol.outlay) / tvl.budget_value,
+				3
+			) AS budgetRate
+		FROM
+			train_outlay tol
+		left JOIN train_value tvl ON tol.customer_id = tvl.customer_id
+		AND tol.organization_id = tvl.organization_id
+		AND tol.`year` = tvl.`year`
+		where tol.`year`=#{year}
+		and tol.customer_id=#{customerId}
+		and tol.organization_id =#{organId}
+	</select>
+	
+</mapper>
