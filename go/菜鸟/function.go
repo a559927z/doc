@@ -19,6 +19,25 @@ func max(num1, num2 int) int {
 	return result
 }
 
+func testFor2() {
+	var a int = 0
+	fmt.Println("for start")
+	for a := 0; a < 10; a++ {
+		fmt.Println(a)
+	}
+	fmt.Println("for end")
+	fmt.Println(a)
+}
+func testFor() {
+	var a int = 0
+	fmt.Println("for start")
+	for a = 0; a < 10; a++ {
+		fmt.Println(a)
+	}
+	fmt.Println("for end")
+	fmt.Println(a)
+}
+
 func main() {
 	a, b := swap("Google", "Runoob")
 	fmt.Println(a, b)
@@ -32,4 +51,6 @@ func main() {
 	ret = max(aa, bb)
 
 	fmt.Printf("最大值是 : %d\n", ret)
+	testFor2()
+	testFor()
 }
