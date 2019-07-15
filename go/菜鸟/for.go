@@ -1,4 +1,4 @@
-package runoob
+package main
 
 import "fmt"
 
