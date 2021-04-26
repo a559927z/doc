@@ -22,7 +22,7 @@
         <guava.version>19.0</guava.version>
         <tika.version>1.13</tika.version>
         <commons.version>1.9</commons.version>
-        <commons.io.version>2.4</commons.io.version>
+        <commons.io.version>2.7</commons.io.version>
         <commons.fileupload.version>1.2.2</commons.fileupload.version>
         <apache.commons.version>3.3.2</apache.commons.version>
         <joda.version>2.3</joda.version>
