@@ -16,7 +16,7 @@
         <jackson.version>2.6.5</jackson.version>
         <aspectj.version>1.7.4</aspectj.version>
         <freemarker.version>2.3.20</freemarker.version>
-        <shiro.version>1.2.3</shiro.version>
+        <shiro.version>1.8.0</shiro.version>
         <tomcat-jdbc.version>7.0.57</tomcat-jdbc.version>
         <quartz.version>2.2.1</quartz.version>
         <guava.version>19.0</guava.version>
