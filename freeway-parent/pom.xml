@@ -44,7 +44,7 @@
         <commons-email.version>1.4</commons-email.version>
         <shiro.version>1.4.0</shiro.version>
         <poi.version>3.15</poi.version>
-        <fastjson.version>1.2.31</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <fasterxml.version>2.9.0</fasterxml.version>
         <joda-time.version>2.10</joda-time.version>
         <hutool.version>4.1.14</hutool.version>
