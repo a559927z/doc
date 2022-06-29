@@ -26,7 +26,7 @@
         <commons.fileupload.version>1.2.2</commons.fileupload.version>
         <apache.commons.version>3.3.2</apache.commons.version>
         <joda.version>2.3</joda.version>
-        <apache.poi.version>3.14</apache.poi.version>
+        <apache.poi.version>4.1.1</apache.poi.version>
         <hibernate.version>5.0.3.Final</hibernate.version>
         <jstl.version>1.2</jstl.version>
         <jsp-api.version>2.0</jsp-api.version>
