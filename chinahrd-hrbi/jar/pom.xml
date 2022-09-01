@@ -44,7 +44,7 @@
         <el-data.version>2.0.1.RELEASE</el-data.version>
         <dom4j.version>1.6.1</dom4j.version>
         <reflectasm.version>1.11.3</reflectasm.version>
-        <jsoup.version>1.10.1</jsoup.version>
+        <jsoup.version>1.15.3</jsoup.version>
         <weka.version>3.9.2</weka.version>
     </properties>
     <dependencies>
